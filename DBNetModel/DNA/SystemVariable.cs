@@ -1,17 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace DBNetModel.DNA
+﻿namespace DBNetModel.DNA
 {
-    [Flags]
-    public enum SystemVariableType
-    {
-        Other = 0,
-        Informational = 1,
-        Functional = 2
-    }
-
     public class SystemVariable
     {
         public SystemVariable(string name, int address, SystemVariableType type)

@@ -10,9 +10,71 @@ namespace DBNetModel.DNA
         static Tokenizer()
         {
             SystemVariables = LoadSystemVariables();
+            DnaMatrix = LoadDnaMatrix();
         }
 
         public static IReadOnlyList<SystemVariable> SystemVariables { get; }
+
+        private static int[,] DnaMatrix { get; }
+
+        public static string BlockToCommand(Block block)
+        {
+            switch (block.Type)
+            {
+                case BlockType.MasterFlow:
+                    return MasterFlowToCommand(block);
+
+                case BlockType.Flow:
+                    return FlowToCommand(block);
+
+                case BlockType.Stores:
+                    return StoreToCommand(block);
+
+                case BlockType.Logic:
+                    return LogicToCommand(block);
+
+                case BlockType.Condition:
+                    return ConditionToCommand(block);
+
+                case BlockType.Bitwise:
+                    return BitwiseToCommand(block);
+
+                case BlockType.AdvancedCommand:
+                    return AdvancedCommandToCommand(block);
+
+                case BlockType.BasicCommand:
+                    return BasicCommandToCommand(block);
+
+                case BlockType.StarVariable:
+                    return StarVariableToCommand(block);
+
+                case BlockType.Variable:
+                    return VariableToCommand(block);
+
+                default:
+                    return string.Empty;
+            }
+        }
+
+        public static int DnaToInt(Block block)
+        {
+            if (block.Type != BlockType.Variable && block.Type != BlockType.StarVariable)
+                return DnaMatrix[(int)block.Type, block.Value] + 32691;
+
+            var value = Math.Min(Math.Max(block.Value, -32000), 32000);
+
+            var res = -16646;
+
+            if (Math.Abs(value) > 999)
+                value = 512 * Math.Sign(value) + (int)Math.Floor(value / 2.05);
+
+            res += value;
+
+            if (block.Type == BlockType.StarVariable)
+                res += 32729;
+
+            return res;
+        }
 
         public static Block ParseCommand([NotNull] string command)
         {
@@ -30,6 +92,228 @@ namespace DBNetModel.DNA
             return command.StartsWith("*")
                 ? ParseSystemVariable(command.Substring(1), true)
                 : ParseSystemVariable(command);
+        }
+
+        private static string AdvancedCommandToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "angle";
+
+                case 2:
+                    return "dist";
+
+                case 3:
+                    return "ceil";
+
+                case 4:
+                    return "floor";
+
+                case 5:
+                    return "sqr";
+
+                case 6:
+                    return "pow";
+
+                case 7:
+                    return "pyth";
+
+                case 8:
+                    return "anglecmp";
+
+                case 9:
+                    return "root";
+
+                case 10:
+                    return "logx";
+
+                case 11:
+                    return "sin";
+
+                case 12:
+                    return "cos";
+
+                case 13:
+                    return "debugint";
+
+                case 14:
+                    return "debugbool";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static string BasicCommandToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "add";
+
+                case 2:
+                    return "sub";
+
+                case 3:
+                    return "mult";
+
+                case 4:
+                    return "div";
+
+                case 5:
+                    return "rnd";
+
+                case 6:
+                    return "*";
+
+                case 7:
+                    return "mod";
+
+                case 8:
+                    return "sgn";
+
+                case 9:
+                    return "abs";
+
+                case 10:
+                    return "dup";
+
+                case 11:
+                    return "drop";
+
+                case 12:
+                    return "clear";
+
+                case 13:
+                    return "swap";
+
+                case 14:
+                    return "over";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static string BitwiseToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "~";
+
+                case 2:
+                    return "&";
+
+                case 3:
+                    return "|";
+
+                case 4:
+                    return "^";
+
+                case 5:
+                    return "++";
+
+                case 6:
+                    return "--";
+
+                case 7:
+                    return "-";
+
+                case 8:
+                    return "<<";
+
+                case 9:
+                    return ">>";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static string ConditionToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "<";
+
+                case 2:
+                    return ">";
+
+                case 3:
+                    return "=";
+
+                case 4:
+                    return "!=";
+
+                case 5:
+                    return "%=";
+
+                case 6:
+                    return "!%=";
+
+                case 7:
+                    return "~=";
+
+                case 8:
+                    return "!~=";
+
+                case 9:
+                    return ">=";
+
+                case 10:
+                    return "<=";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static string FlowToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "cond";
+
+                case 2:
+                    return "start";
+
+                case 3:
+                    return "else";
+
+                case 4:
+                    return "stop";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static int[,] LoadDnaMatrix()
+        {
+            var count = 1;
+
+            var array = new int[11, 15];
+
+            for (var type = 2; type < 11; type++)
+            {
+                for (var value = 0; value < 15; value++)
+                {
+                    var res = BlockToCommand(new Block((BlockType)type, value));
+                    if (string.IsNullOrEmpty(res))
+                        array[type, value] = 0;
+                    else
+                    {
+                        array[type, value] = count;
+                        count++;
+                    }
+                }
+            }
+
+            return array;
         }
 
         private static IReadOnlyList<SystemVariable> LoadSystemVariables()
@@ -58,8 +342,8 @@ namespace DBNetModel.DNA
                 new SystemVariable("velsx", 197, SystemVariableType.Informational),
                 new SystemVariable("veldx", 198, SystemVariableType.Informational),
                 new SystemVariable("veldn", 199, SystemVariableType.Informational),
-                new SystemVariable("velup", 200, SystemVariableType.Informational),
                 new SystemVariable("vel", 200, SystemVariableType.Informational),
+                new SystemVariable("velup", 200, SystemVariableType.Informational),
                 new SystemVariable("hit", 201, SystemVariableType.Informational),
                 new SystemVariable("shflav", 202, SystemVariableType.Informational),
                 new SystemVariable("pain", 203, SystemVariableType.Informational),
@@ -76,8 +360,8 @@ namespace DBNetModel.DNA
                 new SystemVariable("edge", 214, SystemVariableType.Informational),
                 new SystemVariable("fixed", 215, SystemVariableType.Informational),
                 new SystemVariable("fixpos", 216, SystemVariableType.Functional),
-                new SystemVariable("depth", 217, SystemVariableType.Informational),
                 new SystemVariable("ypos", 217, SystemVariableType.Informational),
+                new SystemVariable("depth", 217, SystemVariableType.Informational),
                 new SystemVariable("daytime", 218, SystemVariableType.Informational),
                 new SystemVariable("xpos", 219, SystemVariableType.Informational),
                 new SystemVariable("kills", 220, SystemVariableType.Informational),
@@ -222,11 +506,11 @@ namespace DBNetModel.DNA
                 new SystemVariable("slime", 821, SystemVariableType.Informational),
                 new SystemVariable("mkshell", 822, SystemVariableType.Functional),
                 new SystemVariable("shell", 823, SystemVariableType.Informational),
-                new SystemVariable("strvenom", 824, SystemVariableType.Functional),
                 new SystemVariable("mkvenom", 824, SystemVariableType.Functional),
+                new SystemVariable("strvenom", 824, SystemVariableType.Functional),
                 new SystemVariable("venom", 825, SystemVariableType.Informational),
-                new SystemVariable("strpoison", 826, SystemVariableType.Functional),
                 new SystemVariable("mkpoison", 826, SystemVariableType.Functional),
+                new SystemVariable("strpoison", 826, SystemVariableType.Functional),
                 new SystemVariable("poison", 827, SystemVariableType.Informational),
                 new SystemVariable("waste", 828, SystemVariableType.Informational),
                 new SystemVariable("pwaste", 829, SystemVariableType.Informational),
@@ -296,6 +580,60 @@ namespace DBNetModel.DNA
             return list.AsReadOnly();
         }
 
+        private static string LogicToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "and";
+
+                case 2:
+                    return "or";
+
+                case 3:
+                    return "xor";
+
+                case 4:
+                    return "not";
+
+                case 5:
+                    return "true";
+
+                case 6:
+                    return "false";
+
+                case 7:
+                    return "dropbool";
+
+                case 8:
+                    return "clearbool";
+
+                case 9:
+                    return "dupbool";
+
+                case 10:
+                    return "swapbool";
+
+                case 11:
+                    return "overbool";
+
+                default:
+                    return "";
+            }
+        }
+
+        private static string MasterFlowToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "end";
+
+                default:
+                    return "";
+            }
+        }
+
         private static Block ParseSystemVariable(string command, bool starReference = false)
         {
             if (command.StartsWith("."))
@@ -319,6 +657,62 @@ namespace DBNetModel.DNA
             }
 
             return null;
+        }
+
+        private static string StarVariableToCommand(Block block)
+        {
+            return $"*{VariableToCommand(block)}";
+        }
+
+        private static string StoreToCommand(Block block)
+        {
+            switch (block.Value)
+            {
+                case 1:
+                    return "store";
+
+                case 2:
+                    return "inc";
+
+                case 3:
+                    return "dec";
+
+                case 4:
+                    return "addstore";
+
+                case 5:
+                    return "substore";
+
+                case 6:
+                    return "multstore";
+
+                case 7:
+                    return "divstore";
+
+                case 8:
+                    return "ceilstore";
+
+                case 9:
+                    return "floorstore";
+
+                case 10:
+                    return "rndstore";
+
+                case 11:
+                    return "sgnstore";
+
+                case 12:
+                    return "absstore";
+
+                case 13:
+                    return "sqrstore";
+
+                case 14:
+                    return "negstore";
+
+                default:
+                    return "";
+            }
         }
 
         [CanBeNull]
@@ -642,6 +1036,13 @@ namespace DBNetModel.DNA
                 default:
                     return null;
             }
+        }
+
+        private static string VariableToCommand(Block block)
+        {
+            var variable = SystemVariables.Where(v => v.Address == block.Value).OrderBy(v => v.Name.Length).FirstOrDefault();
+
+            return variable == null ? block.Value.ToString() : $".{variable.Name}";
         }
     }
 }
