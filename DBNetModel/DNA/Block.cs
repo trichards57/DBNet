@@ -1,6 +1,4 @@
-﻿using JetBrains.Annotations;
-
-namespace DBNetModel.DNA
+﻿namespace DBNetModel.DNA
 {
     public class Block
     {
