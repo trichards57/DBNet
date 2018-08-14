@@ -1,91 +1,108 @@
-﻿using System.Linq;
-using DBNetModel.DNA;
+﻿using DBNetModel.DNA;
+using DBNetModel.DNA.Commands;
 using FluentAssertions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace DBNetModel.Tests.DNA
 {
     public class TokenizerTests
     {
-        [Theory,
-             InlineData("end", BlockType.MasterFlow, 1),
-             InlineData("cond", BlockType.Flow, 1),
-             InlineData("start", BlockType.Flow, 2),
-             InlineData("else", BlockType.Flow, 3),
-             InlineData("stop", BlockType.Flow, 4),
-             InlineData("store", BlockType.Stores, 1),
-             InlineData("inc", BlockType.Stores, 2),
-             InlineData("dec", BlockType.Stores, 3),
-             InlineData("addstore", BlockType.Stores, 4),
-             InlineData("substore", BlockType.Stores, 5),
-             InlineData("multstore", BlockType.Stores, 6),
-             InlineData("divstore", BlockType.Stores, 7),
-             InlineData("ceilstore", BlockType.Stores, 8),
-             InlineData("floorstore", BlockType.Stores, 9),
-             InlineData("rndstore", BlockType.Stores, 10),
-             InlineData("sgnstore", BlockType.Stores, 11),
-             InlineData("absstore", BlockType.Stores, 12),
-             InlineData("sqrstore", BlockType.Stores, 13),
-             InlineData("negstore", BlockType.Stores, 14),
-             InlineData("and", BlockType.Logic, 1),
-             InlineData("or", BlockType.Logic, 2),
-             InlineData("xor", BlockType.Logic, 3),
-             InlineData("not", BlockType.Logic, 4),
-             InlineData("true", BlockType.Logic, 5),
-             InlineData("false", BlockType.Logic, 6),
-             InlineData("dropbool", BlockType.Logic, 7),
-             InlineData("clearbool", BlockType.Logic, 8),
-             InlineData("dupbool", BlockType.Logic, 9),
-             InlineData("swapbool", BlockType.Logic, 10),
-             InlineData("overbool", BlockType.Logic, 11),
-             InlineData("<", BlockType.Condition, 1),
-             InlineData(">", BlockType.Condition, 2),
-             InlineData("=", BlockType.Condition, 3),
-             InlineData("!=", BlockType.Condition, 4),
-             InlineData("%=", BlockType.Condition, 5),
-             InlineData("!%=", BlockType.Condition, 6),
-             InlineData("~=", BlockType.Condition, 7),
-             InlineData("!~=", BlockType.Condition, 8),
-             InlineData(">=", BlockType.Condition, 9),
-             InlineData("<=", BlockType.Condition, 10),
-             InlineData("~", BlockType.Bitwise, 1),
-             InlineData("&", BlockType.Bitwise, 2),
-             InlineData("|", BlockType.Bitwise, 3),
-             InlineData("^", BlockType.Bitwise, 4),
-             InlineData("++", BlockType.Bitwise, 5),
-             InlineData("--", BlockType.Bitwise, 6),
-             InlineData("-", BlockType.Bitwise, 7),
-             InlineData("<<", BlockType.Bitwise, 8),
-             InlineData(">>", BlockType.Bitwise, 9),
-             InlineData("angle", BlockType.AdvancedCommand, 1),
-             InlineData("dist", BlockType.AdvancedCommand, 2),
-             InlineData("ceil", BlockType.AdvancedCommand, 3),
-             InlineData("floor", BlockType.AdvancedCommand, 4),
-             InlineData("sqr", BlockType.AdvancedCommand, 5),
-             InlineData("pow", BlockType.AdvancedCommand, 6),
-             InlineData("pyth", BlockType.AdvancedCommand, 7),
-             InlineData("anglecmp", BlockType.AdvancedCommand, 8),
-             InlineData("root", BlockType.AdvancedCommand, 9),
-             InlineData("logx", BlockType.AdvancedCommand, 10),
-             InlineData("sin", BlockType.AdvancedCommand, 11),
-             InlineData("cos", BlockType.AdvancedCommand, 12),
-             InlineData("debugint", BlockType.AdvancedCommand, 13),
-             InlineData("debugbool", BlockType.AdvancedCommand, 14),
-             InlineData("add", BlockType.BasicCommand, 1),
-             InlineData("sub", BlockType.BasicCommand, 2),
-             InlineData("mult", BlockType.BasicCommand, 3),
-             InlineData("div", BlockType.BasicCommand, 4),
-             InlineData("rnd", BlockType.BasicCommand, 5),
-             InlineData("*", BlockType.BasicCommand, 6),
-             InlineData("mod", BlockType.BasicCommand, 7),
-             InlineData("sgn", BlockType.BasicCommand, 8),
-             InlineData("abs", BlockType.BasicCommand, 9),
-             InlineData("dup", BlockType.BasicCommand, 10),
-             InlineData("drop", BlockType.BasicCommand, 11),
-             InlineData("clear", BlockType.BasicCommand, 12),
-             InlineData("swap", BlockType.BasicCommand, 13),
-             InlineData("over", BlockType.BasicCommand, 14),
-        ]
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static readonly IEnumerable<object[]> Pairings = new[]
+        {
+             new object [] {"end", BlockType.MasterFlow, MasterFlow.End},
+             new object [] {"cond", BlockType.Flow, Flow.Condition},
+             new object [] {"start", BlockType.Flow, Flow.Start},
+             new object [] {"else", BlockType.Flow, Flow.Else},
+             new object [] {"stop", BlockType.Flow, Flow.Stop},
+             new object [] {"store", BlockType.Stores, Stores.Store},
+             new object [] {"inc", BlockType.Stores, Stores.Increment},
+             new object [] {"dec", BlockType.Stores, Stores.Decrement},
+             new object [] {"addstore", BlockType.Stores, Stores.AddStore},
+             new object [] {"substore", BlockType.Stores, Stores.SubtractStore},
+             new object [] {"multstore", BlockType.Stores, Stores.MultiplyStore},
+             new object [] {"divstore", BlockType.Stores, Stores.DivideStore},
+             new object [] {"ceilstore", BlockType.Stores, Stores.CeilingStore},
+             new object [] {"floorstore", BlockType.Stores, Stores.FloorStore},
+             new object [] {"rndstore", BlockType.Stores, Stores.RoundStore},
+             new object [] {"sgnstore", BlockType.Stores, Stores.SignStore},
+             new object [] {"absstore", BlockType.Stores, Stores.AbsoluteStore},
+             new object [] {"sqrstore", BlockType.Stores, Stores.SquareStore},
+             new object [] {"negstore", BlockType.Stores, Stores.NegateStore},
+             new object [] {"and", BlockType.Logic, Logic.And},
+             new object [] {"or", BlockType.Logic, Logic.Or},
+             new object [] {"xor", BlockType.Logic, Logic.XOr},
+             new object [] {"not", BlockType.Logic, Logic.Not},
+             new object [] {"true", BlockType.Logic, Logic.True},
+             new object [] {"false", BlockType.Logic, Logic.False},
+             new object [] {"dropbool", BlockType.Logic, Logic.DropBool},
+             new object [] {"clearbool", BlockType.Logic, Logic.ClearBool},
+             new object [] {"dupbool", BlockType.Logic, Logic.DuplicateBool},
+             new object [] {"swapbool", BlockType.Logic, Logic.SwapBool},
+             new object [] {"overbool", BlockType.Logic, Logic.OverBool},
+             new object [] {"<", BlockType.Condition, Condition.LessThan},
+             new object [] {">", BlockType.Condition, Condition.GreaterThan},
+             new object [] {"=", BlockType.Condition, Condition.Equal},
+             new object [] {"!=", BlockType.Condition, Condition.NotEqual},
+             new object [] {"%=", BlockType.Condition, Condition.CloselyEquals},
+             new object [] {"!%=", BlockType.Condition, Condition.NotCloselyEquals},
+             new object [] {"~=", BlockType.Condition, Condition.CustomCloselyEquals},
+             new object [] {"!~=", BlockType.Condition, Condition.CustomNotCloselyEquals},
+             new object [] {">=", BlockType.Condition, Condition.GreaterThanOrEquals},
+             new object [] {"<=", BlockType.Condition, Condition.LessThanOrEquals},
+             new object [] {"~", BlockType.Bitwise, BitwiseCommands.Complement},
+             new object [] {"&", BlockType.Bitwise, BitwiseCommands.And},
+             new object [] {"|", BlockType.Bitwise, BitwiseCommands.Or},
+             new object [] {"^", BlockType.Bitwise, BitwiseCommands.XOr},
+             new object [] {"++", BlockType.Bitwise, BitwiseCommands.Increment},
+             new object [] {"--", BlockType.Bitwise, BitwiseCommands.Decrement},
+             new object [] {"-", BlockType.Bitwise, BitwiseCommands.Negate},
+             new object [] {"<<", BlockType.Bitwise, BitwiseCommands.ShiftLeft},
+             new object [] {">>", BlockType.Bitwise, BitwiseCommands.ShiftRight},
+             new object [] {"angle", BlockType.AdvancedCommand, AdvancedCommands.Angle},
+             new object [] {"dist", BlockType.AdvancedCommand, AdvancedCommands.Distance},
+             new object [] {"ceil", BlockType.AdvancedCommand, AdvancedCommands.Ceiling},
+             new object [] {"floor", BlockType.AdvancedCommand, AdvancedCommands.Floor},
+             new object [] {"sqr", BlockType.AdvancedCommand, AdvancedCommands.Square},
+             new object [] {"pow", BlockType.AdvancedCommand, AdvancedCommands.Pow},
+             new object [] {"pyth", BlockType.AdvancedCommand, AdvancedCommands.Pythagorus},
+             new object [] {"anglecmp", BlockType.AdvancedCommand, AdvancedCommands.AngleCompare},
+             new object [] {"root", BlockType.AdvancedCommand, AdvancedCommands.Root},
+             new object [] {"logx", BlockType.AdvancedCommand, AdvancedCommands.LogX},
+             new object [] {"sin", BlockType.AdvancedCommand, AdvancedCommands.Sin},
+             new object [] {"cos", BlockType.AdvancedCommand, AdvancedCommands.Cos},
+             new object [] {"debugint", BlockType.AdvancedCommand, AdvancedCommands.DebugInt},
+             new object [] {"debugbool", BlockType.AdvancedCommand, AdvancedCommands.DebugBool},
+             new object [] {"add", BlockType.BasicCommand, BasicCommands.Add},
+             new object [] {"sub", BlockType.BasicCommand, BasicCommands.Subtract},
+             new object [] {"mult", BlockType.BasicCommand, BasicCommands.Multiply},
+             new object [] {"div", BlockType.BasicCommand, BasicCommands.Divide},
+             new object [] {"rnd", BlockType.BasicCommand, BasicCommands.Round},
+             new object [] {"*", BlockType.BasicCommand, BasicCommands.Star},
+             new object [] {"mod", BlockType.BasicCommand, BasicCommands.Modulus},
+             new object [] {"sgn", BlockType.BasicCommand, BasicCommands.Sign},
+             new object [] {"abs", BlockType.BasicCommand, BasicCommands.Absolute},
+             new object [] {"dup", BlockType.BasicCommand, BasicCommands.Duplicate},
+             new object [] {"drop", BlockType.BasicCommand, BasicCommands.Drop},
+             new object [] {"clear", BlockType.BasicCommand, BasicCommands.Clear},
+             new object [] {"swap", BlockType.BasicCommand, BasicCommands.Swap},
+             new object [] {"over", BlockType.BasicCommand, BasicCommands.Over}
+        };
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static readonly IEnumerable<object[]> PairingsWithDuplicates = Pairings.Concat(new[] {
+                new object [] {"dupint", BlockType.BasicCommand, BasicCommands.Duplicate},
+                new object [] {"dropint", BlockType.BasicCommand, BasicCommands.Drop},
+                new object [] {"clearint", BlockType.BasicCommand, BasicCommands.Clear},
+                new object [] {"swapint", BlockType.BasicCommand, BasicCommands.Swap},
+                new object [] {"overint", BlockType.BasicCommand, BasicCommands.Over}
+            }
+        );
+
+        [Theory, MemberData(nameof(Pairings))]
         public void BlockToString(string expected, BlockType type, int value)
         {
             var block = new Block(type, value);
@@ -191,96 +208,100 @@ namespace DBNetModel.Tests.DNA
             actual.Should().BeEquivalentTo(expected);
         }
 
-        [Theory,
-            InlineData("end", BlockType.MasterFlow, 1),
-            InlineData("cond", BlockType.Flow, 1),
-            InlineData("start", BlockType.Flow, 2),
-            InlineData("else", BlockType.Flow, 3),
-            InlineData("stop", BlockType.Flow, 4),
-            InlineData("store", BlockType.Stores, 1),
-            InlineData("inc", BlockType.Stores, 2),
-            InlineData("dec", BlockType.Stores, 3),
-            InlineData("addstore", BlockType.Stores, 4),
-            InlineData("substore", BlockType.Stores, 5),
-            InlineData("multstore", BlockType.Stores, 6),
-            InlineData("divstore", BlockType.Stores, 7),
-            InlineData("ceilstore", BlockType.Stores, 8),
-            InlineData("floorstore", BlockType.Stores, 9),
-            InlineData("rndstore", BlockType.Stores, 10),
-            InlineData("sgnstore", BlockType.Stores, 11),
-            InlineData("absstore", BlockType.Stores, 12),
-            InlineData("sqrstore", BlockType.Stores, 13),
-            InlineData("negstore", BlockType.Stores, 14),
-            InlineData("and", BlockType.Logic, 1),
-            InlineData("or", BlockType.Logic, 2),
-            InlineData("xor", BlockType.Logic, 3),
-            InlineData("not", BlockType.Logic, 4),
-            InlineData("true", BlockType.Logic, 5),
-            InlineData("false", BlockType.Logic, 6),
-            InlineData("dropbool", BlockType.Logic, 7),
-            InlineData("clearbool", BlockType.Logic, 8),
-            InlineData("dupbool", BlockType.Logic, 9),
-            InlineData("swapbool", BlockType.Logic, 10),
-            InlineData("overbool", BlockType.Logic, 11),
-            InlineData("<", BlockType.Condition, 1),
-            InlineData(">", BlockType.Condition, 2),
-            InlineData("=", BlockType.Condition, 3),
-            InlineData("!=", BlockType.Condition, 4),
-            InlineData("%=", BlockType.Condition, 5),
-            InlineData("!%=", BlockType.Condition, 6),
-            InlineData("~=", BlockType.Condition, 7),
-            InlineData("!~=", BlockType.Condition, 8),
-            InlineData(">=", BlockType.Condition, 9),
-            InlineData("<=", BlockType.Condition, 10),
-            InlineData("~", BlockType.Bitwise, 1),
-            InlineData("&", BlockType.Bitwise, 2),
-            InlineData("|", BlockType.Bitwise, 3),
-            InlineData("^", BlockType.Bitwise, 4),
-            InlineData("++", BlockType.Bitwise, 5),
-            InlineData("--", BlockType.Bitwise, 6),
-            InlineData("-", BlockType.Bitwise, 7),
-            InlineData("<<", BlockType.Bitwise, 8),
-            InlineData(">>", BlockType.Bitwise, 9),
-            InlineData("angle", BlockType.AdvancedCommand, 1),
-            InlineData("dist", BlockType.AdvancedCommand, 2),
-            InlineData("ceil", BlockType.AdvancedCommand, 3),
-            InlineData("floor", BlockType.AdvancedCommand, 4),
-            InlineData("sqr", BlockType.AdvancedCommand, 5),
-            InlineData("pow", BlockType.AdvancedCommand, 6),
-            InlineData("pyth", BlockType.AdvancedCommand, 7),
-            InlineData("anglecmp", BlockType.AdvancedCommand, 8),
-            InlineData("root", BlockType.AdvancedCommand, 9),
-            InlineData("logx", BlockType.AdvancedCommand, 10),
-            InlineData("sin", BlockType.AdvancedCommand, 11),
-            InlineData("cos", BlockType.AdvancedCommand, 12),
-            InlineData("debugint", BlockType.AdvancedCommand, 13),
-            InlineData("debugbool", BlockType.AdvancedCommand, 14),
-            InlineData("add", BlockType.BasicCommand, 1),
-            InlineData("sub", BlockType.BasicCommand, 2),
-            InlineData("mult", BlockType.BasicCommand, 3),
-            InlineData("div", BlockType.BasicCommand, 4),
-            InlineData("rnd", BlockType.BasicCommand, 5),
-            InlineData("*", BlockType.BasicCommand, 6),
-            InlineData("mod", BlockType.BasicCommand, 7),
-            InlineData("sgn", BlockType.BasicCommand, 8),
-            InlineData("abs", BlockType.BasicCommand, 9),
-            InlineData("dup", BlockType.BasicCommand, 10),
-            InlineData("dupint", BlockType.BasicCommand, 10),
-            InlineData("drop", BlockType.BasicCommand, 11),
-            InlineData("dropint", BlockType.BasicCommand, 11),
-            InlineData("clear", BlockType.BasicCommand, 12),
-            InlineData("clearint", BlockType.BasicCommand, 12),
-            InlineData("swap", BlockType.BasicCommand, 13),
-            InlineData("swapint", BlockType.BasicCommand, 13),
-            InlineData("over", BlockType.BasicCommand, 14),
-            InlineData("overint", BlockType.BasicCommand, 14),
-        ]
+        [Theory, MemberData(nameof(PairingsWithDuplicates))]
         public void ParseBlock(string input, BlockType expectedType, int expectedValue)
         {
             var expected = new Block(expectedType, expectedValue);
             var result = Tokenizer.ParseCommand(input);
 
             result.Should().BeEquivalentTo(expected);
+        }
+
+        [Fact]
+        public void ParseDnaDoesNotAppendDuplicateMasterEnd()
+        {
+            var testInput = $"1 2 add{Environment.NewLine}3 4 sub{Environment.NewLine}end";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1),
+                new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Theory,
+                    InlineData("' This is a comment"),
+            InlineData("    ' This is a comment starting with a space"),
+            InlineData("\t'This is a comment starting with a tab"),
+            InlineData("'")]
+        public void ParseDnaWithCommentOnlyLinesReturnsEmptyList(string input)
+        {
+            var res = Tokenizer.ParseDna(input);
+
+            res.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void ParseDnaWithEmbeddedCommentsReturnsCorrectList()
+        {
+            var testInput = $"1 2 add{Environment.NewLine}' This is an embedded comment{Environment.NewLine}3 4 sub";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1),
+                new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Theory, InlineData(""), InlineData(null), InlineData(" "), InlineData("\t")]
+        public void ParseDnaWithEmptyStringReturnsEmptyList(string input)
+        {
+            var res = Tokenizer.ParseDna(input);
+
+            res.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void ParseDnaWithInlineCommentReturnsCorrectList()
+        {
+            var testInput = $"1 2 add ' This is an inline comment{Environment.NewLine}3 4 sub";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1),
+                new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Fact]
+        public void ParseDnaWithIrregularSpacingReturnsCorrectList()
+        {
+            const string testInput = "1   2  add";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Fact]
+        public void ParseDnaWithMultipleCommandsReturnsCorrectList()
+        {
+            const string testInput = "1 2 add";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Fact]
+        public void ParseDnaWithMultipleLinesReturnsCorrectList()
+        {
+            var testInput = $"1 2 add{Environment.NewLine}3 4 sub";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1),
+                new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
+        }
+
+        [Fact]
+        public void ParseDnaWithSingleCommandReturnsCorrectItem()
+        {
+            const string testInput = "start";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Flow, 2), new Block(BlockType.MasterFlow, 1));
         }
 
         [Fact]

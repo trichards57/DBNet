@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using DBNetModel.DNA.Commands;
 
 [assembly: InternalsVisibleTo("DBNetModel.Tests")]
 
@@ -19,6 +20,40 @@ namespace DBNetModel.DNA
         public static IReadOnlyList<SystemVariable> SystemVariables { get; }
 
         private static int[,] DnaMatrix { get; }
+
+        public static IEnumerable<Block> ParseDna(string dnaText)
+        {
+            if (string.IsNullOrWhiteSpace(dnaText))
+                return Enumerable.Empty<Block>();
+
+            var result = new List<Block>();
+
+            var lines = dnaText.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+            foreach (var line in lines)
+            {
+                var trimmedLine = line.Trim();
+
+                if (trimmedLine.StartsWith("'"))
+                    continue;
+
+                if (trimmedLine.Contains("'"))
+                    trimmedLine = trimmedLine.Substring(0, trimmedLine.IndexOf("'", StringComparison.InvariantCulture)).Trim();
+
+                var items = trimmedLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+                result.AddRange(items.Select(ParseCommand));
+            }
+
+            if (!result.Any()) return result;
+
+            var last = result.Last();
+
+            if (last.Type != BlockType.MasterFlow || last.Value != 1)
+            {
+                result.Add(new Block(BlockType.MasterFlow, 1));
+            }
+
+            return result;
+        }
 
         internal static string BlockToCommand(Block block)
         {
@@ -101,46 +136,46 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case AdvancedCommands.Angle:
                     return "angle";
 
-                case 2:
+                case AdvancedCommands.Distance:
                     return "dist";
 
-                case 3:
+                case AdvancedCommands.Ceiling:
                     return "ceil";
 
-                case 4:
+                case AdvancedCommands.Floor:
                     return "floor";
 
-                case 5:
+                case AdvancedCommands.Square:
                     return "sqr";
 
-                case 6:
+                case AdvancedCommands.Pow:
                     return "pow";
 
-                case 7:
+                case AdvancedCommands.Pythagorus:
                     return "pyth";
 
-                case 8:
+                case AdvancedCommands.AngleCompare:
                     return "anglecmp";
 
-                case 9:
+                case AdvancedCommands.Root:
                     return "root";
 
-                case 10:
+                case AdvancedCommands.LogX:
                     return "logx";
 
-                case 11:
+                case AdvancedCommands.Sin:
                     return "sin";
 
-                case 12:
+                case AdvancedCommands.Cos:
                     return "cos";
 
-                case 13:
+                case AdvancedCommands.DebugInt:
                     return "debugint";
 
-                case 14:
+                case AdvancedCommands.DebugBool:
                     return "debugbool";
 
                 default:
@@ -152,46 +187,46 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case BasicCommands.Add:
                     return "add";
 
-                case 2:
+                case BasicCommands.Subtract:
                     return "sub";
 
-                case 3:
+                case BasicCommands.Multiply:
                     return "mult";
 
-                case 4:
+                case BasicCommands.Divide:
                     return "div";
 
-                case 5:
+                case BasicCommands.Round:
                     return "rnd";
 
-                case 6:
+                case BasicCommands.Star:
                     return "*";
 
-                case 7:
+                case BasicCommands.Modulus:
                     return "mod";
 
-                case 8:
+                case BasicCommands.Sign:
                     return "sgn";
 
-                case 9:
+                case BasicCommands.Absolute:
                     return "abs";
 
-                case 10:
+                case BasicCommands.Duplicate:
                     return "dup";
 
-                case 11:
+                case BasicCommands.Drop:
                     return "drop";
 
-                case 12:
+                case BasicCommands.Clear:
                     return "clear";
 
-                case 13:
+                case BasicCommands.Swap:
                     return "swap";
 
-                case 14:
+                case BasicCommands.Over:
                     return "over";
 
                 default:
@@ -203,31 +238,31 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case BitwiseCommands.Complement:
                     return "~";
 
-                case 2:
+                case BitwiseCommands.And:
                     return "&";
 
-                case 3:
+                case BitwiseCommands.Or:
                     return "|";
 
-                case 4:
+                case BitwiseCommands.XOr:
                     return "^";
 
-                case 5:
+                case BitwiseCommands.Increment:
                     return "++";
 
-                case 6:
+                case BitwiseCommands.Decrement:
                     return "--";
 
-                case 7:
+                case BitwiseCommands.Negate:
                     return "-";
 
-                case 8:
+                case BitwiseCommands.ShiftLeft:
                     return "<<";
 
-                case 9:
+                case BitwiseCommands.ShiftRight:
                     return ">>";
 
                 default:
@@ -239,34 +274,34 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case Condition.LessThan:
                     return "<";
 
-                case 2:
+                case Condition.GreaterThan:
                     return ">";
 
-                case 3:
+                case Condition.Equal:
                     return "=";
 
-                case 4:
+                case Condition.NotEqual:
                     return "!=";
 
-                case 5:
+                case Condition.CloselyEquals:
                     return "%=";
 
-                case 6:
+                case Condition.NotCloselyEquals:
                     return "!%=";
 
-                case 7:
+                case Condition.CustomCloselyEquals:
                     return "~=";
 
-                case 8:
+                case Condition.CustomNotCloselyEquals:
                     return "!~=";
 
-                case 9:
+                case Condition.GreaterThanOrEquals:
                     return ">=";
 
-                case 10:
+                case Condition.LessThanOrEquals:
                     return "<=";
 
                 default:
@@ -278,16 +313,16 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case Flow.Condition:
                     return "cond";
 
-                case 2:
+                case Flow.Start:
                     return "start";
 
-                case 3:
+                case Flow.Else:
                     return "else";
 
-                case 4:
+                case Flow.Stop:
                     return "stop";
 
                 default:
@@ -587,37 +622,37 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case Logic.And:
                     return "and";
 
-                case 2:
+                case Logic.Or:
                     return "or";
 
-                case 3:
+                case Logic.XOr:
                     return "xor";
 
-                case 4:
+                case Logic.Not:
                     return "not";
 
-                case 5:
+                case Logic.True:
                     return "true";
 
-                case 6:
+                case Logic.False:
                     return "false";
 
-                case 7:
+                case Logic.DropBool:
                     return "dropbool";
 
-                case 8:
+                case Logic.ClearBool:
                     return "clearbool";
 
-                case 9:
+                case Logic.DuplicateBool:
                     return "dupbool";
 
-                case 10:
+                case Logic.SwapBool:
                     return "swapbool";
 
-                case 11:
+                case Logic.OverBool:
                     return "overbool";
 
                 default:
@@ -629,7 +664,7 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case MasterFlow.End:
                     return "end";
 
                 default:
@@ -671,46 +706,46 @@ namespace DBNetModel.DNA
         {
             switch (block.Value)
             {
-                case 1:
+                case Stores.Store:
                     return "store";
 
-                case 2:
+                case Stores.Increment:
                     return "inc";
 
-                case 3:
+                case Stores.Decrement:
                     return "dec";
 
-                case 4:
+                case Stores.AddStore:
                     return "addstore";
 
-                case 5:
+                case Stores.SubtractStore:
                     return "substore";
 
-                case 6:
+                case Stores.MultiplyStore:
                     return "multstore";
 
-                case 7:
+                case Stores.DivideStore:
                     return "divstore";
 
-                case 8:
+                case Stores.CeilingStore:
                     return "ceilstore";
 
-                case 9:
+                case Stores.FloorStore:
                     return "floorstore";
 
-                case 10:
+                case Stores.RoundStore:
                     return "rndstore";
 
-                case 11:
+                case Stores.SignStore:
                     return "sgnstore";
 
-                case 12:
+                case Stores.AbsoluteStore:
                     return "absstore";
 
-                case 13:
+                case Stores.SquareStore:
                     return "sqrstore";
 
-                case 14:
+                case Stores.NegateStore:
                     return "negstore";
 
                 default:
@@ -726,46 +761,46 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "angle":
-                    return new Block(BlockType.AdvancedCommand, 1);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Angle);
 
                 case "dist":
-                    return new Block(BlockType.AdvancedCommand, 2);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Distance);
 
                 case "ceil":
-                    return new Block(BlockType.AdvancedCommand, 3);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Ceiling);
 
                 case "floor":
-                    return new Block(BlockType.AdvancedCommand, 4);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Floor);
 
                 case "sqr":
-                    return new Block(BlockType.AdvancedCommand, 5);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Square);
 
                 case "pow":
-                    return new Block(BlockType.AdvancedCommand, 6);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Pow);
 
                 case "pyth":
-                    return new Block(BlockType.AdvancedCommand, 7);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Pythagorus);
 
                 case "anglecmp":
-                    return new Block(BlockType.AdvancedCommand, 8);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.AngleCompare);
 
                 case "root":
-                    return new Block(BlockType.AdvancedCommand, 9);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Root);
 
                 case "logx":
-                    return new Block(BlockType.AdvancedCommand, 10);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.LogX);
 
                 case "sin":
-                    return new Block(BlockType.AdvancedCommand, 11);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Sin);
 
                 case "cos":
-                    return new Block(BlockType.AdvancedCommand, 12);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.Cos);
 
                 case "debugint":
-                    return new Block(BlockType.AdvancedCommand, 13);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.DebugInt);
 
                 case "debugbool":
-                    return new Block(BlockType.AdvancedCommand, 14);
+                    return new Block(BlockType.AdvancedCommand, AdvancedCommands.DebugBool);
 
                 default:
                     return null;
@@ -780,51 +815,51 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "add":
-                    return new Block(BlockType.BasicCommand, 1);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Add);
 
                 case "sub":
-                    return new Block(BlockType.BasicCommand, 2);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Subtract);
 
                 case "mult":
-                    return new Block(BlockType.BasicCommand, 3);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Multiply);
 
                 case "div":
-                    return new Block(BlockType.BasicCommand, 4);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Divide);
 
                 case "rnd":
-                    return new Block(BlockType.BasicCommand, 5);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Round);
 
                 case "*":
-                    return new Block(BlockType.BasicCommand, 6);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Star);
 
                 case "mod":
-                    return new Block(BlockType.BasicCommand, 7);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Modulus);
 
                 case "sgn":
-                    return new Block(BlockType.BasicCommand, 8);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Sign);
 
                 case "abs":
-                    return new Block(BlockType.BasicCommand, 9);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Absolute);
 
                 case "dup":
                 case "dupint":
-                    return new Block(BlockType.BasicCommand, 10);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Duplicate);
 
                 case "drop":
                 case "dropint":
-                    return new Block(BlockType.BasicCommand, 11);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Drop);
 
                 case "clear":
                 case "clearint":
-                    return new Block(BlockType.BasicCommand, 12);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Clear);
 
                 case "swap":
                 case "swapint":
-                    return new Block(BlockType.BasicCommand, 13);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Swap);
 
                 case "over":
                 case "overint":
-                    return new Block(BlockType.BasicCommand, 14);
+                    return new Block(BlockType.BasicCommand, BasicCommands.Over);
 
                 default:
                     return null;
@@ -839,31 +874,31 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "~":
-                    return new Block(BlockType.Bitwise, 1);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.Complement);
 
                 case "&":
-                    return new Block(BlockType.Bitwise, 2);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.And);
 
                 case "|":
-                    return new Block(BlockType.Bitwise, 3);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.Or);
 
                 case "^":
-                    return new Block(BlockType.Bitwise, 4);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.XOr);
 
                 case "++":
-                    return new Block(BlockType.Bitwise, 5);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.Increment);
 
                 case "--":
-                    return new Block(BlockType.Bitwise, 6);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.Decrement);
 
                 case "-":
-                    return new Block(BlockType.Bitwise, 7);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.Negate);
 
                 case "<<":
-                    return new Block(BlockType.Bitwise, 8);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.ShiftLeft);
 
                 case ">>":
-                    return new Block(BlockType.Bitwise, 9);
+                    return new Block(BlockType.Bitwise, BitwiseCommands.ShiftRight);
 
                 default:
                     return null;
@@ -878,34 +913,34 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "<":
-                    return new Block(BlockType.Condition, 1);
+                    return new Block(BlockType.Condition, Condition.LessThan);
 
                 case ">":
-                    return new Block(BlockType.Condition, 2);
+                    return new Block(BlockType.Condition, Condition.GreaterThan);
 
                 case "=":
-                    return new Block(BlockType.Condition, 3);
+                    return new Block(BlockType.Condition, Condition.Equal);
 
                 case "!=":
-                    return new Block(BlockType.Condition, 4);
+                    return new Block(BlockType.Condition, Condition.NotEqual);
 
                 case "%=":
-                    return new Block(BlockType.Condition, 5);
+                    return new Block(BlockType.Condition, Condition.CloselyEquals);
 
                 case "!%=":
-                    return new Block(BlockType.Condition, 6);
+                    return new Block(BlockType.Condition, Condition.NotCloselyEquals);
 
                 case "~=":
-                    return new Block(BlockType.Condition, 7);
+                    return new Block(BlockType.Condition, Condition.CustomCloselyEquals);
 
                 case "!~=":
-                    return new Block(BlockType.Condition, 8);
+                    return new Block(BlockType.Condition, Condition.CustomNotCloselyEquals);
 
                 case ">=":
-                    return new Block(BlockType.Condition, 9);
+                    return new Block(BlockType.Condition, Condition.GreaterThanOrEquals);
 
                 case "<=":
-                    return new Block(BlockType.Condition, 10);
+                    return new Block(BlockType.Condition, Condition.LessThanOrEquals);
 
                 default:
                     return null;
@@ -920,16 +955,16 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "cond":
-                    return new Block(BlockType.Flow, 1);
+                    return new Block(BlockType.Flow, Flow.Condition);
 
                 case "start":
-                    return new Block(BlockType.Flow, 2);
+                    return new Block(BlockType.Flow, Flow.Start);
 
                 case "else":
-                    return new Block(BlockType.Flow, 3);
+                    return new Block(BlockType.Flow, Flow.Else);
 
                 case "stop":
-                    return new Block(BlockType.Flow, 4);
+                    return new Block(BlockType.Flow, Flow.Stop);
 
                 default:
                     return null;
@@ -944,37 +979,37 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "and":
-                    return new Block(BlockType.Logic, 1);
+                    return new Block(BlockType.Logic, Logic.And);
 
                 case "or":
-                    return new Block(BlockType.Logic, 2);
+                    return new Block(BlockType.Logic, Logic.Or);
 
                 case "xor":
-                    return new Block(BlockType.Logic, 3);
+                    return new Block(BlockType.Logic, Logic.XOr);
 
                 case "not":
-                    return new Block(BlockType.Logic, 4);
+                    return new Block(BlockType.Logic, Logic.Not);
 
                 case "true":
-                    return new Block(BlockType.Logic, 5);
+                    return new Block(BlockType.Logic, Logic.True);
 
                 case "false":
-                    return new Block(BlockType.Logic, 6);
+                    return new Block(BlockType.Logic, Logic.False);
 
                 case "dropbool":
-                    return new Block(BlockType.Logic, 7);
+                    return new Block(BlockType.Logic, Logic.DropBool);
 
                 case "clearbool":
-                    return new Block(BlockType.Logic, 8);
+                    return new Block(BlockType.Logic, Logic.ClearBool);
 
                 case "dupbool":
-                    return new Block(BlockType.Logic, 9);
+                    return new Block(BlockType.Logic, Logic.DuplicateBool);
 
                 case "swapbool":
-                    return new Block(BlockType.Logic, 10);
+                    return new Block(BlockType.Logic, Logic.SwapBool);
 
                 case "overbool":
-                    return new Block(BlockType.Logic, 11);
+                    return new Block(BlockType.Logic, Logic.OverBool);
 
                 default:
                     return null;
@@ -995,46 +1030,46 @@ namespace DBNetModel.DNA
             switch (command)
             {
                 case "store":
-                    return new Block(BlockType.Stores, 1);
+                    return new Block(BlockType.Stores, Stores.Store);
 
                 case "inc":
-                    return new Block(BlockType.Stores, 2);
+                    return new Block(BlockType.Stores, Stores.Increment);
 
                 case "dec":
-                    return new Block(BlockType.Stores, 3);
+                    return new Block(BlockType.Stores, Stores.Decrement);
 
                 case "addstore":
-                    return new Block(BlockType.Stores, 4);
+                    return new Block(BlockType.Stores, Stores.AddStore);
 
                 case "substore":
-                    return new Block(BlockType.Stores, 5);
+                    return new Block(BlockType.Stores, Stores.SubtractStore);
 
                 case "multstore":
-                    return new Block(BlockType.Stores, 6);
+                    return new Block(BlockType.Stores, Stores.MultiplyStore);
 
                 case "divstore":
-                    return new Block(BlockType.Stores, 7);
+                    return new Block(BlockType.Stores, Stores.DivideStore);
 
                 case "ceilstore":
-                    return new Block(BlockType.Stores, 8);
+                    return new Block(BlockType.Stores, Stores.CeilingStore);
 
                 case "floorstore":
-                    return new Block(BlockType.Stores, 9);
+                    return new Block(BlockType.Stores, Stores.FloorStore);
 
                 case "rndstore":
-                    return new Block(BlockType.Stores, 10);
+                    return new Block(BlockType.Stores, Stores.RoundStore);
 
                 case "sgnstore":
-                    return new Block(BlockType.Stores, 11);
+                    return new Block(BlockType.Stores, Stores.SignStore);
 
                 case "absstore":
-                    return new Block(BlockType.Stores, 12);
+                    return new Block(BlockType.Stores, Stores.AbsoluteStore);
 
                 case "sqrstore":
-                    return new Block(BlockType.Stores, 13);
+                    return new Block(BlockType.Stores, Stores.SquareStore);
 
                 case "negstore":
-                    return new Block(BlockType.Stores, 14);
+                    return new Block(BlockType.Stores, Stores.NegateStore);
 
                 default:
                     return null;
