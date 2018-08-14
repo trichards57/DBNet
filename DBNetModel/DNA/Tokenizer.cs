@@ -17,10 +17,12 @@ namespace DBNetModel.DNA
             DnaMatrix = LoadDnaMatrix();
         }
 
+        [ItemNotNull, NotNull]
         public static IReadOnlyList<SystemVariable> SystemVariables { get; }
 
         private static int[,] DnaMatrix { get; }
 
+        [ItemNotNull, NotNull]
         public static IEnumerable<Block> ParseDna(string dnaText)
         {
             if (string.IsNullOrWhiteSpace(dnaText))
@@ -55,7 +57,8 @@ namespace DBNetModel.DNA
             return result;
         }
 
-        internal static string BlockToCommand(Block block)
+        [NotNull]
+        internal static string BlockToCommand([NotNull] Block block)
         {
             switch (block.Type)
             {
@@ -94,7 +97,7 @@ namespace DBNetModel.DNA
             }
         }
 
-        internal static int DnaToInt(Block block)
+        internal static int DnaToInt([NotNull] Block block)
         {
             if (block.Type != BlockType.Variable && block.Type != BlockType.StarVariable)
                 return DnaMatrix[(int)block.Type, block.Value] + 32691;
@@ -114,7 +117,8 @@ namespace DBNetModel.DNA
             return res;
         }
 
-        internal static Block ParseCommand([NotNull] string command)
+        [NotNull]
+        internal static Block ParseCommand(string command)
         {
             var tok = TokenizeBasicCommand(command)
                    ?? TokenizeAdvancedCommand(command)
@@ -127,12 +131,15 @@ namespace DBNetModel.DNA
 
             if (tok != null) return tok;
 
-            return command.StartsWith("*")
+            tok = command.StartsWith("*")
                 ? ParseSystemVariable(command.Substring(1), true)
                 : ParseSystemVariable(command);
+
+            return tok ?? new Block(BlockType.Variable, 0);
         }
 
-        private static string AdvancedCommandToCommand(Block block)
+        [NotNull]
+        private static string AdvancedCommandToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -183,7 +190,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string BasicCommandToCommand(Block block)
+        [NotNull]
+        private static string BasicCommandToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -234,7 +242,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string BitwiseToCommand(Block block)
+        [NotNull]
+        private static string BitwiseToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -270,7 +279,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string ConditionToCommand(Block block)
+        [NotNull]
+        private static string ConditionToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -309,7 +319,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string FlowToCommand(Block block)
+        [NotNull]
+        private static string FlowToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -354,6 +365,7 @@ namespace DBNetModel.DNA
             return array;
         }
 
+        [NotNull, ItemNotNull]
         private static IReadOnlyList<SystemVariable> LoadSystemVariables()
         {
             var list = new List<SystemVariable>
@@ -618,7 +630,8 @@ namespace DBNetModel.DNA
             return list.AsReadOnly();
         }
 
-        private static string LogicToCommand(Block block)
+        [NotNull]
+        private static string LogicToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -660,7 +673,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string MasterFlowToCommand(Block block)
+        [NotNull]
+        private static string MasterFlowToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -672,7 +686,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static Block ParseSystemVariable(string command, bool starReference = false)
+        [CanBeNull]
+        private static Block ParseSystemVariable([NotNull] string command, bool starReference = false)
         {
             if (command.StartsWith("."))
             {
@@ -697,12 +712,14 @@ namespace DBNetModel.DNA
             return null;
         }
 
-        private static string StarVariableToCommand(Block block)
+        [NotNull]
+        private static string StarVariableToCommand([NotNull] Block block)
         {
             return $"*{VariableToCommand(block)}";
         }
 
-        private static string StoreToCommand(Block block)
+        [NotNull]
+        private static string StoreToCommand([NotNull] Block block)
         {
             switch (block.Value)
             {
@@ -754,7 +771,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeAdvancedCommand(string command)
+        private static Block TokenizeAdvancedCommand([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -808,7 +825,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeBasicCommand(string command)
+        private static Block TokenizeBasicCommand([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -867,7 +884,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeBitwise(string command)
+        private static Block TokenizeBitwise([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -906,7 +923,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeCondition(string command)
+        private static Block TokenizeCondition([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -948,7 +965,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeFlow(string command)
+        private static Block TokenizeFlow([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -972,7 +989,7 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeLogic(string command)
+        private static Block TokenizeLogic([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -1017,13 +1034,13 @@ namespace DBNetModel.DNA
         }
 
         [CanBeNull]
-        private static Block TokenizeMasterFlow(string command)
+        private static Block TokenizeMasterFlow([NotNull] string command)
         {
             return command.Equals("end", StringComparison.InvariantCultureIgnoreCase) ? new Block(BlockType.MasterFlow, 1) : null;
         }
 
         [CanBeNull]
-        private static Block TokenizeStore(string command)
+        private static Block TokenizeStore([NotNull] string command)
         {
             command = command.ToLowerInvariant();
 
@@ -1076,7 +1093,8 @@ namespace DBNetModel.DNA
             }
         }
 
-        private static string VariableToCommand(Block block)
+        [NotNull]
+        private static string VariableToCommand([NotNull] Block block)
         {
             var variable = SystemVariables.Where(v => v.Address == block.Value).OrderBy(v => v.Name.Length).FirstOrDefault();
 

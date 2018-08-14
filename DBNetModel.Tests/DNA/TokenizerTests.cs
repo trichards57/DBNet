@@ -249,6 +249,16 @@ namespace DBNetModel.Tests.DNA
                 new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
         }
 
+        [Fact]
+        public void ParseDnaWithEmptyLinesReturnsCorrectList()
+        {
+            var testInput = $"1 2 add{Environment.NewLine}  {Environment.NewLine}3 4 sub";
+            var res = Tokenizer.ParseDna(testInput).ToList();
+
+            res.Should().BeEquivalentTo(new Block(BlockType.Variable, 1), new Block(BlockType.Variable, 2), new Block(BlockType.BasicCommand, 1),
+                new Block(BlockType.Variable, 3), new Block(BlockType.Variable, 4), new Block(BlockType.BasicCommand, 2), new Block(BlockType.MasterFlow, 1));
+        }
+
         [Theory, InlineData(""), InlineData(null), InlineData(" "), InlineData("\t")]
         public void ParseDnaWithEmptyStringReturnsEmptyList(string input)
         {
@@ -399,6 +409,17 @@ namespace DBNetModel.Tests.DNA
 
                 result.Should().BeEquivalentTo(expected);
             }
+        }
+
+        [Fact]
+        public void UnknownInputToZero()
+        {
+            const string input = "abcd";
+            var expected = new Block(BlockType.Variable, 0);
+
+            var actual = Tokenizer.ParseCommand(input);
+
+            actual.Should().BeEquivalentTo(expected);
         }
 
         [Theory,
