@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DBNetModel.Tests")]
 
 namespace DBNetModel.DNA
 {
@@ -17,7 +20,7 @@ namespace DBNetModel.DNA
 
         private static int[,] DnaMatrix { get; }
 
-        public static string BlockToCommand(Block block)
+        internal static string BlockToCommand(Block block)
         {
             switch (block.Type)
             {
@@ -56,7 +59,7 @@ namespace DBNetModel.DNA
             }
         }
 
-        public static int DnaToInt(Block block)
+        internal static int DnaToInt(Block block)
         {
             if (block.Type != BlockType.Variable && block.Type != BlockType.StarVariable)
                 return DnaMatrix[(int)block.Type, block.Value] + 32691;
@@ -76,7 +79,7 @@ namespace DBNetModel.DNA
             return res;
         }
 
-        public static Block ParseCommand([NotNull] string command)
+        internal static Block ParseCommand([NotNull] string command)
         {
             var tok = TokenizeBasicCommand(command)
                    ?? TokenizeAdvancedCommand(command)
