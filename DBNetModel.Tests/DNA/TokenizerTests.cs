@@ -112,8 +112,243 @@ namespace DBNetModel.Tests.DNA
             result.Should().Be(expected);
         }
 
+        [Fact]
+        public void DetokenizesCroppedConditionCorrectly()
+        {
+            const string expectedString = @"''' Gene 1 begins at position 0 '''
+cond
+ *.nrg 30000 >
+''' Gene 1 ends at position 3 '''
+
+''' Gene 2 begins at position 4 '''
+cond
+ *.nrg 20000 >
+start
+ 10 .repro store
+else
+ 20 .repro store
+stop
+''' Gene 2 ends at position 16 '''
+
+end
+";
+            var inputDna = new[]
+            {
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 30000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 10),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Else),
+                new Block(BlockType.Variable, 20),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.MasterFlow, MasterFlow.End),
+            };
+
+            var actualString = Tokenizer.DetokenizeDna(inputDna);
+
+            actualString.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void DetokenizesCroppedStartCorrectly()
+        {
+            const string expectedString = @"''' Gene 1 begins at position 0 '''
+cond
+ *.nrg 20001 >
+start
+ 11 .repro store
+''' Gene 1 ends at position 7 '''
+
+''' Gene 2 begins at position 8 '''
+cond
+ *.nrg 20000 >
+start
+ 10 .repro store
+else
+ 20 .repro store
+stop
+''' Gene 2 ends at position 20 '''
+
+end
+";
+            var inputDna = new[]
+            {
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20001),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 11),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 10),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Else),
+                new Block(BlockType.Variable, 20),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.MasterFlow, MasterFlow.End),
+            };
+
+            var actualString = Tokenizer.DetokenizeDna(inputDna);
+
+            actualString.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void DetokenizesElseBodiesCorrectly()
+        {
+            const string expectedString = @"''' Gene 1 begins at position 0 '''
+cond
+ *.nrg 20000 >
+start
+ 10 .repro store
+else
+ 20 .repro store
+stop
+''' Gene 1 ends at position 12 '''
+
+end
+";
+            var inputDna = new[]
+            {
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 10),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Else),
+                new Block(BlockType.Variable, 20),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.MasterFlow, MasterFlow.End),
+            };
+
+            var actualString = Tokenizer.DetokenizeDna(inputDna);
+
+            actualString.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void DetokenizesSingleGeneCorrectly()
+        {
+            const string expectedString = @"''' Gene 1 begins at position 0 '''
+cond
+ *.nrg 20000 >
+start
+ 10 .repro store
+stop
+''' Gene 1 ends at position 8 '''
+
+end
+";
+            var inputDna = new[]
+            {
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 10),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.MasterFlow, MasterFlow.End),
+            };
+
+            var actualString = Tokenizer.DetokenizeDna(inputDna);
+
+            actualString.Should().Be(expectedString);
+        }
+
+        [Fact]
+        public void DetokenizesTwoGenesCorrectly()
+        {
+            const string expectedString = @"''' Gene 1 begins at position 0 '''
+cond
+ *.nrg 20000 >
+start
+ 10 .repro store
+stop
+''' Gene 1 ends at position 8 '''
+
+''' Gene 2 begins at position 9 '''
+cond
+ *.eye5 50 >
+ *.refeye *.myeye !=
+start
+ -1 .shoot store
+ *.refvel .up store
+stop
+''' Gene 2 ends at position 23 '''
+
+end
+";
+            var inputDna = new[]
+            {
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 310),
+                new Block(BlockType.Variable, 20000),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, 10),
+                new Block(BlockType.Variable, 300),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.Flow, Flow.Condition),
+                new Block(BlockType.StarVariable, 505),
+                new Block(BlockType.Variable, 50),
+                new Block(BlockType.Condition, Condition.GreaterThan),
+                new Block(BlockType.StarVariable, 708),
+                new Block(BlockType.StarVariable, 728),
+                new Block(BlockType.Condition, Condition.NotEqual),
+                new Block(BlockType.Flow, Flow.Start),
+                new Block(BlockType.Variable, -1),
+                new Block(BlockType.Variable, 7),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.StarVariable, 699),
+                new Block(BlockType.Variable, 1),
+                new Block(BlockType.Stores, Stores.Store),
+                new Block(BlockType.Flow, Flow.Stop),
+
+                new Block(BlockType.MasterFlow, MasterFlow.End),
+            };
+
+            var actualString = Tokenizer.DetokenizeDna(inputDna);
+
+            actualString.Should().Be(expectedString);
+        }
+
         [Theory,
-             InlineData("add", 1 + 32691),
+                     InlineData("add", 1 + 32691),
              InlineData("sub", 2 + 32691),
              InlineData("mult", 3 + 32691),
              InlineData("div", 4 + 32691),

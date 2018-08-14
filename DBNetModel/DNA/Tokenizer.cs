@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 using DBNetModel.DNA.Commands;
 
 [assembly: InternalsVisibleTo("DBNetModel.Tests")]
@@ -21,6 +22,76 @@ namespace DBNetModel.DNA
         public static IReadOnlyList<SystemVariable> SystemVariables { get; }
 
         private static int[,] DnaMatrix { get; }
+
+        public static string DetokenizeDna(IList<Block> input)
+        {
+            var result = new StringBuilder();
+            var geneCount = 0;
+            var inGene = false;
+
+            for (var i = 0; i < input.Count; i++)
+            {
+                var block = input[i];
+
+                switch (block.Type)
+                {
+                    case BlockType.Flow:
+                        switch (block.Value)
+                        {
+                            case Flow.Condition:
+                                if (inGene)
+                                    // A previous gene wasn't closed properly.
+                                    result.AppendLine($"''' Gene {geneCount} ends at position {i - 1} '''");
+
+                                geneCount++;
+
+                                if (geneCount > 1)
+                                    result.AppendLine();
+
+                                result.AppendLine($"''' Gene {geneCount} begins at position {i} '''");
+                                result.AppendLine("cond");
+                                inGene = true;
+                                break;
+
+                            case Flow.Start:
+                                result.AppendLine("start");
+                                break;
+
+                            case Flow.Else:
+                                result.AppendLine("else");
+                                break;
+
+                            case Flow.Stop:
+                                result.AppendLine("stop");
+                                result.AppendLine($"''' Gene {geneCount} ends at position {i} '''");
+                                inGene = false;
+                                break;
+                        }
+
+                        break;
+
+                    case BlockType.MasterFlow when block.Value == MasterFlow.End:
+                        result.AppendLine();
+                        result.AppendLine("end");
+                        break;
+
+                    default:
+                        result.Append(" ");
+
+                        if (input[i].Type != BlockType.Variable ||
+                            (input[i].Type == BlockType.Variable && input[i + 1].Type == BlockType.Stores))
+                            result.Append(BlockToCommand(block));
+                        else
+                            result.Append(block.Value);
+
+                        if (block.Type != BlockType.StarVariable && block.Type != BlockType.Variable)
+                            result.AppendLine();
+                        break;
+                }
+            }
+
+            return result.ToString();
+        }
 
         [ItemNotNull, NotNull]
         public static IEnumerable<Block> ParseDna(string dnaText)
