@@ -463,7 +463,7 @@ end
         }
 
         [Theory,
-                    InlineData("' This is a comment"),
+            InlineData("' This is a comment"),
             InlineData("    ' This is a comment starting with a space"),
             InlineData("\t'This is a comment starting with a tab"),
             InlineData("'")]
