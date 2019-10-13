@@ -53,10 +53,11 @@ namespace DBNetEngine
         private float _shell;
         private float _slime;
         private float _venom;
+        private int _virusTimer;
         private float _waste;
 
         /// <summary>
-        /// Gets or sets this instance's absolute number.
+        /// Gets or sets this robot's absolute number.
         /// </summary>
         /// <value>
         /// The absolute number.
@@ -1288,7 +1289,15 @@ namespace DBNetEngine
         /// <remarks>
         /// Was 'Vtimer'
         /// </remarks>
-        public int VirusTimer { get; set; }
+        public int VirusTimer
+        {
+            get => _virusTimer;
+            set
+            {
+                _virusTimer = value;
+                Memory[SystemVariableAddresses.VirusTimer] = VirusTimer;
+            }
+        }
 
         /// <summary>
         /// Gets or sets sometimes to do with variables.
@@ -1362,7 +1371,6 @@ namespace DBNetEngine
         {
             if (VirusTimer > 1)
                 VirusTimer -= 1;
-            Memory[SystemVariableAddresses.VirusTimer] = VirusTimer;
 
             if (Memory[SystemVariableAddresses.MakeVirus] > 0 && VirusTimer == 0)
             {
