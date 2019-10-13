@@ -7,7 +7,7 @@ using System.Numerics;
 
 namespace DBNetEngine
 {
-    public class RobotEngine
+    internal class RobotEngine
     {
         /// <summary>
         /// The genetic sensitivity used for DNA comparison.
@@ -316,7 +316,7 @@ namespace DBNetEngine
 
             var childDistance = rob.GetRadius(energyPercent / 100.0f) + rob.GetRadius(1.0f - energyPercent / 100.0f);
             var tempEnergy = rob.Energy;
-            var newPosition = rob.Position + rob.GetAbsoluteAcceleration(rob.Aim, childDistance, 0, 0, 0);
+            var newPosition = rob.Position + Robot.GetAbsoluteAcceleration(rob.Aim, childDistance, 0, 0, 0);
 
             if (!SimpleCollision(rob, newPosition))
             {

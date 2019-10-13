@@ -1,8 +1,8 @@
 ﻿namespace DBNetEngine.DNA
 {
-    public class SystemVariable
+    internal class SystemVariable
     {
-        public SystemVariable(string name, int address, SystemVariableType type)
+        public SystemVariable(string name, int address, SystemVariableTypes type)
         {
             Name = name.ToLowerInvariant();
             Address = address;
@@ -11,6 +11,6 @@
 
         public int Address { get; }
         public string Name { get; }
-        public SystemVariableType Type { get; }
+        public SystemVariableTypes Type { get; }
     }
 }

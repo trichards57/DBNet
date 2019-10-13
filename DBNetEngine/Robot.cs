@@ -11,7 +11,7 @@ namespace DBNetEngine
     /// Represents a robot in the simulation
     /// </summary>
     /// TODO : Update the properties to auto-update their memory addresses, or do all updates at the same time
-    public class Robot : Item
+    internal class Robot : Item
     {
         /// <summary>
         /// The cubic twip per body

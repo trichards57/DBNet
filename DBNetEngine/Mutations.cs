@@ -2,7 +2,7 @@
 
 namespace DBNetEngine
 {
-    public class Mutations
+    internal static class Mutations
     {
         internal static void Mutate(Robot rob)
         {

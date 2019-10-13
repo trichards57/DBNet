@@ -2,7 +2,7 @@
 
 namespace DBNetEngine
 {
-    public class DNAHelper
+    internal class DNAHelper
     {
         public static void DeleteGene(Robot robot, int gene)
         {

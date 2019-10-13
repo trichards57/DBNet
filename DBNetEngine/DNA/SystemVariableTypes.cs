@@ -3,7 +3,7 @@
 namespace DBNetEngine.DNA
 {
     [Flags]
-    public enum SystemVariableType
+    public enum SystemVariableTypes
     {
         Other = 0,
         Informational = 1,

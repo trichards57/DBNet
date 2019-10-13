@@ -2,7 +2,7 @@
 
 namespace DBNetEngine.Physics
 {
-    public class Environment
+    internal class Environment
     {
         public float BouyancyScaling { get; set; }
         public float LightAvailable { get; set; }

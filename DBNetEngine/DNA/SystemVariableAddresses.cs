@@ -2,7 +2,7 @@
 
 namespace DBNetEngine.DNA
 {
-    public class SystemVariableAddresses
+    public static class SystemVariableAddresses
     {
         public static int Aim { get; } = Tokenizer.SystemVariables.First(t => t.Name == "aim").Address;
         public static int AimLeft { get; } = Tokenizer.SystemVariables.First(t => t.Name == "aimleft").Address;

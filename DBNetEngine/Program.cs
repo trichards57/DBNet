@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("DBNetModel.MemoryMapper")]
+[assembly: InternalsVisibleTo("DBNetModel.Tests")]
 
 namespace DBNetEngine
 {

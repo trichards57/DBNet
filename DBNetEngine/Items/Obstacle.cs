@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DBNetEngine.Items
 {
-    public class Obstacle
+    internal class Obstacle
     {
         public static void DoCollisions(List<Obstacle> obstacles, Robot rob)
         {

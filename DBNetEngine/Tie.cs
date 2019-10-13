@@ -2,7 +2,7 @@
 
 namespace DBNetEngine
 {
-    public class Tie
+    internal class Tie
     {
         public Robot TargetRobot { get; set; }
 
