@@ -1,12 +1,10 @@
-﻿using System;
+﻿using DBNetEngine.DNA;
+using System;
 using System.IO;
 using System.Linq;
-using DBNetModel.DNA;
-using JetBrains.Annotations;
 
 namespace DBNetModel.MemoryMapper
 {
-    [UsedImplicitly]
     internal class Program
     {
         private const int MaxAddress = 1000;
