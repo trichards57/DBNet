@@ -362,8 +362,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'It's cube root of volume * some constants to give
                                             'radius of 60 for a bot of 1000 body
 
-Public Declare Sub TestRobot Lib "DBLibrary.dll" Alias "_TestRobot@4" (ByRef r As robot)
-Public Declare Sub RobotUpkeep Lib "DBLibrary.dll" Alias "_Robot_Upkeep@8" (ByRef r As robot, ByRef Costs() As Single)
+Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@20" (ByRef r As robot, ByRef Costs() As Single, DisableFixing As Boolean, ByVal fieldWidth As Long, ByVal fieldHeight As Long)
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -1074,30 +1073,6 @@ Dim length As Long
   End With
 End Sub
 
-Private Sub Poisons(n As Integer)
-  With rob(n)
-  'Paralyzed means venomized
-  
-  If .Paralyzed Then .mem(.Vloc) = .Vval
-    
-  If .Paralyzed Then
-    .Paracount = .Paracount - 1
-    If .Paracount < 1 Then .Paralyzed = False: .Vloc = 0: .Vval = 0
-  End If
-  
-  .mem(837) = Int(.Paracount) 'Botsareus 7/13/2016 Bug fix
-  
-  If .Poisoned Then .mem(.Ploc) = .Pval
-
-  If .Poisoned Then
-    .Poisoncount = .Poisoncount - 1
-    If .Poisoncount < 1 Then .Poisoned = False: .Ploc = 0: .Pval = 0
-  End If
-  
-  .mem(838) = Int(.Poisoncount) 'Botsareus 7/13/2016 Bug fix
-  End With
-End Sub
-
 Private Sub UpdateCounters(n As Integer)
 Dim i As Integer
 
@@ -1314,17 +1289,6 @@ Private Sub ManageBouyancy(ByVal n As Integer) 'Botsareus 2/2/2013 Bouyancy fix 
   End With
 End Sub
 
-Private Sub ManageFixed(n As Integer)
-
-  'Fixed/ not fixed
-    If rob(n).mem(216) > 0 Then
-      rob(n).Fixed = True
-    Else
-      rob(n).Fixed = False
-    End If
-
-End Sub
-
 'Add bots reproducing this cycle to the rep array
 'Currently possible to reproduce both sexually and asexually in the same cycle!
 Private Sub ManageReproduction(ByVal n As Integer)
@@ -1496,12 +1460,9 @@ Public Sub UpdateBots()
   For t = 1 To MaxRobs
     If t Mod 250 = 0 Then DoEvents
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
-      RobotUpkeep rob(t), SimOpts.Costs
-      If ((rob(t).Corpse = False) And (rob(t).DisableDNA = False)) Then Poisons t
-      If Not SimOpts.DisableFixing Then ManageFixed t 'Botsareus 8/5/2014 Call function only if allowed
-      CalcMass t
-      If numObstacles > 0 Then DoObstacleCollisions t
-      bordercolls t
+      RobotPreUpdate rob(t), SimOpts.Costs, True, SimOpts.fieldWidth, SimOpts.fieldHeight
+      ' If numObstacles > 0 Then DoObstacleCollisions t
+      
       TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
       If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
       If Not rob(t).Fixed Then NetForces t 'calculate forces on all robots
@@ -2858,11 +2819,11 @@ Public Function simplecoll(x As Long, y As Long, k As Integer) As Boolean
   Next t
   
   If SimOpts.Dxsxconnected = False Then
-    If x < rob(k).radius + smudgefactor Or x + rob(k).radius + smudgefactor > SimOpts.FieldWidth Then simplecoll = True
+    If x < rob(k).radius + smudgefactor Or x + rob(k).radius + smudgefactor > SimOpts.fieldWidth Then simplecoll = True
   End If
   
   If SimOpts.Updnconnected = False Then
-    If y < rob(k).radius + smudgefactor Or y + rob(k).radius + smudgefactor > SimOpts.FieldHeight Then simplecoll = True
+    If y < rob(k).radius + smudgefactor Or y + rob(k).radius + smudgefactor > SimOpts.fieldHeight Then simplecoll = True
   End If
 getout:
 End Function

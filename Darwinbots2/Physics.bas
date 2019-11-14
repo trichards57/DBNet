@@ -28,8 +28,8 @@ Public Function NetForces(n As Integer)
   'The physics engine breaks apart if bot masses are less than about .1
   
 
-    If Abs(rob(n).vel.X) < 0.0000001 Then rob(n).vel.X = 0#  'Prevents underflow errors down the line
-    If Abs(rob(n).vel.Y) < 0.0000001 Then rob(n).vel.Y = 0#  'Prevents underflow erros down the line
+    If Abs(rob(n).vel.x) < 0.0000001 Then rob(n).vel.x = 0#  'Prevents underflow errors down the line
+    If Abs(rob(n).vel.y) < 0.0000001 Then rob(n).vel.y = 0#  'Prevents underflow erros down the line
     PlanetEaters n
     FrictionForces n
     SphereDragForces n
@@ -40,16 +40,6 @@ Public Function NetForces(n As Integer)
     VoluntaryForces n
  
 End Function
-
-Public Sub CalcMass(n As Integer)
-  With rob(n)
-  .mass = (.body / 1000) + (.shell / 200) + (.chloroplasts / 32000) * 31680  'Panda 8/14/2013 set value for mass 'Botsareus 8/16/2014 Vegys get energy liner
-  'If .mass < 0.1 Then .mass = 0.1 'stops the Euler integration from wigging out too badly.
-  If .mass < 1 Then .mass = 1 'stops the Euler integration from wigging out too badly.
-  If .mass > 32000 Then .mass = 32000
-  
-  End With
-End Sub
 
 Public Sub AddedMass(n As Integer)
   'added mass is a simple enough concept.
@@ -125,7 +115,7 @@ Public Sub SphereDragForces(n As Integer)  'for bots
   Dim mag As Single
   
   'No Drag if no velocity or no density
-  If (rob(n).vel.X = 0 And rob(n).vel.Y = 0) Or SimOpts.Density = 0 Then GoTo getout
+  If (rob(n).vel.x = 0 And rob(n).vel.y = 0) Or SimOpts.Density = 0 Then GoTo getout
    
   'Here we calculate the reduction in angular momentum due to fluid density
   'I'm sure there there is a better calculation
@@ -398,7 +388,7 @@ Else
         .nrg = .nrg - (SimOpts.Ygravity / (SimOpts.PhysMoving) * IIf(.mass > 192, 192, .mass) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)) * rob(n).Bouyancy
         End With
     End If
-    If (1 / BouyancyScaling - rob(n).pos.Y / SimOpts.FieldHeight) > rob(n).Bouyancy Then
+    If (1 / BouyancyScaling - rob(n).pos.y / SimOpts.FieldHeight) > rob(n).Bouyancy Then
        rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, SimOpts.Ygravity * rob(n).mass))
     Else
        rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, -SimOpts.Ygravity * rob(n).mass))
@@ -472,7 +462,7 @@ Public Sub TieHooke(n As Integer)
   'can be made less complex (from O(n^2) to Olog(n) by calculating forces only
   'for robots less than current number and applying that force to both robots
     
-  Dim Length As Single
+  Dim length As Single
   Dim displacement As Single
   Dim Impulse As Single
   Dim k As Integer
@@ -510,11 +500,11 @@ Public Sub TieHooke(n As Integer)
     End If
     
     uv = VectorSub(.pos, rob(.Ties(k).pnt).pos)
-    Length = VectorMagnitude(uv)
+    length = VectorMagnitude(uv)
           
     'delete tie if length > 1000
     'remember length is inverse squareroot
-    If Length - .radius - rob(.Ties(k).pnt).radius > 1000 Then
+    If length - .radius - rob(.Ties(k).pnt).radius > 1000 Then
       DeleteTie n, .Ties(k).pnt
       'k = k - 1 ' Have to do this since deltie slides all the ties down
     Else
@@ -528,11 +518,11 @@ Public Sub TieHooke(n As Integer)
       Else   ' Stiffen the Tie, the bot is a multibot!
         If .Ties(k).last = -1 Then regang n, k
  
-        If Length <> 0 Then
-          uv = VectorScalar(uv, 1 / Length)
+        If length <> 0 Then
+          uv = VectorScalar(uv, 1 / length)
       
           'first -kx
-          displacement = .Ties(k).NaturalLength - Length
+          displacement = .Ties(k).NaturalLength - length
             
           If Abs(displacement) > deformation Then
             displacement = Sgn(displacement) * (Abs(displacement) - deformation)
@@ -674,7 +664,7 @@ Public Sub TieTorque(t As Integer)
           While .Ties(j).pnt > 0
             If .Ties(j).angreg Then 'if angle is fixed.
               n = .Ties(j).pnt
-              anl = angle(.pos.X, .pos.Y, rob(n).pos.X, rob(n).pos.Y) 'angle of tie in euclidian space
+              anl = angle(.pos.x, .pos.y, rob(n).pos.x, rob(n).pos.y) 'angle of tie in euclidian space
               dlo = AngDiff(anl, .aim) 'difference of angle of tie and direction of robot
               mm = AngDiff(dlo, .Ties(j).ang + .Ties(j).bend) 'difference of actual angle and requested angle
              
@@ -684,8 +674,8 @@ Public Sub TieTorque(t As Integer)
                 numOfTorqueTies = numOfTorqueTies + 1
                 mm = (Abs(mm) - angleslack) * Sgn(mm)
                 m = mm * 0.1 ' Was .3
-                dx = rob(n).pos.X - .pos.X
-                dy = .pos.Y - rob(n).pos.Y
+                dx = rob(n).pos.x - .pos.x
+                dy = .pos.y - rob(n).pos.y
                 dist = Sqr(dx ^ 2 + dy ^ 2)
                 nax = -Sin(anl) * m * dist / 10
                 nay = -Cos(anl) * m * dist / 10
@@ -789,7 +779,7 @@ Public Sub bordercolls(t As Integer)
   Dim smudge As Single
   
   With rob(t)
-    If (.pos.X > .radius) And (.pos.X < SimOpts.FieldWidth - .radius) And (.pos.Y > .radius) And (.pos.Y < SimOpts.FieldHeight - .radius) Then GoTo getout
+    If (.pos.x > .radius) And (.pos.x < SimOpts.FieldWidth - .radius) And (.pos.y > .radius) And (.pos.y < SimOpts.FieldHeight - .radius) Then GoTo getout
   
     .mem(214) = 0
     
@@ -798,30 +788,30 @@ Public Sub bordercolls(t As Integer)
     dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge))
     dist = VectorSub(dif, .pos)
   
-    If dist.X <> 0 Then
+    If dist.x <> 0 Then
       If SimOpts.Dxsxconnected = True Then
-        If dist.X < 0 Then
-          ReSpawn t, smudge, .pos.Y
+        If dist.x < 0 Then
+          ReSpawn t, smudge, .pos.y
         Else
-          ReSpawn t, SimOpts.FieldWidth - smudge, .pos.Y
+          ReSpawn t, SimOpts.FieldWidth - smudge, .pos.y
         End If
       Else
         .mem(214) = 1
         'F-> = -k dist-> + v-> * b
       
        ' .ImpulseRes.x = .ImpulseRes.x + dist.x * -k
-         If .pos.X - .radius < 0 Then .pos.X = .radius
-         If .pos.X + .radius > SimOpts.FieldWidth Then .pos.X = CSng(SimOpts.FieldWidth) - .radius
-        .ImpulseRes.X = .ImpulseRes.X + .vel.X * b
+         If .pos.x - .radius < 0 Then .pos.x = .radius
+         If .pos.x + .radius > SimOpts.FieldWidth Then .pos.x = CSng(SimOpts.FieldWidth) - .radius
+        .ImpulseRes.x = .ImpulseRes.x + .vel.x * b
       End If
     End If
   
-    If dist.Y <> 0 Then
+    If dist.y <> 0 Then
       If SimOpts.Updnconnected Then
-        If dist.Y < 0 Then
-          ReSpawn t, .pos.X, smudge
+        If dist.y < 0 Then
+          ReSpawn t, .pos.x, smudge
         Else
-          ReSpawn t, .pos.X, SimOpts.FieldHeight - smudge
+          ReSpawn t, .pos.x, SimOpts.FieldHeight - smudge
         End If
       Else
         rob(t).mem(214) = 1
@@ -831,9 +821,9 @@ Public Sub bordercolls(t As Integer)
     '  dist = VectorSub(dif, .pos)
       
      ' .ImpulseRes.y = .ImpulseRes.y + dist.y * -k
-        If .pos.Y - .radius < 0 Then .pos.Y = .radius
-        If .pos.Y + .radius > SimOpts.FieldHeight Then .pos.Y = CSng(SimOpts.FieldHeight) - .radius
-        .ImpulseRes.Y = .ImpulseRes.Y + .vel.Y * b
+        If .pos.y - .radius < 0 Then .pos.y = .radius
+        If .pos.y + .radius > SimOpts.FieldHeight Then .pos.y = CSng(SimOpts.FieldHeight) - .radius
+        .ImpulseRes.y = .ImpulseRes.y + .vel.y * b
       End If
     End If
 getout:
@@ -845,7 +835,7 @@ End Sub
 Public Sub Repel3(rob1 As Integer, rob2 As Integer)
   Dim normal As vector
   Dim vy As vector
-  Dim Length As Single
+  Dim length As Single
   Dim force As Single
   Dim V1 As vector
   Dim V1f As vector
@@ -961,8 +951,8 @@ Public Sub Repel3(rob1 As Integer, rob2 As Integer)
       
     
     'Update the touch senses
-    touch rob1, rob(rob2).pos.X, rob(rob2).pos.Y
-    touch rob2, rob(rob1).pos.X, rob(rob1).pos.Y
+    touch rob1, rob(rob2).pos.x, rob(rob2).pos.y
+    touch rob2, rob(rob1).pos.x, rob(rob1).pos.y
     
     'Update last touch variables
     rob(rob1).lasttch = rob2
