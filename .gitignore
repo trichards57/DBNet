@@ -328,3 +328,10 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/Darwinbots2/settings/lastran.set
+/Darwinbots2/settings/lastexit.set
+/Darwinbots2/saves/lastexit.sim
+/Darwinbots2/saves/lastautosave.sim
+/Darwinbots2/Safemode.gset
+/Darwinbots2/intsett.ini
+/Darwinbots2/autosaved.gset
