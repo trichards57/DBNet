@@ -2,9 +2,10 @@
 #include "robot.h"
 #include "costs.h"
 #include "physics.h"
+#include "simoptions.h"
 
-void Robot_ManageFixed(Robot& rob, bool disableFixing) {
-	if (!disableFixing)
+void Robot_ManageFixed(Robot& rob, const SimulationOptions options) {
+	if (!options.DisableFixing)
 		rob.Fixed = (rob.Mem[216] > 0);
 }
 
@@ -40,31 +41,31 @@ void Robot_Poisons(Robot& rob) {
 	rob.Mem[838] = (short)rob.PoisonCount;
 }
 
-void Robot_Upkeep(Robot& rob, float* costs) {
+void Robot_Upkeep(Robot& rob, const SimulationOptions options) {
 	float cost;
 
 	if (rob.Corpse)
 		return;
 
 	// Age Cost
-	float ageDelta = rob.Age - costs[AGE_COST_START];
+	float ageDelta = rob.Age - options.Costs[AGE_COST_START];
 
 	if (ageDelta > 0 && rob.Age > 0) {
-		if (costs[AGE_COST_MAKE_LOG] == 1)
-			cost = costs[AGE_COST] * logf(ageDelta);
-		else if (costs[AGE_COST_MAKE_LINEAR] == 1)
-			cost = costs[AGE_COST] + (ageDelta * costs[AGE_COST_LINEAR_FRACTION]);
+		if (options.Costs[AGE_COST_MAKE_LOG] == 1)
+			cost = options.Costs[AGE_COST] * logf(ageDelta);
+		else if (options.Costs[AGE_COST_MAKE_LINEAR] == 1)
+			cost = options.Costs[AGE_COST] + (ageDelta * options.Costs[AGE_COST_LINEAR_FRACTION]);
 		else
-			cost = costs[AGE_COST];
-		rob.Nrg -= cost * costs[COST_MULTIPLIER];
+			cost = options.Costs[AGE_COST];
+		rob.Nrg -= cost * options.Costs[COST_MULTIPLIER];
 	}
 
 	// Body Upkeep
-	cost = rob.Body * costs[BODY_UPKEEP] * costs[COST_MULTIPLIER];
+	cost = rob.Body * options.Costs[BODY_UPKEEP] * options.Costs[COST_MULTIPLIER];
 	rob.Nrg -= cost;
 
 	// DNA Upkeep
-	cost = (rob.DnaLen - 1) * costs[DNA_CYC_COST] * costs[COST_MULTIPLIER];
+	cost = (rob.DnaLen - 1) * options.Costs[DNA_CYC_COST] * options.Costs[COST_MULTIPLIER];
 	rob.Nrg -= cost;
 
 	// Degrade Slime
@@ -89,27 +90,18 @@ void Robot_CalculateMass(Robot& rob) {
 }
 
 extern "C" {
-	__declspec(dllexport) void __stdcall Robot_RunPreUpdate(Robot& rob, LPSAFEARRAY* costsArray, VARIANT_BOOL* disableFixing,
-		int fieldWidth, int fieldHeight, float physBrown, float maxVelocity, float physMoving) {
-		float* costs;
-		HRESULT arrayAccess = SafeArrayAccessData(*costsArray, (void**)&costs);
-
-		if (FAILED(arrayAccess))
-			return;
-
-		Robot_Upkeep(rob, costs);
+	__declspec(dllexport) void __stdcall Robot_RunPreUpdate(Robot& rob, SimulationOptions& options) {
+		Robot_Upkeep(rob, options);
 		Robot_Poisons(rob);
-		Robot_ManageFixed(rob, (*disableFixing) == -1);
+		Robot_ManageFixed(rob, options);
 		Robot_CalculateMass(rob);
 
 		// Obstacle Collisions should be done here.
 
-		Physics_BorderCollisions(rob, fieldWidth, fieldHeight);
+		Physics_BorderCollisions(rob, options);
 
 		// Sort out Tie forces and torques here
 
-		Physics_NetForces(rob, physBrown, maxVelocity, physMoving, costs[MOVE_COST] * costs[COST_MULTIPLIER]);
-
-		SafeArrayUnaccessData(*costsArray);
+		Physics_NetForces(rob, options);
 	}
 }

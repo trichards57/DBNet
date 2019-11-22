@@ -2,23 +2,25 @@
 #include "physics.h"
 #include "vector.h"
 #include "MemoryAddresses.h"
+#include "simoptions.h"
+#include "costs.h"
 
 float Physics_RandomFloat() {
 	return((float)(rand())) / ((float)RAND_MAX);
 }
 
-void Physics_BrownianForces(Robot& rob, float physBrown) {
-	if (physBrown == 0)
+void Physics_BrownianForces(Robot& rob, const SimulationOptions options) {
+	if (options.PhysBrown == 0)
 		return;
 
-	float impulse = physBrown * 0.5f * Physics_RandomFloat();
+	float impulse = options.PhysBrown * 0.5f * Physics_RandomFloat();
 	float angle = Physics_RandomFloat() * 2 * (float)M_PI;
 
 	rob.ImpulseInd = rob.ImpulseInd + Vector(cosf(angle) * impulse, sinf(angle) * impulse);
 	rob.Ma += (impulse / 100) * (Physics_RandomFloat() - 0.5);
 }
 
-void Physics_VoluntaryForces(Robot& rob, float maxVelocity, float physMoving, float moveCost) {
+void Physics_VoluntaryForces(Robot& rob, const SimulationOptions options) {
 	float multiplier = 1;
 
 	if (rob.Corpse || rob.DisableMovementsSysvars || rob.DisableDNA || !rob.Exist
@@ -34,12 +36,12 @@ void Physics_VoluntaryForces(Robot& rob, float maxVelocity, float physMoving, fl
 
 	float magnitude = newAccel.Magnitude();
 
-	if (magnitude > maxVelocity)
-		newAccel = newAccel * (maxVelocity / magnitude);
+	if (magnitude > options.MaxVelocity)
+		newAccel = newAccel * (options.MaxVelocity / magnitude);
 
-	rob.ImpulseInd = rob.ImpulseInd + newAccel * physMoving;
+	rob.ImpulseInd = rob.ImpulseInd + newAccel * options.PhysMoving;
 
-	float energyCost = newAccel.Magnitude() * moveCost;
+	float energyCost = newAccel.Magnitude() * options.Costs[MOVE_COST] * options.Costs[COST_MULTIPLIER];
 
 	if (energyCost > rob.Nrg)
 		energyCost = rob.Nrg;
@@ -50,7 +52,7 @@ void Physics_VoluntaryForces(Robot& rob, float maxVelocity, float physMoving, fl
 	rob.Nrg -= energyCost;
 }
 
-void Physics_NetForces(Robot& rob, float physBrown, float maxVelocity, float physMoving, float moveCost) {
+void Physics_NetForces(Robot& rob, const SimulationOptions options) {
 	if (rob.Fixed)
 		return;
 
@@ -63,23 +65,23 @@ void Physics_NetForces(Robot& rob, float physBrown, float maxVelocity, float phy
 	// Deal with the planet eaters routine here (this is robot to robot gravity
 	// Deal with friction against the environment here
 	// Deal with sphere drag forces here
-	Physics_BrownianForces(rob, physBrown);
+	Physics_BrownianForces(rob, options);
 	// Deal with gravity forces here
-	Physics_VoluntaryForces(rob, maxVelocity, physMoving, moveCost);
+	Physics_VoluntaryForces(rob, options);
 }
 
-void Physics_BorderCollisions(Robot& rob, int fieldWidth, int fieldHeight) {
+void Physics_BorderCollisions(Robot& rob, const SimulationOptions options) {
 	const float b = 0.05f;
 	const float SmudgeFactor = 50.0f;
 
-	if (rob.Pos.X > rob.Radius&& rob.Pos.X < (fieldWidth - rob.Radius) && rob.Pos.Y > rob.Radius&& rob.Pos.Y < (fieldHeight - rob.Radius))
+	if (rob.Pos.X > rob.Radius&& rob.Pos.X < (options.FieldWidth - rob.Radius) && rob.Pos.Y > rob.Radius&& rob.Pos.Y < (options.FieldHeight - rob.Radius))
 		return;
 
 	rob.Mem[214] = 0;
 
 	float smudge = rob.Radius + SmudgeFactor;
 
-	Vector dif = VectorMin(VectorMax(rob.Pos, Vector(smudge, smudge)), Vector(fieldWidth - smudge, fieldHeight - smudge));
+	Vector dif = VectorMin(VectorMax(rob.Pos, Vector(smudge, smudge)), Vector(options.FieldWidth - smudge, options.FieldHeight - smudge));
 	Vector dist = dif - rob.Pos;
 
 	if (dist.X != 0) {
@@ -88,8 +90,8 @@ void Physics_BorderCollisions(Robot& rob, int fieldWidth, int fieldHeight) {
 
 		if ((rob.Pos.X - rob.Radius) < 0)
 			rob.Pos.X = rob.Radius;
-		if ((rob.Pos.X + rob.Radius) > fieldWidth)
-			rob.Pos.X = (float)fieldWidth - rob.Radius;
+		if ((rob.Pos.X + rob.Radius) > options.FieldWidth)
+			rob.Pos.X = (float)options.FieldWidth - rob.Radius;
 		rob.ImpulseRes.X += rob.Vel.X * b;
 	}
 
@@ -99,8 +101,8 @@ void Physics_BorderCollisions(Robot& rob, int fieldWidth, int fieldHeight) {
 
 		if ((rob.Pos.Y - rob.Radius) < 0)
 			rob.Pos.Y = rob.Radius;
-		if ((rob.Pos.Y + rob.Radius) > fieldHeight)
-			rob.Pos.Y = (float)fieldHeight - rob.Radius;
+		if ((rob.Pos.Y + rob.Radius) > options.FieldHeight)
+			rob.Pos.Y = (float)options.FieldHeight - rob.Radius;
 		rob.ImpulseRes.Y += rob.Vel.Y * b;
 	}
 }

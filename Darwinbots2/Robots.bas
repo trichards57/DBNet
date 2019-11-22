@@ -362,7 +362,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'It's cube root of volume * some constants to give
                                             'radius of 60 for a bot of 1000 body
 
-Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@32" (ByRef r As robot, ByRef Costs() As Single, DisableFixing As Boolean, ByVal fieldWidth As Long, ByVal fieldHeight As Long, ByVal physBrown As Single, ByVal maxVelocity As Single, ByVal physMoving As Single)
+Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@8" (ByRef r As robot, ByRef simulationOptions As SimOptions)
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -1455,17 +1455,16 @@ Public Sub UpdateBots()
         SimOpts.Ygravity = (1 - BouyancyScaling) * 4
         SimOpts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
     End If
-  
-  'this loops is for pre update
-  For t = 1 To MaxRobs
+
+    'this loops is for pre update
+    For t = 1 To MaxRobs
     If t Mod 250 = 0 Then DoEvents
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
-      RobotPreUpdate rob(t), SimOpts.Costs, True, SimOpts.fieldWidth, SimOpts.fieldHeight
+      RobotPreUpdate rob(t), SimOpts
       ' If numObstacles > 0 Then DoObstacleCollisions t
       
       TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
       If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
-      'If Not rob(t).Fixed Then NetForces t 'calculate forces on all robots
       BucketsCollision t
       'Botsareus 6/17/2016 Static friction fix
       If rob(t).ImpulseStatic > 0 And (rob(t).ImpulseInd.x <> 0 Or rob(t).ImpulseInd.y <> 0) Then

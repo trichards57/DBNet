@@ -48,6 +48,12 @@
     <ClInclude Include="MemoryAddresses.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="simoptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="species.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
