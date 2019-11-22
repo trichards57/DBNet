@@ -90,7 +90,7 @@ void Robot_CalculateMass(Robot& rob) {
 
 extern "C" {
 	__declspec(dllexport) void __stdcall Robot_RunPreUpdate(Robot& rob, LPSAFEARRAY* costsArray, VARIANT_BOOL* disableFixing,
-		int fieldWidth, int fieldHeight) {
+		int fieldWidth, int fieldHeight, float physBrown, float maxVelocity, float physMoving) {
 		float* costs;
 		HRESULT arrayAccess = SafeArrayAccessData(*costsArray, (void**)&costs);
 
@@ -106,7 +106,9 @@ extern "C" {
 
 		Physics_BorderCollisions(rob, fieldWidth, fieldHeight);
 
-		// Sort out Tie forces here
+		// Sort out Tie forces and torques here
+
+		Physics_NetForces(rob, physBrown, maxVelocity, physMoving, costs[MOVE_COST] * costs[COST_MULTIPLIER]);
 
 		SafeArrayUnaccessData(*costsArray);
 	}

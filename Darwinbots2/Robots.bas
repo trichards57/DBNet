@@ -362,7 +362,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'It's cube root of volume * some constants to give
                                             'radius of 60 for a bot of 1000 body
 
-Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@20" (ByRef r As robot, ByRef Costs() As Single, DisableFixing As Boolean, ByVal fieldWidth As Long, ByVal fieldHeight As Long)
+Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@32" (ByRef r As robot, ByRef Costs() As Single, DisableFixing As Boolean, ByVal fieldWidth As Long, ByVal fieldHeight As Long, ByVal physBrown As Single, ByVal maxVelocity As Single, ByVal physMoving As Single)
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -841,9 +841,9 @@ Public Sub UpdatePosition(ByVal n As Integer)
     .vel = VectorAdd(.vel, VectorScalar(.ImpulseInd, 1 / (.mass + .AddedMass)))
         
     vt = VectorMagnitudeSquare(.vel)
-    If vt > SimOpts.MaxVelocity * SimOpts.MaxVelocity Then
-      .vel = VectorScalar(VectorUnit(.vel), SimOpts.MaxVelocity)
-      vt = SimOpts.MaxVelocity * SimOpts.MaxVelocity
+    If vt > SimOpts.maxVelocity * SimOpts.maxVelocity Then
+      .vel = VectorScalar(VectorUnit(.vel), SimOpts.maxVelocity)
+      vt = SimOpts.maxVelocity * SimOpts.maxVelocity
     End If
     
     .pos = VectorAdd(.pos, .vel)
@@ -876,7 +876,7 @@ Public Sub UpdatePosition(ByVal n As Integer)
   .mem(velsx) = .mem(veldx) * -1
   
   .mem(masssys) = .mass
-  .mem(maxvelsys) = SimOpts.MaxVelocity
+  .mem(maxvelsys) = SimOpts.maxVelocity
   End With
 End Sub
 
@@ -1453,7 +1453,7 @@ Public Sub UpdateBots()
         BouyancyScaling = (1 + Sin(((SimOpts.TotRunCycle + TmpOpts.TidesOf) Mod TmpOpts.Tides) / SimOpts.Tides * PI * 2)) / 2
         BouyancyScaling = Sqr(BouyancyScaling)
         SimOpts.Ygravity = (1 - BouyancyScaling) * 4
-        SimOpts.PhysBrown = IIf(BouyancyScaling > 0.8, 10, 0)
+        SimOpts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
     End If
   
   'this loops is for pre update
@@ -1465,7 +1465,7 @@ Public Sub UpdateBots()
       
       TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
       If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
-      If Not rob(t).Fixed Then NetForces t 'calculate forces on all robots
+      'If Not rob(t).Fixed Then NetForces t 'calculate forces on all robots
       BucketsCollision t
       'Botsareus 6/17/2016 Static friction fix
       If rob(t).ImpulseStatic > 0 And (rob(t).ImpulseInd.x <> 0 Or rob(t).ImpulseInd.y <> 0) Then

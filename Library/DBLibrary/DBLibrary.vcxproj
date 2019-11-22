@@ -161,6 +161,7 @@
     <ClInclude Include="block.h" />
     <ClInclude Include="costs.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="MemoryAddresses.h" />
     <ClInclude Include="mutationProps.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="physics.h" />

@@ -11,3 +11,5 @@ constexpr auto BODY_UPKEEP = 30;
 constexpr auto COST_MULTIPLIER = 54;
 
 constexpr auto DNA_CYC_COST = 24;
+
+constexpr auto MOVE_COST = 20;

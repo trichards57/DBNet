@@ -8,9 +8,12 @@
 #define PCH_H
 
 #define OLE2ANSI
+#define _USE_MATH_DEFINES
 
 // add headers that you want to pre-compile here
 #include "framework.h"
 #include <math.h>
+#include <cstdlib>
+#include <ctime>
 
 #endif //PCH_H
