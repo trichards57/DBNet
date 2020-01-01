@@ -2,7 +2,6 @@
 #include "robot.h"
 #include "costs.h"
 #include "physics.h"
-#include "simoptions.h"
 
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options) {
 	if (!options.DisableFixing)
@@ -89,19 +88,59 @@ void Robot_CalculateMass(Robot& rob) {
 		rob.Mass = 32000;
 }
 
-extern "C" {
-	__declspec(dllexport) void __stdcall Robot_RunPreUpdate(Robot& rob, SimulationOptions& options) {
-		Robot_Upkeep(rob, options);
-		Robot_Poisons(rob);
-		Robot_ManageFixed(rob, options);
-		Robot_CalculateMass(rob);
+void Robot_RunPreUpdate(Robot* robots, int idx, SimulationOptions& options) {
+	Robot_Upkeep(robots[idx], options);
+	Robot_Poisons(robots[idx]);
+	Robot_ManageFixed(robots[idx], options);
+	Robot_CalculateMass(robots[idx]);
 
-		// Obstacle Collisions should be done here.
+	// Obstacle Collisions should be done here.
 
-		Physics_BorderCollisions(rob, options);
+	Physics_BorderCollisions(robots[idx], options);
 
-		// Sort out Tie forces and torques here
+	Tie_HookeForces(robots, idx);
 
-		Physics_NetForces(rob, options);
+	Physics_NetForces(robots[idx], options);
+}
+
+void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, SimulationOptions& options) {
+	Robot* robots;
+	HRESULT res = SafeArrayAccessData(robs, reinterpret_cast<void**>(&robots));
+
+	if (SUCCEEDED(res)) {
+		for (int i = 0; i <= maxRobots; i++) {
+			if (robots[i].Exist == VARIANT_TRUE) {
+				Robot_RunPreUpdate(robots, i, options);
+			}
+		}
+		SafeArrayUnaccessData(robs);
 	}
+}
+
+// Returns false if the robot does not exist
+// NOTE : This is opposite behaviour to the original function
+bool Robot_CheckRobot(LPSAFEARRAY robs, int idx)
+{
+	long upperBound = 0;
+	Robot rob = Robot();
+
+	HRESULT res = SafeArrayGetUBound(robs, 1, &upperBound);
+
+	if (SUCCEEDED(res)) {
+		if (idx > upperBound)
+			return false;
+
+		if (idx == 0)
+			return true;
+
+		long i[] = { idx };
+
+		res = SafeArrayGetElement(robs, i, &rob);
+
+		if (SUCCEEDED(res)) {
+			return rob.Exist == VARIANT_TRUE;
+		}
+	}
+
+	return false;
 }

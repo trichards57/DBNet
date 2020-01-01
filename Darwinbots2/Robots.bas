@@ -342,7 +342,7 @@ Private Type robot
   spermDNA() As block               ' Contains the DNA this bot has been fertilized with.
   spermDNAlen As Integer
   
-  tag As String * 50
+  tag As String
   
   monitor_r As Integer
   monitor_g As Integer
@@ -362,7 +362,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'It's cube root of volume * some constants to give
                                             'radius of 60 for a bot of 1000 body
 
-Private Declare Sub RobotPreUpdate Lib "DBLibrary.dll" Alias "_Robot_RunPreUpdate@8" (ByRef r As robot, ByRef simulationOptions As SimOptions)
+Private Declare Sub Robot_RunPreUpdates Lib "DBLibrary.dll" (ByRef r() As robot, ByVal maxRobots As Integer, ByRef simulationOptions As SimOptions)
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -1456,14 +1456,15 @@ Public Sub UpdateBots()
         SimOpts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
     End If
 
+    Robot_RunPreUpdates rob, MaxRobs, SimOpts
+
     'this loops is for pre update
     For t = 1 To MaxRobs
     If t Mod 250 = 0 Then DoEvents
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
-      RobotPreUpdate rob(t), SimOpts
       ' If numObstacles > 0 Then DoObstacleCollisions t
       
-      TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
+      'TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
       If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
       BucketsCollision t
       'Botsareus 6/17/2016 Static friction fix

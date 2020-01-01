@@ -1,6 +1,9 @@
 #pragma once
 
-#define MAX_TIES
+#include <oaidl.h>
+#include <wtypes.h>
+
+struct Robot;
 
 struct Tie {
 	short Port;
@@ -25,3 +28,7 @@ struct Tie {
 	float B;
 	signed char Type;
 };
+
+constexpr auto MAX_TIES = 10;
+
+void Tie_HookeForces(Robot* robots, int idx);

@@ -21,24 +21,6 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="robot.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="tie.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="var.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="block.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="mutationProps.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="costs.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -52,6 +34,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="species.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mutationProps.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="robot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tie.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="var.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="mathhelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,5 +74,16 @@
     <ClCompile Include="physics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tie.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mathhelp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DBLibrary.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

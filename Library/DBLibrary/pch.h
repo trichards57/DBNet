@@ -12,7 +12,7 @@
 
 // add headers that you want to pre-compile here
 #include "framework.h"
-#include <math.h>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
 

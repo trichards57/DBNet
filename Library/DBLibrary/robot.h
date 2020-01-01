@@ -6,8 +6,7 @@
 #include "tie.h"
 #include "mutationProps.h"
 #include "var.h"
-
-#pragma pack(push, 4)
+#include "simoptions.h"
 
 struct Robot {
 	VARIANT_BOOL Exist;
@@ -124,7 +123,7 @@ struct Robot {
 	short Fertilized;
 	LPSAFEARRAY SpermDNA;
 	short SpermDNALen;
-	char Tag[50];
+	BSTR Tag;
 	short Monitor_R;
 	short Monitor_G;
 	short Monitor_B;
@@ -134,4 +133,4 @@ struct Robot {
 	BSTR DbgString;
 };
 
-#pragma pack(pop)
+bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);

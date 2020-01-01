@@ -96,11 +96,11 @@ getout:
 End Sub
 
 Public Sub BrownianForces(n As Integer)
-  If SimOpts.PhysBrown = 0 Then GoTo getout
+  If SimOpts.physBrown = 0 Then GoTo getout
   Dim Impulse As Single
   Dim RandomAngle As Single
 
-    Impulse = SimOpts.PhysBrown * 0.5 * rndy
+    Impulse = SimOpts.physBrown * 0.5 * rndy
     
     RandomAngle = rndy * 2 * PI
     rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(Cos(RandomAngle) * Impulse, Sin(RandomAngle) * Impulse))
@@ -385,10 +385,10 @@ Else
     'importent PhysMoving is calculated into cost as it changes voluntary movement speeds as well
     If rob(n).Bouyancy > 0 Then
         With rob(n)
-        .nrg = .nrg - (SimOpts.Ygravity / (SimOpts.PhysMoving) * IIf(.mass > 192, 192, .mass) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)) * rob(n).Bouyancy
+        .nrg = .nrg - (SimOpts.Ygravity / (SimOpts.physMoving) * IIf(.mass > 192, 192, .mass) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)) * rob(n).Bouyancy
         End With
     End If
-    If (1 / BouyancyScaling - rob(n).pos.y / SimOpts.FieldHeight) > rob(n).Bouyancy Then
+    If (1 / BouyancyScaling - rob(n).pos.y / SimOpts.fieldHeight) > rob(n).Bouyancy Then
        rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, SimOpts.Ygravity * rob(n).mass))
     Else
        rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, -SimOpts.Ygravity * rob(n).mass))
@@ -425,14 +425,14 @@ Public Sub VoluntaryForces(n As Integer)
     'Its possible to get some really high accelerations here when altzheimers sets in or if a mutation
     'or venom or something writes some really high values into certain mem locations like .up, .dn. etc.
     'This keeps things sane down the road.
-    If VectorMagnitude(NewAccel) > SimOpts.MaxVelocity Then
-      NewAccel = VectorScalar(NewAccel, SimOpts.MaxVelocity / VectorMagnitude(NewAccel))
+    If VectorMagnitude(NewAccel) > SimOpts.maxVelocity Then
+      NewAccel = VectorScalar(NewAccel, SimOpts.maxVelocity / VectorMagnitude(NewAccel))
     End If
         
     'NewAccel is the impulse vector formed by the robot's internal "engine".
     'Impulse is the integral of Force over time.
     
-    .ImpulseInd = VectorAdd(.ImpulseInd, VectorScalar(NewAccel, SimOpts.PhysMoving))
+    .ImpulseInd = VectorAdd(.ImpulseInd, VectorScalar(NewAccel, SimOpts.physMoving))
     
     EnergyCost = VectorMagnitude(NewAccel) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)
     
@@ -779,13 +779,13 @@ Public Sub bordercolls(t As Integer)
   Dim smudge As Single
   
   With rob(t)
-    If (.pos.x > .radius) And (.pos.x < SimOpts.FieldWidth - .radius) And (.pos.y > .radius) And (.pos.y < SimOpts.FieldHeight - .radius) Then GoTo getout
+    If (.pos.x > .radius) And (.pos.x < SimOpts.fieldWidth - .radius) And (.pos.y > .radius) And (.pos.y < SimOpts.fieldHeight - .radius) Then GoTo getout
   
     .mem(214) = 0
     
     smudge = .radius + smudgefactor
   
-    dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge))
+    dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(SimOpts.fieldWidth - smudge, SimOpts.fieldHeight - smudge))
     dist = VectorSub(dif, .pos)
   
     If dist.x <> 0 Then
@@ -793,7 +793,7 @@ Public Sub bordercolls(t As Integer)
         If dist.x < 0 Then
           ReSpawn t, smudge, .pos.y
         Else
-          ReSpawn t, SimOpts.FieldWidth - smudge, .pos.y
+          ReSpawn t, SimOpts.fieldWidth - smudge, .pos.y
         End If
       Else
         .mem(214) = 1
@@ -801,7 +801,7 @@ Public Sub bordercolls(t As Integer)
       
        ' .ImpulseRes.x = .ImpulseRes.x + dist.x * -k
          If .pos.x - .radius < 0 Then .pos.x = .radius
-         If .pos.x + .radius > SimOpts.FieldWidth Then .pos.x = CSng(SimOpts.FieldWidth) - .radius
+         If .pos.x + .radius > SimOpts.fieldWidth Then .pos.x = CSng(SimOpts.fieldWidth) - .radius
         .ImpulseRes.x = .ImpulseRes.x + .vel.x * b
       End If
     End If
@@ -811,7 +811,7 @@ Public Sub bordercolls(t As Integer)
         If dist.y < 0 Then
           ReSpawn t, .pos.x, smudge
         Else
-          ReSpawn t, .pos.x, SimOpts.FieldHeight - smudge
+          ReSpawn t, .pos.x, SimOpts.fieldHeight - smudge
         End If
       Else
         rob(t).mem(214) = 1
@@ -822,7 +822,7 @@ Public Sub bordercolls(t As Integer)
       
      ' .ImpulseRes.y = .ImpulseRes.y + dist.y * -k
         If .pos.y - .radius < 0 Then .pos.y = .radius
-        If .pos.y + .radius > SimOpts.FieldHeight Then .pos.y = CSng(SimOpts.FieldHeight) - .radius
+        If .pos.y + .radius > SimOpts.fieldHeight Then .pos.y = CSng(SimOpts.fieldHeight) - .radius
         .ImpulseRes.y = .ImpulseRes.y + .vel.y * b
       End If
     End If

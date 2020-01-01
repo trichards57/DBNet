@@ -1,5 +1,7 @@
 #pragma once
 
+#include "mathhelp.h"
+
 struct Vector {
 	float X;
 	float Y;
@@ -23,7 +25,11 @@ struct Vector {
 	}
 
 	Vector operator* (const float k) const {
-		return Vector(X * k, Y * k);
+		return Vector(clamp(X * k, 32000, -32000), clamp(Y * k, 32000, -32000));
+	}
+
+	Vector operator/ (const float k) const {
+		return Vector(clamp(X / k, 32000, -32000), clamp(Y / k, 32000, -32000));
 	}
 
 	float Magnitude() {
