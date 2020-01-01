@@ -62,7 +62,7 @@ void Physics_NetForces(Robot& rob, const SimulationOptions options) {
 	if (rob.Vel.Y < 0.0000001)
 		rob.Vel.Y = 0;
 
-	// Deal with the planet eaters routine here (this is robot to robot gravity
+	// Deal with the planet eaters routine here (this is robot to robot gravity)
 	// Deal with friction against the environment here
 	// Deal with sphere drag forces here
 	Physics_BrownianForces(rob, options);

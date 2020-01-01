@@ -72,8 +72,10 @@ void Tie_Regang(Robot* robots, int idx, int tieIdx) {
 
 	if (!rob1->Ties[tieIdx].Back)
 	{
-		rob1->Ties[tieIdx].Ang =
+		rob1->Ties[tieIdx].Ang = AngleDifference(AngleNormalise(ang1), rob2->Aim);
+		rob1->Ties[tieIdx].AngReg = true;
 	}
+	rob1->Ties[tieIdx].NaturalLength = dist;
 }
 
 void Tie_HookeForces(Robot* robots, int idx) {
