@@ -8,6 +8,8 @@
 #include "var.h"
 #include "simoptions.h"
 
+#pragma warning(push)
+#pragma warning(disable: 26495) // Disables the warning about not initialising fields.  Not a problem: the C++ currently doesn't ever create a Robot.
 struct Robot {
 	VARIANT_BOOL Exist;
 	float Radius;
@@ -132,5 +134,6 @@ struct Robot {
 	unsigned char Dq;
 	BSTR DbgString;
 };
+#pragma warning(pop)
 
 bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);

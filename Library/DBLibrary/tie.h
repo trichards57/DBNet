@@ -32,3 +32,4 @@ struct Tie {
 constexpr auto MAX_TIES = 10;
 
 void Tie_HookeForces(Robot* robots, int idx);
+void Tie_Torque(Robot* robots, int idx);

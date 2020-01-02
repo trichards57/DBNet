@@ -17,20 +17,23 @@ void Physics_BrownianForces(Robot& rob, const SimulationOptions options) {
 	float angle = Physics_RandomFloat() * 2 * (float)M_PI;
 
 	rob.ImpulseInd = rob.ImpulseInd + Vector(cosf(angle) * impulse, sinf(angle) * impulse);
-	rob.Ma += (impulse / 100) * (Physics_RandomFloat() - 0.5);
+	rob.Ma += (impulse / 100) * (Physics_RandomFloat() - 0.5f);
 }
 
 void Physics_VoluntaryForces(Robot& rob, const SimulationOptions options) {
 	float multiplier = 1;
 
-	if (rob.Corpse || rob.DisableMovementsSysvars || rob.DisableDNA || !rob.Exist
+	if (rob.Corpse == VARIANT_TRUE
+		|| rob.DisableMovementsSysvars == VARIANT_TRUE
+		|| rob.DisableDNA == VARIANT_TRUE
+		|| rob.Exist == VARIANT_FALSE
 		|| (rob.Mem[dirup] == 0 && rob.Mem[dirdn] == 0 && rob.Mem[dirsx] == 0 && rob.Mem[dirdx] == 0))
 		return;
 
-	if (!rob.NewMove)
+	if (rob.NewMove == VARIANT_FALSE)
 		multiplier = rob.Mass;
 
-	Vector dir = Vector(rob.Mem[dirup] - rob.Mem[dirdn], rob.Mem[dirsx] - rob.Mem[dirdx]) * multiplier;
+	Vector dir = Vector((float)rob.Mem[dirup] - rob.Mem[dirdn], (float)rob.Mem[dirsx] - rob.Mem[dirdx]) * multiplier;
 
 	Vector newAccel = Vector(VectorDot(rob.AimVector, dir), VectorCross(rob.AimVector, dir));
 
@@ -53,7 +56,7 @@ void Physics_VoluntaryForces(Robot& rob, const SimulationOptions options) {
 }
 
 void Physics_NetForces(Robot& rob, const SimulationOptions options) {
-	if (rob.Fixed)
+	if (rob.Fixed == VARIANT_TRUE)
 		return;
 
 	// Clip the velocity to zero to avoid overflows later

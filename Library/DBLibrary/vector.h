@@ -20,8 +20,20 @@ struct Vector {
 		return Vector(X - v2.X, Y - v2.Y);
 	}
 
+	Vector& operator-= (const Vector& v2) {
+		this->X -= v2.X;
+		this->Y -= v2.Y;
+		return *this;
+	}
+
 	Vector operator+ (const Vector& v2) const {
 		return Vector(X + v2.X, Y + v2.Y);
+	}
+
+	Vector& operator+= (const Vector& v2) {
+		this->X += v2.X;
+		this->Y += v2.Y;
+		return *this;
 	}
 
 	Vector operator* (const float k) const {

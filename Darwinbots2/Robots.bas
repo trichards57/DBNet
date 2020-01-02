@@ -1464,8 +1464,6 @@ Public Sub UpdateBots()
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
       ' If numObstacles > 0 Then DoObstacleCollisions t
       
-      'TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
-      If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
       BucketsCollision t
       'Botsareus 6/17/2016 Static friction fix
       If rob(t).ImpulseStatic > 0 And (rob(t).ImpulseInd.x <> 0 Or rob(t).ImpulseInd.y <> 0) Then

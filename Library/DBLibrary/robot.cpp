@@ -4,15 +4,15 @@
 #include "physics.h"
 
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options) {
-	if (!options.DisableFixing)
+	if (options.DisableFixing == VARIANT_FALSE)
 		rob.Fixed = (rob.Mem[216] > 0);
 }
 
 void Robot_Poisons(Robot& rob) {
-	if (rob.Corpse || rob.DisableDNA)
+	if (rob.Corpse == VARIANT_TRUE || rob.DisableDNA == VARIANT_TRUE)
 		return;
 
-	if (rob.Paralyzed) {
+	if (rob.Paralyzed == VARIANT_TRUE) {
 		// The robot has received venom.
 		rob.Mem[rob.Vloc] = rob.Vval;
 		rob.Paracount--;
@@ -26,7 +26,7 @@ void Robot_Poisons(Robot& rob) {
 
 	rob.Mem[837] = (short)rob.Paracount;
 
-	if (rob.Poisoned) {
+	if (rob.Poisoned == VARIANT_TRUE) {
 		// The robot has received poison.
 		rob.Mem[rob.Ploc] = rob.Pval;
 		rob.PoisonCount--;
@@ -43,7 +43,7 @@ void Robot_Poisons(Robot& rob) {
 void Robot_Upkeep(Robot& rob, const SimulationOptions options) {
 	float cost;
 
-	if (rob.Corpse)
+	if (rob.Corpse == VARIANT_TRUE)
 		return;
 
 	// Age Cost
@@ -99,6 +99,8 @@ void Robot_RunPreUpdate(Robot* robots, int idx, SimulationOptions& options) {
 	Physics_BorderCollisions(robots[idx], options);
 
 	Tie_HookeForces(robots, idx);
+	if (robots[idx].Corpse == VARIANT_FALSE && robots[idx].DisableDNA == VARIANT_FALSE)
+		Tie_Torque(robots, idx);
 
 	Physics_NetForces(robots[idx], options);
 }
