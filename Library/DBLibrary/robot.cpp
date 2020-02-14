@@ -2,6 +2,7 @@
 #include "robot.h"
 #include "costs.h"
 #include "physics.h"
+#include "MemoryAddresses.h"
 
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options) {
 	if (options.DisableFixing == VARIANT_FALSE)
@@ -127,6 +128,20 @@ float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float m
 	result += (415 - result) * chloroplasts / 32000;
 
 	return max(1, result);
+}
+
+void __stdcall Robot_StoreBody(Robot& rob, SimulationOptions& options) {
+	float change = min(100.0f, rob.Mem[strbody]);
+
+	rob.Nrg -= change;
+	rob.Body += change / 10;
+
+	if (rob.Body > 32000)
+		rob.Body = 32000;
+
+	rob.Radius = Robot_FindRadius(rob, options, 1);
+
+	rob.Mem[strbody] = 0;
 }
 
 void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, SimulationOptions& options) {

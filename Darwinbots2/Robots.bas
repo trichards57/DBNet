@@ -351,6 +351,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
 
 Private Declare Sub Robot_RunPreUpdates Lib "DBLibrary.dll" (ByRef r() As robot, ByVal maxRobots As Integer, ByRef simulationOptions As SimOptions)
 Private Declare Sub Robot_StoreVenom Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
+Private Declare Sub Robot_StoreBody Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
 Private Declare Function Robot_FindRadius Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions, ByVal multiplier As Single) As Single
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
@@ -1034,7 +1035,7 @@ End Sub
 
 Private Sub MakeStuff(ByVal n As Integer)
    
-  If rob(n).mem(824) <> 0 Then storevenom n
+  If rob(n).mem(824) <> 0 Then Robot_StoreVenom rob(n), SimOpts
   If rob(n).mem(826) <> 0 Then storepoison n
   If rob(n).mem(822) <> 0 Then makeshell n
   If rob(n).mem(820) <> 0 Then makeslime n
@@ -1128,7 +1129,7 @@ Private Sub ManageBody(ByVal n As Integer)
   'body management
   'rob(n).obody = rob(n).body      'replaces routine above 'Botsareus 7/4/2016 Bug fix -bodgain and bodloss work now
         
-  If rob(n).mem(strbody) > 0 Then storebody n
+  If rob(n).mem(strbody) > 0 Then Robot_StoreBody rob(n), SimOpts
   If rob(n).mem(fdbody) > 0 Then feedbody n
   
   If rob(n).body > 32000 Then rob(n).body = 32000
@@ -1538,15 +1539,6 @@ Private Sub ReproduceAndKill()
   Wend
 End Sub
 
-Private Sub storebody(t As Integer)
-  If rob(t).mem(strbody) > 100 Then rob(t).mem(strbody) = 100
-  rob(t).nrg = rob(t).nrg - rob(t).mem(strbody)
-  rob(t).body = rob(t).body + rob(t).mem(strbody) / 10
-  If rob(t).body > 32000 Then rob(t).body = 32000
-  rob(t).radius = FindRadius(t)
-  rob(t).mem(strbody) = 0
-End Sub
-
 Private Sub feedbody(t As Integer)
   If rob(t).mem(fdbody) > 100 Then rob(t).mem(fdbody) = 100
   rob(t).nrg = rob(t).nrg + rob(t).mem(fdbody)
@@ -1847,11 +1839,6 @@ Public Sub sharenrg(t As Integer, k As Integer)
     If rob(.Ties(k).pnt).nrg > 32000 Then rob(.Ties(k).pnt).nrg = 32000
 getout:
   End With
-End Sub
-
-'Robot n converts some of his energy to venom
-Public Sub storevenom(n As Integer)
-  Robot_StoreVenom rob(n), SimOpts
 End Sub
 
 ' Robot n converts some of his energy to poison
