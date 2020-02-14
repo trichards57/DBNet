@@ -1119,8 +1119,8 @@ End Sub
 Private Sub AutoFork_Click() 'Botsareus 3/23/2014 auto forking
 On Error GoTo b:
   AutoFork.Checked = Not AutoFork.Checked
-  If AutoFork.Checked Then SimOpts.SpeciationGeneticDistance = InputBox("Enter % of mutations to DNA length that constitutes forking", "Automatic Forking", SimOpts.SpeciationGeneticDistance)
-  SimOpts.EnableAutoSpeciation = AutoFork.Checked
+  If AutoFork.Checked Then simopts.SpeciationGeneticDistance = InputBox("Enter % of mutations to DNA length that constitutes forking", "Automatic Forking", simopts.SpeciationGeneticDistance)
+  simopts.EnableAutoSpeciation = AutoFork.Checked
 Exit Sub
 b:
 AutoFork.Checked = False
@@ -1129,11 +1129,6 @@ End Sub
 Private Sub AutoSpeciationMenu_Click()
   'Speciation.Show 'Commented out to remove error.
 End Sub
-
-'Botsareus 4/17/2013 Temporary (Beta only) debug
-'Private Sub BetaDebug_Click()
-'BetaDebug.Checked = Not BetaDebug.Checked
-'End Sub
 
 Private Sub DeleteAllShapes_Click()
   DeleteAllObstacles
@@ -1189,19 +1184,19 @@ End Sub
 
 Private Sub DisableArep_Click() 'Botsareus 4/17/2013 The new disable asexrepro button
   DisableArep.Checked = Not DisableArep.Checked
-  SimOpts.DisableTypArepro = DisableArep.Checked
+  simopts.DisableTypArepro = DisableArep.Checked
   TmpOpts.DisableTypArepro = DisableArep.Checked
 End Sub
 
 Private Sub DisableFixing_Click()
   DisableFixing.Checked = Not DisableFixing.Checked
-  SimOpts.DisableFixing = DisableFixing.Checked
+  simopts.DisableFixing = DisableFixing.Checked
   TmpOpts.DisableFixing = DisableFixing.Checked
 End Sub
 
 Private Sub DisableTies_Click()
   DisableTies.Checked = Not DisableTies.Checked
-  SimOpts.DisableTies = DisableTies.Checked
+  simopts.DisableTies = DisableTies.Checked
   TmpOpts.DisableTies = DisableTies.Checked
 End Sub
 
@@ -1228,13 +1223,13 @@ End Sub
 
 Private Sub DontDecayNrgShots_Click()
   DontDecayNrgShots.Checked = Not DontDecayNrgShots.Checked
-  SimOpts.NoShotDecay = DontDecayNrgShots.Checked
+  simopts.NoShotDecay = DontDecayNrgShots.Checked
   TmpOpts.NoShotDecay = DontDecayNrgShots.Checked
 End Sub
 
 Private Sub DontDecayWstShots_Click() 'Botsareus 9/28/2013 Don't decay waste shots
   DontDecayWstShots.Checked = Not DontDecayWstShots.Checked
-  SimOpts.NoWShotDecay = DontDecayWstShots.Checked
+  simopts.NoWShotDecay = DontDecayWstShots.Checked
   TmpOpts.NoWShotDecay = DontDecayWstShots.Checked
 End Sub
 
@@ -1321,7 +1316,7 @@ Top:
     End If
 tryagain:
     'This section create our new Internet Mode Teleporter
-    i = NewTeleporter(False, False, (SimOpts.FieldHeight ^ 0.5) * 10, True)  'Botsareus 5/12/2012 Changed the startup size of teleporter for better robot flow
+    i = NewTeleporter(False, False, (simopts.fieldHeight ^ 0.5) * 10, True)  'Botsareus 5/12/2012 Changed the startup size of teleporter for better robot flow
     
     
     Teleporters(i).vel = VectorSet(0, 0)
@@ -1494,30 +1489,6 @@ Dim t As Integer
   Next t
 End Sub
 
-Private Sub ChangeNameOfAllCloselyRelated(n As Integer, d As Integer, OldSpeciesName As String)
-Dim t As Integer
-Dim l, ll As Long
-Dim simNum As Long
-Dim closestAncestor As Long
-
-  For t = 1 To MaxRobs
-    If rob(t).exist And Not rob(t).Corpse And t <> n Then
-      If rob(t).FName = OldSpeciesName Then
-         'closestAncestor = FindClosestCommonAncestor(t, n, simNum)
-         'If closestAncestor <> 0 Then
-         '  l = FindGeneticDistance(t, n, closestAncestor, simNum)
-         '  ll = FindGenerationalDistance(t, n, closestAncestor, simNum)
-         '  If (l < SimOpts.SpeciationGeneticDistance / 3) And (ll < SimOpts.SpeciationGenerationalDistance / 3) Then
-         '    rob(t).FName = rob(n).FName
-         '  End If
-         'End If
-      End If
-    End If
-  Next t
-End Sub
-
-
-
 Private Sub MonitorOn_Click()
 If frmMonitorSet.overwrite Then MonitorOn.Checked = Not MonitorOn.Checked Else MsgBox "Please configure monitor settings first.", vbInformation
 End Sub
@@ -1541,8 +1512,8 @@ End Sub
 Private Sub pbOn_Click()
 pbOn.Checked = Not pbOn.Checked
 If pbOn.Checked Then
-    Mouse_loc.X = 0
-    Mouse_loc.Y = 0
+    Mouse_loc.x = 0
+    Mouse_loc.y = 0
 End If
 Form1.PlayerBot.Visible = pbOn.Checked
 End Sub
@@ -1651,13 +1622,13 @@ Private Sub SnpDeadEnable_Click()
 SnpDeadEnable.Checked = Not SnpDeadEnable.Checked
 If SnpDeadEnable.Checked Then MsgBox "Snapshot of the dead writes to the DeadRobots.snp and DeadRobots_Mutations.txt in your " & MainDir & "\Autosave folder. " & _
 "You can delete this files to reset the snapshot. WARNING: This feature consumes disk space quickly.", vbInformation
-SimOpts.DeadRobotSnp = SnpDeadEnable.Checked
+simopts.DeadRobotSnp = SnpDeadEnable.Checked
 TmpOpts.DeadRobotSnp = SnpDeadEnable.Checked
 End Sub
 
 Private Sub SnpDeadExRep_Click()
 SnpDeadExRep.Checked = Not SnpDeadExRep.Checked
-SimOpts.SnpExcludeVegs = SnpDeadExRep.Checked
+simopts.SnpExcludeVegs = SnpDeadExRep.Checked
 TmpOpts.SnpExcludeVegs = SnpDeadExRep.Checked
 End Sub
 
@@ -1676,7 +1647,7 @@ End Sub
 
 
 Private Sub SunButton_Click()
-  SimOpts.Daytime = Not (SunButton.value * True)
+  simopts.Daytime = Not (SunButton.value * True)
 End Sub
 
 Public Sub menuupdate() 'Botsareus 7/13/2012 The menu handler
@@ -1695,7 +1666,7 @@ If x_restartmode > 0 And HideDB Then
       Form1.t.Add
       stealthmode = True
       Me.Hide
-      If SimOpts.F1 Then Contest_Form.WindowState = vbMinimized
+      If simopts.F1 Then Contest_Form.WindowState = vbMinimized
 End If
 
 'Botsareus 9/12/2014 Simulation now always starts with ignoreerror on
@@ -1704,16 +1675,16 @@ If UseSafeMode = False Then
  Toolbar1.buttons(24).value = tbrPressed
 End If
 'Botsareus 2/9/2014 Based on collected data we need to figure out fudging here
-If SimOpts.F1 Or (x_restartmode <> 1 And x_restartmode <> 9 And x_restartmode <> 0) Then   'Botsareus 10/6/2015 Do not fudge under sertain modes
+If simopts.F1 Or (x_restartmode <> 1 And x_restartmode <> 9 And x_restartmode <> 0) Then   'Botsareus 10/6/2015 Do not fudge under sertain modes
     Select Case x_fudge
     Case 1: FudgeEyes = True
     Case 2: FudgeAll = True
     End Select
 End If
-pbOn.Enabled = Not SimOpts.F1 And Not y_eco_im = 2
-showEyeDesign.Enabled = Not SimOpts.F1 And Not y_eco_im = 2
+pbOn.Enabled = Not simopts.F1 And Not y_eco_im = 2
+showEyeDesign.Enabled = Not simopts.F1 And Not y_eco_im = 2
 inssp.Enabled = y_eco_im = 0
-If y_eco_im = 2 And Not F1Internet.Checked And Not SimOpts.F1 Then F1Internet_Click 'Botsareus 7/12/2014 For eco evo this activates the internet
+If y_eco_im = 2 And Not F1Internet.Checked And Not simopts.F1 Then F1Internet_Click 'Botsareus 7/12/2014 For eco evo this activates the internet
 Form1.BackColor = backgcolor 'Botsareus 4/27/2013 Set back ground skin color
 If startnovid Then 'turn off vedio as requested
      visualize = False
@@ -1825,7 +1796,7 @@ Private Sub Toolbar1_ButtonClick(ByVal Button As MSComctlLib.Button)
       Form1.t.Add
       stealthmode = True
       Me.Hide
-      If SimOpts.F1 Then Contest_Form.WindowState = vbMinimized
+      If simopts.F1 Then Contest_Form.WindowState = vbMinimized
     Case "Ignore"
       'ignores errors when it encounters them with the hope that they'll fix themselves
       ignoreerror = Not ignoreerror
@@ -1938,20 +1909,20 @@ Private Sub costi_Click()
   optionsform.Show vbModal
 End Sub
 
-Private Sub czin_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub czin_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
   AspettaFlag = True
   ZoomInPremuto
 End Sub
 
-Private Sub czin_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub czin_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
   AspettaFlag = False
 End Sub
 
 Public Sub ZoomIn()
   If Form1.visiblew > RobSize * 4 Then
     If robfocus > 0 Then
-      xc = rob(robfocus).pos.X
-      yc = rob(robfocus).pos.Y
+      xc = rob(robfocus).pos.x
+      yc = rob(robfocus).pos.y
     Else
       xc = Form1.visiblew / 2 + Form1.ScaleLeft
       yc = Form1.visibleh / 2 + Form1.ScaleTop
@@ -1981,8 +1952,8 @@ End Sub
 
 Public Sub Follow() 'Botsareus 11/29/2013 Zoom follow selected robot
     If robfocus > 0 And Form1.visiblew < 6000 And visualize Then
-      xc = rob(robfocus).pos.X
-      yc = rob(robfocus).pos.Y
+      xc = rob(robfocus).pos.x
+      yc = rob(robfocus).pos.y
       Form1.ScaleTop = yc - Form1.ScaleHeight / 2
       Form1.ScaleLeft = xc - Form1.ScaleWidth / 2
   End If
@@ -2002,7 +1973,7 @@ Private Sub ZoomOutPremuto()
   Wend
 End Sub
 
-Private Sub czo_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub czo_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
   AspettaFlag = True
   ZoomOutPremuto
 End Sub
@@ -2022,22 +1993,22 @@ Public Sub ZoomOut()
   Form1.visiblew = Form1.visiblew / 0.95
   Form1.visibleh = Form1.visibleh / 0.95
   
-  If Form1.visiblew > SimOpts.FieldWidth And ZoomLock.value = 0 Then
-    Form1.visiblew = SimOpts.FieldWidth
-    Form1.visibleh = SimOpts.FieldHeight
+  If Form1.visiblew > simopts.fieldWidth And ZoomLock.value = 0 Then
+    Form1.visiblew = simopts.fieldWidth
+    Form1.visibleh = simopts.fieldHeight
   End If
   
-  If Form1.visibleh > SimOpts.FieldHeight And ZoomLock.value = 0 Then
-    Form1.visiblew = SimOpts.FieldWidth
-    Form1.visibleh = SimOpts.FieldHeight
+  If Form1.visibleh > simopts.fieldHeight And ZoomLock.value = 0 Then
+    Form1.visiblew = simopts.fieldWidth
+    Form1.visibleh = simopts.fieldHeight
   End If
   
   Form1.ScaleTop = yc - Form1.visibleh / 2
   Form1.ScaleLeft = xc - Form1.visiblew / 2
   
-  If Form1.visiblew + Form1.ScaleLeft > SimOpts.FieldWidth And ZoomLock.value = 0 Then
-    Form1.ScaleLeft = SimOpts.FieldWidth - Form1.visiblew
-    Form1.ScaleTop = SimOpts.FieldHeight - Form1.visibleh
+  If Form1.visiblew + Form1.ScaleLeft > simopts.fieldWidth And ZoomLock.value = 0 Then
+    Form1.ScaleLeft = simopts.fieldWidth - Form1.visiblew
+    Form1.ScaleTop = simopts.fieldHeight - Form1.visibleh
   End If
   
   If Form1.ScaleLeft < 0 And ZoomLock.value = 0 Then
@@ -2066,7 +2037,7 @@ Public Sub ZoomOut()
   Form1.Redraw
 End Sub
 
-Private Sub czo_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub czo_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
  AspettaFlag = False
 End Sub
 
@@ -2090,8 +2061,8 @@ End Sub
 Private Sub loadsim_Click(Index As Integer)
 If Form1.GraphLab.Visible Then Exit Sub
 
-If chseedloadsim Then SimOpts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 Change seed on load sim
-tmpseed = SimOpts.UserSeedNumber 'Botsareus 5/3/2013 temporarly holds seed for load sim
+If chseedloadsim Then simopts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 Change seed on load sim
+tmpseed = simopts.UserSeedNumber 'Botsareus 5/3/2013 temporarly holds seed for load sim
 simload
 
 End Sub
@@ -2150,11 +2121,11 @@ Private Sub simload(Optional path As String)
   If StartInInternetMode Then MDIForm1.F1Internet_Click
     
  'Populate the Add Species dropdown combo when sims loaded
-  For i = 0 To SimOpts.SpeciesNum - 1
+  For i = 0 To simopts.SpeciesNum - 1
     If i > MAXNATIVESPECIES Then
       MsgBox "Exceeded number of native species."
     Else
-      If SimOpts.Specie(i).Native Then MDIForm1.Combo1.additem SimOpts.Specie(i).Name
+      If simopts.Specie(i).Native Then MDIForm1.Combo1.additem simopts.Specie(i).Name
     End If
   Next i
   
@@ -2165,7 +2136,7 @@ Private Sub simload(Optional path As String)
   'Botsareus 6/11/2013 Restart loaded simulation
   While StartAnotherRound
     StartAnotherRound = False
-    SimOpts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart
+    simopts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart
     Form1.StartSimul
   Wend
 
@@ -2423,25 +2394,8 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   MDIForm1.BaseCaption = "DarwinBots " + CStr(App.Major) + "." + CStr(App.Minor) + "." + Format(App.revision, "00")
   MDIForm1.Caption = MDIForm1.BaseCaption
   
-  'startdir = App.path 'Botsareus 5/10/2013 startdir does not look like it is ever used, disabeling
-  
-'Botsareus 5/10/2013 It is up to the user to select there main dir from now on.
-'  MainDir = App.path
-'    'this little snippet insures that Prsn828 can run his code alright
-'  If Left(MDIForm1.MainDir, 51) = "C:\Repositories\DarwinbotsVB\trunk" Then _
-'    MDIForm1.MainDir = "C:\Program Files\DarwinBotsII"
-'
-'    'Numsgil code
-'  If Left(MDIForm1.MainDir, 15) = "C:\darwinsource" Then _
-'    MDIForm1.MainDir = "C:\DarwinbotsII"
-'
-'  ' Here's another hack like the above so that EricL can run in VB
-'  If Left(MDIForm1.MainDir, 51) = "C:\Documents and Settings\Eric\Desktop\DB VB Source" Then _
-'    MDIForm1.MainDir = "C:\Program Files\DarwinBotsII"
   
   disablesim
-  'SimOpts.FieldWidth = Me.Width
-  'SimOpts.FieldHeight = Me.Height
   Me.Show
   
   Set Form1.t = New TrayIcon
@@ -2476,9 +2430,9 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.NoShotDecay = False
   TmpOpts.NoWShotDecay = False
   TmpOpts.chartingInterval = 200
-  TmpOpts.FieldWidth = 16000
-  TmpOpts.FieldHeight = 12000
-  TmpOpts.MaxVelocity = 60
+  TmpOpts.fieldWidth = 16000
+  TmpOpts.fieldHeight = 12000
+  TmpOpts.maxVelocity = 60
   TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 50
   TmpOpts.Costs(BOTNOCOSTLEVEL) = -1 'Botsareus 5/11/2012 Sets BotNoCostThreshold to -1 to fix a bug when running a veg only sim.
   TmpOpts.Costs(COSTMULTIPLIER) = 1 'Botsareus 1/5/2013 default for cost multiply
@@ -2497,7 +2451,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.SunDown = False   'Set to a reasonable default value
   TmpOpts.FixedBotRadii = False
   TmpOpts.SunThresholdMode = 0
-  TmpOpts.PhysMoving = 0.66
+  TmpOpts.physMoving = 0.66
   TmpOpts.EnergyExType = True
   TmpOpts.EnergyFix = 200
   TmpOpts.EnergyProp = 1
@@ -2506,7 +2460,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.MinVegs = 50
   TmpOpts.RepopAmount = 10
   TmpOpts.RepopCooldown = 10
-  TmpOpts.PhysBrown = 0.5
+  TmpOpts.physBrown = 0.5
   TmpOpts.FieldSize = 2
   
   MaxPop = 700
@@ -2537,7 +2491,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
 '        If Not simalreadyrunning Then
             Select Case x_restartmode
             Case 9
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     optionsform.additem MDIForm1.MainDir & "\evolution\Test.txt"
                     'disable mutations
                     For i = 0 To UBound(TmpOpts.Specie)
@@ -2552,7 +2506,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                     Exit Sub
             Case 7
                 'setup a zb evo
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'load robot
                     For ecocount = 1 To 8
                         optionsform.additem MDIForm1.MainDir & "\evolution\baserob" & ecocount & "\Base.txt"
@@ -2563,10 +2517,10 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                     For i = 0 To UBound(TmpOpts.Specie)
                      If TmpOpts.Specie(i).Name = "Base.txt" Then
                         TmpOpts.Specie(i).Mutables.Mutations = False
-                        TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.FieldHeight) * CDbl(TmpOpts.FieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
+                        TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.fieldHeight) * CDbl(TmpOpts.fieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
                         If TmpOpts.Specie(i).qty = 0 Then TmpOpts.Specie(i).qty = 1
                      End If
-                     If TmpOpts.Specie(i).Name = "Mutate.txt" Then TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.FieldHeight) * CDbl(TmpOpts.FieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
+                     If TmpOpts.Specie(i).Name = "Mutate.txt" Then TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.fieldHeight) * CDbl(TmpOpts.fieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
                      If TmpOpts.Specie(i).qty = 0 Then TmpOpts.Specie(i).qty = 1
                     Next
                     'Randomize find best
@@ -2580,7 +2534,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                     optionsform.StartNew_Click
             Case 6
                 'setup evo test round
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'load robot
                     If y_eco_im > 0 Then
                         For ecocount = 1 To 15
@@ -2617,7 +2571,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                     optionsform.StartNew_Click
             Case 4
                 'setup evo
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'load robot
                     If y_eco_im > 0 Then
                         For ecocount = 1 To 15
@@ -2649,7 +2603,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
             Case 3
                 If UseStepladder Then leagueSourceDir = MDIForm1.MainDir & "\league\Tournament_Results"
                 'setup a league round
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'load robot
                     optionsform.additem MDIForm1.MainDir & "\league\robotA.txt"
                     optionsform.additem MDIForm1.MainDir & "\league\robotB.txt"
@@ -2673,7 +2627,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                         Kill App.path & "\restartmode.gset"
                         GoTo skipsetup
                     End If
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'copy robot
                     robotA = extractname(files(x_filenumber))
                     FileCopy files(x_filenumber), MDIForm1.MainDir & "\league\robotA.txt"
@@ -2722,7 +2676,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                         '
                         GoTo mode2
                     End If
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'copy robot
                     FileCopy files(x_filenumber), MDIForm1.MainDir & "\league\Test.txt"
                     'add tag to robot
@@ -2795,7 +2749,7 @@ mode2:
                 Kill files(1)
                 Kill files(2)
                 'setup a league round
-                    SimOpts = TmpOpts
+                    simopts = TmpOpts
                     'load robot
                     optionsform.additem MDIForm1.MainDir & "\league\robotA.txt"
                     optionsform.additem MDIForm1.MainDir & "\league\robotB.txt"
@@ -2821,13 +2775,7 @@ skipsetup:
     Exit Sub
   End If
     
-  'optionsform.datatolist
-  'TmpOpts.Daytime = True ' Ericl March 15, 2006
- 
- ' Unload optionsform  ' We do this here becuase reading in the settings above loads the Options dialog.
-                      ' We want it unloaded so that when the user loads it the next time, it gets properly
-                      ' populated by the form's load routine
-  SimOpts = TmpOpts
+  simopts = TmpOpts
   path = Command
   
   If path = "" Then
@@ -2852,7 +2800,7 @@ skipsetup:
 bypass:
 
 'Botsareus 5/3/2013 Randomize seed here
-SimOpts.UserSeedNumber = Timer * 100
+simopts.UserSeedNumber = Timer * 100
 End Sub
 
 Public Function EnableRobotsMenu()
@@ -2937,7 +2885,7 @@ If dir(MDIForm1.MainDir + "\settings\lastexit.set") <> "" Then
           
         'moved savesett here
         If optionsform.Visible = False Then
-          TmpOpts = SimOpts
+          TmpOpts = simopts
           optionsform.ObsRepop
         End If
         optionsform.savesett MDIForm1.MainDir + "\settings\lastexit.set" 'save last settings
@@ -2959,7 +2907,7 @@ Else
   
         'copyed savesett here
         If optionsform.Visible = False Then
-          TmpOpts = SimOpts
+          TmpOpts = simopts
           optionsform.ObsRepop
         End If
         optionsform.savesett MDIForm1.MainDir + "\settings\lastexit.set" 'save last settings
@@ -2977,10 +2925,6 @@ Form1.show_graphs
 End Sub
 
 
-Private Sub MDIForm_Resize()
-'  Form1.dimensioni
-  'InfoForm.ZOrder
-End Sub
 Private Sub MDIForm_Unload(Cancel As Integer)
    
 SaveSimulation MDIForm1.MainDir + "\saves\lastexit.sim"  'save last settings
@@ -3000,7 +2944,6 @@ Sub infos(ByVal cyc As Single, tot As Integer, tnv As Integer, tv As Long, brn A
   Dim h As Long
   Dim i As Integer
   Dim k As Integer
- ' Dim AvgSimEnergyLastHundredCycles As Long
   Dim AvgSimEnergyLastTenCycles As Long
   Dim Delta As Double
   
@@ -3022,33 +2965,17 @@ Sub infos(ByVal cyc As Single, tot As Integer, tnv As Integer, tv As Long, brn A
   h = Fix(Min / 60)
   Min = Min Mod 60
   StatusBar1.Panels(7).text = Str$(h) + "h" + Str$(Min) + "m" + Str$(sec) + "s  "
-  StatusBar1.Panels(8).text = "Mut " + Str$(SimOpts.MutCurrMult) + "x "
-  Me.MutationValue.Caption = "Mut " + Str$(SimOpts.MutCurrMult)
+  StatusBar1.Panels(8).text = "Mut " + Str$(simopts.MutCurrMult) + "x "
+  Me.MutationValue.Caption = "Mut " + Str$(simopts.MutCurrMult)
   StatusBar1.Panels(9).text = "Restarts " + Str$(ReStarts) + " "
   StatusBar1.Panels(10).text = "Shots " + Str$(Shots_Module.ShotsThisCycle) + " "
-  
-  'AvgSimEnergyLastTenCycles = 0
-  'This delibertly counts the 10 cycles *before* this one to avoid cases where the timer invokes
-  'this routine before the calculations for the current energy cycle have completed.
-  'For i = 99 To 90 Step -1
-  '  k = (CurrentEnergyCycle + i) Mod 100
-  '  AvgSimEnergyLastTenCycles = AvgSimEnergyLastTenCycles + (TotalSimEnergy(k) * 0.1)
-  'Next i
-  
-' AvgSimEnergyLastHundredCycles = AvgSimEnergyLastTenCycles
-'    k = (CurrentEnergyCycle + 100 - i) Mod 100
-'    AvgSimEnergyLastHundredCycles = AvgSimEnergyLastHundredCycles + TotalSimEnergy(k)
- ' Next i
- ' AvgSimEnergyLastTenCycles = AvgSimEnergyLastTenCycles * 0.1
- ' AvgSimEnergyLastHundredCycles = AvgSimEnergyLastHundredCycles * 0.01
 
-  'If AvgSimEnergyLastTenCycles <> 0 Then delta = TotalSimEnergyDisplayed - AvgSimEnergyLastTenCycles
   k = (CurrentEnergyCycle + 98) Mod 100
   Delta = TotalSimEnergyDisplayed - TotalSimEnergy(k)
   
   StatusBar1.Panels(11).text = "Nrg " + Str$(TotalSimEnergyDisplayed) + " "
   StatusBar1.Panels(12).text = "Delta " + Str$(Round(Delta, 5)) + " "
-  StatusBar1.Panels(13).text = "CostX " + Str$(Round(SimOpts.Costs(COSTMULTIPLIER), 5)) + " "
+  StatusBar1.Panels(13).text = "CostX " + Str$(Round(simopts.Costs(COSTMULTIPLIER), 5)) + " "
 End Sub
 
 Private Sub newsim_Click(Index As Integer)
@@ -3117,16 +3044,10 @@ Public Sub enablesim()
   czo.Enabled = True
 End Sub
 
-Public Sub disablesim()
- ' edit.Enabled = False
- ' popup.Enabled = False
- ' czin.Enabled = False
- ' czo.Enabled = False
-End Sub
+
 
 Private Sub waste_Click()
   Gridmode = 1
-  'DispGrid
 End Sub
 
 Private Sub y_info_Click()

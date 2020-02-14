@@ -121,32 +121,32 @@ Begin VB.Form optionsform
       TabCaption(2)   =   "Physics and Costs"
       TabPicture(2)   =   "OptionsForm.frx":0038
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "Frame20"
-      Tab(2).Control(1)=   "Frame21"
+      Tab(2).Control(0)=   "Frame21"
+      Tab(2).Control(1)=   "Frame20"
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Mutations"
       TabPicture(3)   =   "OptionsForm.frx":0054
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "DisableMutationsCheck"
+      Tab(3).Control(0)=   "Frame13"
       Tab(3).Control(1)=   "Frame14"
-      Tab(3).Control(2)=   "Frame13"
+      Tab(3).Control(2)=   "DisableMutationsCheck"
       Tab(3).ControlCount=   3
       TabCaption(4)   =   "Restart and League"
       TabPicture(4)   =   "OptionsForm.frx":0070
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "btnSetSB"
-      Tab(4).Control(1)=   "btnSetF2"
-      Tab(4).Control(2)=   "btnSetF1"
-      Tab(4).Control(3)=   "Frame7"
-      Tab(4).Control(4)=   "Restart"
-      Tab(4).Control(5)=   "Label19"
+      Tab(4).Control(0)=   "Label19"
+      Tab(4).Control(1)=   "Restart"
+      Tab(4).Control(2)=   "Frame7"
+      Tab(4).Control(3)=   "btnSetF1"
+      Tab(4).Control(4)=   "btnSetF2"
+      Tab(4).Control(5)=   "btnSetSB"
       Tab(4).ControlCount=   6
       TabCaption(5)   =   "Internet"
       TabPicture(5)   =   "OptionsForm.frx":008C
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Simulazione"
+      Tab(5).Control(0)=   "Label41"
       Tab(5).Control(1)=   "Label42"
-      Tab(5).Control(2)=   "Label41"
+      Tab(5).Control(2)=   "Simulazione"
       Tab(5).ControlCount=   3
       Begin VB.CommandButton btnSetSB 
          Caption         =   "Set SB settings"
@@ -1995,6 +1995,7 @@ Begin VB.Form optionsform
          _ExtentX        =   6165
          _ExtentY        =   1720
          _Version        =   393217
+         Enabled         =   -1  'True
          ReadOnly        =   -1  'True
          ScrollBars      =   2
          TextRTF         =   $"OptionsForm.frx":0547
@@ -2505,8 +2506,6 @@ Dim follow2 As Boolean
 Dim follow3 As Boolean
 Dim follow4 As Boolean
 
-'Dim SpeciesToggle As Boolean 'Botsareus 1/21/2013 no more need for speices toggle
-
 Dim lastsettings As String
 Dim contrmethod As Integer
 Public CurrSpec As Integer
@@ -2521,13 +2520,13 @@ Dim multx As Long
 Dim multy As Long
 
 'Windows declarations
-Private Declare Function SetCapture Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function SetCapture Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function ClipCursor Lib "user32" (lpRect As Any) As Long
 Private Declare Function ReleaseCapture Lib "user32" () As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hwnd As Long, lpRect As RECT) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hdc As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Private Declare Function GetStockObject Lib "gdi32" (ByVal nIndex As Long) As Long
@@ -2536,8 +2535,8 @@ Private Declare Function SetROP2 Lib "gdi32" (ByVal hdc As Long, ByVal nDrawMode
 Private Declare Function Rectangle Lib "gdi32" (ByVal hdc As Long, ByVal x1 As Long, ByVal y1 As Long, ByVal x2 As Long, ByVal y2 As Long) As Long
 
 Private Type POINTAPI
-    X As Long
-    Y As Long
+    x As Long
+    y As Long
 End Type
 
 Private Type RECT
@@ -2610,14 +2609,14 @@ pass = False
     TmpOpts.CorpseEnabled = False    ' No Corpses
     TmpOpts.DayNight = False         ' Sun never sets
     TmpOpts.SunOnRnd = True          ' There is weather
-    TmpOpts.FieldWidth = 9237
-    TmpOpts.FieldHeight = 6928
+    TmpOpts.fieldWidth = 9237
+    TmpOpts.fieldHeight = 6928
     TmpOpts.FieldSize = 1
     TmpOpts.MaxEnergy = 40           ' Veggy nrg per cycle
     TmpOpts.MaxPopulation = 25       ' Veggy max population
     TmpOpts.MinVegs = 10
     TmpOpts.Pondmode = False
-    TmpOpts.PhysBrown = 0         ' Animal Motion
+    TmpOpts.physBrown = 0         ' Animal Motion
     TmpOpts.Toroidal = True
     TmpOpts.Updnconnected = True
     TmpOpts.Dxsxconnected = True
@@ -2644,7 +2643,7 @@ pass = False
     TmpOpts.DisableFixing = False
     TmpOpts.RepopAmount = 10
     TmpOpts.RepopCooldown = 25
-    TmpOpts.MaxVelocity = 180
+    TmpOpts.maxVelocity = 180
     TmpOpts.VegFeedingToBody = 0.5       ' 50/50 nrg/body veggy feeding ratio
     TmpOpts.SunUp = False                ' Turn off bringing the sun up due to a threshold
     TmpOpts.SunDown = False              ' Turn off setting the sun due to a threshold
@@ -2683,8 +2682,8 @@ If MsgBox("Enabling SB mode settings will greatly alter the physics of your simu
 pass = True
 
 btnSetF1_Click
-TmpOpts.FieldWidth = 16000
-TmpOpts.FieldHeight = 12000
+TmpOpts.fieldWidth = 16000
+TmpOpts.fieldHeight = 12000
 FieldSizeSlide.value = 2
 FWidthLab = 16000
 FHeightLab = 12000
@@ -2770,7 +2769,7 @@ Private Sub txtMinRounds_LostFocus()
     optMinRounds = MinRounds
 End Sub
 
-Private Sub CorpseCheck_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub CorpseCheck_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 If CorpseCheck.value = 1 Then 'Botsareus 1/17/2013 set default values
     TmpOpts.DecayType = 3
     TmpOpts.Decay = 75
@@ -2831,23 +2830,23 @@ Label7(2).Visible = TmpOpts.Tides = 0
 Label7(3).Visible = TmpOpts.Tides = 0
 Label47.Visible = TmpOpts.Tides > 0
   
-If TmpOpts.PhysMoving < 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
-If TmpOpts.PhysMoving > 0.33 And TmpOpts.PhysMoving < 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
-If TmpOpts.PhysMoving > 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
+If TmpOpts.physMoving < 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
+If TmpOpts.physMoving > 0.33 And TmpOpts.physMoving < 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
+If TmpOpts.physMoving > 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
 
-If TmpOpts.PhysMoving = 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
-If TmpOpts.PhysMoving = 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
-If TmpOpts.PhysMoving = 1 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
+If TmpOpts.physMoving = 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
+If TmpOpts.physMoving = 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
+If TmpOpts.physMoving = 1 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
   
 '
 
-If TmpOpts.PhysBrown > 7 Then BrownianCombo.text = BrownianCombo.list(0)
-If TmpOpts.PhysBrown > 0.5 And TmpOpts.PhysBrown < 7 Then BrownianCombo.text = BrownianCombo.list(1)
-If TmpOpts.PhysBrown < 0.5 Then BrownianCombo.text = BrownianCombo.list(2)
+If TmpOpts.physBrown > 7 Then BrownianCombo.text = BrownianCombo.list(0)
+If TmpOpts.physBrown > 0.5 And TmpOpts.physBrown < 7 Then BrownianCombo.text = BrownianCombo.list(1)
+If TmpOpts.physBrown < 0.5 Then BrownianCombo.text = BrownianCombo.list(2)
 
-If TmpOpts.PhysBrown = 7 Then BrownianCombo.text = BrownianCombo.list(0)
-If TmpOpts.PhysBrown = 0.5 Then BrownianCombo.text = BrownianCombo.list(1)
-If TmpOpts.PhysBrown = 0 Then BrownianCombo.text = BrownianCombo.list(2)
+If TmpOpts.physBrown = 7 Then BrownianCombo.text = BrownianCombo.list(0)
+If TmpOpts.physBrown = 0.5 Then BrownianCombo.text = BrownianCombo.list(1)
+If TmpOpts.physBrown = 0 Then BrownianCombo.text = BrownianCombo.list(2)
 
 '
 
@@ -2933,21 +2932,11 @@ Public Sub PopulateSpeciesList()
 Dim i As Integer
 
  SortSpecies
-' If SpeciesToggle Then 'Botsareus 1/21/2013 Get non-native species via SnapShotSearch
-'    SpeciesLabel = "Native and Non-Native Species:"
-'    NativeSpeciesButton.Caption = "Show Native Species Only"
-'    SpecList.CLEAR
-'    For i = 0 To TmpOpts.SpeciesNum - 1
-'      SpecList.additem (TmpOpts.Specie(i).Name)
-'    Next i
-'  Else
-'    SpeciesLabel = "Native Species:"
-'    NativeSpeciesButton.Caption = "Show Non-Native Species"
+
     SpecList.CLEAR
     For i = 0 To TmpOpts.SpeciesNum - 1
        If TmpOpts.Specie(i).Native Then SpecList.additem (TmpOpts.Specie(i).Name)
     Next i
-'  End If
  
   SpecList.Refresh
 End Sub
@@ -2958,9 +2947,9 @@ Dim i As Integer
 Dim MSG As String
 Dim found As Boolean
 MSG = "The Non-Native Species are:" & vbCrLf & vbCrLf
-For i = 0 To SimOpts.SpeciesNum - 1
- If Not SimOpts.Specie(i).Native Then
-    MSG = MSG & """" & SimOpts.Specie(i).Name & """, "
+For i = 0 To simopts.SpeciesNum - 1
+ If Not simopts.Specie(i).Native Then
+    MSG = MSG & """" & simopts.Specie(i).Name & """, "
     found = True
  End If
 Next i
@@ -2977,7 +2966,6 @@ Dim ind As Integer
  
   ind = optionsform.SpecList.ListIndex
   If ind >= 0 Then
-    'RenameForm.Show vbModal
   Else
     MsgBox ("No Species Selected.")
   End If
@@ -3048,13 +3036,8 @@ Private Sub FluidSolidRadio_Click(Index As Integer)
 End Sub
 
 Private Sub MaxVelSlider_Change()
-  TmpOpts.MaxVelocity = MaxVelSlider.value
+  TmpOpts.maxVelocity = MaxVelSlider.value
 End Sub
-
-'Private Sub PauseButton_Click() 'Botsareus 1/5/2013 Can not control pause from settings
-'  Form1.Active = Not Form1.Active
-'  PauseButton.Caption = IIf(Form1.Active, "Unpaused", "Paused")
-'End Sub
 
 
 ''''''''''''''''''''''''''''''''
@@ -3180,7 +3163,6 @@ Private Sub AddSpec_Click()
   CommonDialog1.ShowOpen
   If CommonDialog1.FileName <> "" Then 'Botsareus 1/11/2013 Do not insert robot if filename is blank
   additem CommonDialog1.FileName
- ' TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
   PopulateSpeciesList
   End If
 fine:
@@ -3191,12 +3173,6 @@ Private Sub DuplicaButt_Click() 'Botsareus 4/30/2013 Fix for the duplicator
   Dim ind As Integer
   ind = SpecList.ListIndex
   If ind >= 0 And TmpOpts.Specie(ind).Native Then
-'    CommonDialog1.FileName = ""
-'    CommonDialog1.Filter = "Dna file(*.txt)|*.txt"
-'    CommonDialog1.InitDir = MDIForm1.MainDir + "\robots"
-'    CommonDialog1.DialogTitle = WSchoosedna
-'    CommonDialog1.ShowOpen
-'    additem CommonDialog1.FileName
     TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
     TmpOpts.Specie(TmpOpts.SpeciesNum - 1) = TmpOpts.Specie(ind)
     DispSettings
@@ -3212,15 +3188,11 @@ Sub DelSpec_Click()
   If ind >= 0 Then
     SpecList.RemoveItem ind
     k = ind
-    'l = SpecList.ListCount + 1
     For t = ind To SpecList.ListCount 'Listcount now has one fewer than it did before!!!
       TmpOpts.Specie(t) = TmpOpts.Specie(t + 1)
     Next t
     TmpOpts.SpeciesNum = TmpOpts.SpeciesNum - 1
     disprop
-  'Else
-   ' MsgBox ("Sorry, but you can only delete bots that originated in this simulation.")
-    'Check to make sure our current slected index is still valid
     If ind >= SpecList.ListCount Then
       ind = ind - 1
     End If
@@ -3235,7 +3207,6 @@ End Sub
 Private Sub clearall()
   Dim k As Integer
   k = 0
-'  SpecList.CLEAR
   While TmpOpts.Specie(k).Name <> ""
     TmpOpts.Specie(k).Name = ""
     k = k + 1
@@ -3249,7 +3220,6 @@ End Sub
 Sub additem(path As String)
   Dim k As Integer, t As Long
   SpecList.additem extractname(path)
-  'k = SpecList.ListCount - 1
   
   k = TmpOpts.SpeciesNum
   TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
@@ -3356,57 +3326,26 @@ End Sub
 
 Private Sub ShowSkin(k As Integer)
   Dim t As Integer
-  Dim X As Long
-  Dim Y As Long
-  X = Cerchio.Left + Cerchio.Width / 2
-  Y = Cerchio.Top + Cerchio.Height / 2
+  Dim x As Long
+  Dim y As Long
+  x = Cerchio.Left + Cerchio.Width / 2
+  y = Cerchio.Top + Cerchio.Height / 2
   multx = Cerchio.Width / 120
   multy = Cerchio.Height / 120
   Me.AutoRedraw = True
-  Line7.x1 = TmpOpts.Specie(k).Skin(0) * multx * Cos(TmpOpts.Specie(k).Skin(1) / 100) + X
-  Line7.y1 = TmpOpts.Specie(k).Skin(0) * multy * Sin(TmpOpts.Specie(k).Skin(1) / 100) + Y
-  Line7.x2 = TmpOpts.Specie(k).Skin(2) * multx * Cos(TmpOpts.Specie(k).Skin(3) / 100) + X
-  Line7.y2 = TmpOpts.Specie(k).Skin(2) * multy * Sin(TmpOpts.Specie(k).Skin(3) / 100) + Y
+  Line7.x1 = TmpOpts.Specie(k).Skin(0) * multx * Cos(TmpOpts.Specie(k).Skin(1) / 100) + x
+  Line7.y1 = TmpOpts.Specie(k).Skin(0) * multy * Sin(TmpOpts.Specie(k).Skin(1) / 100) + y
+  Line7.x2 = TmpOpts.Specie(k).Skin(2) * multx * Cos(TmpOpts.Specie(k).Skin(3) / 100) + x
+  Line7.y2 = TmpOpts.Specie(k).Skin(2) * multy * Sin(TmpOpts.Specie(k).Skin(3) / 100) + y
   Line8.x1 = Line7.x2
   Line8.y1 = Line7.y2
-  Line8.x2 = TmpOpts.Specie(k).Skin(4) * multx * Cos(TmpOpts.Specie(k).Skin(5) / 100) + X
-  Line8.y2 = TmpOpts.Specie(k).Skin(4) * multy * Sin(TmpOpts.Specie(k).Skin(5) / 100) + Y
+  Line8.x2 = TmpOpts.Specie(k).Skin(4) * multx * Cos(TmpOpts.Specie(k).Skin(5) / 100) + x
+  Line8.y2 = TmpOpts.Specie(k).Skin(4) * multy * Sin(TmpOpts.Specie(k).Skin(5) / 100) + y
   Line9.x1 = Line8.x2
   Line9.y1 = Line8.y2
-  Line9.x2 = TmpOpts.Specie(k).Skin(6) * multx * Cos(TmpOpts.Specie(k).Skin(7) / 100) + X
-  Line9.y2 = TmpOpts.Specie(k).Skin(6) * multy * Sin(TmpOpts.Specie(k).Skin(7) / 100) + Y
+  Line9.x2 = TmpOpts.Specie(k).Skin(6) * multx * Cos(TmpOpts.Specie(k).Skin(7) / 100) + x
+  Line9.y2 = TmpOpts.Specie(k).Skin(6) * multy * Sin(TmpOpts.Specie(k).Skin(7) / 100) + y
 End Sub
-
-'Botsareus 4/37/2013 Do not need this one also
-'Private Sub ShowSkinO(k As Integer)
-'  Dim t As Integer
-'  Dim x As Long
-'  Dim y As Long
-'  x = Shape2.Left
-'  y = Shape2.Top
-'  multx = Shape2.Width / 120
-'  multy = Shape2.Height / 120
-'  Me.AutoRedraw = True
-'  Shape3.Left = x + TmpOpts.Specie(k).Skin(t) * multx
-'  Shape3.Top = y + TmpOpts.Specie(k).Skin(t + 1) * multy
-'  Shape3.Width = TmpOpts.Specie(k).Skin(t + 2) * multx
-'  Shape3.Height = TmpOpts.Specie(k).Skin(t + 3) * multy
-'  'Shape4.Left = x + specie(k).Skin(t + 4) * multx
-'  'Shape4.Top = Y + specie(k).Skin(t + 5) * multy
-'  'Shape4.Width = specie(k).Skin(t + 6) * multx
-'  'Shape4.Height = specie(k).Skin(t + 7) * multy
-'End Sub
-
-'Botsareus 4/37/2013 This code never runs anyway
-'Private Sub AssignSkinO(k As Integer)
-'  Dim i As Integer
-'  For i = 0 To 8 Step 4
-'    TmpOpts.Specie(k).Skin(i) = Random(0, 120)
-'    TmpOpts.Specie(k).Skin(i + 2) = Random(0, 120 - TmpOpts.Specie(k).Skin(i))
-'    TmpOpts.Specie(k).Skin(i + 1) = Random(0, 120)
-'    TmpOpts.Specie(k).Skin(i + 3) = Random(0, 120 - TmpOpts.Specie(k).Skin(i + 1))
-'  Next i
-'End Sub
 
 Sub AssignSkin(k As Integer, path As String) 'The new skin engine requires path
 'Botsareus 4/27/2013 The new skin engine
@@ -3420,17 +3359,17 @@ robname = Replace(TmpOpts.Specie(k).Name, ".txt", "")
 Dim newR As Double
 Dim nextR As Double
 Dim nameR As Double
-Dim X As Long
+Dim x As Long
 
 Dim dbls() As Double
 
 ReDim dbls(Len(robname) - 1)
-For X = 1 To Len(robname)
-dbls(X - 1) = Rnd(-Asc(Mid(robname, X, 1)))
+For x = 1 To Len(robname)
+dbls(x - 1) = Rnd(-Asc(Mid(robname, x, 1)))
 Next 'pre seeds
 
-For X = 1 To Len(robname)
-newR = dbls(X - 1)
+For x = 1 To Len(robname)
+newR = dbls(x - 1)
 nextR = Rnd(-(angle(0, 0, nextR - 0.5, newR - 0.5)))
 Next 'randomize by name
 
@@ -3444,12 +3383,12 @@ nextR = 0
     Randomize 0
     
     ReDim dbls(UBound(rob(0).dna))
-    For X = 0 To UBound(rob(0).dna)
-    dbls(X) = Rnd(-(angle(0, 0, Rnd(-rob(0).dna(X).value) - 0.5, Rnd(-rob(0).dna(X).tipo) - 0.5)))
+    For x = 0 To UBound(rob(0).dna)
+    dbls(x) = Rnd(-(angle(0, 0, Rnd(-rob(0).dna(x).value) - 0.5, Rnd(-rob(0).dna(x).tipo) - 0.5)))
     Next 'pre seeds
     
-    For X = 0 To UBound(rob(0).dna)
-    newR = dbls(X)
+    For x = 0 To UBound(rob(0).dna)
+    newR = dbls(x)
     nextR = Rnd(-(angle(0, 0, nextR - 0.5, newR - 0.5)))
     Next 'randomize by dna
     
@@ -3711,14 +3650,14 @@ Private Sub PosReset_Click()
 
 End Sub
 
-Private Sub Initial_Position_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Initial_Position_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
   If Button = vbLeftButton Then
     DragBegin Initial_Position
     PaintObstacles
   End If
 End Sub
 
-Private Sub IPB_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub IPB_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
   If Button = vbLeftButton Then
     DragBegin Initial_Position
     PaintObstacles
@@ -3789,8 +3728,8 @@ Public Sub DragBegin(ctl As Control)
     m_DragRect.TwipsToScreen m_CurrCtl
     
     'Make initial mouse position relative to control
-    m_DragPoint.X = m_DragPoint.X - m_DragRect.Left
-    m_DragPoint.Y = m_DragPoint.Y - m_DragRect.Top
+    m_DragPoint.x = m_DragPoint.x - m_DragRect.Left
+    m_DragPoint.y = m_DragPoint.y - m_DragRect.Top
     
     'Force redraw of form without sizing handles
     'before drawing dragging rectangle
@@ -3806,10 +3745,10 @@ Public Sub DragBegin(ctl As Control)
     'we set the mouse capture to the form and will process mouse
     'movement from the applicable form events
     ReleaseCapture  'This appears needed before calling SetCapture
-    SetCapture hWnd
+    SetCapture hwnd
     
     'Limit cursor movement within form
-    GetWindowRect hWnd, rc
+    GetWindowRect hwnd, rc
     ClipCursor rc
 End Sub
 
@@ -3822,7 +3761,7 @@ End Sub
 
 'To handle all mouse message anywhere on the form, we set the mouse
 'capture to the form. Mouse movement is processed here
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
 If CurrSpec = -1 Then Exit Sub 'Botsareus 2/3/2013 bug fix when no robot selected
 
     Dim nWidth As Single, nHeight As Single
@@ -3837,8 +3776,8 @@ If CurrSpec = -1 Then Exit Sub 'Botsareus 2/3/2013 bug fix when no robot selecte
         'Hide existing rectangle
         DrawDragRect
         'Update drag rectangle coordinates
-        m_DragRect.Left = pt.X - m_DragPoint.X
-        m_DragRect.Top = pt.Y - m_DragPoint.Y
+        m_DragRect.Left = pt.x - m_DragPoint.x
+        m_DragRect.Top = pt.y - m_DragPoint.y
         m_DragRect.Right = m_DragRect.Left + nWidth
         m_DragRect.Bottom = m_DragRect.Top + nHeight
         'Draw new rectangle
@@ -3851,25 +3790,25 @@ If CurrSpec = -1 Then Exit Sub 'Botsareus 2/3/2013 bug fix when no robot selecte
         'Action depends on handle being dragged
         Select Case m_DragHandle
             Case 0
-                m_DragRect.Left = pt.X
-                m_DragRect.Top = pt.Y
+                m_DragRect.Left = pt.x
+                m_DragRect.Top = pt.y
             Case 2
-                m_DragRect.Right = pt.X
-                m_DragRect.Top = pt.Y
+                m_DragRect.Right = pt.x
+                m_DragRect.Top = pt.y
             Case 4
-                m_DragRect.Right = pt.X
-                m_DragRect.Bottom = pt.Y
+                m_DragRect.Right = pt.x
+                m_DragRect.Bottom = pt.y
             Case 6
-                m_DragRect.Left = pt.X
-                m_DragRect.Bottom = pt.Y
+                m_DragRect.Left = pt.x
+                m_DragRect.Bottom = pt.y
             Case 9
-                m_DragRect.Top = pt.Y
+                m_DragRect.Top = pt.y
             Case 10
-                m_DragRect.Bottom = pt.Y
+                m_DragRect.Bottom = pt.y
             Case 11
-                m_DragRect.Left = pt.X
+                m_DragRect.Left = pt.x
             Case 12
-                m_DragRect.Right = pt.X
+                m_DragRect.Right = pt.x
         End Select
         'Draw new rectangle
         DrawDragRect
@@ -3878,7 +3817,7 @@ End Sub
 
 'To handle all mouse message anywhere on the form, we set the mouse
 'capture to the form. Mouse up is processed here
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 If CurrSpec = -1 Then Exit Sub 'Botsareus 2/3/2013 bug fix when no robot selected
 
     If Button = vbLeftButton Then
@@ -3923,7 +3862,7 @@ If CurrSpec = -1 Then Exit Sub 'Botsareus 2/3/2013 bug fix when no robot selecte
 End Sub
 
 'Process MouseDown over handles
-Private Sub picHandle_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub picHandle_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim i As Integer
     Dim rc As RECT
 
@@ -3947,13 +3886,13 @@ Private Sub picHandle_MouseDown(Index As Integer, Button As Integer, Shift As In
     'In order to detect mouse movement over any part of the form,
     'we set the mouse capture to the form and will process mouse
     'movement from the applicable form events
-    SetCapture hWnd
+    SetCapture hwnd
     'Limit cursor movement within form
-    GetWindowRect hWnd, rc
+    GetWindowRect hwnd, rc
     ClipCursor rc
 End Sub
 
-Private Sub Robplacline_MouseDown(Index As Integer, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Robplacline_MouseDown(Index As Integer, Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim i As Integer
     Dim rc As RECT
 
@@ -3977,9 +3916,9 @@ Private Sub Robplacline_MouseDown(Index As Integer, Button As Integer, Shift As 
     'In order to detect mouse movement over any part of the form,
     'we set the mouse capture to the form and will process mouse
     'movement from the applicable form events
-    SetCapture hWnd
+    SetCapture hwnd
     'Limit cursor movement within form
-    GetWindowRect hWnd, rc
+    GetWindowRect hwnd, rc
     ClipCursor rc
 End Sub
 
@@ -4078,27 +4017,27 @@ Private Sub FieldSizeSlide_Scroll()
   
   TmpOpts.FieldSize = FieldSizeSlide.value
   
-  oldsw = TmpOpts.FieldWidth
-  oldsh = TmpOpts.FieldHeight
+  oldsw = TmpOpts.fieldWidth
+  oldsh = TmpOpts.fieldHeight
   
   If TmpOpts.FieldSize = 1 Then 'F1 mode
-    TmpOpts.FieldWidth = 9237
-    TmpOpts.FieldHeight = 6928
+    TmpOpts.fieldWidth = 9237
+    TmpOpts.fieldHeight = 6928
   Else
-    TmpOpts.FieldWidth = 8000
-    TmpOpts.FieldHeight = 6000
+    TmpOpts.fieldWidth = 8000
+    TmpOpts.fieldHeight = 6000
     
     If TmpOpts.FieldSize <= 12 Then
-      TmpOpts.FieldWidth = TmpOpts.FieldWidth * TmpOpts.FieldSize
-      TmpOpts.FieldHeight = TmpOpts.FieldHeight * TmpOpts.FieldSize
+      TmpOpts.fieldWidth = TmpOpts.fieldWidth * TmpOpts.FieldSize
+      TmpOpts.fieldHeight = TmpOpts.fieldHeight * TmpOpts.FieldSize
     Else ' Field sizes larger than size 12 get big fast...
-      TmpOpts.FieldWidth = (TmpOpts.FieldWidth * 12) * (TmpOpts.FieldSize - 12) * 2
-      TmpOpts.FieldHeight = (TmpOpts.FieldHeight * 12) * (TmpOpts.FieldSize - 12) * 2
+      TmpOpts.fieldWidth = (TmpOpts.fieldWidth * 12) * (TmpOpts.FieldSize - 12) * 2
+      TmpOpts.fieldHeight = (TmpOpts.fieldHeight * 12) * (TmpOpts.FieldSize - 12) * 2
     End If
   End If
   
-  FWidthLab.Caption = TmpOpts.FieldWidth
-  FHeightLab.Caption = TmpOpts.FieldHeight
+  FWidthLab.Caption = TmpOpts.fieldWidth
+  FHeightLab.Caption = TmpOpts.fieldHeight
 End Sub
 
 
@@ -4113,7 +4052,7 @@ End Sub
 
 Private Sub UserSeedText_Change()
   TmpOpts.UserSeedNumber = val(UserSeedText.text)
-  SimOpts.UserSeedNumber = val(UserSeedText.text)
+  simopts.UserSeedNumber = val(UserSeedText.text)
 End Sub
 
 ''''''End Seeded Random Control
@@ -4281,7 +4220,7 @@ Private Sub color_lightlines()
   If EnergyScalingFactor = 0 Then EnergyScalingFactor = 1
   toplevel = 2 * (val(EnergyScalingFactor.text) / (depth ^ Gradient))
    
-  depth = TmpOpts.FieldHeight / 16 / 2000 + 1
+  depth = TmpOpts.fieldHeight / 16 / 2000 + 1
   fxn = 2 * (TmpOpts.LightIntensity / (depth ^ Gradient)) / toplevel
   greyform = Convert_PercentageColor(Ceil(fxn, 1))
   greyform = Abs(greyform)
@@ -4296,8 +4235,8 @@ Private Sub color_lightlines()
   LightStrata(15).BorderColor = color
   
   For Index = 1 To 14
-    depth = (Index * TmpOpts.FieldHeight / 16) / 2000 + 1
-    depth2 = ((Index + 1) * TmpOpts.FieldHeight / 16 / 2000) + 1
+    depth = (Index * TmpOpts.fieldHeight / 16) / 2000 + 1
+    depth2 = ((Index + 1) * TmpOpts.fieldHeight / 16 / 2000) + 1
     fxn = 2 * (TmpOpts.LightIntensity / (depth ^ Gradient)) / toplevel
     fxn = fxn + 2 * (TmpOpts.LightIntensity / (depth2 ^ Gradient)) / toplevel
     fxn = Ceil(fxn / 2, 1)
@@ -4423,11 +4362,11 @@ End Sub
 Private Sub EfficiencyCombo_Click()
   Select Case EfficiencyCombo.text
     Case EfficiencyCombo.list(0)
-      TmpOpts.PhysMoving = 1
+      TmpOpts.physMoving = 1
     Case EfficiencyCombo.list(1)
-      TmpOpts.PhysMoving = 0.66
+      TmpOpts.physMoving = 0.66
     Case EfficiencyCombo.list(2)
-      TmpOpts.PhysMoving = 0.33
+      TmpOpts.physMoving = 0.33
   End Select
 End Sub
 
@@ -4470,11 +4409,11 @@ End Sub
 Private Sub BrownianCombo_Click()
   Select Case BrownianCombo.text
     Case BrownianCombo.list(0)
-      TmpOpts.PhysBrown = 7
+      TmpOpts.physBrown = 7
     Case BrownianCombo.list(1)
-      TmpOpts.PhysBrown = 0.5
+      TmpOpts.physBrown = 0.5
     Case BrownianCombo.list(2)
-      TmpOpts.PhysBrown = 0
+      TmpOpts.physBrown = 0
   End Select
 End Sub
 
@@ -4553,10 +4492,10 @@ Dim o As Integer
 For o = 1 To UBound(xObstacle)
 If xObstacle(o).exist Then
 With xObstacle(o)
- .pos.X = .pos.X / SimOpts.FieldWidth
- .pos.Y = .pos.Y / SimOpts.FieldHeight
- .Width = .Width / SimOpts.FieldWidth
- .Height = .Height / SimOpts.FieldHeight
+ .pos.x = .pos.x / simopts.fieldWidth
+ .pos.y = .pos.y / simopts.fieldHeight
+ .Width = .Width / simopts.fieldWidth
+ .Height = .Height / simopts.fieldHeight
 End With
 End If
 Next
@@ -4569,7 +4508,7 @@ Dim o As Integer
 For o = 1 To UBound(xObstacle)
 If xObstacle(o).exist Then
 With xObstacle(o)
- IPB.Line (.pos.X * IPB.ScaleWidth, .pos.Y * IPB.ScaleHeight)-((.pos.X + .Width) * IPB.ScaleWidth, (.pos.Y + .Height) * IPB.ScaleHeight), .color, BF
+ IPB.Line (.pos.x * IPB.ScaleWidth, .pos.y * IPB.ScaleHeight)-((.pos.x + .Width) * IPB.ScaleWidth, (.pos.y + .Height) * IPB.ScaleHeight), .color, BF
 End With
 End If
 Next
@@ -4582,16 +4521,16 @@ End Sub
 
 Private Sub Form_Load()
 
-TmpOpts = SimOpts
+TmpOpts = simopts
   
  CurrSpec = -1 ' EricL 4/1/2006 Initialize that no species is selected
  DragInit    'Initialize drag code
  strings Me
 
- Form1.ScaleWidth = SimOpts.FieldWidth
- Form1.ScaleHeight = SimOpts.FieldHeight
- If TmpOpts.FieldWidth = 0 Then TmpOpts.FieldWidth = 16000
- If TmpOpts.FieldHeight = 0 Then TmpOpts.FieldHeight = 12000
+ Form1.ScaleWidth = simopts.fieldWidth
+ Form1.ScaleHeight = simopts.fieldHeight
+ If TmpOpts.fieldWidth = 0 Then TmpOpts.fieldWidth = 16000
+ If TmpOpts.fieldHeight = 0 Then TmpOpts.fieldHeight = 12000
  datatolist
  validate = True
  DispSettings
@@ -4671,26 +4610,26 @@ Form1.camfix = False 'Botsareus 2/23/2013 When simulation starts the screen is n
   
   'These change values while a sim is running.
   'Copy them so the correct value will be put back into SimOpts
-  TmpOpts.TotRunCycle = SimOpts.TotRunCycle
-  TmpOpts.TotBorn = SimOpts.TotBorn
-  TmpOpts.TotRunTime = SimOpts.TotRunTime
-  TmpOpts.DayNightCycleCounter = SimOpts.DayNightCycleCounter
-  TmpOpts.Daytime = SimOpts.Daytime
+  TmpOpts.TotRunCycle = simopts.TotRunCycle
+  TmpOpts.TotBorn = simopts.TotBorn
+  TmpOpts.TotRunTime = simopts.TotRunTime
+  TmpOpts.DayNightCycleCounter = simopts.DayNightCycleCounter
+  TmpOpts.Daytime = simopts.Daytime
   If TmpOpts.DayNight = False Then TmpOpts.Daytime = True
   
   
-  SimOpts = TmpOpts
+  simopts = TmpOpts
   
-  If InternetMode Then ResizeInternetTeleporter (SimOpts.FieldHeight / 150)
+  If InternetMode Then ResizeInternetTeleporter (simopts.fieldHeight / 150)
   
-  Form1.ScaleWidth = SimOpts.FieldWidth
-  Form1.ScaleHeight = SimOpts.FieldHeight
-  Form1.visiblew = SimOpts.FieldWidth
-  Form1.visibleh = SimOpts.FieldHeight
+  Form1.ScaleWidth = simopts.fieldWidth
+  Form1.ScaleHeight = simopts.fieldHeight
+  Form1.visiblew = simopts.fieldWidth
+  Form1.visibleh = simopts.fieldHeight
   Form1.xDivisor = 1
   Form1.yDivisor = 1
-  If SimOpts.FieldWidth > 32000 Then Form1.xDivisor = SimOpts.FieldWidth / 32000
-  If SimOpts.FieldHeight > 32000 Then Form1.yDivisor = SimOpts.FieldHeight / 32000
+  If simopts.fieldWidth > 32000 Then Form1.xDivisor = simopts.fieldWidth / 32000
+  If simopts.fieldHeight > 32000 Then Form1.yDivisor = simopts.fieldHeight / 32000
   Form1.SecTimer.Enabled = True
   Form1.Active = True
   
@@ -4796,7 +4735,7 @@ If chseedstartnew Then TmpOpts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 
   
   Unload Me
   
-  SimOpts = TmpOpts
+  simopts = TmpOpts
   
   If Form1.Active Then Form1.SecTimer.Enabled = True
   If InternetMode Then MDIForm1.F1Internet_Click
@@ -4806,7 +4745,7 @@ If chseedstartnew Then TmpOpts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 
   While StartAnotherRound
     StartAnotherRound = False
     Form1.StartSimul
-    SimOpts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart, moved to after first sim
+    simopts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart, moved to after first sim
   Wend
   
 End Sub
@@ -4837,8 +4776,8 @@ End If
   UserSeedText.text = TmpOpts.UserSeedNumber
   FrequencyText.text = TmpOpts.Decaydelay
   
-  FWidthLab.Caption = TmpOpts.FieldWidth
-  FHeightLab.Caption = TmpOpts.FieldHeight
+  FWidthLab.Caption = TmpOpts.fieldWidth
+  FHeightLab.Caption = TmpOpts.fieldHeight
   
   'DisableTiesCheck.value = TmpOpts.DisableTies * True
   TopDownCheck.value = TmpOpts.Updnconnected * True
@@ -4980,7 +4919,7 @@ End If
     DragCombo.text = "Custom"
   End If
     
-  MaxVelSlider.value = TmpOpts.MaxVelocity
+  MaxVelSlider.value = TmpOpts.maxVelocity
   BodyNrgDist.value = TmpOpts.VegFeedingToBody * 100
   
   'EricL 4/1/2006 Added these to initialize values
@@ -5091,8 +5030,8 @@ On Error GoTo fine
     'Write #1, TmpOpts.Specie(t).Poslf
     'Write #1, TmpOpts.Specie(t).Postp
     
-    Write #1, TmpOpts.FieldWidth
-    Write #1, TmpOpts.FieldHeight
+    Write #1, TmpOpts.fieldWidth
+    Write #1, TmpOpts.fieldHeight
     Write #1, 0
     Write #1, 0
     
@@ -5119,8 +5058,8 @@ skipthisspecie:
   'generali
   Write #1, numSpecies 'Botsareus 1/21/2013 No more non-native species -bug fixed
   Write #1, TmpOpts.FieldSize
-  Write #1, TmpOpts.FieldWidth
-  Write #1, TmpOpts.FieldHeight
+  Write #1, TmpOpts.fieldWidth
+  Write #1, TmpOpts.fieldHeight
   Write #1, TmpOpts.MaxPopulation
   Write #1, TmpOpts.BlockedVegs
   Write #1, TmpOpts.DisableTies
@@ -5140,8 +5079,8 @@ skipthisspecie:
   'fisica
   Write #1, TmpOpts.Ygravity
   Write #1, TmpOpts.Zgravity
-  Write #1, TmpOpts.PhysBrown
-  Write #1, TmpOpts.PhysMoving
+  Write #1, TmpOpts.physBrown
+  Write #1, TmpOpts.physMoving
   Write #1, TmpOpts.PhysSwim
   
   Write #1, "null"
@@ -5236,13 +5175,13 @@ skipthisspecie3:
 skipthisspecie4:
   Next k
   
-  Write #1, TmpOpts.MaxVelocity
+  Write #1, TmpOpts.maxVelocity
   Write #1, TmpOpts.BadWastelevel 'EricL 4/1/2006 Added this
   Write #1, TmpOpts.chartingInterval 'EricL 4/1/2006 Added this
   Write #1, TmpOpts.FluidSolidCustom 'EricL 5/7/2006
   Write #1, TmpOpts.CostRadioSetting ' EricL 5/7/2006
   Write #1, TmpOpts.CoefficientElasticity ' EricL 5/7/2006
-  Write #1, TmpOpts.MaxVelocity ' EricL 5/15/2006
+  Write #1, TmpOpts.maxVelocity ' EricL 5/15/2006
   Write #1, TmpOpts.NoShotDecay ' EricL 6/8/2006
   Write #1, TmpOpts.SunUpThreshold 'EricL 6/8/2006 Added this
   Write #1, TmpOpts.SunUp 'EricL 6/8/2006 Added this
@@ -5298,10 +5237,10 @@ skipthisspecie4:
     Write #1, .color
     Write #1, .Width
     Write #1, .Height
-    Write #1, .vel.X
-    Write #1, .vel.Y
-    Write #1, .pos.X
-    Write #1, .pos.Y
+    Write #1, .vel.x
+    Write #1, .vel.y
+    Write #1, .pos.x
+    Write #1, .pos.y
   End With
   End If
   Next
@@ -5467,8 +5406,8 @@ Public Sub ReadSettFromFile()
   Input #1, TmpOpts.SimName
   Input #1, TmpOpts.SpeciesNum
   Input #1, TmpOpts.FieldSize
-  Input #1, TmpOpts.FieldWidth
-  Input #1, TmpOpts.FieldHeight
+  Input #1, TmpOpts.fieldWidth
+  Input #1, TmpOpts.fieldHeight
   Input #1, TmpOpts.MaxPopulation
   Input #1, TmpOpts.BlockedVegs
   Input #1, TmpOpts.DisableTies
@@ -5488,8 +5427,8 @@ Public Sub ReadSettFromFile()
   'fisica
   Input #1, TmpOpts.Ygravity
   Input #1, TmpOpts.Zgravity
-  Input #1, TmpOpts.PhysBrown
-  Input #1, TmpOpts.PhysMoving
+  Input #1, TmpOpts.physBrown
+  Input #1, TmpOpts.physMoving
   Input #1, TmpOpts.PhysSwim
   
   Input #1, obsoleteString
@@ -5577,7 +5516,7 @@ Public Sub ReadSettFromFile()
     TmpOpts.Specie(k).Native = True
   Next k
   
-  If Not EOF(1) Then Input #1, TmpOpts.MaxVelocity
+  If Not EOF(1) Then Input #1, TmpOpts.maxVelocity
   
   TmpOpts.BadWastelevel = -1 ' Default
   If Not EOF(1) Then Input #1, TmpOpts.BadWastelevel 'EricL 4/1/2006 Added this
@@ -5594,8 +5533,8 @@ Public Sub ReadSettFromFile()
   TmpOpts.CoefficientElasticity = 0 ' Default for older settings files
   If Not EOF(1) Then Input #1, TmpOpts.CoefficientElasticity 'EricL 5/7/2006 Added this
   
-  TmpOpts.MaxVelocity = 40 ' Default for older settings files
-  If Not EOF(1) Then Input #1, TmpOpts.MaxVelocity 'EricL 5/15/2006 Added this
+  TmpOpts.maxVelocity = 40 ' Default for older settings files
+  If Not EOF(1) Then Input #1, TmpOpts.maxVelocity 'EricL 5/15/2006 Added this
   
   TmpOpts.NoShotDecay = False ' Default for older settings files
   If Not EOF(1) Then Input #1, TmpOpts.NoShotDecay 'EricL 6/8/2006 Added this
@@ -5658,10 +5597,10 @@ Public Sub ReadSettFromFile()
     If Not EOF(1) Then Input #1, .color
     If Not EOF(1) Then Input #1, .Width
     If Not EOF(1) Then Input #1, .Height
-    If Not EOF(1) Then Input #1, .vel.X
-    If Not EOF(1) Then Input #1, .vel.Y
-    If Not EOF(1) Then Input #1, .pos.X
-    If Not EOF(1) Then Input #1, .pos.Y
+    If Not EOF(1) Then Input #1, .vel.x
+    If Not EOF(1) Then Input #1, .vel.y
+    If Not EOF(1) Then Input #1, .pos.x
+    If Not EOF(1) Then Input #1, .pos.y
     .exist = True
   End With
   Next
@@ -5715,9 +5654,9 @@ Public Sub ReadSettFromFile()
                               "Not all the information it contains can be " + vbCrLf + _
                               "transfered."
   
-  If TmpOpts.FieldWidth = 0 Then TmpOpts.FieldWidth = 16000
-  If TmpOpts.FieldHeight = 0 Then TmpOpts.FieldHeight = 12000
-  If TmpOpts.MaxVelocity = 0 Then TmpOpts.MaxVelocity = 60
+  If TmpOpts.fieldWidth = 0 Then TmpOpts.fieldWidth = 16000
+  If TmpOpts.fieldHeight = 0 Then TmpOpts.fieldHeight = 12000
+  If TmpOpts.maxVelocity = 0 Then TmpOpts.maxVelocity = 60
   If TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 0 Then TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 50
   
   

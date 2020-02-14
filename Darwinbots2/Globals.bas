@@ -342,11 +342,11 @@ Dim FName As String
 Dim splitname() As String 'just incase original species is dead
 Dim robname As String
 
-FName = extractname(SimOpts.Specie(r).Name)
+FName = extractname(simopts.Specie(r).Name)
 
 checkvegstatus = False
 
-If SimOpts.Specie(r).Veg = True And SimOpts.Specie(r).Native Then
+If simopts.Specie(r).Veg = True And simopts.Specie(r).Native Then
 
     'see if any active robots have chloroplasts
       For t = 1 To MaxRobs
@@ -362,7 +362,7 @@ If SimOpts.Specie(r).Veg = True And SimOpts.Specie(r).Native Then
                     robname = .FName
                 End If
                 
-                If SimOpts.Specie(r).Name = robname Then
+                If simopts.Specie(r).Name = robname Then
                 
                     checkvegstatus = True
                     Exit Function
@@ -399,7 +399,7 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
   
   If r = -1 Then
     'run one loop to check vegy status
-    For i = 0 To SimOpts.SpeciesNum - 1
+    For i = 0 To simopts.SpeciesNum - 1
         If checkvegstatus(i) Then
             anyvegy = True
             Exit For
@@ -408,17 +408,17 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
     If Not anyvegy Then Exit Sub
   
     Do
-    r = Random(0, SimOpts.SpeciesNum - 1)  ' start randomly in the list of species
+    r = Random(0, simopts.SpeciesNum - 1)  ' start randomly in the list of species
     Loop Until checkvegstatus(r)
     
-    x = fRnd(SimOpts.Specie(r).Poslf * (SimOpts.FieldWidth - 60), SimOpts.Specie(r).Posrg * (SimOpts.FieldWidth - 60))
-    y = fRnd(SimOpts.Specie(r).Postp * (SimOpts.FieldHeight - 60), SimOpts.Specie(r).Posdn * (SimOpts.FieldHeight - 60))
+    x = fRnd(simopts.Specie(r).Poslf * (simopts.fieldWidth - 60), simopts.Specie(r).Posrg * (simopts.fieldWidth - 60))
+    y = fRnd(simopts.Specie(r).Postp * (simopts.fieldHeight - 60), simopts.Specie(r).Posdn * (simopts.fieldHeight - 60))
   End If
   
-  If SimOpts.Specie(r).Name <> "" And SimOpts.Specie(r).path <> "Invalid Path" Then
-    a = RobScriptLoad(respath(SimOpts.Specie(r).path) + "\" + SimOpts.Specie(r).Name)
+  If simopts.Specie(r).Name <> "" And simopts.Specie(r).path <> "Invalid Path" Then
+    a = RobScriptLoad(respath(simopts.Specie(r).path) + "\" + simopts.Specie(r).Name)
     If a < 0 Then
-      SimOpts.Specie(r).Native = False
+      simopts.Specie(r).Native = False
       GoTo getout
     End If
     
@@ -426,19 +426,19 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
     'come from another machine with a different install path.  Set the species path to an empty string to
     'prevent endless looping of error dialogs.
     If Not rob(a).exist Then
-      SimOpts.Specie(r).path = "Invalid Path"
+      simopts.Specie(r).path = "Invalid Path"
       GoTo getout
     End If
     
-    rob(a).Veg = SimOpts.Specie(r).Veg
+    rob(a).Veg = simopts.Specie(r).Veg
     If rob(a).Veg Then rob(a).chloroplasts = StartChlr 'Botsareus 2/12/2014 Start a robot with chloroplasts
     'NewMove loaded via robscriptload
-    rob(a).Fixed = SimOpts.Specie(r).Fixed
-    rob(a).CantSee = SimOpts.Specie(r).CantSee
-    rob(a).DisableDNA = SimOpts.Specie(r).DisableDNA
-    rob(a).DisableMovementSysvars = SimOpts.Specie(r).DisableMovementSysvars
-    rob(a).CantReproduce = SimOpts.Specie(r).CantReproduce
-    rob(a).VirusImmune = SimOpts.Specie(r).VirusImmune
+    rob(a).Fixed = simopts.Specie(r).Fixed
+    rob(a).CantSee = simopts.Specie(r).CantSee
+    rob(a).DisableDNA = simopts.Specie(r).DisableDNA
+    rob(a).DisableMovementSysvars = simopts.Specie(r).DisableMovementSysvars
+    rob(a).CantReproduce = simopts.Specie(r).CantReproduce
+    rob(a).VirusImmune = simopts.Specie(r).VirusImmune
     rob(a).Corpse = False
     rob(a).Dead = False
     rob(a).body = 1000
@@ -450,14 +450,7 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
     rob(a).generation = 0
     rob(a).SonNumber = 0
     rob(a).parent = 0
-'    rob(a).mem(468) = 32000 Botsareus 10/5/2015 why set memory right before an erase call?
-'    rob(a).mem(AimSys) = Random(1, 1256) / 200
-'    rob(a).mem(SetAim) = rob(a).aim * 200
-'    rob(a).mem(480) = 32000
-'    rob(a).mem(481) = 32000
-'    rob(a).mem(482) = 32000
-'    rob(a).mem(483) = 32000
-'    rob(a).aim = Rnd(PI)
+
     Erase rob(a).mem
     'If rob(a).Veg Then rob(a).Feed = 8
     If rob(a).Fixed Then rob(a).mem(216) = 1
@@ -472,9 +465,9 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
    ' rob(a).BucketPos.x = -2
    ' rob(a).BucketPos.Y = -2
     UpdateBotBucket a
-    rob(a).nrg = SimOpts.Specie(r).Stnrg
+    rob(a).nrg = simopts.Specie(r).Stnrg
    ' EnergyAddedPerCycle = EnergyAddedPerCycle + rob(a).nrg
-    rob(a).Mutables = SimOpts.Specie(r).Mutables
+    rob(a).Mutables = simopts.Specie(r).Mutables
     
     rob(a).Vtimer = 0
     rob(a).virusshot = 0
@@ -489,16 +482,16 @@ Public Sub aggiungirob(ByVal r As Integer, ByVal x As Single, ByVal y As Single)
     rob(a).mem(GenesSys) = rob(a).genenum
     
     'Botsareus 10/8/2015 New kill restrictions
-    rob(a).multibot_time = IIf(SimOpts.Specie(r).kill_mb, 210, 0)
-    rob(a).dq = IIf(SimOpts.Specie(r).dq_kill, 1, 0)
-    rob(a).NoChlr = SimOpts.Specie(r).NoChlr 'Botsareus 11/1/2015 Bug fix
+    rob(a).multibot_time = IIf(simopts.Specie(r).kill_mb, 210, 0)
+    rob(a).dq = IIf(simopts.Specie(r).dq_kill, 1, 0)
+    rob(a).NoChlr = simopts.Specie(r).NoChlr 'Botsareus 11/1/2015 Bug fix
     
     
     For i = 0 To 7 'Botsareus 5/20/2012 fix for skin engine
-      rob(a).Skin(i) = SimOpts.Specie(r).Skin(i)
+      rob(a).Skin(i) = simopts.Specie(r).Skin(i)
     Next i
     
-    rob(a).color = SimOpts.Specie(r).color
+    rob(a).color = simopts.Specie(r).color
     makeoccurrlist a
   End If
 getout:

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form MutationsProbability 
    Caption         =   "Mutation Probabilities"
    ClientHeight    =   8490
@@ -736,10 +736,6 @@ Private Sub Form_Load()
     TypeOption(7).Visible = False
   End If
   
-  
-'  If (TmpOpts.Specie(optionsform.CurrSpec).Mutables.Mutations = True) Then
-'    EnableAllCheck.value = 1
-'  End If
 End Sub
 
 Private Sub Command1_Click(Index As Integer)
@@ -767,16 +763,6 @@ Private Sub Command1_Click(Index As Integer)
     End With
   End If
 End Sub
-
-'Private Sub EnableAllCheck_Click()
-'  If (EnableAllCheck.value = 0) Then
-'    EnableAllCheck.Caption = "All Disabled"
-'  Else
-'    EnableAllCheck.Caption = "All Enabled"
-'  End If
-'
-'  TmpOpts.Specie(optionsform.CurrSpec).Mutables.Mutations = (EnableAllCheck.value * True)
-'End Sub
 
 Private Sub Lower_LostFocus(Index As Integer)
   Mean(Index).text = (val(Lower(Index).text) + val(Upper(Index).text)) / 2
@@ -1074,7 +1060,6 @@ Private Sub SetupInsertion()
   Slider1.Visible = False
   Slider1Text(0).Visible = False
   Slider1Text(1).Visible = False
-  'Sliders6.Visible = True
   Sliders6.Visible = False
   
   Text2.text = "A run of random bp are inserted into the genome.  " + _

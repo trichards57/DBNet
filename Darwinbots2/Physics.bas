@@ -20,27 +20,6 @@ Public Const smudgefactor As Single = 50 'just to keep the bots more likely to s
 Public boylabldisp As Boolean
 Public BouyancyScaling As Single
 
-Public Function NetForces(n As Integer)
-  Dim mag As Single
-  Dim sign As Integer
-  Dim staticV As vector
-    
-  'The physics engine breaks apart if bot masses are less than about .1
-  
-
-    If Abs(rob(n).vel.x) < 0.0000001 Then rob(n).vel.x = 0#  'Prevents underflow errors down the line
-    If Abs(rob(n).vel.y) < 0.0000001 Then rob(n).vel.y = 0#  'Prevents underflow erros down the line
-    PlanetEaters n
-    FrictionForces n
-    SphereDragForces n
-    'TieDragForces n Botsareus 6/18/2016 Disabled for not doing anything
-    BrownianForces n
-    'BouyancyForces n  BouyancyForces are no longer needed since boy is proportional to y gravity
-    GravityForces n
-    VoluntaryForces n
- 
-End Function
-
 Public Sub AddedMass(n As Integer)
   'added mass is a simple enough concept.
   'To move an object through a liquid, you must also move
@@ -51,10 +30,10 @@ Public Sub AddedMass(n As Integer)
   Const AddedMassCoefficientForASphere As Single = 0.5
   
   With rob(n)
-    If SimOpts.Density = 0 Then
+    If simopts.Density = 0 Then
       .AddedMass = 0
     Else
-      .AddedMass = AddedMassCoefficientForASphere * SimOpts.Density * fourthirdspi * .radius * .radius * .radius
+      .AddedMass = AddedMassCoefficientForASphere * simopts.Density * fourthirdspi * .radius * .radius * .radius
     End If
   End With
 End Sub
@@ -66,14 +45,14 @@ Public Sub FrictionForces(n As Integer)
   
   With rob(n)
   
-  If SimOpts.Zgravity = 0 Then GoTo getout
+  If simopts.Zgravity = 0 Then GoTo getout
 
-  ZGrav = SimOpts.Zgravity
+  ZGrav = simopts.Zgravity
   
 
-    .ImpulseStatic = CSng(.mass * ZGrav * SimOpts.CoefficientStatic) ' * 1 cycle (timestep = 1)
+    .ImpulseStatic = CSng(.mass * ZGrav * simopts.CoefficientStatic) ' * 1 cycle (timestep = 1)
 
-    Impulse = CSng(.mass * ZGrav * SimOpts.CoefficientKinetic) ' * 1 cycle (timestep = 1)
+    Impulse = CSng(.mass * ZGrav * simopts.CoefficientKinetic) ' * 1 cycle (timestep = 1)
 
     'Here we calculate the reduction in angular momentum due to friction
     If Abs(rob(n).ma) > 0 Then
@@ -96,11 +75,11 @@ getout:
 End Sub
 
 Public Sub BrownianForces(n As Integer)
-  If SimOpts.physBrown = 0 Then GoTo getout
+  If simopts.physBrown = 0 Then GoTo getout
   Dim Impulse As Single
   Dim RandomAngle As Single
 
-    Impulse = SimOpts.physBrown * 0.5 * rndy
+    Impulse = simopts.physBrown * 0.5 * rndy
     
     RandomAngle = rndy * 2 * PI
     rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(Cos(RandomAngle) * Impulse, Sin(RandomAngle) * Impulse))
@@ -115,13 +94,13 @@ Public Sub SphereDragForces(n As Integer)  'for bots
   Dim mag As Single
   
   'No Drag if no velocity or no density
-  If (rob(n).vel.x = 0 And rob(n).vel.y = 0) Or SimOpts.Density = 0 Then GoTo getout
+  If (rob(n).vel.x = 0 And rob(n).vel.y = 0) Or simopts.Density = 0 Then GoTo getout
    
   'Here we calculate the reduction in angular momentum due to fluid density
   'I'm sure there there is a better calculation
   If Abs(rob(n).ma) > 0 Then
-    If SimOpts.Density < 0.000001 Then
-      rob(n).ma = rob(n).ma * (1# - (SimOpts.Density * 1000000))
+    If simopts.Density < 0.000001 Then
+      rob(n).ma = rob(n).ma * (1# - (simopts.Density * 1000000))
     Else
       rob(n).ma = 0
     End If
@@ -135,7 +114,7 @@ Public Sub SphereDragForces(n As Integer)  'for bots
  
     
   Impulse = CSng(0.5 * SphereCd(mag, rob(n).radius) * _
-    SimOpts.Density * mag * mag * (PI * rob(n).radius ^ 2))
+    simopts.Density * mag * mag * (PI * rob(n).radius ^ 2))
    
   If Impulse > mag Then Impulse = mag * 0.99 ' Prevents the resistance force from exceeding the velocity!
   ImpulseVector = VectorScalar(VectorUnit(rob(n).vel), Impulse)
@@ -144,160 +123,11 @@ Public Sub SphereDragForces(n As Integer)  'for bots
 getout:
 End Sub
 
-'Public Sub TieDragForces(n As Integer)  'for ties
-''calculate drag on the ties as if the ties are cylinders
-''radius of the tie should be stored in tie array
-'Dim a As Long
-'
-''EricL 5/26/2006 Added for Perf
-'If rob(n).numties = 0 Then GoTo getout
-'
-'For a = 0 To MAXTIES
-'  If rob(n).Ties(a).pnt > 0 Then
-'    'If rob(n).Ties(a).pnt > n Then TieDrag2 n, rob(n).Ties(a).pnt
-'    TieDrag n, rob(n).Ties(a).pnt
-'  End If
-'Next a
-'
-'getout:
-'End Sub
-'
-'Public Sub TieDrag3(n1 As Integer, n2 As Integer)
-'  Dim pos As vector
-'  Dim a As Single, b As Single, c As Single
-'  Dim TorqueScalar
-'
-'  pos = VectorSub(rob(n2).pos, rob(n1).pos)
-'
-'  a = Cross(rob(n1).vel, pos)
-'  b = Cross(rob(n2).vel, pos)
-'  c = (a + b) * 0.5 * 0.0001
-'
-'  'pretend Cd is always 1
-'  pos = VectorUnit(pos)
-'  pos = VectorSet(-pos.Y, pos.X)
-'  rob(n1).ImpulseRes = VectorSub(rob(n1).ImpulseRes, VectorScalar(pos, Abs(c)))
-'
-'End Sub
-'
-'Public Sub TieDrag2(ByVal n1 As Long, ByVal n2 As Long)
-'  Dim pos As vector
-'  Dim a As Single, b As Single, c As Single
-'  Dim invlength As Single
-'  Dim ForceScalar As Single
-'
-'  If rob(n1).mass = 0 Or rob(n2).mass = 0 Then GoTo getout
-'
-'  'cooperative or independant\
-'  pos = VectorSub(rob(n1).pos, rob(n2).pos)
-'  invlength = VectorInvMagnitude(pos)
-'
-'  'a and b are the two cross velocities
-'  a = Cross(rob(n1).vel, pos)
-'  b = Cross(rob(n2).vel, pos)
-'
-'  c = (a + b) * 0.5 * invlength 'the average cross velocity
-'  'use c to find the Cd
-'
-'  Dim asquare As Single
-'  Dim ab As Single
-'  Dim bsquare As Single
-'  Dim BigB As Single
-'  Dim BigA As Single
-'  Const TieRadius As Single = 30
-'
-'  asquare = a * a
-'  ab = a * b
-'  bsquare = b * b
-'  BigB = rob(n2).mass / (rob(n1).mass + rob(n2).mass)
-'  BigA = SimOpts.Density * TieRadius * CylinderCd(c, TieRadius) * 0.083333333333 * Sgn(c)
-'
-'  ForceScalar = BigA * invlength * (4 * BigB * _
-'    (asquare - 5 * ab + bsquare) + asquare + 2 * ab + 3 * bsquare)
-'  'divide the above be either B or 1-B (depending on which robot we're
-'  'applying forces to) and multiply by the orthogonal unit component to pos
-'  pos = VectorScalar(pos, invlength)
-'  pos = VectorSet(-pos.Y, pos.X)
-'
-'  rob(n1).ImpulseRes = VectorAdd(rob(n1).ImpulseRes, _
-'    VectorScalar(pos, ForceScalar * 0.5 / BigB))
-'  'rob(N2).ForceRes = VectorAdd(rob(N2).ForceRes, _
-'  '  VectorScalar(pos, ForceScalar * 0.5 / (1 - BigB)))
-'getout:
-'End Sub
-'
-'Public Sub TieDrag(n1 As Integer, n2 As Integer)
-''Simple method:
-'
-''v1 = my velocity
-''m1 = my mass
-''p1 = my position
-''v2 = other 's velocity
-''m2 = other mass
-''p2 = other position
-''
-''
-''1.  Find unit vector for tie = u = (p2 - p1) / length(p2-p1)
-''2.  a = v1 cross u  |  a and b are the cross velocities, that is, the velocity
-''    b = vc cross u  |  perpindicular to the movement of the tie,
-''                    |  which is the direction that causes drag
-''    v(d) = a + (b-a)/length * d where d is distance from a
-''3.  Force on either bots is: A/12*length^2(a^2+2ab+3b^2) in a direction perpindicular to u.
-''A = density * radius * Cd
-''4.  Find force of drag per unit length using c as the velocity <--- this is
-''     the assumption that drag and velocity are linearly related.
-''     For turbulent flows, using the average of two velocities is incorrect.
-''     In the future, this should be solved.  This requires integrating the
-''     Cd and drag force equations for length (with velocity depending linearly
-''     on distance from either Mc or m1 of course) between 0 and distance from
-''     m1 to Mc.
-''5.  The torque (we just add it to resistive forces) applied to "me" =
-''     Drag Force per length / 2, since it's the area of the triangle
-''     formed by length and dragforces at Mc and m1, divided by the length
-''     since we 're applying them all to m1.
-'
-'  Dim u As vector, vc As vector, a As Single, b As Single, c As Single
-'  Dim Aconstant As Single
-'  Dim DragScalar As Single
-'  Dim Drag As vector
-'  Dim radius As Single
-'  Dim Length As Single
-'
-'  If n2 > UBound(rob) Then Exit Sub
-'  If n1 > UBound(rob) Then Exit Sub
-'
-'
-'  '1.  Find unit vector
-'  u = VectorSub(rob(n2).pos, rob(n1).pos)
-'  Length = VectorMagnitude(u)
-'  u = VectorUnit(u)
-'
-'  a = Cross(rob(n1).vel, u)
-'  b = Cross(rob(n2).vel, u)
-'  c = (a * a + 2 * a * b + 3 * b * b)
-'  '4.  Find drag using c:
-'
-'  '1.7 is a good radius.  What?  Whhhaaatttt?  It is.
-'  'okay, it's because that's what 10 body, at 905 twips^3 each,
-'  'stretched into a cylinder with a length of 1000 twips would be
-'
-'  If Length = 0 Then Length = 1    'EricL: 4/15/2006
-'  radius = Sqr(9050 / Length / PI) ' EricL Possible divide by zero bug here when a bot is moved using the mouse.
-'  Aconstant = radius * SimOpts.Density * 1
-'
-'  DragScalar = Aconstant * Length * Length / 12 * c
-'  Drag = VectorScalar(VectorSet(-u.Y, u.X), DragScalar * 0.5)
-'
-'  '5:  apply drag to bot
-'  'not working right :/
-'  'rob(n1).ForceRes = VectorAdd(rob(n1).ForceRes, Drag)
-'End Sub
-
 Public Function SphereCd(ByVal velocitymagnitude As Single, ByVal radius As Single) As Single
   'computes the coeficient of drag for a spehre given the unit reynolds in simopts
   'totally ripped from an online drag calculator.  So sue me.
   
-  With SimOpts
+  With simopts
   
   Dim Reynolds As Single, y11 As Single, y12 As Single, y13 As Single, y1 As Single, y2 As Single, alpha As Single
   If .Viscosity = 0 Then GoTo getout
@@ -333,7 +163,7 @@ End Function
 Public Function CylinderCd(ByVal velocitymagnitude As Single, ByVal radius As Single) As Single
   Dim sign As Single
   
-  With SimOpts
+  With simopts
   
   Const alpha As Single = -3.6444444444444E-11
   
@@ -373,25 +203,25 @@ getout:
 End Function
 
 Public Sub GravityForces(n As Integer)  'Botsareus 2/2/2013 added bouy as part of y-gravity formula
-If (SimOpts.Ygravity = 0 Or Not SimOpts.Pondmode Or SimOpts.Updnconnected) Then
+If (simopts.Ygravity = 0 Or Not simopts.Pondmode Or simopts.Updnconnected) Then
     If rob(n).Bouyancy > 0 Then
         If Not boylabldisp Then Form1.BoyLabl.Visible = True
         boylabldisp = True
     End If
-    rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, SimOpts.Ygravity * rob(n).mass))
+    rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, simopts.Ygravity * rob(n).mass))
 Else
     If Form1.BoyLabl.Visible Then Form1.BoyLabl.Visible = False
     'bouy costs energy (calculated from voluntery movment)
     'importent PhysMoving is calculated into cost as it changes voluntary movement speeds as well
     If rob(n).Bouyancy > 0 Then
         With rob(n)
-        .nrg = .nrg - (SimOpts.Ygravity / (SimOpts.physMoving) * IIf(.mass > 192, 192, .mass) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)) * rob(n).Bouyancy
+        .nrg = .nrg - (simopts.Ygravity / (simopts.physMoving) * IIf(.mass > 192, 192, .mass) * simopts.Costs(MOVECOST) * simopts.Costs(COSTMULTIPLIER)) * rob(n).Bouyancy
         End With
     End If
-    If (1 / BouyancyScaling - rob(n).pos.y / SimOpts.fieldHeight) > rob(n).Bouyancy Then
-       rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, SimOpts.Ygravity * rob(n).mass))
+    If (1 / BouyancyScaling - rob(n).pos.y / simopts.fieldHeight) > rob(n).Bouyancy Then
+       rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, simopts.Ygravity * rob(n).mass))
     Else
-       rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, -SimOpts.Ygravity * rob(n).mass))
+       rob(n).ImpulseInd = VectorAdd(rob(n).ImpulseInd, VectorSet(0, -simopts.Ygravity * rob(n).mass))
     End If
 End If
 End Sub
@@ -406,7 +236,6 @@ Public Sub VoluntaryForces(n As Integer)
   
   With rob(n)
     'corpses are dead, they don't move around of their own volition
-    'If .Corpse Or .wall Or (Not .exist) Or ((.mem(dirup) = 0) And (.mem(dirdn) = 0) And (.mem(dirsx) = 0) And (.mem(dirdx) = 0)) Then goto getout
     If .Corpse Or .DisableMovementSysvars Or .DisableDNA Or (Not .exist) Or ((.mem(dirup) = 0) And (.mem(dirdn) = 0) And (.mem(dirsx) = 0) And (.mem(dirdx) = 0)) Then GoTo getout
     
     If .NewMove = False Then
@@ -425,16 +254,16 @@ Public Sub VoluntaryForces(n As Integer)
     'Its possible to get some really high accelerations here when altzheimers sets in or if a mutation
     'or venom or something writes some really high values into certain mem locations like .up, .dn. etc.
     'This keeps things sane down the road.
-    If VectorMagnitude(NewAccel) > SimOpts.maxVelocity Then
-      NewAccel = VectorScalar(NewAccel, SimOpts.maxVelocity / VectorMagnitude(NewAccel))
+    If VectorMagnitude(NewAccel) > simopts.maxVelocity Then
+      NewAccel = VectorScalar(NewAccel, simopts.maxVelocity / VectorMagnitude(NewAccel))
     End If
         
     'NewAccel is the impulse vector formed by the robot's internal "engine".
     'Impulse is the integral of Force over time.
     
-    .ImpulseInd = VectorAdd(.ImpulseInd, VectorScalar(NewAccel, SimOpts.physMoving))
+    .ImpulseInd = VectorAdd(.ImpulseInd, VectorScalar(NewAccel, simopts.physMoving))
     
-    EnergyCost = VectorMagnitude(NewAccel) * SimOpts.Costs(MOVECOST) * SimOpts.Costs(COSTMULTIPLIER)
+    EnergyCost = VectorMagnitude(NewAccel) * simopts.Costs(MOVECOST) * simopts.Costs(COSTMULTIPLIER)
     
     'EricL 4/4/2006 Clip the energy loss due to voluntary forces.  The total energy loss per cycle could be
     'higher then this due to other nrg losses and this may be redundent with the magnitude clip above, but it
@@ -451,8 +280,6 @@ Public Sub VoluntaryForces(n As Integer)
 getout:
   End With
 End Sub
-
-
 
 'Botsareus 9/30/2014 Returns true if robot does not exsist
 Private Function CheckRobot(ByVal n As Integer) As Boolean
@@ -480,7 +307,7 @@ Public Sub PlanetEaters(n As Integer)
   Dim PosDiff As vector
   Dim mag As Single
   
-  If Not SimOpts.PlanetEaters Then GoTo getout
+  If Not simopts.PlanetEaters Then GoTo getout
   If rob(n).mass = 0 Then GoTo getout:
     
   For t = n + 1 To MaxRobs
@@ -490,7 +317,7 @@ Public Sub PlanetEaters(n As Integer)
     mag = VectorMagnitude(PosDiff)
     If mag = 0 Then GoTo Nextiteration
     
-    force = (SimOpts.PlanetEatersG * IIf(rob(n).mass > 192, 192, rob(n).mass) * IIf(rob(t).mass > 192, 192, rob(t).mass)) / (mag * mag)
+    force = (simopts.PlanetEatersG * IIf(rob(n).mass > 192, 192, rob(n).mass) * IIf(rob(t).mass > 192, 192, rob(t).mass)) / (mag * mag)
     PosDiff = VectorScalar(PosDiff, 1 / mag)
     'Now set PosDiff to the vector for force along that line
         
@@ -547,59 +374,13 @@ Public Function AngDiff(a1 As Single, a2 As Single) As Single
   AngDiff = r
 End Function
 
-'' calculates acceleration due to the medium action on the links
-'' (used for swimming)
-'Public Sub Swimming()
-'  Dim vxle As Long
-'  Dim vyle As Long
-'  Dim nd As node
-'  Dim t As Integer, p As Integer
-'  Dim j As Byte
-'  Dim anle As Single, anve As Single, ancm As Single
-'  Dim vea As Long, lle As Long
-'  Dim cnorm As Single
-'  Dim Fx As Long, Fy As Long
-'  Set nd = rlist.firstnode
-'  While Not (nd Is rlist.last)
-'    t = nd.robn
-'    With rob(t)
-'      If .Corpse = False And .Numties > 0 Then  'new conditions to prevent parsing corpses and robots without ties.
-'        j = 1
-'        While .Ties(j).pnt > 0
-'          p = .Ties(j).pnt
-'          vxle = (.vx + rob(p).vx) / 2  'average x velocity
-'          vyle = (.vy + rob(p).vy) / 2  'average y velocity
-'          anle = angle(.x, .y, rob(p).x, rob(p).y)  'Angle between robots
-'          anve = angle(0, 0, vxle, vyle)            'Angle of vector velocity
-'          ancm = anve - anle                        'Combined angle
-'          vea = Sqr(vxle ^ 2 + vyle ^ 2)            'velocity along vector
-'          lle = Sqr((.x - rob(p).x) ^ 2 + (.y - rob(p).y) ^ 2)  'distance between robots
-'          cnorm = Sin(ancm) * vea * lle * SimOpts.PhysSwim  'Swim force
-'          'cnorm = Average Cross velocity * distance between bots * PhysSwim
-'          Fx = cnorm * Sin(anle) / 800
-'          Fy = cnorm * Cos(anle) / 800
-'          .ax = .ax + Fx
-'          .ay = .ay + Fy
-'          rob(p).ax = rob(p).ax + Fx
-'          rob(p).ay = rob(p).ay + Fy
-'          j = j + 1
-'        Wend
-'      End If
-'    End With
-'    Set nd = nd.pn
-'  Wend
-'End Sub
-
 Public Sub bordercolls(t As Integer)
   'treat the borders as spongy ground
   'that makes you bounce off.
   
   'bottom = -1 for top, 1 for ground
   'side = -1 for left, 1 for right
-  
-  'Const k As Single = 0.1
-  'Const b As Single = 0.04
- 
+   
   Const k As Single = 0.4
   Const b As Single = 0.05
   
@@ -608,21 +389,21 @@ Public Sub bordercolls(t As Integer)
   Dim smudge As Single
   
   With rob(t)
-    If (.pos.x > .radius) And (.pos.x < SimOpts.fieldWidth - .radius) And (.pos.y > .radius) And (.pos.y < SimOpts.fieldHeight - .radius) Then GoTo getout
+    If (.pos.x > .radius) And (.pos.x < simopts.fieldWidth - .radius) And (.pos.y > .radius) And (.pos.y < simopts.fieldHeight - .radius) Then GoTo getout
   
     .mem(214) = 0
     
     smudge = .radius + smudgefactor
   
-    dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(SimOpts.fieldWidth - smudge, SimOpts.fieldHeight - smudge))
+    dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(simopts.fieldWidth - smudge, simopts.fieldHeight - smudge))
     dist = VectorSub(dif, .pos)
   
     If dist.x <> 0 Then
-      If SimOpts.Dxsxconnected = True Then
+      If simopts.Dxsxconnected = True Then
         If dist.x < 0 Then
           ReSpawn t, smudge, .pos.y
         Else
-          ReSpawn t, SimOpts.fieldWidth - smudge, .pos.y
+          ReSpawn t, simopts.fieldWidth - smudge, .pos.y
         End If
       Else
         .mem(214) = 1
@@ -630,28 +411,24 @@ Public Sub bordercolls(t As Integer)
       
        ' .ImpulseRes.x = .ImpulseRes.x + dist.x * -k
          If .pos.x - .radius < 0 Then .pos.x = .radius
-         If .pos.x + .radius > SimOpts.fieldWidth Then .pos.x = CSng(SimOpts.fieldWidth) - .radius
+         If .pos.x + .radius > simopts.fieldWidth Then .pos.x = CSng(simopts.fieldWidth) - .radius
         .ImpulseRes.x = .ImpulseRes.x + .vel.x * b
       End If
     End If
   
     If dist.y <> 0 Then
-      If SimOpts.Updnconnected Then
+      If simopts.Updnconnected Then
         If dist.y < 0 Then
           ReSpawn t, .pos.x, smudge
         Else
-          ReSpawn t, .pos.x, SimOpts.fieldHeight - smudge
+          ReSpawn t, .pos.x, simopts.fieldHeight - smudge
         End If
       Else
         rob(t).mem(214) = 1
       'F-> = -k dist-> + v-> * b
       
-   '   dif = VectorMin(VectorMax(.pos, VectorSet(smudge, smudge)), VectorSet(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge))
-    '  dist = VectorSub(dif, .pos)
-      
-     ' .ImpulseRes.y = .ImpulseRes.y + dist.y * -k
         If .pos.y - .radius < 0 Then .pos.y = .radius
-        If .pos.y + .radius > SimOpts.fieldHeight Then .pos.y = CSng(SimOpts.fieldHeight) - .radius
+        If .pos.y + .radius > simopts.fieldHeight Then .pos.y = CSng(simopts.fieldHeight) - .radius
         .ImpulseRes.y = .ImpulseRes.y + .vel.y * b
       End If
     End If
@@ -686,11 +463,8 @@ Public Sub Repel3(rob1 As Integer, rob2 As Integer)
   Dim relVel As Single
   Dim TotalMass As Single
   
-  e = SimOpts.CoefficientElasticity ' Set in the UI or loaded/defaulted in the sim load routines
-  
-  'Botsareus 9/30/2014 More realisitic coefficient for massive robots 'Botsareus 6/18/2016 Disabled - Better idea using fixed logic below
-  'If e > 0 Then If rob(rob1).mass > 400 And rob(rob2).mass > 400 Then e = e * 10
-  
+  e = simopts.CoefficientElasticity ' Set in the UI or loaded/defaulted in the sim load routines
+    
   normal = VectorSub(rob(rob2).pos, rob(rob1).pos) ' Vector pointing from bot 1 to bot 2
   currdist = VectorMagnitude(normal) ' The current distance between the bots
   
@@ -793,263 +567,3 @@ Public Sub Repel3(rob1 As Integer, rob2 As Integer)
 
   End If
 End Sub
-
-'' gives to too near robots an accelaration towards
-'' opposite directions, inversely prop. to their distance
-'Private Sub repel(k As Integer, t As Integer)
-'  Dim d As Single
-'  Dim dx As Integer
-'  Dim dy As Integer
-'  Dim dxlk As Single
-'  Dim dylk As Single
-'  Dim dxlt As Single
-'  Dim dylt As Single
-'  Dim kconst As Single
-'  Dim llink As Single
-'  Dim accel As Long  'new acceleration to apply
-'  Dim difKE As Long
-'
-'  Dim maxcel As Single
-'  Dim angl1 As Single
-'  Dim angl2 As Single
-'  Dim colldist As Integer
-'  Dim totx As Single 'total x velocity
-'  Dim toty As Single 'total y velocity
-'  Dim totv As Single 'total absolute velocity
-'  Dim totaccel As Single
-'  Dim decell As Single
-'  Dim kmovx As Single
-'  Dim kmovy As Single
-'  Dim tmovx As Single
-'  Dim tmovy As Single
-'  Dim kKE As Single
-'  Dim tKE As Single
-'  Dim kxm As Single   'robot k x momentum
-'  Dim kym As Single   'robot k y momentum
-'  Dim txm As Single   'robot t x momentum
-'  Dim tym As Single   'robot t y momentum
-'  Dim xmean As Single  'Mean of both x momentums
-'  Dim ymean As Single  'Mean of both y momentums
-'
-'  Dim totKE As Single
-'  Dim kPer As Single    'percentage of acceleration to give to robot k based on mass
-'  Dim tPer As Single    'same for robot t
-'  Dim moveaway As Single  'The amount to directly move a robot away from a collision
-'
-'  'If xmoveaway(k, t) Then GoTo bypass2
-'  'If ymoveaway(k, t) Then GoTo bypass2
-'
-'  dx = (rob(t).pos.x - rob(k).pos.x)
-'  dy = (rob(t).pos.y - rob(k).pos.y)
-'  colldist = rob(k).Radius + rob(t).Radius 'amount of overlap based on size of robot
-'  d = Sqr(dx ^ 2 + dy ^ 2) + 0.01   'inter-robot distance
-'
-'  decell = 1
-'  maxcel = 40
-'  'GoTo bypass2
-'  kKE = rob(k).mass * rob(k).vel.x + rob(k).mass * rob(k).vel.y
-'  tKE = rob(t).mass * rob(t).vel.x + rob(t).mass * rob(t).vel.y
-'  kxm = rob(k).mass * rob(k).vel.x     'rob(k) x momentum signed
-'  kym = rob(k).mass * rob(k).vel.y     'rob(k) y momentum signed
-'  txm = rob(t).mass * rob(t).vel.x     'rob(t) x momentum signed
-'  tym = rob(t).mass * rob(t).vel.y     'rob(t) y momentum signed
-'  xmean = (Abs(kxm) + Abs(txm)) / 2 'absolute mean of x momentums. Both counted as positive
-'  ymean = (Abs(kym) + Abs(tym)) / 2 'absolute mean of y momentums. Both counted as positive
-'  If rob(k).mass = 0 Then rob(k).mass = 0.001
-'  rob(k).vel.x = rob(k).vel.x + (xmean / rob(k).mass) * kxColdir(k, t) * decell
-'  rob(t).vel.x = rob(t).vel.x + (xmean / rob(t).mass) * txColdir(k, t) * decell
-'  rob(k).vel.y = rob(k).vel.y + (ymean / rob(k).mass) * kyColdir(k, t) * decell
-'  rob(t).vel.y = rob(t).vel.y + (ymean / rob(t).mass) * tyColdir(k, t) * decell
-'
-'bypass2:
-'  'totKE = tKE + kKE   'calculates total momentum of both robots
-'  'difKE = kKE - tKE   'difference in momentum
-'
-'  'tPer = rob(k).mass / (rob(k).mass + rob(t).mass)  'percentage of total momentum in bot k
-'  'kPer = rob(t).mass / (rob(k).mass + rob(t).mass)  'percentage of total momentum in bot t
-'
-'
-'
-'  'If rob(k).vx = 0 Then rob(k).vx = 0.00001
-'  'If rob(t).vx = 0 Then rob(t).vx = 0.00001
-'  'mvanglt = Atn(rob(k).vy / rob(k).vx)
-'  'mvangla = Atn(rob(t).vy / rob(t).vx)
-'  'angledifference = angnorm(AngDiff(mvanglt, angl))
-'  'exitangle = angnorm(angl - angledifference)
-'  'newvx = (rob(k).vx + rob(t).vx) * (rob(t).mass / (rob(k).mass + rob(t).mass))
-'  'newvy = (rob(k).vy + rob(t).vy) * (rob(t).mass / (rob(k).mass + rob(t).mass))
-'  'newvx = newvx * 0.95
-'  'newvy = newvy * 0.95
-'  'llink = 1000
-'
-'  'totx = Abs(rob(k).vx) + Abs(rob(t).vx)
-'  'totx = rob(k).vx + rob(t).vx
-'  'toty = Abs(rob(k).vy) + Abs(rob(t).vy)
-'  'toty = rob(k).vy + rob(t).vy
-'  'totv = totx + toty
-'
-'
-'  angl1 = angle(rob(k).pos.x, rob(k).pos.y, rob(t).pos.x, rob(t).pos.y) 'angle from rob k to rob t
-'  angl2 = angle(rob(t).pos.x, rob(t).pos.y, rob(k).pos.x, rob(k).pos.y) 'angle from rob t to rob k
-'  'colldist = colldist * 1.2
-'
-'  'dxlk = absx(angl1, totKE, 0, 0, 0) * tPer
-'  'dylk = absy(angl1, totKE, 0, 0, 0) * tPer
-'  'dxlt = absx(angl2, totKE, 0, 0, 0) * kPer
-'  'dylt = absy(angl2, totKE, 0, 0, 0) * kPer
-'  'totaccel = Abs(dxl) + Abs(dyl)
-'
-'
-'  'kconst = 0.01
-'  'dxl = (dx - (llink * dx) / d)
-'  'dyl = (dy - (llink * dy) / d)
-'  moveaway = (colldist - d) / 2 'move away based on half of overlap
-'  If d < colldist Then
-'    kmovx = absx(angl1, moveaway, 0, 0, 0)
-'    kmovy = absy(angl1, moveaway, 0, 0, 0)
-'    tmovx = absx(angl2, moveaway, 0, 0, 0)
-'    tmovy = absy(angl2, moveaway, 0, 0, 0)
-'    If Not rob(t).Fixed Then
-'      rob(t).pos.x = rob(t).pos.x - tmovx
-'      rob(t).pos.y = rob(t).pos.y - tmovy
-'    End If
-'    If Not rob(k).Fixed Then
-'      rob(k).pos.x = rob(k).pos.x - kmovx
-'      rob(k).pos.y = rob(k).pos.y - kmovy
-'    End If
-'  Else
-'    kmovx = 0
-'    kmovy = 0
-'    tmovx = 0
-'    tmovy = 0
-'  End If
-'bypass3:
-'End Sub
-'
-'Private Function kxColdir(k As Integer, t As Integer)
-'  If rob(k).pos.x < rob(t).pos.x Then
-'    kxColdir = -1
-'  Else
-'    kxColdir = 1
-'  End If
-'End Function
-'
-'Private Function kyColdir(k As Integer, t As Integer)
-'If rob(k).pos.y < rob(t).pos.y Then
-'    kyColdir = -1
-'  Else
-'    kyColdir = 1
-'  End If
-'End Function
-'
-'Private Function txColdir(k As Integer, t As Integer)
-'If rob(t).pos.x < rob(k).pos.x Then
-'    txColdir = -1
-'  Else
-'    txColdir = 1
-'  End If
-'End Function
-'
-'Private Function tyColdir(k As Integer, t As Integer)
-'If rob(t).pos.y < rob(k).pos.y Then
-'    tyColdir = -1
-'  Else
-'    tyColdir = 1
-'  End If
-'End Function
-'
-'Private Function xmoveaway(k As Integer, t As Integer) As Boolean
-'  If Sgn(rob(k).vel.x) = Sgn(rob(t).vel.x) Then 'both moving the same way
-'    If rob(k).pos.x < rob(t).pos.x Then           'rob(k) is to the left
-'      If Sgn(rob(k).vel.x) = 1 Then          'rob(k) moving to the right
-'        If rob(k).vel.x < rob(t).vel.x Then     'rob(k) moving slower than rob(t)
-'          xmoveaway = True                'moving away
-'        Else
-'          xmoveaway = False               'not moving away
-'        End If
-'      Else                                'rob(k) moving to the left
-'        If rob(k).vel.x > rob(t).vel.x Then     'rob(k) moving faster than rob(t)
-'          xmoveaway = True                'moving away
-'        Else
-'          xmoveaway = False               'not moving away
-'        End If
-'      End If
-'    Else                                  'rob(k) is NOT to the left (right or level)
-'      If Sgn(rob(k).vel.x) = 1 Then          'rob(k) moving to the right
-'        If rob(k).vel.x > rob(t).vel.x Then     'rob(k) moving faster than rob(t)
-'          xmoveaway = True                'moving away
-'        Else
-'          xmoveaway = False               'not moving away
-'        End If
-'      Else                                'rob(k) moving to the left
-'        If rob(k).vel.x < rob(t).vel.x Then     'rob(k) moving faster than rob(t)
-'          xmoveaway = True                'moving away
-'        Else
-'          xmoveaway = False               'not moving away
-'        End If
-'      End If
-'    End If
-'  Else                                    'robots moving opposite directions
-'    If rob(k).pos.x < rob(t).pos.x Then           'rob(k) is to the left
-'      If Sgn(rob(k).vel.x) = 1 Then          'rob(k) moving to the right
-'        xmoveaway = False
-'      Else                                'rob(k) moving to the left
-'        xmoveaway = True
-'      End If
-'    Else                                  'rob(k) is to the right or level
-'      If Sgn(rob(k).vel.x) = 1 Then          'rob(k) moving to the right
-'        xmoveaway = True                  'must be moving away
-'      Else                                'rob(k) moving to the left
-'        xmoveaway = False                 'must be moving towards
-'      End If
-'    End If
-'  End If
-'End Function
-'
-'Private Function ymoveaway(k As Integer, t As Integer) As Boolean
-'If Sgn(rob(k).vy) = Sgn(rob(t).vy) Then   'both moving the same way
-'    If rob(k).y < rob(t).y Then           'rob(k) is to the top
-'      If Sgn(rob(k).vy) = 1 Then          'rob(k) moving to the bottom
-'        If rob(k).vy < rob(t).vy Then     'rob(k) moving slower than rob(t)
-'          ymoveaway = True                'moving away
-'        Else
-'          ymoveaway = False               'not moving away
-'        End If
-'      Else                                'rob(k) moving to the left
-'        If rob(k).vy > rob(t).vy Then     'rob(k) moving faster than rob(t)
-'          ymoveaway = True                'moving away
-'        Else
-'          ymoveaway = False               'not moving away
-'        End If
-'      End If
-'    Else                                  'rob(k) is NOT to the left (right or level)
-'      If Sgn(rob(k).vy) = 1 Then          'rob(k) moving to the bottom
-'        If rob(k).vy > rob(t).vy Then     'rob(k) moving faster than rob(t)
-'          ymoveaway = True                'moving away
-'        Else
-'          ymoveaway = False               'not moving away
-'        End If
-'      Else                                'rob(k) moving to the top
-'        If rob(k).vy < rob(t).vy Then     'rob(k) moving faster than rob(t)
-'          ymoveaway = True                'moving away
-'        Else
-'          ymoveaway = False               'not moving away
-'        End If
-'      End If
-'    End If
-'  Else                                    'robots moving opposite directions
-'    If rob(k).y < rob(t).y Then           'rob(k) is to the top
-'      If Sgn(rob(k).vy) = 1 Then          'rob(k) moving to the bottom
-'        ymoveaway = False
-'      Else                                'rob(k) moving to the top
-'        ymoveaway = True
-'      End If
-'    Else                                  'rob(k) is to the right or level
-'      If Sgn(rob(k).vy) = 1 Then          'rob(k) moving to the bottom
-'        ymoveaway = True                  'must be moving away
-'      Else                                'rob(k) moving to the top
-'        ymoveaway = False                 'must be moving towards
-'      End If
-'    End If
-'  End If
-'End Function

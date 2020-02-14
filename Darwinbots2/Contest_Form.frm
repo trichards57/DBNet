@@ -371,11 +371,6 @@ Attribute VB_Exposed = False
 Option Explicit
 'Botsareus 6/12/2012 form's icon change
 
-' Stuff for automatic restarts and F1 contest mode
-Private Sub Form_Load()
-'  SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE
-End Sub
-
 Private Sub Option1_Click(Index As Integer) 'Botsareus 2/25/2014 Simplified
 If Index = 0 Then Exit Sub
   'robot species index wins this round

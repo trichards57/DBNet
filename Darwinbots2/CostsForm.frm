@@ -1,6 +1,6 @@
 VERSION 5.00
 Object = "{FE0065C0-1B7B-11CF-9D53-00AA003C9CB6}#1.1#0"; "COMCT232.OCX"
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.1#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
 Begin VB.Form CostsForm 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Costs"
@@ -1095,7 +1095,7 @@ End Sub
 
 Private Sub CostX_Change()
   TmpOpts.Costs(COSTMULTIPLIER) = val(ConvertCommasToDecimal(CostX.text))
-  SimOpts.Costs(COSTMULTIPLIER) = val(ConvertCommasToDecimal(CostX.text)) ' Have to do this here since DispSettings gets called again when the Options dialog repaints...
+  simopts.Costs(COSTMULTIPLIER) = val(ConvertCommasToDecimal(CostX.text)) ' Have to do this here since DispSettings gets called again when the Options dialog repaints...
   TmpOpts.oldCostX = val(ConvertCommasToDecimal(CostX.text))
 End Sub
 
@@ -1145,7 +1145,6 @@ Private Sub DynamicCosts_Click()
   DynamicCostSensitivitySlider.Enabled = DynamicCosts.value * True
   DynamicCostsRangeU.Enabled = DynamicCosts.value * True
   DynamicCostsRangeL.Enabled = DynamicCosts.value * True
- ' TmpOpts.Costs(COSTMULTIPLIER) = 1 ' Start at 1 if enabled or re-enabled
 End Sub
 
 Private Sub DynamicCostSensitivitySlider_Change()
@@ -1166,7 +1165,6 @@ End Sub
 
 Private Sub DynamicCostTargetPopulation_Change()
   TmpOpts.Costs(DYNAMICCOSTTARGET) = val(DynamicCostTargetPopulation.text)
- ' TmpOpts.Costs(COSTMULTIPLIER) = 1 ' Start at 1 if the value is changed
 End Sub
 
 Private Sub ExitButton_Click()
@@ -1214,7 +1212,7 @@ fine:
   End If
   
   'Need to load this as it changes and will get put back.
-  TmpOpts.Costs(COSTMULTIPLIER) = SimOpts.Costs(COSTMULTIPLIER)
+  TmpOpts.Costs(COSTMULTIPLIER) = simopts.Costs(COSTMULTIPLIER)
     
   CostX.text = TmpOpts.Costs(COSTMULTIPLIER)
     
@@ -1233,8 +1231,6 @@ fine:
   DynamicCostsIncludePlantsCheck.value = IIf(TmpOpts.Costs(DYNAMICCOSTINCLUDEPLANTS) = 0, 0, 1)
      
 End Sub
-
-
 
 Private Sub LinearAgeCostCheck_Click()
   If LinearAgeCostCheck.value = 1 Then

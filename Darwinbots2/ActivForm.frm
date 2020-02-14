@@ -83,8 +83,6 @@ Private Sub SetLab(ga() As Boolean)
   stp = pbox.Width / da
   pbox.Cls
   If da < 25 Then
-    'pbox.CurrentX = pbox.Left + (pbox.Width / da) / 2
-    'pbox.Print "1";
     For t = 0 To da - 1
       pbox.CurrentX = pbox.Left + (pbox.Width / da) * t + (pbox.Width / da) / 2 - Len(CStr(t + 1)) * 40
       pbox.Print CStr(t + 1);
