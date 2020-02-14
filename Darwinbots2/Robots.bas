@@ -350,7 +350,8 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'radius of 60 for a bot of 1000 body
 
 Private Declare Sub Robot_RunPreUpdates Lib "DBLibrary.dll" (ByRef r() As robot, ByVal maxRobots As Integer, ByRef simulationOptions As SimOptions)
-Private Declare Sub Robot_StoreVenom Lib "DBLibrary.dll" (ByRef rob As robot, ByRef simopts As SimOptions)
+Private Declare Sub Robot_StoreVenom Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
+Private Declare Function Robot_FindRadius Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions, ByVal multiplier As Single) As Single
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -627,57 +628,10 @@ ReDim Preserve Outdna(upperbound + resn - nn)
 
 whatside = Int(rndy * 2) = 0
 
-''''debug
-'Dim debugme As Boolean
-'debugme = False
-'Dim k As String
-'Dim temp As String
-'Dim bp As block
-'Dim converttosysvar As Boolean
-''''debug
-
 For a = nn To resn - 1
     Outdna(upperbound + 1 + a - nn).tipo = IIf(whatside, rob1(a).tipo, rob2(a - nn + res2).tipo) 'left hand side or right hand?
     Outdna(upperbound + 1 + a - nn).value = IIf(IIf(rob1(a).tipo = rob2(a - nn + res2).tipo And Abs(rob1(a).value) > 999 And Abs(rob2(a - nn + res2).value) > 999, Int(rndy * 2) = 0, whatside), rob1(a).value, rob2(a - nn + res2).value)  'if typo is different or in var range then all left/right hand, else choose a random side
-    'If rob1(a).tipo = rob2(a - nn + res2).tipo And Abs(rob1(a).value) > 999 And Abs(rob2(a - nn + res2).value) > 999 And rob1(a).value <> rob2(a - nn + res2).value Then debugme = True 'debug
 Next
-
-'If debugme Then
-'Dim a2 As Integer
-'Dim a3 As Integer
-'k = ""
-'      For a = nn To resn - 1
-'
-'        If a = UBound(rob1) Then converttosysvar = False Else converttosysvar = IIf(rob1(a + 1).tipo = 7, True, False)
-'        bp.tipo = rob1(a).tipo
-'        bp.value = rob1(a).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbTab
-'
-'        a2 = a - nn + res2
-'        If a2 = UBound(rob2) Then converttosysvar = False Else converttosysvar = IIf(rob2(a2 + 1).tipo = 7, True, False)
-'        bp.tipo = rob2(a2).tipo
-'        bp.value = rob2(a2).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbTab
-'
-'        a3 = upperbound + 1 + a - nn
-'        If a3 = UBound(Outdna) Then converttosysvar = False Else converttosysvar = IIf(Outdna(a3 + 1).tipo = 7, True, False)
-'        bp.tipo = Outdna(a3).tipo
-'        bp.value = Outdna(a3).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbCrLf
-'
-'      Next
-'
-'      MsgBox k
-'End If
 
 Loop
 
@@ -704,29 +658,8 @@ End Sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Public Function FindRadius(ByVal n As Integer, Optional ByVal mult As Single = 1) As Single
-
-  'Botsareus 9/30/2014 Redo of find radius to make it faster
-  Dim bodypoints As Single
-  Dim chlr As Single
-  
-  If mult = -1 Then
-    bodypoints = 32000
-    chlr = 0
-  Else
-    bodypoints = rob(n).body * mult
-    chlr = rob(n).chloroplasts * mult
-  End If
-  
-  If bodypoints < 1 Then bodypoints = 1
-  If simopts.FixedBotRadii Then
-    FindRadius = half
-  Else
-    ' EricL 10/20/2007 Added log(bodypoints) to increase the size variation in bots.
-    FindRadius = (Log(bodypoints) * bodypoints * CubicTwipPerBody * 3 * 0.25 / PI) ^ (1 / 3)
-    'Botsareus 9/30/2014 added a rule to count chloroplasts in robot size
-    FindRadius = FindRadius + (415 - FindRadius) * chlr / 32000
-    If FindRadius < 1 Then FindRadius = 1
-  End If
+    'If n = 0 Then n = 1
+    FindRadius = Robot_FindRadius(rob(n), SimOpts, mult)
 End Function
 
 ' returns an absolute acceleration, given up-down,
@@ -779,7 +712,7 @@ Private Function SetAimFunc(ByVal t As Integer) As Single  'Botsareus 6/29/2013 
   End If
   
   'diff + diff2 is now the amount, positive or negative to turn.
-  .nrg = .nrg - Abs((Round((diff + diff2) / 200, 3) * simopts.Costs(TURNCOST) * simopts.Costs(COSTMULTIPLIER)))
+  .nrg = .nrg - Abs((Round((diff + diff2) / 200, 3) * SimOpts.Costs(TURNCOST) * SimOpts.Costs(COSTMULTIPLIER)))
       
   SetAimFunc = SetAimFunc Mod (1256)
   If SetAimFunc < 0 Then SetAimFunc = SetAimFunc + 1256
@@ -829,9 +762,9 @@ Public Sub UpdatePosition(ByVal n As Integer)
     .vel = VectorAdd(.vel, VectorScalar(.ImpulseInd, 1 / (.mass + .AddedMass)))
         
     vt = VectorMagnitudeSquare(.vel)
-    If vt > simopts.maxVelocity * simopts.maxVelocity Then
-      .vel = VectorScalar(VectorUnit(.vel), simopts.maxVelocity)
-      vt = simopts.maxVelocity * simopts.maxVelocity
+    If vt > SimOpts.maxVelocity * SimOpts.maxVelocity Then
+      .vel = VectorScalar(VectorUnit(.vel), SimOpts.maxVelocity)
+      vt = SimOpts.maxVelocity * SimOpts.maxVelocity
     End If
     
     .pos = VectorAdd(.pos, .vel)
@@ -846,7 +779,7 @@ Public Sub UpdatePosition(ByVal n As Integer)
   .ImpulseRes = .ImpulseInd
   .ImpulseStatic = 0
   
-  If simopts.ZeroMomentum = True Then .vel = VectorSet(0, 0)
+  If SimOpts.ZeroMomentum = True Then .vel = VectorSet(0, 0)
   
   .lastup = .mem(dirup)
   .lastdown = .mem(dirdn)
@@ -864,7 +797,7 @@ Public Sub UpdatePosition(ByVal n As Integer)
   .mem(velsx) = .mem(veldx) * -1
   
   .mem(masssys) = .mass
-  .mem(maxvelsys) = simopts.maxVelocity
+  .mem(maxvelsys) = SimOpts.maxVelocity
   End With
 End Sub
 
@@ -901,7 +834,7 @@ Dim shellNrgConvRate As Single
     .nrg = .nrg - (Abs(Delta) * shellNrgConvRate)          ' Making or unmaking shell takes nrg
     
     'This is the transaction cost
-    Cost = Abs(Delta) * simopts.Costs(SHELLCOST) * simopts.Costs(COSTMULTIPLIER)
+    Cost = Abs(Delta) * SimOpts.Costs(SHELLCOST) * SimOpts.Costs(COSTMULTIPLIER)
     
     If .Multibot Then
       .nrg = .nrg - Cost / (IIf(.numties < 0, 0, .numties) + 1)  'lower cost for multibot
@@ -915,8 +848,8 @@ Dim shellNrgConvRate As Single
     .mem(823) = CInt(.shell)               ' update the .shell sysvar
 getout:
     'Botsareus 3/14/2014 Disqualify
-    If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making shell"
-    If Not simopts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
+    If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making shell"
+    If Not SimOpts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
   End With
 End Sub
 
@@ -948,7 +881,7 @@ Dim slimeNrgConvRate As Single
     .nrg = .nrg - (Abs(Delta) * slimeNrgConvRate)          ' Making or unmaking slime takes nrg
     
     'This is the transaction cost
-    Cost = Abs(Delta) * simopts.Costs(SLIMECOST) * simopts.Costs(COSTMULTIPLIER)
+    Cost = Abs(Delta) * SimOpts.Costs(SLIMECOST) * SimOpts.Costs(COSTMULTIPLIER)
     
     If .Multibot Then
       .nrg = .nrg - Cost / (IIf(.numties < 0, 0, .numties) + 1) 'lower cost for multibot
@@ -964,8 +897,8 @@ Dim slimeNrgConvRate As Single
 getout:
     'Botsareus 3/14/2014 Disqualify
     If Not .Veg Then
-        If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making slime"
-        If Not simopts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
+        If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making slime"
+        If Not SimOpts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
     End If
   End With
 End Sub
@@ -975,7 +908,7 @@ Private Sub altzheimer(n As Integer)
   Dim loc As Integer, val As Integer
   Dim loops As Integer
   Dim t As Integer
-  loops = (rob(n).Pwaste + rob(n).Waste - simopts.BadWastelevel) / 4
+  loops = (rob(n).Pwaste + rob(n).Waste - SimOpts.BadWastelevel) / 4
 
   For t = 1 To loops
     Do 'Botsareus 9/12/2014 From Testlund waste can not change chloroplasts
@@ -1017,7 +950,7 @@ Dim length As Long
         'make the virus
         If MakeVirus(n, .mem(mkvirus)) Then
            length = genelength(n, .mem(mkvirus)) * 2
-           rob(n).nrg = rob(n).nrg - length / 2 * simopts.Costs(DNACOPYCOST) * simopts.Costs(COSTMULTIPLIER) 'Botsareus 7/20/2013 Creating a virus costs a copy cost
+           rob(n).nrg = rob(n).nrg - length / 2 * SimOpts.Costs(DNACOPYCOST) * SimOpts.Costs(COSTMULTIPLIER) 'Botsareus 7/20/2013 Creating a virus costs a copy cost
            If length < 32000 Then
              .Vtimer = length
            Else
@@ -1069,20 +1002,20 @@ Dim i As Integer
     TotalRobots = TotalRobots + 1
     
     'Update the number of bots in each species
-    While simopts.Specie(i).Name <> rob(n).FName And i < simopts.SpeciesNum
+    While SimOpts.Specie(i).Name <> rob(n).FName And i < SimOpts.SpeciesNum
         i = i + 1
     Wend
     
     'If no species structure for the bot, then create one
     If Not rob(n).Corpse Then
-      If i = simopts.SpeciesNum And simopts.SpeciesNum < MAXNATIVESPECIES Then
+      If i = SimOpts.SpeciesNum And SimOpts.SpeciesNum < MAXNATIVESPECIES Then
         AddSpecie n, False
-      ElseIf simopts.SpeciesNum < MAXNATIVESPECIES Then
-        simopts.Specie(i).population = simopts.Specie(i).population + 1
+      ElseIf SimOpts.SpeciesNum < MAXNATIVESPECIES Then
+        SimOpts.Specie(i).population = SimOpts.Specie(i).population + 1
       End If
     End If
     'Overflow protection.  Need to make sure teleported in species grow the species array correctly.
-    If simopts.Specie(i).population > 32000 Then simopts.Specie(i).population = 32000
+    If SimOpts.Specie(i).population > 32000 Then SimOpts.Specie(i).population = 32000
        
     If rob(n).Veg Then
       totvegs = totvegs + 1
@@ -1110,8 +1043,8 @@ End Sub
 
 Private Sub HandleWaste(ByVal n As Integer)
     If rob(n).Waste > 0 And rob(n).chloroplasts > 0 Then feedveg2 n  'Botsareus 8/25/2013 Mod to effect all robots
-    If simopts.BadWastelevel = 0 Then simopts.BadWastelevel = 400
-    If simopts.BadWastelevel > 0 And rob(n).Pwaste + rob(n).Waste > simopts.BadWastelevel Then altzheimer n
+    If SimOpts.BadWastelevel = 0 Then SimOpts.BadWastelevel = 400
+    If SimOpts.BadWastelevel > 0 And rob(n).Pwaste + rob(n).Waste > SimOpts.BadWastelevel Then altzheimer n
     If rob(n).Waste > 32000 Then defacate n
     If rob(n).Pwaste > 32000 Then rob(n).Pwaste = 32000
     If rob(n).Waste < 0 Then rob(n).Waste = 0
@@ -1174,9 +1107,9 @@ With rob(t)
   
   If tmpchlr < .chloroplasts Then
   
-    newnrg = .nrg - (.chloroplasts - tmpchlr) * simopts.Costs(CHLRCOST) * simopts.Costs(COSTMULTIPLIER)
+    newnrg = .nrg - (.chloroplasts - tmpchlr) * SimOpts.Costs(CHLRCOST) * SimOpts.Costs(COSTMULTIPLIER)
   
-    If (TotalChlr > simopts.MaxPopulation And .Veg = True) Or newnrg < 100 Then 'Botsareus 12/3/2013 Attempt to stop vegy spikes
+    If (TotalChlr > SimOpts.MaxPopulation And .Veg = True) Or newnrg < 100 Then 'Botsareus 12/3/2013 Attempt to stop vegy spikes
       .chloroplasts = tmpchlr
     Else
      .nrg = newnrg  'Botsareus 8/24/2013 only charge energy for adding chloroplasts to prevent robots from cheating by adding and subtracting there chlroplasts in 3 cycles
@@ -1230,7 +1163,7 @@ Private Sub ManageDeath(ByVal n As Integer)
   'We kill bots with nrg of body less than 0.5 rather than 0 to avoid rounding issues with refvars and such
   'showing extant bots with nrg or body of 0.
     
-  If simopts.CorpseEnabled Then
+  If SimOpts.CorpseEnabled Then
     If Not .Corpse Then
       If (.nrg < 15) And .age > 0 Then 'Botsareus 1/5/2013 Corpse forms more often
         .Corpse = True
@@ -1339,7 +1272,7 @@ Private Sub FireTies(ByVal n As Integer)
   
   
   If .mem(mtie) <> 0 Then
-    If .lastopp > 0 And Not simopts.DisableTies And (.lastopptype = 0) Then
+    If .lastopp > 0 And Not SimOpts.DisableTies And (.lastopptype = 0) Then
       
       '2 robot lengths
       length = VectorMagnitude(VectorSub(rob(.lastopp).pos, .pos))
@@ -1349,8 +1282,8 @@ Private Sub FireTies(ByVal n As Integer)
         'maketie auto deletes existing ties for you
         maketie n, rob(n).lastopp, rob(n).radius + rob(rob(n).lastopp).radius + RobSize * 2, -20, rob(n).mem(mtie)
         'Botsareus 3/14/2014 Disqualify
-        If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(n).FName, rob(n).tag, "making a tie"
-        If Not simopts.F1 And rob(n).dq = 1 And Disqualify = 2 Then rob(n).Dead = True  'safe kill robot
+        If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(n).FName, rob(n).tag, "making a tie"
+        If Not SimOpts.F1 And rob(n).dq = 1 And Disqualify = 2 Then rob(n).Dead = True  'safe kill robot
       End If
       
     End If
@@ -1364,11 +1297,11 @@ End Sub
 Private Sub DeleteSpecies(i As Integer)
   Dim x As Integer
   
-  For x = i To simopts.SpeciesNum - 1
-    simopts.Specie(x) = simopts.Specie(x + 1)
+  For x = i To SimOpts.SpeciesNum - 1
+    SimOpts.Specie(x) = SimOpts.Specie(x + 1)
   Next x
-  simopts.Specie(simopts.SpeciesNum - 1).Native = False ' Do this just in case
-  simopts.SpeciesNum = simopts.SpeciesNum - 1
+  SimOpts.Specie(SimOpts.SpeciesNum - 1).Native = False ' Do this just in case
+  SimOpts.SpeciesNum = SimOpts.SpeciesNum - 1
    
 End Sub
 
@@ -1377,8 +1310,8 @@ Private Sub RemoveExtinctSpecies()
 Dim i, j As Integer
   
   i = 0
-  While i < simopts.SpeciesNum
-    If simopts.Specie(i).population = 0 And Not simopts.Specie(i).Native Then
+  While i < SimOpts.SpeciesNum
+    If SimOpts.Specie(i).population = 0 And Not SimOpts.Specie(i).Native Then
       DeleteSpecies (i)
       ' Don't increment i since we need to recheck the i postion after deleting the species
     Else
@@ -1428,7 +1361,7 @@ Public Sub UpdateBots()
   
   
   'Only calculate mass due to fuild displacement if the sim medium has density.
-  If simopts.Density <> 0 Then
+  If SimOpts.Density <> 0 Then
     For t = 1 To MaxRobs
       If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then AddedMass t
     Next t
@@ -1438,13 +1371,13 @@ Public Sub UpdateBots()
     If TmpOpts.Tides = 0 Then
         BouyancyScaling = 1
     Else
-        BouyancyScaling = (1 + Sin(((simopts.TotRunCycle + TmpOpts.TidesOf) Mod TmpOpts.Tides) / simopts.Tides * PI * 2)) / 2
+        BouyancyScaling = (1 + Sin(((SimOpts.TotRunCycle + TmpOpts.TidesOf) Mod TmpOpts.Tides) / SimOpts.Tides * PI * 2)) / 2
         BouyancyScaling = Sqr(BouyancyScaling)
-        simopts.Ygravity = (1 - BouyancyScaling) * 4
-        simopts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
+        SimOpts.Ygravity = (1 - BouyancyScaling) * 4
+        SimOpts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
     End If
 
-    Robot_RunPreUpdates rob, MaxRobs, simopts
+    Robot_RunPreUpdates rob, MaxRobs, SimOpts
 
     'this loops is for pre update
     For t = 1 To MaxRobs
@@ -1476,8 +1409,8 @@ Public Sub UpdateBots()
     
   ' Don't handle events durign this next section cause we are updating species population numbers...
   i = 0
-  While i < simopts.SpeciesNum
-    simopts.Specie(i).population = 0
+  While i < SimOpts.SpeciesNum
+    SimOpts.Specie(i).population = 0
     i = i + 1
   Wend
   For t = 1 To MaxRobs
@@ -1557,7 +1490,7 @@ Public Sub UpdateBots()
   
   'Restart
   'Leaguemode handles restarts differently so only restart here if not in leaguemode
-  If totnvegs = 0 And simopts.Restart And Not simopts.F1 Then 'Botsareus 6/11/2013 Using SimOpts instead of raw RestartMode
+  If totnvegs = 0 And SimOpts.Restart And Not SimOpts.F1 Then 'Botsareus 6/11/2013 Using SimOpts instead of raw RestartMode
   ' totnvegs = 1
   ' Contests = Contests + 1
     ReStarts = ReStarts + 1
@@ -1660,29 +1593,29 @@ Private Sub robshoot(n As Integer)
     End If
   
     If rngmultiplier > 4 Then
-      Cost = rngmultiplier * simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER)
+      Cost = rngmultiplier * SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)
       rngmultiplier = Log(rngmultiplier / 2) / Log(2)
     ElseIf valmode = False Then
       rngmultiplier = 1
-      Cost = (simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1))
+      Cost = (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1))
     End If
   
     If multiplier > 4 Then
-      Cost = multiplier * simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER)
+      Cost = multiplier * SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)
       multiplier = Log(multiplier / 2) / Log(2)
     ElseIf valmode = True Then
       multiplier = 1
-      Cost = (simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)) 'Botsareus 6/12/2014 Bug fix
+      Cost = (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)) 'Botsareus 6/12/2014 Bug fix
     End If
   
     If Cost > rob(n).nrg And Cost > 2 And rob(n).nrg > 2 And valmode Then
       Cost = rob(n).nrg
-      multiplier = Log(rob(n).nrg / (simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER))) / Log(2)
+      multiplier = Log(rob(n).nrg / (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER))) / Log(2)
     End If
   
     If Cost > rob(n).nrg And Cost > 2 And rob(n).nrg > 2 And Not valmode Then
       Cost = rob(n).nrg
-      rngmultiplier = Log(rob(n).nrg / (simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER))) / Log(2)
+      rngmultiplier = Log(rob(n).nrg / (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER))) / Log(2)
     End If
   End If
   
@@ -1694,13 +1627,13 @@ Private Sub robshoot(n As Integer)
   
   Case Is >= 0 ' Memory Shot
     shtype = shtype Mod MaxMem
-    Cost = simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER)
+    Cost = SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)
     If rob(n).nrg < Cost Then Cost = rob(n).nrg
     rob(n).nrg = rob(n).nrg - Cost ' EricL - postive shots should cost the shotcost
     newshot n, shtype, value, 1, True
     'Botsareus 3/14/2014 Disqualify
-    If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(n).FName, rob(n).tag, "firing an info shot"
-    If Not simopts.F1 And rob(n).dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
+    If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(n).FName, rob(n).tag, "firing an info shot"
+    If Not SimOpts.F1 And rob(n).dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
   Case -1 ' Nrg request Feeding Shot
     If rob(n).Multibot Then
       value = 20 + (rob(n).body / 5) * (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1) 'Botsareus 6/22/2016 Bugfix
@@ -1715,7 +1648,7 @@ Private Sub robshoot(n As Integer)
     value = Abs(value)
     If rob(n).nrg < value Then value = rob(n).nrg
     If value = 0 Then value = rob(n).nrg / 100#  'default energy shot.  Very small.
-    EnergyLost = value + simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
+    EnergyLost = value + SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
     If EnergyLost > rob(n).nrg Then
       rob(n).nrg = 0
     Else
@@ -1728,7 +1661,7 @@ Private Sub robshoot(n As Integer)
     If value = 0 Then value = rob(n).venom / 20# 'default venom shot.  Not too small.
     rob(n).venom = rob(n).venom - value
     rob(n).mem(825) = rob(n).venom
-    EnergyLost = simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
+    EnergyLost = SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
     If EnergyLost > rob(n).nrg Then
     '  EnergyLostPerCycle = EnergyLostPerCycle - rob(n).nrg
       rob(n).nrg = 0
@@ -1743,7 +1676,7 @@ Private Sub robshoot(n As Integer)
     If value > rob(n).Waste Then value = rob(n).Waste
     rob(n).Waste = rob(n).Waste - value * 0.99 'Botsareus 10/5/2015 Fix for waste
     rob(n).Pwaste = rob(n).Pwaste + value / 100
-    EnergyLost = simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
+    EnergyLost = SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER) / (IIf(rob(n).numties < 0, 0, rob(n).numties) + 1)
     If EnergyLost > rob(n).nrg Then
      ' EnergyLostPerCycle = EnergyLostPerCycle - rob(n).nrg
       rob(n).nrg = 0
@@ -1763,7 +1696,7 @@ Private Sub robshoot(n As Integer)
     value = value * multiplier
     newshot n, shtype, value, rngmultiplier, True
   Case -8 ' shoot sperm
-    Cost = simopts.Costs(SHOTCOST) * simopts.Costs(COSTMULTIPLIER)
+    Cost = SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)
     If rob(n).nrg < Cost Then Cost = rob(n).nrg
     rob(n).nrg = rob(n).nrg - Cost ' EricL - postive shots should cost the shotcost
     newshot n, shtype, value, 1, True
@@ -1918,7 +1851,7 @@ End Sub
 
 'Robot n converts some of his energy to venom
 Public Sub storevenom(n As Integer)
-  Robot_StoreVenom rob(n)
+  Robot_StoreVenom rob(n), SimOpts
 End Sub
 
 ' Robot n converts some of his energy to poison
@@ -1947,7 +1880,7 @@ Public Sub storepoison(n As Integer)
     .nrg = .nrg - (Abs(Delta) * poisonNrgConvRate)           ' Making or unmaking poison takes nrg
     
     'This is the transaction cost
-    Cost = Abs(Delta) * simopts.Costs(POISONCOST) * simopts.Costs(COSTMULTIPLIER)
+    Cost = Abs(Delta) * SimOpts.Costs(POISONCOST) * SimOpts.Costs(COSTMULTIPLIER)
    
     .nrg = .nrg - Cost
     
@@ -1957,8 +1890,8 @@ Public Sub storepoison(n As Integer)
     .mem(827) = CInt(.poison)              ' update the .poison sysvar
 getout:
     'Botsareus 3/14/2014 Disqualify
-    If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making poison"
-    If Not simopts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
+    If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making poison"
+    If Not SimOpts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
   End With
  
 End Sub
@@ -1976,7 +1909,7 @@ Public Sub Reproduce(n As Integer, per As Integer)
 
 If rob(n).body < 5 Then Exit Sub 'Botsareus 3/27/2014 An attempt to prevent 'robot bursts'
 
-If simopts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
+If SimOpts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
   Dim sondist As Long
   Dim nuovo As Integer
   Dim nnrg As Single, nwaste As Single, npwaste As Single, nchloroplasts As Single  'Botsareus 8/24/2013 nchloroplasts
@@ -1995,13 +1928,13 @@ If simopts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
   If rob(n).body <= 2 Or rob(n).CantReproduce Then GoTo getout 'bot is too small to reproduce
   
   'attempt to stop veg overpopulation but will it work?
-  If rob(n).Veg = True And (TotalChlr > simopts.MaxPopulation Or totvegsDisplayed < 0) Then GoTo getout 'Panda 8/23/2013 Based on TotalChlr now
+  If rob(n).Veg = True And (TotalChlr > SimOpts.MaxPopulation Or totvegsDisplayed < 0) Then GoTo getout 'Panda 8/23/2013 Based on TotalChlr now
  
   ' If we got here and it's a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
   ' so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
   ' so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
   ' then let them all reproduce.
-  If rob(n).Veg = True And (Random(0, 10) <> 5) And (TotalChlr > (simopts.MaxPopulation * 0.9)) Then GoTo getout 'Panda 8/23/2013 Based on TotalChlr now
+  If rob(n).Veg = True And (Random(0, 10) <> 5) And (TotalChlr > (SimOpts.MaxPopulation * 0.9)) Then GoTo getout 'Panda 8/23/2013 Based on TotalChlr now
   If totvegsDisplayed = -1 Then GoTo getout ' no veggies can reproduce on the first cycle after the sim is restarted.
 
   per = per Mod 100 ' per should never be <=0 as this is checked in ManageReproduction()
@@ -2026,7 +1959,7 @@ If simopts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
   '    If MaxRobs = 500 Then MsgBox "Maxrobs = 500 in Reproduce, about to call posto"
       nuovo = posto()
       
-      simopts.TotBorn = simopts.TotBorn + 1
+      SimOpts.TotBorn = SimOpts.TotBorn + 1
       If rob(n).Veg Then totvegs = totvegs + 1
       ReDim rob(nuovo).dna(UBound(rob(n).dna))
       For t = 1 To UBound(rob(nuovo).dna)
@@ -2078,7 +2011,7 @@ If simopts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
       rob(nuovo).NewMove = rob(n).NewMove
       rob(nuovo).generation = rob(n).generation + 1
       If rob(nuovo).generation > 32000 Then rob(nuovo).generation = 32000  'Botsareus 10/9/2015 Overflow protection
-      rob(nuovo).BirthCycle = simopts.TotRunCycle
+      rob(nuovo).BirthCycle = SimOpts.TotRunCycle
       rob(nuovo).vnum = 1
       
       nnrg = (rob(n).nrg / 100#) * CSng(per)
@@ -2280,7 +2213,7 @@ skip:
        End If
       End If
       
-      rob(n).nrg = rob(n).nrg - rob(n).DnaLen * simopts.Costs(DNACOPYCOST) * simopts.Costs(COSTMULTIPLIER) 'Botsareus 7/7/2013 Reproduction DNACOPY cost
+      rob(n).nrg = rob(n).nrg - rob(n).DnaLen * SimOpts.Costs(DNACOPYCOST) * SimOpts.Costs(COSTMULTIPLIER) 'Botsareus 7/7/2013 Reproduction DNACOPY cost
       If rob(n).nrg < 0 Then rob(n).nrg = 0
     End If
   End If
@@ -2322,13 +2255,13 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
   'we let male veggies fertilize nonveggie females all they want since the offspring's "species" and thus vegginess
   'will be determined by their mother.  Perhaps a strategy will emerge where plants compete to reproduce
   'with nonveggies so as to bypass the popualtion limtis?  Who knows.
-  If rob(female).Veg = True And (TotalChlr > simopts.MaxPopulation Or totvegsDisplayed < 0) Then Exit Function  'Panda 8/23/2013 Based on TotalChlr now
+  If rob(female).Veg = True And (TotalChlr > SimOpts.MaxPopulation Or totvegsDisplayed < 0) Then Exit Function  'Panda 8/23/2013 Based on TotalChlr now
  
   ' If we got here and the female is a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
   ' so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
   ' so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
   ' then let them all reproduce.
-  If rob(female).Veg = True And (Random(0, 9) <> 5) And (TotalChlr > (simopts.MaxPopulation * 0.9)) Then Exit Function 'Panda 8/23/2013 Based on TotalChlr now
+  If rob(female).Veg = True And (Random(0, 9) <> 5) And (TotalChlr > (SimOpts.MaxPopulation * 0.9)) Then Exit Function 'Panda 8/23/2013 Based on TotalChlr now
   If totvegsDisplayed = -1 Then Exit Function ' no veggies can reproduce on the first cycle after the sim is restarted.
 
   per = per Mod 100 ' per should never be <=0 as this is checked in ManageReproduction()
@@ -2351,8 +2284,8 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
     If Not tests Then
     
     'Botsareus 3/14/2014 Disqualify
-    If (simopts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(female).FName, rob(female).tag, "attempting to reproduce sexually"
-    If Not simopts.F1 And rob(female).dq = 1 And Disqualify = 2 Then
+    If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason rob(female).FName, rob(female).tag, "attempting to reproduce sexually"
+    If Not SimOpts.F1 And rob(female).dq = 1 And Disqualify = 2 Then
         rob(female).Dead = True 'safe kill robot
         GoTo getout
     End If
@@ -2469,7 +2402,7 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
       End If
     
       nuovo = posto()
-      simopts.TotBorn = simopts.TotBorn + 1
+      SimOpts.TotBorn = SimOpts.TotBorn + 1
       If rob(female).Veg Then totvegs = totvegs + 1
           
       'Step4 after robot is created store the dna
@@ -2527,7 +2460,7 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
       rob(nuovo).NewMove = rob(female).NewMove
       rob(nuovo).generation = rob(female).generation + 1
       If rob(nuovo).generation > 32000 Then rob(nuovo).generation = 32000  'Botsareus 10/9/2015 Overflow protection
-      rob(nuovo).BirthCycle = simopts.TotRunCycle
+      rob(nuovo).BirthCycle = SimOpts.TotRunCycle
       rob(nuovo).vnum = 1
       
       nnrg = (rob(female).nrg / 100#) * CSng(per)
@@ -2619,7 +2552,7 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
       
       
       logmutation nuovo, "Female DNA len " + Str(rob(female).DnaLen) + " and male DNA len " + _
-      Str(UBound(rob(female).spermDNA)) + " had offspring DNA len " + Str(rob(nuovo).DnaLen) + " during cycle " + Str(simopts.TotRunCycle)
+      Str(UBound(rob(female).spermDNA)) + " had offspring DNA len " + Str(rob(nuovo).DnaLen) + " during cycle " + Str(SimOpts.TotRunCycle)
             
       If Delta2 Then
         With rob(nuovo)
@@ -2714,7 +2647,7 @@ skip:
        End If
       End If
                   
-      rob(female).nrg = rob(female).nrg - rob(female).DnaLen * simopts.Costs(DNACOPYCOST) * simopts.Costs(COSTMULTIPLIER) 'Botsareus 7/7/2013 Reproduction DNACOPY cost
+      rob(female).nrg = rob(female).nrg - rob(female).DnaLen * SimOpts.Costs(DNACOPYCOST) * SimOpts.Costs(COSTMULTIPLIER) 'Botsareus 7/7/2013 Reproduction DNACOPY cost
       If rob(female).nrg < 0 Then rob(female).nrg = 0
     End If
   End If
@@ -2769,12 +2702,12 @@ Public Function simplecoll(x As Long, y As Long, k As Integer) As Boolean
     End If
   Next t
   
-  If simopts.Dxsxconnected = False Then
-    If x < rob(k).radius + smudgefactor Or x + rob(k).radius + smudgefactor > simopts.fieldWidth Then simplecoll = True
+  If SimOpts.Dxsxconnected = False Then
+    If x < rob(k).radius + smudgefactor Or x + rob(k).radius + smudgefactor > SimOpts.fieldWidth Then simplecoll = True
   End If
   
-  If simopts.Updnconnected = False Then
-    If y < rob(k).radius + smudgefactor Or y + rob(k).radius + smudgefactor > simopts.fieldHeight Then simplecoll = True
+  If SimOpts.Updnconnected = False Then
+    If y < rob(k).radius + smudgefactor Or y + rob(k).radius + smudgefactor > SimOpts.fieldHeight Then simplecoll = True
   End If
 getout:
 End Function
@@ -2844,8 +2777,8 @@ End Function
 ' Kills the robot and writes a snapshot record
 Public Sub KillRobot(n As Integer)
 
-  If simopts.DeadRobotSnp Then
-    If rob(n).Veg And simopts.SnpExcludeVegs Then
+  If SimOpts.DeadRobotSnp Then
+    If rob(n).Veg And SimOpts.SnpExcludeVegs Then
     Else
       AddRecord n
     End If

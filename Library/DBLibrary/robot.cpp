@@ -105,6 +105,30 @@ void Robot_RunPreUpdate(Robot* robots, int idx, SimulationOptions& options) {
 	Physics_NetForces(robots[idx], options);
 }
 
+float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float multiplier) {
+	float bodyPoints;
+	float chloroplasts;
+
+	if (options.FixedBotRadii)
+		return ROBOT_SIZE_HALF;
+
+	if (multiplier == -1) {
+		bodyPoints = 32000;
+		chloroplasts = 0;
+	}
+	else {
+		bodyPoints = rob.Body * multiplier;
+		chloroplasts = rob.Chloroplasts * multiplier;
+	}
+
+	bodyPoints = max(1, bodyPoints);
+
+	float result = powf(logf(bodyPoints) * bodyPoints * ROBOT_CUBIC_TWIP_PER_BODY * 3 * 0.25f / (float)M_PI, 1.0f / 3);
+	result += (415 - result) * chloroplasts / 32000;
+
+	return max(1, result);
+}
+
 void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, SimulationOptions& options) {
 	Robot* robots;
 	HRESULT res = SafeArrayAccessData(robs, reinterpret_cast<void**>(&robots));

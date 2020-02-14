@@ -1469,7 +1469,6 @@ Dim OldSpeciesName As String
     
   AddSpecie n, False ' Species is forked in this sim so it's native
   ChangeNameOfAllChildren n, OldSpeciesName
-  ChangeNameOfAllCloselyRelated n, 10, OldSpeciesName
 End Function
 
 
