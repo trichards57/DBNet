@@ -10,6 +10,7 @@
 
 #pragma warning(push)
 #pragma warning(disable: 26495) // Disables the warning about not initialising fields.  Not a problem: the C++ currently doesn't ever create a Robot.
+#pragma pack(4)
 struct Robot {
 	VARIANT_BOOL Exist;
 	float Radius;

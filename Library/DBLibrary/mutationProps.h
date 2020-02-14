@@ -2,6 +2,7 @@
 
 #include <oaidl.h>
 
+#pragma pack(4)
 struct MutationProbs {
 	VARIANT_BOOL Mutations;
 	float MutArray[21];

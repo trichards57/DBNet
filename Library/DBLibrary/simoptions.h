@@ -5,6 +5,7 @@
 
 constexpr auto MAX_NATIVE_SPECIES = 20;
 
+#pragma pack(4)
 struct SimulationOptions {
 	BSTR SimName;
 	int TotRunCycle;

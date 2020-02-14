@@ -91,7 +91,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;DBLIBRARY_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <StructMemberAlignment>4Bytes</StructMemberAlignment>
+      <StructMemberAlignment>Default</StructMemberAlignment>
       <OpenMPSupport>
       </OpenMPSupport>
     </ClCompile>
@@ -121,6 +121,10 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>DBLibrary.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>copy "$(SolutionDir)$(Platform)\$(Configuration)\*.dll" "C:\Program Files (x86)\Microsoft Visual Studio\VB98\"
+copy "$(SolutionDir)$(Platform)\$(Configuration)\*.dll" "C:\Users\trich\source\repos\trichards57\DBNet\Darwinbots2"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

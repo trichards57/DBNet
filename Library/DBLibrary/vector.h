@@ -2,6 +2,7 @@
 
 #include "mathhelp.h"
 
+#pragma pack(4)
 struct Vector {
 	float X;
 	float Y;

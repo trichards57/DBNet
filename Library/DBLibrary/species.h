@@ -3,6 +3,7 @@
 #include <wtypes.h>
 #include "mutationProps.h"
 
+#pragma pack(4)
 struct Species {
 	short Skin[14];
 	BSTR Path;

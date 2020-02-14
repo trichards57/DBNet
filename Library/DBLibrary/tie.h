@@ -3,8 +3,10 @@
 #include <oaidl.h>
 #include <wtypes.h>
 
+#pragma pack(4)
 struct Robot;
 
+#pragma pack(4)
 struct Tie {
 	short Port;
 	short Pnt;

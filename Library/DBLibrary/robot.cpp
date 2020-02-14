@@ -125,13 +125,13 @@ void __stdcall Robot_StoreVenom(Robot& rob, SimulationOptions& options) {
 	if (rob.Nrg <= 0)
 		return;
 
-	float delta = clamp(rob.Mem[824], 32000, -32000);
+	float delta = (float)clamp(rob.Mem[824], 32000, -32000);
 
 	if (delta > rob.Nrg / VenomEnergyConversionRate)
 		delta = copysign(rob.Nrg / VenomEnergyConversionRate, delta);
 
 	if (fabs(delta) > 100)
-		delta = copysign(100, delta);
+		delta = copysignf(100, delta);
 
 	if (rob.Venom + delta > 32000)
 		delta = 32000 - rob.Venom;
