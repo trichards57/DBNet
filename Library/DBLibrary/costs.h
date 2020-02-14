@@ -13,3 +13,5 @@ constexpr auto COST_MULTIPLIER = 54;
 constexpr auto DNA_CYC_COST = 24;
 
 constexpr auto MOVE_COST = 20;
+
+constexpr auto VENOM_COST = 26;

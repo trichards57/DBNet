@@ -119,6 +119,36 @@ void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, Simulatio
 	}
 }
 
+constexpr float VenomEnergyConversionRate = 1;
+
+void __stdcall Robot_StoreVenom(Robot& rob, SimulationOptions& options) {
+	if (rob.Nrg <= 0)
+		return;
+
+	float delta = clamp(rob.Mem[824], 32000, -32000);
+
+	if (delta > rob.Nrg / VenomEnergyConversionRate)
+		delta = copysign(rob.Nrg / VenomEnergyConversionRate, delta);
+
+	if (fabs(delta) > 100)
+		delta = copysign(100, delta);
+
+	if (rob.Venom + delta > 32000)
+		delta = 32000 - rob.Venom;
+	if (rob.Venom + delta < 0)
+		delta = -rob.Venom;
+
+	rob.Venom += delta;
+	rob.Nrg -= fabs(delta) * VenomEnergyConversionRate;
+
+	float cost = fabs(delta) * options.Costs[VENOM_COST] * options.Costs[COST_MULTIPLIER];
+	rob.Nrg -= cost;
+	rob.Waste += cost;
+
+	rob.Mem[824] = 0;
+	rob.Mem[825] = (short)(rob.Venom);
+}
+
 // Returns false if the robot does not exist
 // NOTE : This is opposite behaviour to the original function
 bool Robot_CheckRobot(LPSAFEARRAY robs, int idx)
