@@ -3,5 +3,5 @@ LIBRARY
 EXPORTS 
 	Robot_RunPreUpdates
 	Robot_StoreVenom
-	Robot_StoreBody
+	Robot_ManageBody
 	Robot_FindRadius

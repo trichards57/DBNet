@@ -351,7 +351,7 @@ Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
 
 Private Declare Sub Robot_RunPreUpdates Lib "DBLibrary.dll" (ByRef r() As robot, ByVal maxRobots As Integer, ByRef simulationOptions As SimOptions)
 Private Declare Sub Robot_StoreVenom Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
-Private Declare Sub Robot_StoreBody Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
+Private Declare Sub Robot_ManageBody Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
 Private Declare Function Robot_FindRadius Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions, ByVal multiplier As Single) As Single
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
@@ -1124,20 +1124,6 @@ End With
   
 End Sub
 
-Private Sub ManageBody(ByVal n As Integer)
-    
-  'body management
-  'rob(n).obody = rob(n).body      'replaces routine above 'Botsareus 7/4/2016 Bug fix -bodgain and bodloss work now
-        
-  If rob(n).mem(strbody) > 0 Then Robot_StoreBody rob(n), SimOpts
-  If rob(n).mem(fdbody) > 0 Then feedbody n
-  
-  If rob(n).body > 32000 Then rob(n).body = 32000
-  If rob(n).body < 0 Then rob(n).body = 0   'Ericl 4/6/2006 Overflow protection.
-  rob(n).mem(body) = CInt(rob(n).body)
-    
-End Sub
-
 Private Sub Shock(ByVal n As Integer)
 
 'This code here forces a robot to die instantly from getting an overload based on energy
@@ -1470,7 +1456,7 @@ Public Sub UpdateBots()
       HandleWaste t
       Shooting t
       If Not rob(t).NoChlr Then ManageChlr t 'Botsareus 3/28/2014 Disable Chloroplasts
-      ManageBody t
+      Robot_ManageBody rob(t), SimOpts
       ManageBouyancy t
       ManageReproduction t
       Shock t
@@ -1537,15 +1523,6 @@ Private Sub ReproduceAndKill()
     KillRobot kil(t)
     t = t + 1
   Wend
-End Sub
-
-Private Sub feedbody(t As Integer)
-  If rob(t).mem(fdbody) > 100 Then rob(t).mem(fdbody) = 100
-  rob(t).nrg = rob(t).nrg + rob(t).mem(fdbody)
-  rob(t).body = rob(t).body - CSng(rob(t).mem(fdbody)) / 10#
-  If rob(t).nrg > 32000 Then rob(t).nrg = 32000
-  rob(t).radius = FindRadius(t)
-  rob(t).mem(fdbody) = 0
 End Sub
 
 ' here we catch the attempt of a robot to shoot,

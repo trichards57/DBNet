@@ -130,7 +130,21 @@ float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float m
 	return max(1, result);
 }
 
-void __stdcall Robot_StoreBody(Robot& rob, SimulationOptions& options) {
+void Robot_FeedBody(Robot& rob, SimulationOptions& options) {
+	float feed = min(100.0f, rob.Mem[fdbody]);
+
+	rob.Nrg += feed;
+	rob.Body -= feed / 10;
+
+	if (rob.Nrg > 32000)
+		rob.Nrg = 32000;
+
+	rob.Radius = Robot_FindRadius(rob, options, 1);
+
+	rob.Mem[fdbody] = 0;
+}
+
+void Robot_StoreBody(Robot& rob, SimulationOptions& options) {
 	float change = min(100.0f, rob.Mem[strbody]);
 
 	rob.Nrg -= change;
@@ -142,6 +156,16 @@ void __stdcall Robot_StoreBody(Robot& rob, SimulationOptions& options) {
 	rob.Radius = Robot_FindRadius(rob, options, 1);
 
 	rob.Mem[strbody] = 0;
+}
+
+void __stdcall Robot_ManageBody(Robot& rob, SimulationOptions& options) {
+	if (rob.Mem[strbody] > 0)
+		Robot_StoreBody(rob, options);
+	if (rob.Mem[fdbody] > 0)
+		Robot_FeedBody(rob, options);
+
+	rob.Body = clamp(rob.Body, 32000, 0);
+	rob.Mem[body] = (int)rob.Body;
 }
 
 void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, SimulationOptions& options) {
