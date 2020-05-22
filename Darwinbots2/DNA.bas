@@ -7,10 +7,6 @@ Private Type boolstack
   pos As Integer
 End Type
 
-Type block
-  tipo As Integer
-  value As Integer
-End Type
 
 Dim CurrentFlow As Byte
 Const CLEAR As Byte = 0
@@ -53,11 +49,15 @@ Public ingene As Boolean             ' Flag for current gene counting.
 ''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''
 
+Private Declare Sub DNA_Execute Lib "DBLibrary.dll" (ByRef r As robot, ByRef opts As SimOptions)
+
 Private Sub ExecuteDNA(ByVal n As Integer)
   Dim a As Integer
   Dim b As Integer
   Dim tipo As Long
   Dim i As Integer
+  
+  DNA_Execute rob(n), SimOpts
   
   currbot = n
   currgene = 0
@@ -390,8 +390,8 @@ Private Sub findang()
   Dim e As Single  'angle to target
   b = PopIntStack ' * Form1.yDivisor
   a = PopIntStack ' * Form1.xDivisor
-  c = rob(currbot).pos.X / Form1.xDivisor
-  d = rob(currbot).pos.Y / Form1.yDivisor
+  c = rob(currbot).pos.x / Form1.xDivisor
+  d = rob(currbot).pos.y / Form1.yDivisor
   e = angnorm(angle(c, d, a, b)) * 200
   PushIntStack e
 End Sub
@@ -405,8 +405,8 @@ Private Sub finddist()
   Dim e As Single  'distance to target
   b = PopIntStack * Form1.yDivisor
   a = PopIntStack * Form1.xDivisor
-  c = rob(currbot).pos.X
-  d = rob(currbot).pos.Y
+  c = rob(currbot).pos.x
+  d = rob(currbot).pos.y
   e = Sqr(((c - a) ^ 2 + (d - b) ^ 2))
   If Abs(e) > 2000000000# Then
     e = Sgn(e) * 2000000000#
@@ -593,9 +593,9 @@ End Sub
 
 Private Sub DNABitwiseCompliment()
   Dim value As Long
-  Dim bits As DoubleWord
-  
-  value = PopIntStack
+    Dim bits As DoubleWord
+
+    value = PopIntStack
   bits = NumberToBit(value)
   InvertBits bits
   PushIntStack BitToNumber(bits)
