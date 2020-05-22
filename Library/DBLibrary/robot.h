@@ -142,3 +142,5 @@ bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);
 constexpr auto ROBOT_SIZE = 120;
 constexpr auto ROBOT_SIZE_HALF = ROBOT_SIZE / 2;
 constexpr auto ROBOT_CUBIC_TWIP_PER_BODY = 905;
+
+constexpr auto ROBOT_MAX_MEM = 1000;
