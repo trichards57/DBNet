@@ -46,13 +46,7 @@ struct Vector {
 	}
 
 	float Magnitude() {
-		float minVal = min(fabsf(X), fabsf(Y));
-		float maxVal = min(fabsf(X), fabsf(Y));
-
-		if (maxVal < 0.00001)
-			return 0;
-
-		return maxVal * sqrtf(1 + powf(minVal / maxVal, 2));
+		return sqrtf(X * X + Y * Y);
 	}
 };
 

@@ -6,3 +6,7 @@ EXPORTS
 	Robot_ManageBody
 	Robot_FindRadius
 	DNA_Execute
+	VectorMin
+	VectorMax
+	VectorDot
+	VectorCross
