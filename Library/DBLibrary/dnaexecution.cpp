@@ -38,7 +38,29 @@ struct State {
 		IntStack.pop();
 		return val;
 	}
+
+	bool PopBool() {
+		if (BoolStack.size() == 0)
+			return true;
+		bool val = BoolStack.top();
+		BoolStack.pop();
+		return val;
+	}
 };
+
+int LocalMod(int value, int max) {
+	int newValue = value % max;
+
+	if (newValue == 0) {
+		if (value > 0) {
+			return max;
+		}
+		else if (value < 0) {
+			return -max;
+		}
+	}
+	return newValue;
+}
 
 void DNA_ExecuteBasicCommand(Robot& rob, SimulationOptions& simOpts, State& state, short value) {
 	int a, b, c;
@@ -95,9 +117,7 @@ void DNA_ExecuteBasicCommand(Robot& rob, SimulationOptions& simOpts, State& stat
 		break;
 	case 6: // dereference (*)
 		b = state.PopInt();
-		b = abs(b) % ROBOT_MAX_MEM;
-		if (b == 0)
-			b = ROBOT_MAX_MEM;
+		b = LocalMod(abs(b), ROBOT_MAX_MEM);
 		state.IntStack.push(rob.Mem[b]);
 		break;
 	case 7: // mod
@@ -150,9 +170,9 @@ void DNA_ExecuteBasicCommand(Robot& rob, SimulationOptions& simOpts, State& stat
 	}
 }
 
-float getScale(float dimension) {
+float getScale(int dimension) {
 	if (dimension > 32000)
-		return dimension / 32000;
+		return (float)dimension / 32000;
 	return 1;
 }
 
@@ -165,7 +185,7 @@ void DNA_FindAngle(Robot& rob, SimulationOptions& simOpts, State& state) {
 	float x2 = rob.Pos.X / getScale(simOpts.FieldWidth);
 	float y2 = rob.Pos.Y / getScale(simOpts.FieldHeight);
 
-	float e = angleToInt(AngleNormalise(Angle(x2, y2, x1, y1)));
+	int e = angleToInt(AngleNormalise(Angle(x2, y2, (float)x1, (float)y1)));
 
 	state.IntStack.push(e);
 }
@@ -214,23 +234,23 @@ void DNA_ExecuteAdvancedCommand(Robot& rob, SimulationOptions& simOpts, State& s
 		a = state.PopInt();
 
 		if (abs(b) > 10)
-			b = copysign(10, b);
+			b = (int)copysign(10, b);
 
 		if (a == 0)
 			state.IntStack.push(0);
 		else {
-			c = pow(a, b);
+			c = pow((float)a, (float)b);
 			if (c > MaxValue)
-				c = copysign(MaxValue, c);
+				c = copysignf(MaxValue, c);
 			state.IntStack.push((int)c);
 		}
 		break;
 	case 7: // pyth
 		a = state.PopInt();
 		b = state.PopInt();
-		c = Vector(a, b).Magnitude();
+		c = Vector((float)a, (float)b).Magnitude();
 		if (c > MaxValue)
-			c = copysign(MaxValue, c);
+			c = copysignf(MaxValue, c);
 		state.IntStack.push((int)c);
 		break;
 	case 8: // angle compare
@@ -399,10 +419,315 @@ void DNA_ExecuteConditions(Robot& rob, SimulationOptions& simOpts, State& state,
 	}
 }
 
-void DNA_ExecuteLogic(Robot& rob, SimulationOptions& simOpts, State& state, short value) {}
-void DNA_ExecuteStores(Robot& rob, SimulationOptions& simOpts, State& state, short value) {}
-bool DNA_ExecuteFlowCommand(Robot& rob, SimulationOptions& simOpts, State& state, short value) {}
-bool DNA_ConditionState(State& state) {}
+void DNA_ExecuteLogic(Robot& rob, SimulationOptions& simOpts, State& state, short value) {
+	rob.Nrg -= simOpts.Costs[COST_LOGIC_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+
+	bool a, b;
+
+	switch (value) {
+	case 1: // and
+		b = state.PopBool();
+		a = state.PopBool();
+		state.BoolStack.push(a && b);
+		break;
+	case 2: // or
+		b = state.PopBool();
+		a = state.PopBool();
+		state.BoolStack.push(a || b);
+		break;
+	case 3: // xor
+		b = state.PopBool();
+		a = state.PopBool();
+		state.BoolStack.push(a != b);
+		break;
+	case 4: // not
+		b = state.PopBool();
+		state.BoolStack.push(!b);
+		break;
+	case 5: // true
+		state.BoolStack.push(true);
+		break;
+	case 6: // false
+		state.BoolStack.push(false);
+		break;
+	case 7: // dropbool
+		state.PopBool();
+		break;
+	case 8: // clearbool
+		state.BoolStack = std::stack<bool>();
+		break;
+	case 9: // dupbool
+		if (!state.BoolStack.empty())
+			state.BoolStack.push(state.BoolStack.top());
+		break;
+	case 10: // swapbool
+		if (state.BoolStack.size() > 1) {
+			a = state.PopBool();
+			b = state.PopBool();
+
+			state.BoolStack.push(a);
+			state.BoolStack.push(b);
+		}
+		break;
+	case 11: // overbool
+		if (state.BoolStack.size() > 1) {
+			a = state.PopBool();
+			b = state.PopBool();
+
+			state.BoolStack.push(a);
+			state.BoolStack.push(b);
+			state.BoolStack.push(a);
+		}
+		else if (state.BoolStack.size() == 1) {
+			state.BoolStack.push(true);
+		}
+		break;
+	}
+}
+
+void DNA_ExecuteStores(Robot& rob, SimulationOptions& simOpts, State& state, short value) {
+	int a, b, c;
+
+	switch (value) {
+	case 1: // store
+		b = state.PopInt(); // The memory location to store to
+		if (b != 0) { // Only stores to non-zero addresses actually do anything
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			a = state.PopInt();
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = LocalMod(a, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 2: // inc
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			rob.Mem[b] = LocalMod(rob.Mem[b] + 1, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 3: // dec
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			rob.Mem[b] = LocalMod(rob.Mem[b] - 1, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 4: // add and store
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			a = rob.Mem[b] + state.PopInt();
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = LocalMod(a, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 5: // subtract and store
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			a = rob.Mem[b] - state.PopInt();
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = LocalMod(a, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 6: // multiply and store
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			a = rob.Mem[b] * LocalMod(state.PopInt(), 32000);
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = LocalMod(a, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 7: // divide and store
+		b = state.PopInt();
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			int c = state.PopInt();
+			if (c == 0)
+				a = 0;
+			else
+				a = rob.Mem[b] / c;
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = LocalMod(a, 32000);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 8: // ceiling and store
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			c = state.PopInt();
+
+			a = LocalMod(min(rob.Mem[b], c), 32000);
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = a;
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 9: // floor and store
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+			c = state.PopInt();
+
+			a = LocalMod(max(rob.Mem[b], c), 32000);
+
+			for (int k = 0; k < 4; k++) {
+				if (b == 480 + k) rob.TieAngOverwrite[k] = VARIANT_TRUE;
+				if (b == 484 + k) rob.TieLenOverwrite[k] = VARIANT_TRUE;
+			}
+
+			rob.Mem[b] = a;
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 10: // store random
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+
+			std::uniform_int_distribution<int> gen(min(0, rob.Mem[b]), max(0, rob.Mem[b]));
+			rob.Mem[b] = gen(rng);
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+		break;
+	case 11: // store sign
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+
+			rob.Mem[b] = sgn(rob.Mem[b]);
+
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+	case 12: // store abs
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+
+			rob.Mem[b] = abs(rob.Mem[b]);
+
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+	case 13: // store square root
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+
+			if (rob.Mem[b] > 0)
+				rob.Mem[b] = (short)sqrt(rob.Mem[b]);
+			else
+				rob.Mem[b] = 0;
+
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+	case 14: // store negation
+		b = state.PopInt();
+
+		if (b != 0) {
+			b = LocalMod(abs(b), ROBOT_MAX_MEM);
+
+			rob.Mem[b] = -rob.Mem[b];
+
+			rob.Nrg -= simOpts.Costs[COST_STORE_COMMAND] * simOpts.Costs[COST_MULTIPLIER];
+		}
+	}
+}
+
+CurrentConditionFlag AddUpConditions(State& state) {
+	bool res = true;
+
+	while (!state.BoolStack.empty()) {
+		res = res && state.PopBool();
+	}
+
+	return res ? CurrentConditionFlag::NextBody : CurrentConditionFlag::NextElse;
+}
+
+bool DNA_ExecuteFlowCommand(Robot& rob, SimulationOptions& simOpts, State& state, short value) {
+	if (value == 1) {
+		state.CurrentFlow = CurrentFlow::Condition;
+		state.CurrentGene++;
+		state.BoolStack = std::stack<bool>();
+		state.InGene = true;
+		return false;
+	}
+	else if (value == 2 /* start */ || value == 3 /* else */ || value == 4 /* stop */) {
+		// start by assuming inferring a stop command if there isn't already one there
+		if (state.CurrentFlow == CurrentFlow::Condition) state.CurrentCondFlag = AddUpConditions(state);
+		if (!state.InGene) state.CurrentCondFlag = CurrentConditionFlag::NextBody;
+
+		state.CurrentFlow = CurrentFlow::Clear;
+
+		switch (value) {
+		case 2: // start
+			if (!state.InGene) state.CurrentGene++;
+			state.InGene = false;
+			if (state.CurrentCondFlag == CurrentConditionFlag::NextBody)
+				state.CurrentFlow = CurrentFlow::Body;
+			break;
+		case 3: // else
+			if (state.CurrentCondFlag == CurrentConditionFlag::NextElse)
+				state.CurrentFlow = CurrentFlow::ElseBody;
+			if (!state.InGene) state.CurrentGene++;
+			state.InGene = false;
+			break;
+		case 4: // stop
+			state.InGene = false;
+			state.CurrentFlow = CurrentFlow::Clear;
+			break;
+		}
+		return true;
+	}
+	return false;
+}
+
+bool DNA_ConditionState(State& state) {
+	return state.BoolStack.empty() || state.BoolStack.top();
+}
 
 void __stdcall DNA_Execute(Robot& rob, SimulationOptions& simOpts) {
 	State state = State();
@@ -434,9 +759,7 @@ void __stdcall DNA_Execute(Robot& rob, SimulationOptions& simOpts) {
 						short b = dnaBlocks[currentBlock].Value;
 
 						if (b > ROBOT_MAX_MEM || b < 1) {
-							b = abs(dnaBlocks[currentBlock].Value) % ROBOT_MAX_MEM;
-							if (b == 0)
-								b = ROBOT_MAX_MEM;
+							b = LocalMod(abs(dnaBlocks[currentBlock].Value), ROBOT_MAX_MEM);
 						}
 
 						state.IntStack.push(rob.Mem[b]);
