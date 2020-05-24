@@ -6,28 +6,11 @@ float Angle(float x1, float y1, float x2, float y2)
 	float dx = x2 - x1;
 	float dy = y2 - y1;
 
-	if (dx == 0)
-	{
-		if (dy >= 0)
-			return (float)M_PI_2 * 3;
-		return (float)M_PI_2;
-	}
-	else {
-		if (dx < 0)
-			return atan(dy / dx);
-		return atan(dy / dx) + (float)M_PI;
-	}
+	return atan2(dy, dx);
 }
 
 float AngleDifference(float a1, float a2) {
-	float diff = a1 - a2;
-
-	if (diff > M_PI)
-		diff = (-2 * (float)M_PI - diff);
-	if (diff < -M_PI)
-		diff += 2 * (float)M_PI;
-
-	return diff;
+	return AngleNormalise(a1 - a2);
 }
 
 float AngleNormalise(float a) {

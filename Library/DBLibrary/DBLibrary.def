@@ -10,3 +10,6 @@ EXPORTS
 	VectorMax
 	VectorDot
 	VectorCross
+	Angle
+	AngleDifference
+	AngleNormalise
