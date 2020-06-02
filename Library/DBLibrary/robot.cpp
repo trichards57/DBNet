@@ -81,12 +81,7 @@ void Robot_Upkeep(Robot& rob, const SimulationOptions options) {
 }
 
 void Robot_CalculateMass(Robot& rob) {
-	rob.Mass = rob.Body / 1000 + rob.Shell / 200 + rob.Chloroplasts * 31680 / 32000;
-
-	if (rob.Mass < 1)
-		rob.Mass = 1;
-	if (rob.Mass > 32000)
-		rob.Mass = 32000;
+	rob.Mass = clamp(rob.Body / 1000 + rob.Shell / 200 + rob.Chloroplasts * 31680 / 32000, 32000, 1);
 }
 
 void Robot_RunPreUpdate(Robot* robots, int idx, SimulationOptions& options) {

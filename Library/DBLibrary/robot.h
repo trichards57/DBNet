@@ -137,6 +137,7 @@ struct Robot {
 };
 #pragma warning(pop)
 
+void Robot_CalculateMass(Robot& rob);
 bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options);
 

@@ -1,6 +1,7 @@
 LIBRARY
 
 EXPORTS 
+	Robot_CalculateMass
 	Robot_RunPreUpdates
 	Robot_StoreVenom
 	Robot_ManageBody

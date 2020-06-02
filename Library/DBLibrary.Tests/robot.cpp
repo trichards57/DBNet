@@ -53,3 +53,53 @@ TEST(Robot_ManageFixed, IgnoresAddressFreeWhenDisableFixing) {
 
 	EXPECT_EQ(rob->Fixed, VARIANT_FALSE);
 }
+
+TEST(Robot_CalculateMass, SetsMassFromBody) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Body = 1258;
+
+	Robot_CalculateMass(*rob);
+
+	EXPECT_EQ(rob->Mass, rob->Body / 1000);
+}
+
+TEST(Robot_CalculateMass, SetsMassFromShell) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Shell = 456;
+
+	Robot_CalculateMass(*rob);
+
+	EXPECT_EQ(rob->Mass, rob->Shell / 200);
+}
+
+TEST(Robot_CalculateMass, SetsMassFromChloroplasts) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Chloroplasts = 32000;
+
+	Robot_CalculateMass(*rob);
+
+	EXPECT_EQ(rob->Mass, 31680);
+}
+
+TEST(Robot_CalculateMass, SetsMinimumMass) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Body = 25;
+
+	Robot_CalculateMass(*rob);
+
+	EXPECT_EQ(rob->Mass, 1);
+}
+
+TEST(Robot_CalculateMass, SetsMaximumMass) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Body = 32000 * 1042;
+
+	Robot_CalculateMass(*rob);
+
+	EXPECT_EQ(rob->Mass, 32000);
+}
