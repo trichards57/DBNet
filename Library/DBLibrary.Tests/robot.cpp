@@ -103,3 +103,75 @@ TEST(Robot_CalculateMass, SetsMaximumMass) {
 
 	EXPECT_EQ(rob->Mass, 32000);
 }
+
+TEST(Robot_FindRadius, HandlesFixedSize) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_TRUE;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+
+	EXPECT_EQ(radius, ROBOT_SIZE_HALF);
+}
+
+TEST(Robot_FindRadius, HandlesBody) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_FALSE;
+	rob->Body = 1000;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+
+	EXPECT_NEAR(radius, 114.2, 0.1);
+}
+
+TEST(Robot_FindRadius, HandlesMinimumRadius) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_FALSE;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+
+	EXPECT_EQ(radius, 1);
+}
+
+TEST(Robot_FindRadius, HandlesChloroplastsBody) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_FALSE;
+	rob->Chloroplasts = 1000;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+
+	EXPECT_NEAR(radius, 12.9, 0.1);
+}
+
+TEST(Robot_FindRadius, HandlesTotalBody) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_FALSE;
+	rob->Body = 1000;
+	rob->Chloroplasts = 1000;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+
+	EXPECT_NEAR(radius, 114.2 + 9.4, 0.1);
+}
+
+TEST(Robot_FindRadius, HandlesDefaultCase) {
+	auto opts = std::make_unique<SimulationOptions>();
+	auto rob = std::make_unique<Robot>();
+
+	opts->FixedBotRadii = VARIANT_FALSE;
+	rob->Body = 32000;
+
+	float radius = Robot_FindRadius(*rob, *opts, 1);
+	float defaultRadius = Robot_FindRadius(*rob, *opts, -1);
+
+	EXPECT_NEAR(defaultRadius, radius, 0.1);
+}
