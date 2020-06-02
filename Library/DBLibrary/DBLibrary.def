@@ -5,6 +5,7 @@ EXPORTS
 	Robot_StoreVenom
 	Robot_ManageBody
 	Robot_FindRadius
+	Robot_ManageFixed
 	DNA_Execute
 	VectorMin
 	VectorMax

@@ -6,7 +6,7 @@
 
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options) {
 	if (options.DisableFixing == VARIANT_FALSE)
-		rob.Fixed = (rob.Mem[216] > 0);
+		rob.Fixed = (rob.Mem[Fixed] > 0) ? VARIANT_TRUE : VARIANT_FALSE;
 }
 
 void Robot_Poisons(Robot& rob) {

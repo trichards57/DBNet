@@ -138,6 +138,7 @@ struct Robot {
 #pragma warning(pop)
 
 bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);
+void Robot_ManageFixed(Robot& rob, const SimulationOptions options);
 
 constexpr auto ROBOT_SIZE = 120;
 constexpr auto ROBOT_SIZE_HALF = ROBOT_SIZE / 2;
