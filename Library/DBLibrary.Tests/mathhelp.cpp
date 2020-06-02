@@ -56,3 +56,42 @@ TEST(AngleNormalise, HandlesLargeNegative) {
 
 	EXPECT_NEAR(angle, testAngle, 0.001);
 }
+
+TEST(sgn, NegativeGivesMinusOne) {
+	float x = -42.5;
+	auto sign = sgn(x);
+
+	EXPECT_EQ(sign, -1);
+}
+
+TEST(sgn, PositiveGivesPlusOne) {
+	float x = 51.6;
+	auto sign = sgn(x);
+
+	EXPECT_EQ(sign, 1);
+}
+
+TEST(sgn, ZeroGivesPlusOne) {
+	float x = 0;
+	auto sign = sgn(x);
+
+	EXPECT_EQ(sign, 0);
+}
+
+TEST(clamp, TooPositiveGetsCapped) {
+	float x = clamp(50000, 32000, -32000);
+
+	EXPECT_EQ(x, 32000);
+}
+
+TEST(clamp, TooNegativeGetsCapped) {
+	float x = clamp(-50000, 32000, -32000);
+
+	EXPECT_EQ(x, -32000);
+}
+
+TEST(clamp, GoodSizeUnchanged) {
+	float x = clamp(42, 32000, -32000);
+
+	EXPECT_EQ(x, 42);
+}

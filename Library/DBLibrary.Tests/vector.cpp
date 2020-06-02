@@ -141,3 +141,10 @@ TEST(Vector, CalculatesCross) {
 
 	EXPECT_EQ(dotProduct, -197);
 }
+
+TEST(Vector, DefaultsToZero) {
+	Vector a = Vector();
+
+	EXPECT_EQ(a.X, 0);
+	EXPECT_EQ(a.Y, 0);
+}
