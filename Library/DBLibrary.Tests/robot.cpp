@@ -321,3 +321,99 @@ TEST(Robot_Poisons, HandlesNoPoisonNoParalysis) {
 	EXPECT_EQ(rob->Mem[Fixed], 0);
 	EXPECT_EQ(rob->Mem[Fixed + 1], 0);
 }
+
+TEST(Robot_FeedBody, HandlesStandardCommand) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 1000;
+	rob->Body = 200;
+	rob->Mem[fdbody] = 10;
+
+	Robot_FeedBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 1010);
+	EXPECT_EQ(rob->Body, 199);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}
+
+TEST(Robot_FeedBody, ClampsVeryHighCommand) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 1000;
+	rob->Body = 200;
+	rob->Mem[fdbody] = 1000;
+
+	Robot_FeedBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 1100);
+	EXPECT_EQ(rob->Body, 190);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}
+
+TEST(Robot_FeedBody, ClampsVeryHighEnergy) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 32000;
+	rob->Body = 200;
+	rob->Mem[fdbody] = 10;
+
+	Robot_FeedBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 32000);
+	EXPECT_EQ(rob->Body, 199);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}
+
+TEST(Robot_StoreBody, HandlesStandardCommand) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 1000;
+	rob->Body = 200;
+	rob->Mem[strbody] = 10;
+
+	Robot_StoreBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 990);
+	EXPECT_EQ(rob->Body, 201);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}
+
+TEST(Robot_StoreBody, ClampsVeryHighCommand) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 1000;
+	rob->Body = 200;
+	rob->Mem[strbody] = 1000;
+
+	Robot_StoreBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 900);
+	EXPECT_EQ(rob->Body, 210);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}
+
+TEST(Robot_StoreBody, ClampsVeryHighBody) {
+	auto rob = std::make_unique<Robot>();
+	auto opts = std::make_unique <SimulationOptions>();
+
+	rob->Nrg = 32000;
+	rob->Body = 32000;
+	rob->Mem[strbody] = 10;
+
+	Robot_StoreBody(*rob, *opts);
+
+	EXPECT_EQ(rob->Nrg, 31990);
+	EXPECT_EQ(rob->Body, 32000);
+	EXPECT_EQ(rob->Radius, Robot_FindRadius(*rob, *opts, 1));
+	EXPECT_EQ(rob->Mem[fdbody], 0);
+}

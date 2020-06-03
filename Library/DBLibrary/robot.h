@@ -142,6 +142,8 @@ bool Robot_CheckRobot(LPSAFEARRAY robots, int idx);
 void Robot_ManageFixed(Robot& rob, const SimulationOptions options);
 float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float multiplier);
 void Robot_Poisons(Robot& rob);
+void Robot_FeedBody(Robot& rob, SimulationOptions& options);
+void Robot_StoreBody(Robot& rob, SimulationOptions& options);
 
 constexpr auto ROBOT_SIZE = 120;
 constexpr auto ROBOT_SIZE_HALF = ROBOT_SIZE / 2;

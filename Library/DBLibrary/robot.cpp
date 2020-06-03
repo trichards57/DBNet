@@ -125,30 +125,25 @@ float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float m
 	return max(1, result);
 }
 
-void Robot_FeedBody(Robot& rob, SimulationOptions& options) {
-	float feed = min(100.0f, rob.Mem[fdbody]);
+void UpdateBody(Robot& rob, SimulationOptions& options, float amount) {
+	amount = clamp(amount, 100.0f, -100.0f);
 
-	rob.Nrg += feed;
-	rob.Body -= feed / 10;
+	rob.Nrg += amount;
+	rob.Body -= amount / 10;
 
-	if (rob.Nrg > 32000)
-		rob.Nrg = 32000;
-
+	rob.Nrg = min(rob.Nrg, 32000);
+	rob.Body = min(rob.Body, 32000);
 	rob.Radius = Robot_FindRadius(rob, options, 1);
+}
+
+void Robot_FeedBody(Robot& rob, SimulationOptions& options) {
+	UpdateBody(rob, options, rob.Mem[fdbody]);
 
 	rob.Mem[fdbody] = 0;
 }
 
 void Robot_StoreBody(Robot& rob, SimulationOptions& options) {
-	float change = min(100.0f, rob.Mem[strbody]);
-
-	rob.Nrg -= change;
-	rob.Body += change / 10;
-
-	if (rob.Body > 32000)
-		rob.Body = 32000;
-
-	rob.Radius = Robot_FindRadius(rob, options, 1);
+	UpdateBody(rob, options, -rob.Mem[strbody]);
 
 	rob.Mem[strbody] = 0;
 }
