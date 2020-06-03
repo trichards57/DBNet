@@ -5,6 +5,8 @@
 
 #pragma once
 
+#pragma warning(disable: 26495 26812) // Disables some code analysis warnings generated in the gtest header
+
 #define OLE2ANSI
 #define _USE_MATH_DEFINES
 

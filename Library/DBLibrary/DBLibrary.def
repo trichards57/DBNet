@@ -7,6 +7,7 @@ EXPORTS
 	Robot_ManageBody
 	Robot_FindRadius
 	Robot_ManageFixed
+	Robot_Poisons
 	DNA_Execute
 	VectorMin
 	VectorMax

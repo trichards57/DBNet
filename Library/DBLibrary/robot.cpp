@@ -19,7 +19,7 @@ void Robot_Poisons(Robot& rob) {
 		rob.Paracount--;
 		if (rob.Paracount < 1)
 		{
-			rob.Paralyzed = false;
+			rob.Paralyzed = VARIANT_FALSE;
 			rob.Vloc = 0;
 			rob.Vval = 0;
 		}
@@ -32,7 +32,7 @@ void Robot_Poisons(Robot& rob) {
 		rob.Mem[rob.Ploc] = rob.Pval;
 		rob.PoisonCount--;
 		if (rob.PoisonCount < 1) {
-			rob.Poisoned = false;
+			rob.Poisoned = VARIANT_FALSE;
 			rob.Ploc = 0;
 			rob.Pval = 0;
 		}

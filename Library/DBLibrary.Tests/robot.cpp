@@ -175,3 +175,149 @@ TEST(Robot_FindRadius, HandlesDefaultCase) {
 
 	EXPECT_NEAR(defaultRadius, radius, 0.1);
 }
+
+TEST(Robot_Poisons, HandlesDeadRobot) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_TRUE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_TRUE;
+	rob->Paracount = 20;
+	rob->Poisoned = VARIANT_TRUE;
+	rob->PoisonCount = 20;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Paralyzed, VARIANT_TRUE);
+	EXPECT_EQ(rob->Paracount, 20);
+	EXPECT_EQ(rob->Poisoned, VARIANT_TRUE);
+	EXPECT_EQ(rob->PoisonCount, 20);
+}
+
+TEST(Robot_Poisons, HandlesDisabledDNA) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_TRUE;
+
+	rob->Paralyzed = VARIANT_TRUE;
+	rob->Paracount = 20;
+	rob->Poisoned = VARIANT_TRUE;
+	rob->PoisonCount = 20;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Paralyzed, VARIANT_TRUE);
+	EXPECT_EQ(rob->Paracount, 20);
+	EXPECT_EQ(rob->Poisoned, VARIANT_TRUE);
+	EXPECT_EQ(rob->PoisonCount, 20);
+}
+
+TEST(Robot_Poisons, HandlesOngoingParalysis) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_TRUE;
+	rob->Paracount = 20;
+	rob->Poisoned = VARIANT_FALSE;
+	rob->PoisonCount = 0;
+	rob->Vloc = Fixed;
+	rob->Vval = 10;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Paralyzed, VARIANT_TRUE);
+	EXPECT_EQ(rob->Paracount, 19);
+	EXPECT_EQ(rob->Mem[837], 19);
+	EXPECT_EQ(rob->Mem[Fixed], 10);
+}
+
+TEST(Robot_Poisons, HandlesOngoingPoison) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_FALSE;
+	rob->Paracount = 0;
+	rob->Poisoned = VARIANT_TRUE;
+	rob->PoisonCount = 20;
+	rob->Ploc = Fixed + 1;
+	rob->Pval = 10;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Poisoned, VARIANT_TRUE);
+	EXPECT_EQ(rob->PoisonCount, 19);
+	EXPECT_EQ(rob->Mem[838], 19);
+	EXPECT_EQ(rob->Mem[Fixed + 1], 10);
+}
+
+TEST(Robot_Poisons, HandlesEndingParalysis) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_TRUE;
+	rob->Paracount = 1;
+	rob->Poisoned = VARIANT_FALSE;
+	rob->PoisonCount = 0;
+	rob->Vloc = Fixed;
+	rob->Vval = 10;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Paralyzed, VARIANT_FALSE);
+	EXPECT_EQ(rob->Paracount, 0);
+	EXPECT_EQ(rob->Mem[837], 0);
+	EXPECT_EQ(rob->Mem[Fixed], 10);
+}
+
+TEST(Robot_Poisons, HandlesEndingPoison) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_FALSE;
+	rob->Paracount = 0;
+	rob->Poisoned = VARIANT_TRUE;
+	rob->PoisonCount = 1;
+	rob->Ploc = Fixed + 1;
+	rob->Pval = 10;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Poisoned, VARIANT_FALSE);
+	EXPECT_EQ(rob->PoisonCount, 0);
+	EXPECT_EQ(rob->Mem[838], 0);
+	EXPECT_EQ(rob->Mem[Fixed + 1], 10);
+}
+
+TEST(Robot_Poisons, HandlesNoPoisonNoParalysis) {
+	auto rob = std::make_unique<Robot>();
+
+	rob->Corpse = VARIANT_FALSE;
+	rob->DisableDNA = VARIANT_FALSE;
+
+	rob->Paralyzed = VARIANT_FALSE;
+	rob->Paracount = 0;
+	rob->Poisoned = VARIANT_FALSE;
+	rob->PoisonCount = 0;
+	rob->Vloc = Fixed + 1;
+	rob->Vval = 10;
+	rob->Ploc = Fixed + 1;
+	rob->Pval = 11;
+
+	Robot_Poisons(*rob);
+
+	EXPECT_EQ(rob->Poisoned, VARIANT_FALSE);
+	EXPECT_EQ(rob->PoisonCount, 0);
+	EXPECT_EQ(rob->Mem[838], 0);
+	EXPECT_EQ(rob->Mem[Fixed], 0);
+	EXPECT_EQ(rob->Mem[Fixed + 1], 0);
+}

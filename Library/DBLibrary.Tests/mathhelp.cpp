@@ -26,33 +26,33 @@ TEST(Angle, HandlesAnglesQuadrant4) {
 }
 
 TEST(AngleDifference, HandlesSmallAngles) {
-	float angle = AngleDifference(0.1, 0.05);
+	float angle = AngleDifference(0.1f, 0.05f);
 
 	EXPECT_NEAR(angle, 0.05, 0.001);
 }
 
 TEST(AngleDifference, HandlesLargeAngles) {
-	float angle = AngleDifference(6 * M_PI, M_PI_4);
+	float angle = AngleDifference(6 * (float)M_PI, (float)M_PI_4);
 
 	EXPECT_NEAR(angle, (2 * M_PI) - M_PI_4, 0.001);
 }
 
 TEST(AngleNormalise, HandlesUnchanged) {
-	float angle = AngleNormalise(0.1);
+	float angle = AngleNormalise(0.1f);
 
 	EXPECT_NEAR(angle, 0.1, 0.001);
 }
 
 TEST(AngleNormalise, HandlesLargePositive) {
-	float testAngle = 0.14;
-	float angle = AngleNormalise(testAngle + M_PI * 8);
+	float testAngle = 0.14f;
+	float angle = AngleNormalise(testAngle + (float)M_PI * 8);
 
 	EXPECT_NEAR(angle, testAngle, 0.001);
 }
 
 TEST(AngleNormalise, HandlesLargeNegative) {
-	float testAngle = 0.13;
-	float angle = AngleNormalise(testAngle - M_PI * 8);
+	float testAngle = 0.13f;
+	float angle = AngleNormalise(testAngle - (float)M_PI * 8);
 
 	EXPECT_NEAR(angle, testAngle, 0.001);
 }
@@ -65,7 +65,7 @@ TEST(sgn, NegativeGivesMinusOne) {
 }
 
 TEST(sgn, PositiveGivesPlusOne) {
-	float x = 51.6;
+	float x = 51.6f;
 	auto sign = sgn(x);
 
 	EXPECT_EQ(sign, 1);
