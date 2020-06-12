@@ -174,11 +174,11 @@ void __stdcall Robot_RunPreUpdates(LPSAFEARRAY& robs, short maxRobots, Simulatio
 
 constexpr float VenomEnergyConversionRate = 1;
 
-void __stdcall Robot_StoreVenom(Robot& rob, SimulationOptions& options) {
+void Robot_StoreVenom(Robot& rob, SimulationOptions& options) {
 	if (rob.Nrg <= 0)
 		return;
 
-	float delta = (float)clamp(rob.Mem[824], 32000, -32000);
+	float delta = (float)clamp(rob.Mem[storevenom], 32000, -32000);
 
 	if (delta > rob.Nrg / VenomEnergyConversionRate)
 		delta = copysign(rob.Nrg / VenomEnergyConversionRate, delta);
@@ -198,8 +198,8 @@ void __stdcall Robot_StoreVenom(Robot& rob, SimulationOptions& options) {
 	rob.Nrg -= cost;
 	rob.Waste += cost;
 
-	rob.Mem[824] = 0;
-	rob.Mem[825] = (short)(rob.Venom);
+	rob.Mem[storevenom] = 0;
+	rob.Mem[venom] = (short)(rob.Venom);
 }
 
 // Returns false if the robot does not exist

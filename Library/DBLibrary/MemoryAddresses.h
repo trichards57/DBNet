@@ -16,3 +16,6 @@ constexpr int thisgene = 341;
 constexpr int numties = 466;
 constexpr int tiepres = 454;
 constexpr int multi = 470;
+
+constexpr int storevenom = 824;
+constexpr int venom = 825;

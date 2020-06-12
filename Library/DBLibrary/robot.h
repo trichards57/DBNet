@@ -144,6 +144,7 @@ float __stdcall Robot_FindRadius(Robot& rob, SimulationOptions& options, float m
 void Robot_Poisons(Robot& rob);
 void Robot_FeedBody(Robot& rob, SimulationOptions& options);
 void Robot_StoreBody(Robot& rob, SimulationOptions& options);
+void Robot_StoreVenom(Robot& rob, SimulationOptions& options);
 
 constexpr auto ROBOT_SIZE = 120;
 constexpr auto ROBOT_SIZE_HALF = ROBOT_SIZE / 2;

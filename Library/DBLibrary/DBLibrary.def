@@ -10,6 +10,7 @@ EXPORTS
 	Robot_Poisons
 	Robot_FeedBody
 	Robot_StoreBody
+	Robot_StoreVenom
 	DNA_Execute
 	VectorMin
 	VectorMax
