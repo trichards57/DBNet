@@ -126,7 +126,7 @@ internal static class Database
                 VBWriteFile(3, CStr(s) + v + CStr(Robots.rob[rn].nrg + Robots.rob[rn].body * 10) + v + rob.chloroplasts + vbCrLf);
                 d = "";
                 savingtofile = true;
-                d = DetokenizeDNA(ref rn) + vbCrLf;
+                d = DetokenizeDNA(rn) + vbCrLf;
                 if (Mid(d, Len(d) - 3, 2) == vbCrLf)
                 {
                     d = Left(d, Len(d) - 2); //Borsareus 7/22/2014 a bug fix

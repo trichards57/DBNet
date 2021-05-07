@@ -340,7 +340,7 @@ internal static class DNAExecution
         PushIntStack((int)b);
     }
 
-    private static void DNAdebugbool(ref int at_position)
+    private static void DNAdebugbool(int at_position)
     { //Botsareus 1/31/2013 The new debugbool command
         var a = PopBoolStack();
 
@@ -349,7 +349,7 @@ internal static class DNAExecution
         PushBoolStack(a == 1);
     }
 
-    private static void DNAdebugint(ref int at_position)
+    private static void DNAdebugint(int at_position)
     { //Botsareus 1/31/2013 The new debugint command 'Botsareus 4/5/2016 Cleaner architecture
         var a = PopIntStack();
 
@@ -846,7 +846,7 @@ internal static class DNAExecution
                 PopIntStack();
                 break;//clearint - Clears the Int stack
             case 12:
-                IntStack.Clear(); 
+                IntStack.Clear();
                 break;//swapint - Swaps the top two values on the Int stack
             case 13:
                 SwapIntStack();
@@ -857,7 +857,7 @@ internal static class DNAExecution
         }
     }
 
-    private static void ExecuteBitwiseCommand(ref int n)
+    private static void ExecuteBitwiseCommand(int n)
     {
         rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[BTCMDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
 
@@ -893,7 +893,7 @@ internal static class DNAExecution
         }
     }
 
-    private static void ExecuteConditions(ref int n)
+    private static void ExecuteConditions(int n)
     {
         rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[CONDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
 
@@ -1107,7 +1107,7 @@ internal static class DNAExecution
         return ExecuteFlowCommands;
     }
 
-    private static void ExecuteLogic(ref int n)
+    private static void ExecuteLogic(int n)
     {
         rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[LOGICCOST] * SimOpts.Costs[COSTMULTIPLIER]);
 
@@ -1183,7 +1183,7 @@ internal static class DNAExecution
         }
     }
 
-    private static void ExecuteStores(ref int n)
+    private static void ExecuteStores(int n)
     {
         switch (n)
         {

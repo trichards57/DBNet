@@ -3,7 +3,7 @@ using static System.Math;
 
 internal static class Bitwise
 {
-    public static DoubleWord BitAND(ref DoubleWord bitsA, ref DoubleWord bitsB)
+    public static DoubleWord BitAND(DoubleWord bitsA, DoubleWord bitsB)
     {
         DoubleWord BitAND = null;
 
@@ -14,7 +14,7 @@ internal static class Bitwise
         return BitAND;
     }
 
-    public static DoubleWord BitOR(ref DoubleWord bitsA, ref DoubleWord bitsB)
+    public static DoubleWord BitOR(DoubleWord bitsA, DoubleWord bitsB)
     {
         DoubleWord BitOR = null;
 
@@ -35,7 +35,7 @@ internal static class Bitwise
         bits.bit[0] = false;
     }
 
-    public static void BitShiftRight(ref DoubleWord bits)
+    public static void BitShiftRight(DoubleWord bits)
     {
         var lastbit = bits.bit[31];
 
@@ -47,7 +47,7 @@ internal static class Bitwise
         bits.bit[31] = lastbit;
     }
 
-    public static int BitToNumber(ref DoubleWord bits)
+    public static int BitToNumber(DoubleWord bits)
     {
         var BitToNumber = 0;
         var negative = false;
@@ -73,7 +73,7 @@ internal static class Bitwise
         return BitToNumber;
     }
 
-    public static DoubleWord BitXOR(ref DoubleWord bitsA, ref DoubleWord bitsB)
+    public static DoubleWord BitXOR(DoubleWord bitsA, DoubleWord bitsB)
     {
         DoubleWord BitXOR = null;
 

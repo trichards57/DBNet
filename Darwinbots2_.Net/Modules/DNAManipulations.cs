@@ -166,7 +166,7 @@ internal static class DNAManipulations
         return genepos;
     }
 
-    public static void insertsysvars(ref int n)
+    public static void insertsysvars(int n)
     {
         var t = 1;
         while (sysvar[t].Name != "")
@@ -315,7 +315,7 @@ internal static class DNAManipulations
     ' prepares with some values the struct of a new rob
     */
 
-    public static void ScanUsedVars(ref int n)
+    public static void ScanUsedVars(int n)
     {
         var t = 0;
         var used = false;

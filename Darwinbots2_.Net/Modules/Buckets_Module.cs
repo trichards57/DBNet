@@ -42,11 +42,11 @@ internal static class Buckets_Module
         Buckets[(int)pos.x, (int)pos.y].arr.Add(n);
     }
 
-    public static bool AnyShapeBlocksBot(ref int n1, ref int n2)
+    public static bool AnyShapeBlocksBot(int n1, int n2)
     {
         for (var i = 1; i < numObstacles; i++)
         {
-            if (Obstacles.Obstacles[i].exist && ShapeBlocksBot(ref n1, ref n2, ref i))
+            if (Obstacles.Obstacles[i].exist && ShapeBlocksBot(n1, n2, i))
                 return true;
         }
 
@@ -125,7 +125,7 @@ internal static class Buckets_Module
         //If Shapes are see through, then there is no reason to check if a shape blocks a bot
         if (!SimOpts.shapesAreSeeThrough)
         {
-            if (AnyShapeBlocksBot(ref n1, ref n2))
+            if (AnyShapeBlocksBot(n1, n2))
                 return;
         }
 
@@ -780,7 +780,7 @@ internal static class Buckets_Module
         return 0.0;
     }
 
-    public static bool ShapeBlocksBot(ref int n1, ref int n2, ref int o)
+    public static bool ShapeBlocksBot(int n1, int n2, int o)
     {
         var D1 = new vector[5];
         var p = new vector[5];
