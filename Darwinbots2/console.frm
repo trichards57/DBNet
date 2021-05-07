@@ -23,6 +23,7 @@ Begin VB.Form Consoleform
       _ExtentX        =   8281
       _ExtentY        =   3572
       _Version        =   393217
+      Enabled         =   -1  'True
       ReadOnly        =   -1  'True
       ScrollBars      =   2
       TextRTF         =   $"console.frx":058A
@@ -204,11 +205,6 @@ Private Sub debug_Click() 'Botsareus 2/2/2013 The debug button
   Consoleform.evnt.fire cnum, "debug"
 End Sub
 
-Private Sub Form_Load()
-  strings Me
-  SetWindowPos hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE
-End Sub
-
 Private Sub Form_Resize()
   If WindowState <> 1 Then
     Text1.Width = Width - 120
@@ -319,7 +315,7 @@ End Sub
 Public Sub openconsole()
   If rob(robfocus).console Is Nothing Then
     Set rob(robfocus).console = New Consoleform
-    rob(robfocus).console.newconsole robfocus, "Robot " + Str$(rob(robfocus).AbsNum) + " console", "Robot " + Str$(rob(robfocus).AbsNum) + " - " + rob(robfocus).FName + " console"
+    rob(robfocus).console.newconsole robfocus, "Robot " + Str(rob(robfocus).AbsNum) + " console", "Robot " + Str(rob(robfocus).AbsNum) + " - " + rob(robfocus).FName + " console"
     rob(robfocus).console.textout "Type 'help' for commands"
     Active = False
   End If
@@ -407,7 +403,7 @@ Private Sub printmem(ind As Integer, w As String)
     v = SysvarTok(w, ind)
   End If
   If v > 0 And v < 1000 Then
-    rob(ind).console.textout Str$(v) + "->" + Str$(rob(ind).mem(v))
+    rob(ind).console.textout Str(v) + "->" + Str(rob(ind).mem(v))
   End If
 End Sub
 
@@ -416,17 +412,17 @@ Private Function printeye(ind As Integer) As String
   Dim t As Byte
   printeye = "EyeN: "
   For t = 1 To 9
-    printeye = printeye + Str$(rob(ind).mem(EyeStart + t))
-  Next t
-  printeye = printeye + " .eyef:" + Str$(rob(ind).mem(EYEF)) + " .focuseye:" + Str$(rob(ind).mem(FOCUSEYE))
+    printeye = printeye + Str(rob(ind).mem(EyeStart + t))
+  Next
+  printeye = printeye + " .eyef:" + Str(rob(ind).mem(EYEF)) + " .focuseye:" + Str(rob(ind).mem(FOCUSEYE))
   printeye = printeye + Chr(13) + Chr(10) + "EyeNDir: "
   For t = 0 To 8
-    printeye = printeye + Str$(rob(ind).mem(EYE1DIR + t))
-  Next t
+    printeye = printeye + Str(rob(ind).mem(EYE1DIR + t))
+  Next
   printeye = printeye + Chr(13) + Chr(10) + "EyeNWidth: "
   For t = 0 To 8
-    printeye = printeye + Str$(rob(ind).mem(EYE1WIDTH + t))
-  Next t
+    printeye = printeye + Str(rob(ind).mem(EYE1WIDTH + t))
+  Next
 End Function
 
 ' printdebug command
@@ -435,25 +431,24 @@ Private Function printdebug(ind As Integer) As String 'Botsareus 4/5/2016 Rearch
   printdebug = printdebug & rob(ind).dbgstring
 End Function
 
-
 ' printtouch...
 Private Function printtouch(ind As Integer) As String
   Dim a As String
-  a = "Up:" + Str$(rob(ind).mem(hitup))
-  a = a + " Dn:" + Str$(rob(ind).mem(hitdn))
-  a = a + " Sx:" + Str$(rob(ind).mem(hitsx))
-  a = a + " Dx:" + Str$(rob(ind).mem(hitdx))
-  a = a + " ID:" + Str$(rob(ind).lasttch)
+  a = "Up:" + Str(rob(ind).mem(hitup))
+  a = a + " Dn:" + Str(rob(ind).mem(hitdn))
+  a = a + " Sx:" + Str(rob(ind).mem(hitsx))
+  a = a + " Dx:" + Str(rob(ind).mem(hitdx))
+  a = a + " ID:" + Str(rob(ind).lasttch)
   printtouch = a
 End Function
 
 ' print taste (shots flavour)
 Private Function printtaste(ind As Integer) As String
   Dim a As String
-  a = "Up:" + Str$(rob(ind).mem(shup))
-  a = a + " Dn:" + Str$(rob(ind).mem(shdn))
-  a = a + " Sx:" + Str$(rob(ind).mem(shsx))
-  a = a + " Dx:" + Str$(rob(ind).mem(shdx))
+  a = "Up:" + Str(rob(ind).mem(shup))
+  a = a + " Dn:" + Str(rob(ind).mem(shdn))
+  a = a + " Sx:" + Str(rob(ind).mem(shsx))
+  a = a + " Dx:" + Str(rob(ind).mem(shdx))
   printtaste = a
 End Function
 
@@ -461,28 +456,23 @@ End Function
 Public Sub cycle(num As Integer)
   Dim q As Integer, k As Integer
   For k = 1 To num
-      Form1.cyc = Form1.cyc + 1
-      
-      UpdateSim
-      Form1.Redraw
-      
-      If datirob.Visible And Not datirob.ShowMemoryEarlyCycle Then
-        With rob(robfocus)
-        datirob.infoupdate robfocus, .nrg, .parent, .Mutations, .age, .SonNumber, 1, .FName, .genenum, .LastMut, .generation, .DnaLen, .LastOwner, .Waste, .body, .mass, .venom, .shell, .Slime, .chloroplasts
-        End With
-      End If
-      
-      If lasttim > Int(Timer) Then lasttim = Int(Timer)
-      If lasttim < Int(Timer) Then
-        Form1.cyccaption Form1.cyc
-        lasttim = Int(Timer)
-        Form1.cyc = 0
-      End If
-      
-'      Select Case SimOpts.PopLimMethod
-'        Case 1, 2
-'          If TotalRobots > SimOpts.MaxPopulation Then Form1.popcontrol
-'      End Select
+    Form1.cyc = Form1.cyc + 1
+    
+    UpdateSim
+    Form1.Redraw
+    
+    If datirob.Visible And Not datirob.ShowMemoryEarlyCycle Then
+      With rob(robfocus)
+      datirob.infoupdate robfocus, .nrg, .parent, .Mutations, .age, .SonNumber, 1, .FName, .genenum, .LastMut, .generation, .DnaLen, .LastOwner, .Waste, .body, .mass, .venom, .shell, .Slime, .chloroplasts
+      End With
+    End If
+    
+    If lasttim > Int(Timer) Then lasttim = Int(Timer)
+    If lasttim < Int(Timer) Then
+      Form1.cyccaption Form1.cyc
+      lasttim = Int(Timer)
+      Form1.cyc = 0
+    End If
     DoEvents
-  Next k
+  Next
 End Sub

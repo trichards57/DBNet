@@ -1,0 +1,52 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".designer.cs" #>
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+
+namespace DBLibrary
+{
+	internal partial class RobotHost
+	{
+<#
+	foreach (var line in System.IO.File.ReadAllLines(this.Host.ResolvePath("BotDefinition.txt"))) {
+		var parts = line.Split(' ');
+		var type = parts[0];
+		var name = parts[1];
+#>
+		public List<<#= type #>> <#= name #> { get; } = new List<<#= type #>>();
+<#
+	}
+#>
+	}
+
+    [ComVisible(true)]
+	public partial class BotManager
+	{
+		internal RobotHost Host { get; } = new RobotHost();
+<#
+	foreach (var line in System.IO.File.ReadAllLines(this.Host.ResolvePath("BotDefinition.txt"))) {
+		var parts = line.Split(' ');
+		var type = parts[0];
+		var name = parts[1];
+#>
+		public <#= type #> Get<#= name #>(int id) {
+			if (id < Host.<#= name #>.Count)
+				return Host.<#= name #>[id];
+			return default;
+		}
+
+		public void Set<#= name #>(int id, <#= type #> value) {
+			if (id < Host.<#= name #>.Count)
+				Host.<#= name #>[id] = value;
+		}
+
+<#
+	}
+#>
+	}
+}

@@ -1,0 +1,4 @@
+LIBRARY DBLibrary
+EXPORTS
+	GetRobot
+	RobotExists

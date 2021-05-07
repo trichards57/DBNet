@@ -1,0 +1,48 @@
+<Window x:Class="DBNet.Forms.frmEYE"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="Eye Designer"    Height="431"    Width="315">
+ <Grid>
+  <Label x:Name="CommonDialog1" Margin="206,206,0,0" Padding="2,2,2,2" VerticalAlignment="Top" HorizontalAlignment="Left" />
+  <Button x:Name="btnOut" Margin="9,266,0,0" Padding="2,2,2,2" Width="95" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Write DNA ..." Click="btnOut_Click" />
+  <TextBox x:Name="txtWth_8" Margin="137,231,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_7" Margin="137,206,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_6" Margin="137,180,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_5" Margin="137,154,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_4" Margin="137,129,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_3" Margin="137,103,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_2" Margin="137,77,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_1" Margin="137,51,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtWth_0" Margin="137,26,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_8" Margin="60,231,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_7" Margin="60,206,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_6" Margin="60,180,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_5" Margin="60,154,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_4" Margin="60,129,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_3" Margin="60,103,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_2" Margin="60,77,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_1" Margin="60,51,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <TextBox x:Name="txtDir_0" Margin="60,26,0,0" Padding="2,2,2,2" Width="70" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+  <GroupBox x:Name="Frame1" Margin="9,309,0,0" Width="267" Height="87" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Ease of Access"> <Grid Margin="0,-15,0,0">
+    <Button x:Name="btnCosts" Margin="163,51,0,0" Padding="2,2,2,2" Width="95" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Disable Costs" Click="btnCosts_Click" />
+    <Button x:Name="btnRaim" Margin="163,17,0,0" Padding="2,2,2,2" Width="95" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Reset Aim" Click="btnRaim_Click" />
+    <Button x:Name="btnBoff" Margin="9,17,0,0" Padding="2,2,2,2" Width="147" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Turn off Brownian Motion" Click="btnBoff_Click" />
+  </Grid> </GroupBox>
+  <Label x:Name="Label11" Margin="17,231,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye9" />
+  <Label x:Name="Label10" Margin="17,206,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye8" />
+  <Label x:Name="Label9" Margin="17,180,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye7" />
+  <Label x:Name="Label8" Margin="17,154,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye6" />
+  <Label x:Name="Label7" Margin="17,129,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye5" />
+  <Label x:Name="Label6" Margin="17,103,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye4" />
+  <Label x:Name="Label5" Margin="17,77,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye3" />
+  <Label x:Name="Label4" Margin="17,51,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye2" />
+  <Label x:Name="Label3" Margin="17,26,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="eye1" />
+  <Label x:Name="Label2" Margin="146,9,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="width" />
+  <Label x:Name="Label1" Margin="69,9,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="direction" />
+ </Grid>
+</Window>

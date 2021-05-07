@@ -608,23 +608,23 @@ Public enlarged As Boolean
 Public showingMemory As Boolean
 Public ShowMemoryEarlyCycle As Boolean
 
-Private Sub robfname_DblClick() 'Botsareus 10/26/2014 Should make forking easyer
-Clipboard.CLEAR
-Clipboard.SetText robfname.Caption
+Private Sub robfname_DblClick()
+  Clipboard.CLEAR
+  Clipboard.SetText robfname.Caption
 End Sub
 
 Public Sub ShowDna()
-  dnashow_Click 'Botsareus 1/25/2013 Show dna using the button
+  dnashow_Click
 End Sub
 
-Private Sub btnMark_Click() 'Botsareus 2/25/2013 Makes the program easy to debug
-Visible = False
-Dim poz As Double
-    poz = val(InputBox("""[<POSITION MARKER]"" will be displayed next to dna location. Specify position:"))
-    poz = Abs(poz)
-    If poz > 32000 Then poz = 32000
-Visible = True
-dnatext.text = DetokenizeDNA(robfocus, CInt(poz))
+Private Sub btnMark_Click()
+  Visible = False
+  Dim poz As Double
+  poz = val(InputBox("""[<POSITION MARKER]"" will be displayed next to dna location. Specify position:"))
+  poz = Abs(poz)
+  If poz > 32000 Then poz = 32000
+  Visible = True
+  dnatext.text = DetokenizeDNA(robfocus, CInt(poz))
 End Sub
 
 Private Sub Command3_Click()
@@ -642,30 +642,30 @@ End Sub
 Private Sub dnashow_Click()
   showingMemory = False
   MemoryStateCheck.Visible = False
-  Me.Width = 12645
+  Width = 12645
   dnatext.Width = 9050
   Frame2.Width = 4695 + 8055
   enlarged = True
   If rob(robfocus).exist Then
-    dnatext.text = DetokenizeDNA(robfocus) ', CInt(poz))
+    dnatext.text = DetokenizeDNA(robfocus)
   Else
     dnatext.text = "This Robot is dead.  No DNA available."
   End If
-  btnMark.Visible = True 'Botsareus 3/15/2013 Makes dna easyer to debug
+  btnMark.Visible = True
 End Sub
 
 Private Sub dnatext_Change()
-robtag.Caption = Left(rob(robfocus).tag, 45) 'Botsareus 1/28/2014 New short description feature
+  robtag.Caption = Left(rob(robfocus).tag, 45)
 End Sub
 
 Private Sub Form_Activate()
-  SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE 'Botsareus 12/12/2012 Info form is always on top
+  SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE
 End Sub
 
 Private Sub MemoryCommand_Click()
- showingMemory = True
- MemoryStateCheck.Visible = True
-  Me.Width = 12645
+  showingMemory = True
+  MemoryStateCheck.Visible = True
+  Width = 12645
   dnatext.Width = 9050
   Frame2.Width = 4695 + 8055
   enlarged = True
@@ -674,26 +674,26 @@ Private Sub MemoryCommand_Click()
   Else
     dnatext.text = "This Robot is dead.  No DNA available."
   End If
-  btnMark.Visible = False 'Botsareus 3/15/2013 Makes dna easyer to debug
+  btnMark.Visible = False
 End Sub
+
 Public Function GetRobMemoryString(n As Integer) As String
-Dim i As Integer
-Dim j As Integer
+  Dim i As Integer
+  Dim j As Integer
 
   If Not rob(n).exist Then
     GetRobMemoryString = "This robot is dead"
     Exit Function
   End If
-  For j = 1 To 100
-    GetRobMemoryString = GetRobMemoryString + Str$((j - 1) * 10 + 1) + ":"
-    For i = ((j - 1) * 10) + 1 To (j * 10)
-      GetRobMemoryString = GetRobMemoryString + vbTab + Str$(rob(n).mem(i)) 'space(6 - Len(Str$(rob(n).mem(i))))
-    Next i
-     GetRobMemoryString = GetRobMemoryString + vbCrLf
-  Next j
   
+  For j = 1 To 100
+    GetRobMemoryString = GetRobMemoryString + Str((j - 1) * 10 + 1) + ":"
+    For i = ((j - 1) * 10) + 1 To (j * 10)
+      GetRobMemoryString = GetRobMemoryString + vbTab + Str(rob(n).mem(i))
+    Next
+     GetRobMemoryString = GetRobMemoryString + vbCrLf
+  Next
 End Function
-
 
 Private Sub MemoryStateCheck_Click()
   ShowMemoryEarlyCycle = MemoryStateCheck.value
@@ -702,12 +702,12 @@ End Sub
 Private Sub MutDetails_Click()
   showingMemory = False
   MemoryStateCheck.Visible = False
-  Me.Width = 12645
+  Width = 12645
   dnatext.Width = 9050
   Frame2.Width = 4695 + 8055
   enlarged = True
   dnatext.text = GiveMutationDetails(robfocus)
-  btnMark.Visible = False 'Botsareus 3/15/2013 Makes dna easyer to debug
+  btnMark.Visible = False
 End Sub
 
 Private Function GiveMutationDetails(robfocus) As String
@@ -715,16 +715,14 @@ Private Function GiveMutationDetails(robfocus) As String
   If GiveMutationDetails = "" Then GiveMutationDetails = "No mutations"
 End Function
 
-Private Sub robtag_DblClick() 'Botsareus 1/28/2014 Enter short description for robot
-    SetWindowPos hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE 'Botsareus 12/12/2012 Info form is always on top
-    rob(robfocus).tag = InputBox("Enter short description for robot. Can not be more then 45 characters long.", , Left(rob(robfocus).tag, 45))
-    rob(robfocus).tag = Left(replacechars(rob(robfocus).tag), 45)
-    robtag.Caption = rob(robfocus).tag
-    SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE 'Botsareus 12/12/2012 Info form is always on top
+Private Sub robtag_DblClick()
+  rob(robfocus).tag = InputBox("Enter short description for robot. Can not be more then 45 characters long.", , Left(rob(robfocus).tag, 45))
+  rob(robfocus).tag = Left(replacechars(rob(robfocus).tag), 45)
+  robtag.Caption = rob(robfocus).tag
 End Sub
 
 Private Sub ShrinkWin_Click()
-  Me.Width = 3255
+  Width = 3255
   MutDetails.Caption = "Mutation details->"
   enlarged = False
   showingMemory = False
@@ -737,41 +735,37 @@ Public Sub RefreshDna()
 End Sub
 
 Sub Form_Load()
-  strings Me
   rage.Caption = "Age (cycles)" 'EricL 4/13/2006 Override resource file because I don't have a resource editor handy :)
-  Me.Width = 3255
+  Width = 3255
   enlarged = False
   ShowMemoryEarlyCycle = False
   MemoryStateCheck.value = 0
 End Sub
 
-Sub infoupdate(n As Integer, nrg As Single, par As Long, mut As Long, age As Long, _
-                son As Integer, pmut As Single, FName As String, gn As Integer, mo As Long, _
-                gennum As Integer, DnaLen As Integer, lastown As String, Waste As Single, body As Single, _
-                mass As Single, venom As Single, shell As Single, Slime As Single, ChlrVal As Single) 'Botsareus 8/25/2013 Mod to display chloroplast info.
-  robnum.Caption = Str$(n)
-  UniqueBotID.Caption = Str$(rob(n).AbsNum)
-  robnrg.Caption = Str$(Round(nrg, 2))
-  robbody.Caption = Str$(Round(body, 2)) 'EricL 4/14/2006 Removed Int()  Need to see the decimal value
-  robmass.Caption = Str$(Round(mass, 2))
-  robvenom.Caption = Str$(Round(venom, 2))
-  robshell.Caption = Str$(Round(rob(n).shell, 2))
-  robslime.Caption = Str$(Round(rob(n).Slime, 2))
-  PoisonLabel.Caption = Str$(Round(rob(n).poison, 2))
-  VTimerLabel.Caption = Str$(rob(n).Vtimer)
-  robparent.Caption = Str$(par)
-  robmutations.Caption = Str$(mo)
-  robage.Caption = Str$(age) ' EricL 4/13/2006 Now reads actual age
-  robson.Caption = Str$(son)
+Sub infoupdate(n As Integer, nrg As Single, par As Long, mut As Long, age As Long, son As Integer, pmut As Single, FName As String, gn As Integer, mo As Long, gennum As Integer, DnaLen As Integer, lastown As String, Waste As Single, body As Single, mass As Single, venom As Single, shell As Single, Slime As Single, ChlrVal As Single)  'Botsareus 8/25/2013 Mod to display chloroplast info.
+  robnum.Caption = Str(n)
+  UniqueBotID.Caption = Str(rob(n).AbsNum)
+  robnrg.Caption = Str(Round(nrg, 2))
+  robbody.Caption = Str(Round(body, 2)) 'EricL 4/14/2006 Removed Int()  Need to see the decimal value
+  robmass.Caption = Str(Round(mass, 2))
+  robvenom.Caption = Str(Round(venom, 2))
+  robshell.Caption = Str(Round(rob(n).shell, 2))
+  robslime.Caption = Str(Round(rob(n).Slime, 2))
+  PoisonLabel.Caption = Str(Round(rob(n).poison, 2))
+  VTimerLabel.Caption = Str(rob(n).Vtimer)
+  robparent.Caption = Str(par)
+  robmutations.Caption = Str(mo)
+  robage.Caption = Str(age) ' EricL 4/13/2006 Now reads actual age
+  robson.Caption = Str(son)
   robfname.Caption = FName
-  robgene.Caption = Str$(gn)
-  robover.Caption = Str$(mut)
+  robgene.Caption = Str(gn)
+  robover.Caption = Str(mut)
   robgener.Caption = rob(n).generation
-  totlenlab.Caption = Str$(DnaLen)
-  ChlrLabel.Caption = Str$(ChlrVal)
-  wasteval.Caption = Str$(Round(Waste, 2))
-  VelocityLabel.Caption = Str$(Round(VectorMagnitude(rob(n).vel), 2))
-  RadiusLabel.Caption = Str$(Round(rob(n).radius, 2))
+  totlenlab.Caption = Str(DnaLen)
+  ChlrLabel.Caption = Str(ChlrVal)
+  wasteval.Caption = Str(Round(Waste, 2))
+  VelocityLabel.Caption = Str(Round(VectorMagnitude(rob(n).vel), 2))
+  RadiusLabel.Caption = Str(Round(rob(n).radius, 2))
   If lastown <> "" Then
     LastOwnLab.Caption = lastown
   Else

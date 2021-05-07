@@ -1,0 +1,125 @@
+<Window x:Class="DBNet.Forms.CostsForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="Costs"    Height="692"    Width="811" Loaded="Form_Load">
+ <Grid>
+  <GroupBox x:Name="Frame2" Margin="9,351,0,0" Width="404" Height="292" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Cost Overrides"> <Grid Margin="0,-15,0,0">
+    <CheckBox x:Name="AllowNegativeCostXCheck" Margin="214,26,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Allow Multiplier to go Negative" Click="AllowNegativeCostXCheck_Click" />
+    <CheckBox x:Name="DynamicCostsIncludePlantsCheck" Margin="17,129,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Include all robots" Click="DynamicCostsIncludePlantsCheck_Click" />
+    <TextBox x:Name="CostX" Margin="111,26,0,0" Padding="2,2,2,2" Width="85" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1.0" TextChanged="CostX_Change" />
+    <TextBox x:Name="CostReinstate" Margin="309,103,0,0" Padding="2,2,2,2" Width="69" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" TextChanged="CostReinstate_Change" />
+    <GroupBox x:Name="Frame3" Margin="9,154,0,0" Width="387" Height="130" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Dynamic Cost Adjustment"> <Grid Margin="0,-15,0,0">
+      <TextBox x:Name="DynamicCostsRangeL" Margin="317,77,0,0" Padding="2,2,2,2" Width="27" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="100" TextChanged="DynamicCostsRangeL_Change" />
+      <TextBox x:Name="DynamicCostsRangeU" Margin="317,51,0,0" Padding="2,2,2,2" Width="27" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="100" TextChanged="DynamicCostsRangeU_Change" />
+      <TextBox x:Name="DynamicCostTargetPopulation" Margin="309,26,0,0" Padding="2,2,2,2" Width="33" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="5000" TextChanged="DynamicCostTargetPopulation_Change" />
+      <CheckBox x:Name="DynamicCosts" Margin="17,17,0,0" Padding="2,2,2,2" Width="138" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enable Dynamic Costs" Click="DynamicCosts_Click" />
+      <Slider x:Name="DynamicCostSensitivitySlider" Margin="9,60,0,0" Padding="2,2,2,2" Width="155" Height="40" VerticalAlignment="Top" HorizontalAlignment="Left" />
+      <Label x:Name="DynamicCostsUpDown" Margin="343,26,0,0" Padding="2,2,2,2" Width="18" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+      <Label x:Name="UpDown1" Margin="343,51,0,0" Padding="2,2,2,2" Width="18" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+      <Label x:Name="UpDown3" Margin="343,77,0,0" Padding="2,2,2,2" Width="18" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+      <Label x:Name="Label15" Margin="369,82,0,0" Padding="2,2,2,2" Width="10" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="%" />
+      <Label x:Name="Label14" Margin="189,77,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Lower Range: Target -" />
+      <Label x:Name="Label13" Margin="369,57,0,0" Padding="2,2,2,2" Width="10" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="%" />
+      <Label x:Name="Label12" Margin="189,51,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Upper Range: Target +" />
+      <Label x:Name="Label8" Margin="189,26,0,0" Padding="2,2,2,2" Width="104" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Target Population" />
+      <Label x:Name="Label7" Margin="60,43,0,0" Padding="2,2,2,2" Width="61" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Sensitivity" />
+      <Label x:Name="Label10" Margin="17,103,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Low" />
+      <Label x:Name="Label11" Margin="129,103,0,0" Padding="2,2,2,2" Width="27" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="High" />
+    </Grid> </GroupBox>
+    <TextBox x:Name="BotNoCostThreshold" Margin="309,77,0,0" Padding="2,2,2,2" Width="69" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" TextChanged="BotNoCostThreshold_Change" />
+    <Label x:Name="UpDown2" Margin="377,77,0,0" Padding="2,2,2,2" Width="18" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Label x:Name="UpDown4" Margin="377,103,0,0" Padding="2,2,2,2" Width="18" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Label x:Name="Label19" Margin="17,27,0,0" Padding="2,2,2,2" Width="78" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Cost Multiplier:" />
+    <Label x:Name="Label16" Margin="94,103,0,0" Padding="2,2,2,2" Width="215" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Reinstate Costs when population above" />
+    <Label x:Name="Label9" Margin="94,77,0,0" Padding="2,2,2,2" Width="207" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Zero Costs when population falls below" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="AgeFrame" Margin="420,437,0,0" Width="292" Height="181" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Aging"> <Grid Margin="0,-15,0,0">
+    <TextBox x:Name="Costs_33" Tag="33" Margin="137,120,0,0" Padding="2,2,2,2" Width="52" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0.0001" />
+    <CheckBox x:Name="LinearAgeCostCheck" Margin="43,120,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Increase by" Click="LinearAgeCostCheck_Click" />
+    <CheckBox x:Name="AgeCostLog" Margin="43,146,0,0" Padding="2,2,2,2" Width="232" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Increase log(bot age - cost start age)" Click="AgeCostLog_Click" />
+                <TextBox x:Name="Costs_32" Tag="32" Margin="133,60,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_31" Tag="31" Margin="133,26,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+    <Label x:Name="Label18" Margin="9,94,0,0" Padding="2,2,2,2" Width="243" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Once cost begins being applied:" />
+    <Label x:Name="Label17" Margin="197,120,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per cycle" />
+    <Label x:Name="Label6" Margin="210,60,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="cycles old" />
+    <Label x:Name="Label5" Margin="9,60,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Begins upon reaching" />
+    <Label x:Name="Label4" Margin="9,26,0,0" Padding="2,2,2,2" Width="123" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Age Cost" />
+    <Label x:Name="Label3" Margin="210,26,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per cycle" />
+  </Grid> </GroupBox>
+  <Button x:Name="Default" Margin="514,626,0,0" Padding="2,2,2,2" Width="112" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="F1 Default" Click="Default_Click" />
+  <Button x:Name="ExitButton" Margin="651,626,0,0" Padding="2,2,2,2" Width="112" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Okay" Click="ExitButton_Click" />
+  <GroupBox x:Name="Frame1_2" Margin="420,9,0,0" Width="352" Height="425" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Morphological Costs"> <Grid Margin="0,-15,0,0">
+                <TextBox x:Name="Costs_8" Tag="8" Margin="146,394,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_25" Tag="25" Margin="146,360,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_30"  Tag="30" Margin="146,326,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_29" Tag="29" Margin="146,291,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_28" Tag="28" Margin="146,257,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_27" Tag="27" Margin="146,223,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_26" Tag="26" Margin="146,189,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_24" Tag="24" Margin="146,154,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_23" Tag="23" Margin="146,120,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_22" Tag="22" Margin="146,86,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_21" Tag="21" Margin="146,51,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_20" Tag="20" Margin="146,17,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+    <Label x:Name="Label1_10" Tag="29" Margin="21,394,0,0" Padding="2,2,2,2" Width="91" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Chloroplast Cost" />
+    <Label x:Name="Label2_10" Margin="223,394,0,0" Padding="2,2,2,2" Width="108" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per added chlr." />
+    <Label x:Name="Label2_8" Margin="223,360,0,0" Padding="2,2,2,2" Width="108" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per data per copy" />
+    <Label x:Name="Label1_9" Margin="21,360,0,0" Padding="2,2,2,2" Width="91" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="DNA Copy" />
+    <Label x:Name="Label2_30" Margin="223,326,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per body per turn" />
+    <Label x:Name="Label1_30" Margin="21,326,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Body Upkeep" />
+    <Label x:Name="Label1_29" Margin="21,17,0,0" Padding="2,2,2,2" Width="130" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Voluntary Movement" />
+    <Label x:Name="Label1_28" Margin="21,51,0,0" Padding="2,2,2,2" Width="117" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Rotation" />
+    <Label x:Name="Label1_27" Margin="21,291,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Shell Cost" />
+    <Label x:Name="Label1_26" Margin="21,86,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Tie Formation" />
+    <Label x:Name="Label1_25" Margin="21,120,0,0" Padding="2,2,2,2" Width="134" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Shot Formation" />
+    <Label x:Name="Label1_24" Margin="21,154,0,0" Padding="2,2,2,2" Width="91" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="DNA Upkeep" />
+    <Label x:Name="Label1_22" Margin="21,189,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Venom Cost" />
+    <Label x:Name="Label1_21" Margin="21,223,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Poison Cost" />
+    <Label x:Name="Label1_20" Margin="21,257,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Slime Cost" />
+    <Label x:Name="Label2_29" Margin="223,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per bang" />
+    <Label x:Name="Label2_28" Margin="223,51,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per radian" />
+    <Label x:Name="Label2_27" Margin="223,86,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per firing" />
+    <Label x:Name="Label2_26" Margin="223,120,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="base nrg per shot" />
+    <Label x:Name="Label2_25" Margin="223,154,0,0" Padding="2,2,2,2" Width="125" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per data per cycle" />
+    <Label x:Name="Label2_24" Margin="377,60,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per bp per copy" />
+    <Label x:Name="Label2_23" Margin="223,189,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per unit constructed" />
+    <Label x:Name="Label2_22" Margin="223,223,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per unit constructed" />
+    <Label x:Name="Label2_21" Margin="223,257,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per unit constructed" />
+    <Label x:Name="Label2_20" Margin="223,291,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per unit constructed" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="Frame1_0" Margin="9,9,0,0" Width="404" Height="340" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="DNA Command Costs"> <Grid Margin="0,-15,0,0">
+                <TextBox x:Name="Costs_3" Tag="3" Margin="140,129,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_0" Tag="0" Margin="140,26,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_9" Tag="9" Margin="140,304,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_7" Tag="7" Margin="140,269,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_6" Tag="6" Margin="140,234,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_5" Tag="5" Margin="140,199,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_4" Tag="4" Margin="140,163,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_2" Tag="2" Margin="140,95,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                <TextBox x:Name="Costs_1" Tag="1" Margin="140,60,0,0" Padding="2,2,2,2" Width="70" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+    <Label x:Name="Label2_9" Margin="223,309,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_7" Margin="223,273,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_6" Margin="223,238,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_5" Margin="223,204,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_4" Margin="223,169,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_3" Margin="223,134,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_2" Margin="223,100,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_1" Margin="223,64,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label2_0" Margin="223,30,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="nrg per instance" />
+    <Label x:Name="Label1_8" Margin="13,270,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Stores" />
+    <Label x:Name="Label1_7" Margin="13,236,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Logic" />
+    <Label x:Name="Label1_6" Margin="13,201,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Condition" />
+    <Label x:Name="Label1_5" Margin="13,167,0,0" Padding="2,2,2,2" Width="91" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Bitwise Command" />
+    <Label x:Name="Label1_4" Margin="13,133,0,0" Padding="2,2,2,2" Width="134" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Advanced Command" />
+    <Label x:Name="Label1_3" Margin="13,99,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Basic Command" />
+    <Label x:Name="Label1_2" Margin="13,309,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Flow Command" />
+    <Label x:Name="Label1_1" Margin="13,64,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="*number" />
+    <Label x:Name="Label1_0" Margin="13,30,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="number" />
+  </Grid> </GroupBox>
+ </Grid>
+</Window>

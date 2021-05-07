@@ -1,0 +1,55 @@
+<Window x:Class="DBNet.Forms.TeleportForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="New Teleporter"    Height="490"    Width="659">
+ <Grid>
+  <GroupBox x:Name="Frame5" Margin="343,206,0,0" Width="275" Height="138" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Internet Options"> <Grid Margin="0,-15,0,0">
+    <TextBox x:Name="intOutText" Margin="17,103,0,0" Padding="2,2,2,2" Width="241" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" />
+    <TextBox x:Name="intInText" Margin="17,51,0,0" Padding="2,2,2,2" Width="241" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" />
+    <Label x:Name="inboundLabel" Margin="17,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Inbound Path" />
+    <Label x:Name="outboundLabel" Margin="17,86,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Outbound Path" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="Frame4" Margin="9,274,0,0" Width="327" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Statistics"> <Grid Margin="0,-15,0,0">
+    <Label x:Name="NumTeleported" Margin="129,26,0,0" Padding="2,2,2,2" Width="147" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+    <Label x:Name="Label3" Margin="17,26,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Total Teleported:" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="Frame3" Margin="9,51,0,0" Width="327" Height="215" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Type"> <Grid Margin="0,-15,0,0">
+    <RadioButton x:Name="TeleportOption_3" Margin="43,69,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Internet" />
+    <TextBox x:Name="BackFlowText" Margin="154,163,0,0" Padding="2,2,2,2" Width="52" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="10" />
+    <CheckBox x:Name="TeleportVeggiesCheck" Margin="171,43,0,0" Padding="2,2,2,2" Width="121" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Teleport Autotrophs" />
+    <CheckBox x:Name="TeleportCorpsesCheck" Margin="171,60,0,0" Padding="2,2,2,2" Width="112" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Teleport Corpses" />
+    <CheckBox x:Name="TeleportHeterotrophsCheck" Margin="171,26,0,0" Padding="2,2,2,2" Width="138" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Teleport Heterotrophs" />
+    <TextBox x:Name="BotsPerPoll" Margin="154,137,0,0" Padding="2,2,2,2" Width="52" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="10" />
+    <TextBox x:Name="InboundCycleCheck" Margin="154,111,0,0" Padding="2,2,2,2" Width="52" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="10" />
+    <RadioButton x:Name="TeleportOption_0" Margin="43,51,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Inbound" />
+    <RadioButton x:Name="TeleportOption_1" Margin="43,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Outbound" />
+    <RadioButton x:Name="TeleportOption_2" Margin="43,17,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Intrasim" />
+    <Label x:Name="Label5" Margin="69,163,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Backflow Limit" />
+    <Label x:Name="Label4" Margin="214,163,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="bots" />
+    <Label x:Name="InboundLabel4" Margin="214,137,0,0" Padding="2,2,2,2" Width="104" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="bots in at a time" />
+    <Label x:Name="InboundLabel3" Margin="69,137,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Teleport max of " />
+    <Label x:Name="InboundLabel2" Margin="214,111,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="cycles" />
+    <Label x:Name="InboundLabel1" Margin="77,111,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Check every" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="Frame1" Margin="343,51,0,0" Width="275" Height="138" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Properties"> <Grid Margin="0,-15,0,0">
+    <GroupBox x:Name="Frame2" Margin="17,69,0,0" Width="250" Height="61" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Size"> <Grid Margin="0,-15,0,0">
+      <Slider x:Name="TeleporterSizeSlider" Margin="17,34,0,0" Padding="2,2,2,2" Width="224" Height="22" VerticalAlignment="Top" HorizontalAlignment="Left" />
+      <Label x:Name="Label10" Margin="17,17,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Small" />
+      <Label x:Name="Label11" Margin="206,17,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Large" />
+    </Grid> </GroupBox>
+    <CheckBox x:Name="RespectShapesCheck" Margin="34,43,0,0" Padding="2,2,2,2" Width="112" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Respect Shapes" />
+    <CheckBox x:Name="FixedCheck" Margin="34,26,0,0" Padding="2,2,2,2" Width="78" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Fixed" />
+  </Grid> </GroupBox>
+  <Button x:Name="CancelButton" Margin="377,411,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Cancel" Click="CancelButton_Click" />
+  <Button x:Name="OKButton" Margin="506,411,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="OK" Click="OKButton_Click" />
+  <TextBox x:Name="NetworkPath" Margin="94,17,0,0" Padding="2,2,2,2" Width="181" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="path" />
+  <Label x:Name="Label42" Margin="9,351,0,0" Padding="2,2,2,2" Width="610" Height="52" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="$&quot;TeleportForm.frx&quot;:0000" />
+  <Label x:Name="Label2" Margin="291,17,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="e.g.   c:\db   or  \\server\share" />
+  <Label x:Name="Label1" Margin="17,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="File Path:" />
+ </Grid>
+</Window>

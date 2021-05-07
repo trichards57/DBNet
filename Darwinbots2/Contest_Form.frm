@@ -371,23 +371,18 @@ Attribute VB_Exposed = False
 Option Explicit
 'Botsareus 6/12/2012 form's icon change
 
-' Stuff for automatic restarts and F1 contest mode
-Private Sub Form_Load()
-'  SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE
-End Sub
-
 Private Sub Option1_Click(Index As Integer) 'Botsareus 2/25/2014 Simplified
-If Index = 0 Then Exit Sub
+  If Index = 0 Then Exit Sub
   'robot species index wins this round
-    Dim t As Integer
-    Dim realname As String
-    For t = 1 To MaxRobs
-        If Not rob(t).Veg And Not rob(t).Corpse And rob(t).exist Then
-          realname = Left(rob(t).FName, Len(rob(t).FName) - 4)
-          If realname <> PopArray(Index).SpName Then KillRobot t
-        End If
-    Next t
-    Option1(Index).value = False 'Botsareus 3/7/2014 Bug fix
+  Dim t As Integer
+  Dim realname As String
+  For t = 1 To MaxRobs
+    If Not rob(t).Veg And Not rob(t).Corpse And rob(t).exist Then
+      realname = Left(rob(t).FName, Len(rob(t).FName) - 4)
+      If realname <> PopArray(Index).SpName Then KillRobot t
+    End If
+  Next
+  Option1(Index).value = False 'Botsareus 3/7/2014 Bug fix
 End Sub
 
 Private Sub Form_Resize()

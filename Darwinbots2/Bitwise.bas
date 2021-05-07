@@ -31,7 +31,7 @@ Public Function NumberToBit(ByVal value As Long) As DoubleWord
     Else
       NumberToBit.bit(counter) = False
     End If
-  Next counter
+  Next
 
   If negative Then
     'invert bits then add 1
@@ -58,7 +58,7 @@ Public Function BitToNumber(ByRef bits As DoubleWord) As Long
 
   For counter = 0 To 30 '31st bit is always zero at this point
     BitToNumber = BitToNumber + (2 ^ counter) * (bits.bit(counter) * True)
-  Next counter
+  Next
 
   If negative Then BitToNumber = -BitToNumber
 End Function
@@ -68,7 +68,7 @@ Public Sub InvertBits(ByRef bits As DoubleWord) 'compliment
 
   For counter = 0 To 31
     bits.bit(counter) = Not bits.bit(counter)
-  Next counter
+  Next
 End Sub
 
 'tested and works Sept-21-05
@@ -83,7 +83,7 @@ Public Sub IncBits(ByRef bits As DoubleWord) 'bitinc
       'we have to carry bits
       bits.bit(counter) = False
     End If
-  Next counter
+  Next
 End Sub
 
 'tested and works Sept-21-05
@@ -98,7 +98,7 @@ Public Sub DecBits(ByRef bits As DoubleWord) 'bitdec
       'we have to borrow bits
       bits.bit(counter) = True
     End If
-  Next counter
+  Next
 End Sub
 
 'tested and works Sept-21-05
@@ -131,7 +131,7 @@ Public Function BitAND(ByRef bitsA As DoubleWord, ByRef bitsB As DoubleWord) As 
 
   For counter = 0 To 31
     BitAND.bit(counter) = bitsA.bit(counter) And bitsB.bit(counter)
-  Next counter
+  Next
 End Function
 
 Public Function BitOR(ByRef bitsA As DoubleWord, bitsB As DoubleWord) As DoubleWord
@@ -139,7 +139,7 @@ Public Function BitOR(ByRef bitsA As DoubleWord, bitsB As DoubleWord) As DoubleW
 
   For counter = 0 To 31
     BitOR.bit(counter) = bitsA.bit(counter) Or bitsB.bit(counter)
-  Next counter
+  Next
 End Function
 
 Public Function BitXOR(ByRef bitsA As DoubleWord, bitsB As DoubleWord) As DoubleWord
@@ -147,5 +147,5 @@ Public Function BitXOR(ByRef bitsA As DoubleWord, bitsB As DoubleWord) As Double
 
   For counter = 0 To 31
     BitXOR.bit(counter) = bitsA.bit(counter) Xor bitsB.bit(counter)
-  Next counter
+  Next
 End Function

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "Mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Begin VB.Form frmGset 
    BorderStyle     =   4  'Fixed ToolWindow
@@ -49,44 +49,44 @@ Begin VB.Form frmGset
       TabCaption(0)   =   "Main settings"
       TabPicture(0)   =   "frmGset.frx":0000
       Tab(0).ControlEnabled=   0   'False
-      Tab(0).Control(0)=   "chkIntRnd"
-      Tab(0).Control(1)=   "chkEpiGene"
-      Tab(0).Control(2)=   "ffmInitChlr"
-      Tab(0).Control(3)=   "ffmFBSBO"
+      Tab(0).Control(0)=   "ffmUI"
+      Tab(0).Control(1)=   "ffmCheatin"
+      Tab(0).Control(2)=   "Frame1"
+      Tab(0).Control(3)=   "ffmMainDir"
       Tab(0).Control(4)=   "chkSafeMode"
-      Tab(0).Control(5)=   "ffmMainDir"
-      Tab(0).Control(6)=   "Frame1"
-      Tab(0).Control(7)=   "ffmCheatin"
-      Tab(0).Control(8)=   "ffmUI"
+      Tab(0).Control(5)=   "ffmFBSBO"
+      Tab(0).Control(6)=   "ffmInitChlr"
+      Tab(0).Control(7)=   "chkEpiGene"
+      Tab(0).Control(8)=   "chkIntRnd"
       Tab(0).ControlCount=   9
       TabCaption(1)   =   "Mutations"
       TabPicture(1)   =   "frmGset.frx":001C
       Tab(1).ControlEnabled=   0   'False
-      Tab(1).Control(0)=   "ffmSunMut"
+      Tab(1).Control(0)=   "ffmEpiReset"
       Tab(1).Control(0).Enabled=   0   'False
-      Tab(1).Control(1)=   "ffmEpiReset"
+      Tab(1).Control(1)=   "ffmSunMut"
       Tab(1).Control(1).Enabled=   0   'False
       Tab(1).ControlCount=   2
       TabCaption(2)   =   "Leagues"
       TabPicture(2)   =   "frmGset.frx":0038
       Tab(2).ControlEnabled=   0   'False
-      Tab(2).Control(0)=   "chkFilter"
+      Tab(2).Control(0)=   "lblSource"
       Tab(2).Control(0).Enabled=   0   'False
-      Tab(2).Control(1)=   "Command1"
+      Tab(2).Control(1)=   "chkTournament"
       Tab(2).Control(1).Enabled=   0   'False
-      Tab(2).Control(2)=   "chkAddarob"
+      Tab(2).Control(2)=   "txtSourceDir"
       Tab(2).Control(2).Enabled=   0   'False
-      Tab(2).Control(3)=   "ffmDisqualification"
+      Tab(2).Control(3)=   "chkStepladder"
       Tab(2).Control(3).Enabled=   0   'False
       Tab(2).Control(4)=   "ffmFudge"
       Tab(2).Control(4).Enabled=   0   'False
-      Tab(2).Control(5)=   "chkStepladder"
+      Tab(2).Control(5)=   "ffmDisqualification"
       Tab(2).Control(5).Enabled=   0   'False
-      Tab(2).Control(6)=   "txtSourceDir"
+      Tab(2).Control(6)=   "chkAddarob"
       Tab(2).Control(6).Enabled=   0   'False
-      Tab(2).Control(7)=   "chkTournament"
+      Tab(2).Control(7)=   "Command1"
       Tab(2).Control(7).Enabled=   0   'False
-      Tab(2).Control(8)=   "lblSource"
+      Tab(2).Control(8)=   "chkFilter"
       Tab(2).Control(8).Enabled=   0   'False
       Tab(2).ControlCount=   9
       TabCaption(3)   =   "Evolution"
@@ -914,19 +914,8 @@ Private Sub btnEvoRES_Click()
 End Sub
 
 Private Sub btnHelp_Click()
-MsgBox "Survival mode consists of a base species and a mutating species. The base species gets 'turned on and off.'" & _
-" The mutating species get there energy changed during the time the base species are 'not updating.'" & _
-" This is a handicap for the Base species. Because, a negative value means mutating species are losing energy." & vbCrLf _
-& vbCrLf & "Formula1:" & vbCrLf _
-& "new_value = ((Average energy gain with Base.txt on (species average, time average)) minus " & _
-"(Average energy gain with Base.txt off (species average, time average))) / LFOR " & vbCrLf & _
-"If new_value is less then old_value then current_value = new_value else current_value = (old_value * 9 + new_value) / 10 " _
-& vbCrLf & "Formula 2:" & vbCrLf _
-& "((Average energy gain last on/off cycle (species average, time average)) minus " & _
-"(Average energy gain this on/off cycle (species average, time average))) / LFOR * 2 " & vbCrLf & _
-"Result = Formula1 minus Formula2 or just Formula1 if Formula2 is greater then zero. Result takes full effect after 6 on/off cycles." _
-& vbCrLf & vbCrLf & "For current simulation's data go to the help menu." _
-& vbCrLf & vbCrLf & "www.darwinbots.com", vbInformation, "Dev. By: Paul Kononov a.k.a. Botsareus"
+MsgBox "Survival mode consists of a base species and a mutating species. The base species gets 'turned on and off.'" & " The mutating species get there energy changed during the time the base species are 'not updating.'" & " This is a handicap for the Base species. Because, a negative value means mutating species are losing energy." & vbCrLf & vbCrLf & "Formula1:" & vbCrLf & "new_value = ((Average energy gain with Base.txt on (species average, time average)) minus " & "(Average energy gain with Base.txt off (species average, time average))) / LFOR " & vbCrLf & "If new_value is less then old_value then current_value = new_value else current_value = (old_value * 9 + new_value) / 10 " & vbCrLf & "Formula 2:" & vbCrLf & "((Average energy gain last on/off cycle (species average, time average)) minus " & "(Average energy gain this on/off cycle (species average, time average))) / LFOR * 2 " & vbCrLf & _
+"Result = Formula1 minus Formula2 or just Formula1 if Formula2 is greater then zero. Result takes full effect after 6 on/off cycles." & vbCrLf & vbCrLf & "For current simulation's data go to the help menu." & vbCrLf & vbCrLf & "www.darwinbots.com", vbInformation, "Dev. By: Paul Kononov a.k.a. Botsareus"
 End Sub
 
 Private Sub btnOK_Click()
@@ -1294,11 +1283,11 @@ If chkSurvivalSimple.value = 1 Or chkSurvivalEco.value = 1 Then
         End If
     End If
     'calculate robot's size
-    Dim Length As Integer
+    Dim length As Integer
     'we have to calculate length of robot here
     ReDim rob(0)
     If LoadDNA(txtRob, 0) Then
-        Length = DnaLen(rob(0).dna)
+        length = DnaLen(rob(0).dna)
     End If
     'generate data file
     Open MDIForm1.MainDir & "\evolution\data.gset" For Output As #1
@@ -1308,8 +1297,8 @@ If chkSurvivalSimple.value = 1 Or chkSurvivalEco.value = 1 Then
         '
         Write #1, val(txtCycSM) 'hidePredCycl
         '
-        Write #1, val(Length + CInt(5)) 'curr_dna_size
-        Write #1, TargetDNASize(Length) 'target_dna_size
+        Write #1, val(length + CInt(5)) 'curr_dna_size
+        Write #1, TargetDNASize(length) 'target_dna_size
         '
         Write #1, val(txtCycSM) 'Init hidePredCycl
         '

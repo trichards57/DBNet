@@ -1,0 +1,15 @@
+<Window x:Class="DBNet.Forms.ActivForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="Genes Activations"    Height="102"    Width="439" Loaded="Form_Load">
+ <Grid>
+  <Image x:Name="pbox" Margin="0,58,0,0" Width="408" Height="17" VerticalAlignment="Top" HorizontalAlignment="Left" />
+  
+  
+ </Grid>
+</Window>

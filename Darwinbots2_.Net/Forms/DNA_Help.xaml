@@ -1,0 +1,17 @@
+<Window x:Class="DBNet.Forms.DNA_Help"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="Help for DNA commands"    Height="555"    Width="778" Loaded="Form_Load">
+ <Grid>
+  <Button x:Name="Basic" Margin="471,489,0,0" Padding="2,2,2,2" Width="124" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="MS Sans Serif" FontSize="8.25" FontWeight="Bold" Content="&amp;Basic Help" Click="Basic_Click" />
+  <TextBox x:Name="Help" Margin="17,60,0,0" Padding="2,2,2,2" Width="712" Height="417" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" />
+  <Image x:Name="picIcon" Margin="17,17,0,0" Width="39" Height="39" VerticalAlignment="Top" HorizontalAlignment="Left" />
+  <Button x:Name="cmdOK" Margin="609,489,0,0" Padding="2,2,2,2" Width="124" Height="25" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="MS Sans Serif" FontSize="8.25" FontWeight="Bold" Content="&amp;Exit Help" Click="cmdOK_Click" />
+  <Label x:Name="lblTitle" Margin="75,17,0,0" Padding="2,2,2,2" Width="278" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Application Title" />
+ </Grid>
+</Window>

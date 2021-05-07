@@ -1,0 +1,84 @@
+<Window x:Class="DBNet.Forms.MutationsProbability"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="Mutation Probabilities"    Height="638"    Width="686" Loaded="Form_Load">
+ <Grid>
+  <Button x:Name="Command1_0" Margin="257,566,0,0" Padding="2,2,2,2" Width="104" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Default Rates" />
+  <TextBox x:Name="Probs_2" Margin="94,501,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+  <TextBox x:Name="Probs_1" Margin="94,471,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+  <TextBox x:Name="Text2" Margin="244,9,0,0" Padding="2,2,2,2" Width="400" Height="61" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="NeoMutprob.frx&quot;:08CA" />
+  <GroupBox x:Name="CustGauss_1" Margin="450,124,0,0" Width="194" Height="198" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Custom Gauss"> <Grid Margin="0,-15,0,0">
+    <Image x:Name="Picture1_1" Margin="13,30,0,0" Width="164" Height="82" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <TextBox x:Name="Upper_1" Margin="124,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <TextBox x:Name="Lower_1" Margin="21,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <TextBox x:Name="Mean_1" Margin="73,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <TextBox x:Name="StdDev_1" Margin="124,163,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="5.268" />
+    <Label x:Name="Label2_7" Margin="167,141,0,0" Padding="2,2,2,2" Width="22" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Ints" />
+    <Label x:Name="Label1_6" Margin="129,116,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Upper" />
+    <Label x:Name="Label1_5" Margin="26,116,0,0" Padding="2,2,2,2" Width="31" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Lower" />
+    <Label x:Name="Label1_4" Margin="77,116,0,0" Padding="2,2,2,2" Width="31" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Mean" />
+    <Label x:Name="Label4_1" Margin="21,167,0,0" Padding="2,2,2,2" Width="108" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Standard Deviation: " />
+  </Grid> </GroupBox>
+  <Button x:Name="Command1_1" Margin="133,566,0,0" Padding="2,2,2,2" Width="104" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Okay" />
+  <CheckBox x:Name="MutTypeEnabled" Margin="244,81,0,0" Padding="2,2,2,2" Width="147" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enabled" Click="MutTypeEnabled_Click" />
+  <TextBox x:Name="Probs_0" Margin="474,84,0,0" Padding="2,2,2,2" Width="54" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1234567" />
+  <CheckBox x:Name="Global" Margin="13,540,0,0" Padding="2,2,2,2" Width="142" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Apply Changes Globally" />
+  <GroupBox x:Name="CustGauss_0" Margin="244,124,0,0" Width="194" Height="198" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Custom Gauss"> <Grid Margin="0,-15,0,0">
+    <TextBox x:Name="StdDev_0" Margin="124,163,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="5.268" />
+    <TextBox x:Name="Mean_0" Margin="73,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <TextBox x:Name="Lower_0" Margin="21,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <TextBox x:Name="Upper_0" Margin="124,137,0,0" Padding="2,2,2,2" Width="40" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+    <Image x:Name="Picture1_0" Margin="13,30,0,0" Width="164" Height="82" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Label x:Name="Label4_0" Margin="21,167,0,0" Padding="2,2,2,2" Width="108" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Standard Deviation: " />
+    <Label x:Name="Label1_3" Margin="77,116,0,0" Padding="2,2,2,2" Width="31" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Mean" />
+    <Label x:Name="Label1_1" Margin="26,116,0,0" Padding="2,2,2,2" Width="31" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Lower" />
+    <Label x:Name="Label1_2" Margin="129,116,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Upper" />
+    <Label x:Name="Label2_6" Margin="167,141,0,0" Padding="2,2,2,2" Width="22" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Ints" />
+  </Grid> </GroupBox>
+  <Slider x:Name="Slider1" Margin="369,360,0,0" Padding="2,2,2,2" Width="160" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" LostFocus="Slider1_LostFocus" />
+  <GroupBox x:Name="Frame2" Margin="9,9,0,0" Width="224" Height="361" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Mutation Types"> <Grid Margin="0,-15,0,0">
+    <RadioButton x:Name="TypeOption_10" Margin="17,309,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Copy Error 2" />
+    <RadioButton x:Name="TypeOption_9" Margin="120,253,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Point 2" />
+    <RadioButton x:Name="TypeOption_8" Margin="17,253,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Translocation" />
+    <RadioButton x:Name="TypeOption_7" Margin="120,30,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Delta Mutation" />
+    <RadioButton x:Name="TypeOption_0" Margin="17,30,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Point" />
+    <RadioButton x:Name="TypeOption_1" Margin="120,141,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Minor Deletion" />
+    <RadioButton x:Name="TypeOption_2" Margin="17,141,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Reversal" />
+    <RadioButton x:Name="TypeOption_3" Margin="120,86,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Insertion" />
+    <RadioButton x:Name="TypeOption_4" Margin="17,197,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Amplification" />
+    <RadioButton x:Name="TypeOption_5" Margin="120,197,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Major Deletion" />
+    <RadioButton x:Name="TypeOption_6" Margin="17,86,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Copy Error" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="Sliders6" Margin="566,403,0,0" Width="387" Height="194" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header=""> <Grid Margin="0,-15,0,0">
+    <Slider x:Name="TypeProb_0" Margin="17,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Slider x:Name="TypeProb_1" Margin="79,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Slider x:Name="TypeProb_2" Margin="140,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Slider x:Name="TypeProb_3" Margin="202,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Slider x:Name="TypeProb_4" Margin="264,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Slider x:Name="TypeProb_5" Margin="326,21,0,0" Padding="2,2,2,2" Width="45" Height="151" VerticalAlignment="Top" HorizontalAlignment="Left" />
+    <Label x:Name="TypePerc_5" Margin="273,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="TypePerc_4" Margin="334,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="TypePerc_3" Margin="211,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="TypePerc_2" Margin="149,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="TypePerc_1" Margin="87,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="TypePerc_0" Margin="26,171,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="100%" />
+    <Label x:Name="Label2_5" Margin="334,4,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Flow" />
+    <Label x:Name="Label2_4" Margin="257,4,0,0" Padding="2,2,2,2" Width="61" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Comparison" />
+    <Label x:Name="Label2_3" Margin="210,4,0,0" Padding="2,2,2,2" Width="31" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Logic" />
+    <Label x:Name="Label2_2" Margin="137,4,0,0" Padding="2,2,2,2" Width="52" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Operator" />
+    <Label x:Name="Label2_1" Margin="77,4,0,0" Padding="2,2,2,2" Width="48" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="*Number" />
+    <Label x:Name="Label2_0" Margin="17,4,0,0" Padding="2,2,2,2" Width="44" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Number" />
+  </Grid> </GroupBox>
+  <Label x:Name="Label5" Margin="47,446,0,0" Padding="2,2,2,2" Width="142" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Mutation Sumations:" />
+  <Label x:Name="Label3_2" Margin="30,504,0,0" Padding="2,2,2,2" Width="172" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="1 chance in  XXXXXXX.  per bot" />
+  <Label x:Name="Label3_1" Margin="30,474,0,0" Padding="2,2,2,2" Width="172" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="1 chance in  XXXXXXX.  per bp" />
+  <Label x:Name="Label3_0" Margin="407,87,0,0" Padding="2,2,2,2" Width="245" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="1 chance in  XXXXXXX per XXXXXXXX" />
+  <Label x:Name="Slider1Text_1" Margin="540,360,0,0" Padding="2,2,2,2" Width="87" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Change value" />
+  <Label x:Name="Slider1Text_0" Margin="266,360,0,0" Padding="2,2,2,2" Width="91" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Change type" />
+ </Grid>
+</Window>

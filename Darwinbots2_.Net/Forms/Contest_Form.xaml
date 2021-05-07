@@ -1,0 +1,39 @@
+<Window x:Class="DBNet.Forms.Contest_Form"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" Title="Contest Results" Height="195" Width="384">
+    <Grid>
+        <RadioButton x:Name="Option1_5" Tag="5" Margin="304,120,0,0" Padding="2,2,2,2" Width="22" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="W"  Click="Option_Click" />
+        <RadioButton x:Name="Option1_4" Tag="4" Margin="304,103,0,0" Padding="2,2,2,2" Width="22" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="W"  Click="Option_Click" />
+        <RadioButton x:Name="Option1_3" Tag="3" Margin="304,86,0,0" Padding="2,2,2,2" Width="22" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="W" Click="Option_Click" />
+        <RadioButton x:Name="Option1_2" Tag="2" Margin="304,69,0,0" Padding="2,2,2,2" Width="22" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="W"  Click="Option_Click" />
+        <RadioButton x:Name="Option1_1" Tag="1" Margin="304,51,0,0" Padding="2,2,2,2" Width="22" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="W" Click="Option_Click" />
+        <Label x:Name="Label3" Margin="296,17,0,0" Padding="2,2,2,2" Width="48" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="InstaWin" />
+        <Label x:Name="Maxrounds" Margin="180,0,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="5" />
+        <Label x:Name="Label2" Margin="51,0,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Round" />
+        <Label x:Name="Winner1" Margin="9,34,0,0" Padding="2,2,2,2" Width="70" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="MS Sans Serif" FontSize="8.25" FontWeight="Bold" Content="" />
+        <Label x:Name="Winner" Margin="86,34,0,0" Padding="2,2,2,2" Width="241" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="" />
+        <Label x:Name="Pop5" Margin="257,120,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+        <Label x:Name="Pop4" Margin="257,103,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+        <Label x:Name="Pop3" Margin="257,86,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+        <Label x:Name="Pop2" Margin="257,69,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+        <Label x:Name="Pop1" Margin="257,51,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="0" />
+        <Label x:Name="PopLabel" Margin="231,17,0,0" Padding="2,2,2,2" Width="61" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Population" />
+        <Label x:Name="Wins5" Margin="197,120,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins5" />
+        <Label x:Name="Wins4" Margin="197,103,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins4" />
+        <Label x:Name="Robname5" Margin="9,120,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Arial" FontSize="8.25" FontWeight="Bold" Content="Robname5" />
+        <Label x:Name="Robname4" Margin="9,103,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Arial" FontSize="8.25" FontWeight="Bold" Content="Robname4" />
+        <Label x:Name="Wins3" Margin="197,86,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins3" />
+        <Label x:Name="Wins2" Margin="197,69,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins2" />
+        <Label x:Name="Robname3" Margin="9,86,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Arial" FontSize="8.25" FontWeight="Bold" Content="Robname3" />
+        <Label x:Name="Robname2" Margin="9,69,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Arial" FontSize="8.25" FontWeight="Bold" Content="Robname2" />
+        <Label x:Name="Contests" Margin="94,0,0,0" Padding="2,2,2,2" Width="35" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="1" />
+        <Label x:Name="Label1" Margin="146,0,0,0" Padding="2,2,2,2" Width="18" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="of" />
+        <Label x:Name="wins1" Margin="197,51,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins1" />
+        <Label x:Name="Robname1" Margin="9,51,0,0" Padding="2,2,2,2" Width="181" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Arial" FontSize="8.25" FontWeight="Bold" Content="Robname1" />
+        <Label x:Name="Wins" Margin="189,17,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Wins" />
+        <Label x:Name="RoName" Margin="43,17,0,0" Padding="2,2,2,2" Width="95" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Robot Name" />
+    </Grid>
+</Window>

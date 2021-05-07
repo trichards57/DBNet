@@ -1,0 +1,47 @@
+<Window x:Class="DBNet.Forms.frmMonitorSet"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:DBNet.Forms"
+    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
+    mc:Ignorable="d"
+    Title="RGB Memory Monitor Settings"    Height="264"    Width="452" Loaded="Form_Load" Unloaded="Form_Unload">
+ <Grid>
+  <Label x:Name="CommonDialog1" Margin="9,197,0,0" Padding="2,2,2,2" VerticalAlignment="Top" HorizontalAlignment="Left" />
+  <Button x:Name="Command2" Margin="111,197,0,0" Padding="2,2,2,2" Width="95" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Save Preset..." Click="Command2_Click" />
+  <Button x:Name="Command1" Margin="9,197,0,0" Padding="2,2,2,2" Width="95" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Load Preset..." Click="Command1_Click" />
+  <GroupBox x:Name="ffmRed_2" Margin="283,9,0,0" Width="130" Height="181" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Blue"> <Grid Margin="0,-15,0,0">
+    <TextBox x:Name="txtMem_2" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1" />
+    <GroupBox x:Name="ffmRange_2" Margin="9,60,0,0" Width="112" Height="112" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Active Range"> <Grid Margin="0,-15,0,0">
+      <TextBox x:Name="txtCeil_2" Margin="9,77,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+      <TextBox x:Name="txtFloor_2" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+      <Label x:Name="Label3_2" Margin="9,60,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Ceiling:" />
+      <Label x:Name="Label2_2" Margin="9,17,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Floor:" />
+    </Grid> </GroupBox>
+    <Label x:Name="Label1_2" Margin="9,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Memory location:" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="ffmRed_1" Margin="146,9,0,0" Width="130" Height="181" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Green"> <Grid Margin="0,-15,0,0">
+    <GroupBox x:Name="ffmRange_1" Margin="9,60,0,0" Width="112" Height="112" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Active Range"> <Grid Margin="0,-15,0,0">
+      <TextBox x:Name="txtFloor_1" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+      <TextBox x:Name="txtCeil_1" Margin="9,77,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+      <Label x:Name="Label2_1" Margin="9,17,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Floor:" />
+      <Label x:Name="Label3_1" Margin="9,60,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Ceiling:" />
+    </Grid> </GroupBox>
+    <TextBox x:Name="txtMem_1" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1" />
+    <Label x:Name="Label1_1" Margin="9,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Memory location:" />
+  </Grid> </GroupBox>
+  <GroupBox x:Name="ffmRed_0" Margin="9,9,0,0" Width="130" Height="181" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Red"> <Grid Margin="0,-15,0,0">
+    <TextBox x:Name="txtMem_0" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1" />
+    <GroupBox x:Name="ffmRange_0" Margin="9,60,0,0" Width="112" Height="112" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Active Range"> <Grid Margin="0,-15,0,0">
+      <TextBox x:Name="txtCeil_0" Margin="9,77,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32000" />
+      <TextBox x:Name="txtFloor_0" Margin="9,34,0,0" Padding="2,2,2,2" Width="61" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" />
+      <Label x:Name="Label3_0" Margin="9,60,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Ceiling:" />
+      <Label x:Name="Label2_0" Margin="9,17,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Floor:" />
+    </Grid> </GroupBox>
+    <Label x:Name="Label1_0" Margin="9,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Memory location:" />
+  </Grid> </GroupBox>
+  <Button x:Name="btnCancel" Margin="326,197,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Cancel" Click="btnCancel_Click" />
+  <Button x:Name="btnOK" Margin="231,197,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="OK" Click="btnOK_Click" />
+ </Grid>
+</Window>
