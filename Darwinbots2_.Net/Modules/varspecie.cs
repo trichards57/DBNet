@@ -111,9 +111,9 @@ static class varspecie {
 //Extras
 public class mutationprobs {
  public bool Mutations = false;
- public decimal[] mutarray = new decimal[20];
- public decimal[] Mean = new decimal[20];
- public decimal[] StdDev = new decimal[20];
+ public double[] mutarray = new double[20];
+ public double[] Mean = new double[20];
+ public double[] StdDev = new double[20];
  public int PointWhatToChange = 0;
  public int CopyErrorWhatToChange = 0;
 }

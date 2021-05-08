@@ -717,7 +717,7 @@ for (int redim_iter_8662=0;i<0;redim_iter_8662++) {matchlist2.Add(0);}
   } while(!((loopr1 > ei1 && loopr2 > ei2) || patch > (16000 ^ 2));
 }
 
-public static decimal DoGeneticDistance(ref int r1, ref int r2) {
+public static double DoGeneticDistance( int r1,  int r2) {
   decimal DoGeneticDistance = 0;
   int t = 0;
 

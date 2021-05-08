@@ -218,7 +218,7 @@ internal static class DNATokenizing
         return Hash;
     }
 
-    public static bool LoadDNA(ref string path, ref int n)
+    public static bool LoadDNA(string path, int n)
     {
         var DNApos = 0;
         var hold = "";

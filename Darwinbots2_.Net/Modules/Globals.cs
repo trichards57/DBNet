@@ -197,9 +197,9 @@ public static int curr_dna_size = 0;
 public static int hidePredCycl = 0;
 public static int Init_hidePredCycl = 0;
 public static int hidePredOffset = 0;
-public static decimal LFOR = 0;
+public static double LFOR = 0;
 public static bool LFORdir = false;//direction
-public static decimal LFORcorr = 0;//correction
+public static double LFORcorr = 0;//correction
 public static bool hidepred = false;
 public static int target_dna_size = 0;
 // var structure, to store the correspondance name<->value
