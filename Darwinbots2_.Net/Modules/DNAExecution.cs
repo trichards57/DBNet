@@ -1,11 +1,11 @@
 using DBNet.Forms;
+using Iersera.Model;
+using System;
 using System.Collections.Generic;
 using static Common;
 using static DNAManipulations;
 using static Globals;
-using static Microsoft.VisualBasic.Constants;
 using static Microsoft.VisualBasic.Information;
-using static Microsoft.VisualBasic.Interaction;
 using static Robots;
 using static SimOptModule;
 using static System.Math;
@@ -28,7 +28,7 @@ internal static class DNAExecution
 
     public const int stacklim = 100;
 
-    public static Stack<bool> Condst = null;
+    public static SafeStack<bool> Condst = new() { DefaultValue = true };
 
     public static bool DisplayActivations = false;
 
@@ -36,7 +36,7 @@ internal static class DNAExecution
     //Indicates whether the cycle was executed from a console
     public static bool ingene = false;
 
-    public static Stack<int> IntStack = null;
+    public static SafeStack<int> IntStack = new() { DefaultValue = 0 };
 
     public static var_[] sysvar = new var_[1001];
 
@@ -47,7 +47,7 @@ internal static class DNAExecution
     public static var_[] sysvarOUT = new var_[256];
 
     //for the conditions stack
-    private static readonly List<Queue> CommandQueue = new List<Queue>();
+    private static readonly List<Queue> CommandQueue = new();
 
     private static int currbot = 0;
 
@@ -61,167 +61,144 @@ internal static class DNAExecution
     {
         for (var t = 1; t < MaxRobs; t++)
         {
-            if (t % 250 == 0)
-                DoEvents();
+            if (!rob[t].exist || rob[t].Corpse || rob[t].DisableDNA || rob[t].FName == "Base.txt" && hidepred)
+                continue;
 
-            if (rob[t].exist && !rob[t].Corpse && !rob[t].DisableDNA && !(rob[t].FName == "Base.txt" && hidepred))
+            ExecuteDNA(t);
+
+            if (rob[t].console != null && DisplayActivations)
             {
-                ExecuteDNA(t);
-
-                if (!(rob[t].console == null) && DisplayActivations)
+                rob[t].console.textout("");
+                rob[t].console.textout("***ROBOT GENES EXECUTION***"); //Botsareus 3/24/2012 looks a little better now
+                for (var k = 1; k < rob[t].genenum; k++)
                 {
-                    rob[t].console.textout("");
-                    rob[t].console.textout("***ROBOT GENES EXECUTION***"); //Botsareus 3/24/2012 looks a little better now
-                    for (var k = 1; k < rob[t].genenum; k++)
-                    {
-                        if (rob[t].ga[k])
-                            rob[t].console.textout(CStr(k) + " executed");
-                        else
-                            rob[t].console.textout(CStr(k) + " not executed"); //Botsareus 3/24/2012 looks a little better now
-                    }
+                    if (rob[t].ga[k])
+                        rob[t].console.textout(CStr(k) + " executed");
+                    else
+                        rob[t].console.textout(CStr(k) + " not executed"); //Botsareus 3/24/2012 looks a little better now
                 }
-
-                if (t == robfocus && ActivForm.instance.Visibility == System.Windows.Visibility.Visible)
-                    exechighlight(t);
             }
+
+            if (t == robfocus && ActivForm.instance.Visibility == System.Windows.Visibility.Visible)
+                exechighlight(t);
         }
     }
 
     private static bool AddupCond()
     {
-        //AND together all conditions on the boolstack
-        var AddupCond = true;
+        if (Condst.Count == 0)
+            return true;
 
-        var a = PopBoolStack();
-        while (a != -5)
-        {
-            AddupCond = AddupCond && (a == 1);
-            a = PopBoolStack();
-        }
-        return AddupCond;
+        var res = true;
+
+        while (Condst.Count > 0)
+            res &= Condst.Pop();
+
+        return res;
     }
 
     private static void cdiff()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
         var c = a / 10;
-        PushBoolStack(!((a + c >= b) && (a - c <= b)));
+        Condst.Push(a + c < b || a - c > b);
     }
 
     private static void cequa()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
         var c = a / 10;
-        PushBoolStack((a - c <= b) && (a + c >= b));
+        Condst.Push(!(a + c < b || a - c > b));
     }
 
-    private static bool CondStateIsTrue()
+    private static void CheckTieAngTieLenAddress(int b)
     {
-        var a = PopBoolStack();
-        if (a == -5)
-            return true;
-
-        PushBoolStack(CBool(a)); // If we popped something off the stack, push it back on
-
-        return a == 1;
+        for (var k = 0; k < 4; k++)
+        {
+            if (b == 480 + k)
+                rob[currbot].TieAngOverwrite[k] = true;
+            if (b == 484 + k)
+                rob[currbot].TieLenOverwrite[k] = true;
+        }
     }
+
+    private static int Clamp(int val, int max = 2000000000) => Clamp(val, max, -max);
+
+    private static int Clamp(int val, int max, int min) => Math.Min(Max(val, min), max);
 
     private static void customcdiff()
     {
-        var d = PopIntStack();
-        var b = PopIntStack();
-        var a = PopIntStack();
-        var c = a / 100 * d;
-        if (Abs(c) > 2000000000)
-            c = Sign(c) * 2000000000;
+        var d = IntStack.Pop();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
-        PushBoolStack(a + c < b || a - c > b);
+        var c = a * d / 100;
+
+        Condst.Push(a + c < b || a - c > b);
     }
 
     private static void customcequa()
     {
         //usage: 10 20 30 ~= are 10 and 20 within 30 percent of each other?
 
-        var d = PopIntStack();
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var d = IntStack.Pop();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
+
         var c = a / 100 * d;
-        PushBoolStack((a - c <= b) && (a + c >= b));
-    }
 
-    private static void diff()
-    {
-        PushBoolStack(PopIntStack() != PopIntStack());
-    }
-
-    private static void DNAabs()
-    {
-        PushIntStack(Abs(PopIntStack()));
+        Condst.Push(!(a + c < b || a - c > b));
     }
 
     private static void DNAabsstore()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = Abs(rob[currbot].mem[a]);
-            rob[currbot].mem[a] = b;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 8;
-        }
+        if (a == 0)
+            return;
+
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = Abs(rob[currbot].mem[a]);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 8;
     }
 
     private static void DNAadd()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
         a %= 2000000000;
         b %= 2000000000;
 
-        var c = a + b;
-
-        if (Abs(c) > 2000000000)
-            c -= Sign(c) * 2000000000;
-
-        PushIntStack(c);
+        IntStack.Push(Clamp(a + b));
     }
 
     private static void DNAaddstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
 
-            var a = PopIntStack() + rob[currbot].mem[b];
+        if (b == 0)
+            return;
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
+        b = NormaliseMemoryAddress(b);
 
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
+        var a = IntStack.Pop() + rob[currbot].mem[b];
 
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
+        //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
+
+        CheckTieAngTieLenAddress(b);
+
+        rob[currbot].mem[b] = mod32000(a);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void DNAanglecmp()
-    { //Allowes a robot to quickly calculate the difference between two angles
-        var b = PopIntStack();
-        var a = PopIntStack();
+    {
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
         //Botsareus 10/5/2015 Value normalization
         b %= 1256;
@@ -234,520 +211,281 @@ internal static class DNAExecution
 
         var c = AngDiff(a / 200, b / 200) * 200;
 
-        PushIntStack(c);
-    }
-
-    private static void DNABitwiseAND()
-    {
-        var valueB = PopIntStack();
-        var valueA = PopIntStack();
-
-        PushIntStack(valueA & valueB);
-    }
-
-    private static void DNABitwiseCompliment()
-    {
-        var value = PopIntStack();
-
-        PushIntStack(~value);
-    }
-
-    private static void DNABitwiseDEC()
-    {
-        var value = PopIntStack();
-
-        PushIntStack(value - 1);
-    }
-
-    private static void DNABitwiseINC()
-    {
-        var value = PopIntStack();
-
-        PushIntStack(value + 1);
-    }
-
-    private static void DNABitwiseOR()
-    {
-        var valueB = PopIntStack();
-        var valueA = PopIntStack();
-
-        PushIntStack(valueA | valueB);
-    }
-
-    private static void DNABitwiseShiftLeft()
-    {
-        var value = PopIntStack();
-
-        PushIntStack(value << 1);
-    }
-
-    private static void DNABitwiseShiftRight()
-    {
-        var value = PopIntStack();
-
-        PushIntStack(value >> 1);
-    }
-
-    private static void DNABitwiseXOR()
-    {
-        var valueB = PopIntStack();
-        var valueA = PopIntStack();
-
-        PushIntStack(valueA ^ valueB);
-    }
-
-    private static void DNAceil()
-    {
-        var b = PopIntStack();
-        var a = PopIntStack();
-
-        PushIntStack(IIf(a > b, b, a));
+        IntStack.Push(c);
     }
 
     private static void DNAceilstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        var c = PopIntStack();
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
+        var c = IntStack.Pop();
 
-            var a = IIf(rob[currbot].mem[b] > c, c, rob[currbot].mem[b]);
+        if (b == 0)
+            return;
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
-    }
-
-    private static void DNAcos()
-    {
-        var a = PopIntStack();
-
-        var b = Cos(a / 200) * 32000;
-
-        PushIntStack((int)b);
+        rob[currbot].mem[b] = mod32000(Math.Min(c, rob[currbot].mem[b]));
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void DNAdebugbool(int at_position)
-    { //Botsareus 1/31/2013 The new debugbool command
-        var a = PopBoolStack();
+    { 
+        var a = Condst.Pop();
 
-        rob[currbot].dbgstring = rob[currbot].dbgstring + vbCrLf + a + " at position " + at_position;
+        rob[currbot].dbgstring = $"{rob[currbot].dbgstring}\n{a} at position {at_position}";
 
-        PushBoolStack(a == 1);
+        Condst.Push(a);
     }
 
     private static void DNAdebugint(int at_position)
-    { //Botsareus 1/31/2013 The new debugint command 'Botsareus 4/5/2016 Cleaner architecture
-        var a = PopIntStack();
+    { 
+        var a = IntStack.Pop();
 
-        rob[currbot].dbgstring = rob[currbot].dbgstring + vbCrLf + a + " at position " + at_position;
+        rob[currbot].dbgstring = $"{rob[currbot].dbgstring}\n{a} at position {at_position}";
 
-        PushIntStack(a);
+        IntStack.Push(a);
     }
 
     private static void DNAdec()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
+        if (a == 0)
+            return;
 
-            var b = rob[currbot].mem[a] - 1;
-            rob[currbot].mem[a] = mod32000(b);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 10;
-        }
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = mod32000(rob[currbot].mem[a] - 1);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 10;
     }
 
     private static void DNAderef()
     {
-        var b = PopIntStack();
+        var a = IntStack.Pop();
 
-        b = Abs(b) % MaxMem;
-        if (b == 0)
-            b = 1000; // Special case that multiples of 1000 should store to location 1000
+        a = NormaliseMemoryAddress(a);
 
-        PushIntStack(rob[currbot].mem[b]);
+        IntStack.Push(rob[currbot].mem[a]);
     }
 
     private static void DNAdiv()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
-        if (b != 0)
-            PushIntStack(a / b);
-        else
-            PushIntStack(0);
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
+
+        IntStack.Push(b == 0 ? 0 : a / b);
     }
 
     private static void DNAdivstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        var c = PopIntStack();
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
+        var c = IntStack.Pop();
 
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        if (b == 0)
+            return;
 
-            var a = c == 0 ? 0 : rob[currbot].mem[b] / c;
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
-
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = a;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
-    }
-
-    private static void DNAdup()
-    {
-        var b = PopIntStack();
-        PushIntStack(b);
-        PushIntStack(b);
-    }
-
-    private static void DNAfloor()
-    {
-        var b = PopIntStack();
-        var a = PopIntStack();
-
-        PushIntStack(IIf(a < b, b, a));
+        rob[currbot].mem[b] = c == 0 ? 0 : rob[currbot].mem[b] / c;
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void DNAfloorstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        var c = PopIntStack();
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop();
+        var c = IntStack.Pop();
 
-            var a = IIf(rob[currbot].mem[b] < c, c, rob[currbot].mem[b]);
+        if (b == 0)
+            return;
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
+        rob[currbot].mem[b] = mod32000(Max(c, rob[currbot].mem[b]));
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void DNAinc()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = rob[currbot].mem[a] + 1;
-            rob[currbot].mem[a] = mod32000(b);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 10;
-        }
+        if (a == 0)
+            return;
+
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = mod32000(rob[currbot].mem[a] + 1);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 10;
     }
 
     private static void DNAlogx()
     {
-        var b = Abs(PopIntStack());
-        var a = Abs(PopIntStack());
+        var b = Abs(IntStack.Pop());
+        var a = Abs(IntStack.Pop());
 
-        var c = b < 2 || a == 0 ? 0 : (int)(Log(a) / Log(b));
+        var c = Log(a, b);
 
-        PushIntStack(c);
+        if (double.IsNaN(c) && double.IsInfinity(c))
+            c = 0;
+
+        IntStack.Push((int)c);
     }
 
     private static void DNAmod()
     {
-        var b = PopIntStack();
-        if (b == 0)
-        {
-            PopIntStack();
-            PushIntStack(0);
-        }
-        else
-            PushIntStack(PopIntStack() % b);
-    }
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
-    private static void DNAmult()
-    {
-        var b = PopIntStack();
-        var a = PopIntStack();
-        var c = CDbl(a) * CDbl(b);
-        if (Abs(c) > 2000000000)
-            c = Sign(c) * 2000000000;
-
-        PushIntStack(CInt(c));
+        IntStack.Push(b == 0 ? 0 : a % b);
     }
 
     private static void DNAmultstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
 
-            //Botsareus 11/30/2013 Small bugfix to prevent overflow
+        if (b == 0)
+            return;
 
-            var c = PopIntStack();
-            c = mod32000(c);
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-            var a = rob[currbot].mem[b] * c;
+        var c = mod32000(IntStack.Pop());
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
-
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
+        rob[currbot].mem[b] = mod32000(rob[currbot].mem[b] * c);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void DNAnegstore()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = -rob[currbot].mem[a];
-            rob[currbot].mem[a] = b;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 8;
-        }
+        if (a == 0)
+            return;
+
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = -rob[currbot].mem[a];
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 8;
     }
 
     private static void DNApow()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
-        if (Abs(b) > 10)
-            b = 10 * Sign(b);
+        b = Clamp(b, 10);
 
-        var c = a == 0 ? 0 : (int)Pow(a, b);
-
-        if (Abs(c) > 2000000000)
-            c = Sign(c) * 2000000000;
-
-        PushIntStack(c);
+        IntStack.Push(Clamp((int)Pow(a, b)));
     }
 
     private static void DNApyth()
     {
-        var b = PopIntStack();
-        var a = PopIntStack();
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
-        var c = Sqrt(a * a + b * b);
-        if (Abs(c) > 2000000000)
-            c = Sign(c) * 2000000000;
+        var c = Clamp((int)Sqrt(a * a + b * b));
 
-        PushIntStack((int)c);
-    }
-
-    private static void DNArnd()
-    {
-        PushIntStack(Random(0, PopIntStack()));
+        IntStack.Push(c);
     }
 
     private static void DNArndstore()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = Random(0, Abs(rob[currbot].mem[a])) * Sign(rob[currbot].mem[a]);
-            rob[currbot].mem[a] = b;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 7;
-        }
+        if (a == 0)
+            return;
+
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = Random(0, Abs(rob[currbot].mem[a])) * Sign(rob[currbot].mem[a]);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 7;
     }
 
     private static void DNAroot()
     {
-        var b = Abs(PopIntStack());
-        var a = Abs(PopIntStack());
+        var b = Abs(IntStack.Pop());
+        var a = Abs(IntStack.Pop());
 
-        var c = b == 0 ? 0 : (int)Pow(a, 1 / b);
-        PushIntStack(c);
-    }
-
-    private static void DNAsgn()
-    {
-        PushIntStack(Sign(PopIntStack()));
+        IntStack.Push(b == 0 ? 0 : (int)Pow(a, 1 / b));
     }
 
     private static void DNAsgnstore()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = Sign(rob[currbot].mem[a]);
-            rob[currbot].mem[a] = b;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 7;
-        }
-    }
+        if (a == 0)
+            return;
 
-    private static void DNAsin()
-    {
-        var a = PopIntStack();
+        a = NormaliseMemoryAddress(a);
 
-        var b = Sin(a / 200) * 32000;
-        PushIntStack((int)b);
+        rob[currbot].mem[a] = Sign(rob[currbot].mem[a]);
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 7;
     }
 
     private static void DNASqr()
     {
-        var a = PopIntStack();
+        var a = IntStack.Pop();
 
-        var b = a > 0 ? (int)Sqrt(a) : 0;
-
-        PushIntStack(b);
+        IntStack.Push(a > 0 ? (int)Sqrt(a) : 0);
     }
 
     private static void DNAsqrstore()
     {
-        var a = PopIntStack();
-        if (a != 0)
-        {
-            a = Abs(a) % MaxMem;
-            if (a == 0)
-                a = 1000;
+        var a = IntStack.Pop();
 
-            var b = rob[currbot].mem[a] > 0 ? (int)Sqrt(rob[currbot].mem[a]) : 0;
+        if (a == 0)
+            return;
 
-            rob[currbot].mem[a] = b;
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 7;
-        }
+        a = NormaliseMemoryAddress(a);
+
+        rob[currbot].mem[a] = rob[currbot].mem[a] > 0 ? (int)Sqrt(rob[currbot].mem[a]) : 0;
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 7;
     }
 
     private static void DNAstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
 
-            var a = PopIntStack();
+        if (b == 0)
+            return;
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
-
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]);
-        }
+        rob[currbot].mem[b] = mod32000(IntStack.Pop());
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER];
     }
 
     private static void DNASub()
-    { //Botsareus 5/20/2012 new code to stop overflow
-        var b = PopIntStack();
-        var a = PopIntStack();
+    {
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
 
         a %= 2000000000;
         b %= 2000000000;
 
-        var c = a - b;
-
-        if (Abs(c) > 2000000000)
-            c -= Sign(c) * 2000000000;
-
-        PushIntStack(c);
+        IntStack.Push(Clamp(a - b));
     }
 
     private static void DNAsubstore()
     {
-        var b = PopIntStack(); // Pop the stack and get the mem location to store to
-        if (b != 0)
-        { // Stores to 0 are allowed, but do nothing and cost nothing
-            b = Abs(b) % MaxMem; // Make sure the location hits the bot's memory to increase the chance of mutations hitting sysvars.
-            if (b == 0)
-                b = 1000; // Special case that multiples of 1000 should store to location 1000
+        var b = IntStack.Pop(); // Pop the stack and get the mem location to store to
 
-            var a = rob[currbot].mem[b] - PopIntStack();
+        if (b == 0)
+            return;
 
-            //Botsareus 3/22/2013 handle tieang...tielen 1...4 overwrites
-            for (var k = 0; k < 3; k++)
-            {
-                if (b == 480 + k)
-                    rob[currbot].TieAngOverwrite[k] = true;
+        b = NormaliseMemoryAddress(b);
+        CheckTieAngTieLenAddress(b);
 
-                if (b == 484 + k)
-                    rob[currbot].TieLenOverwrite[k] = true;
-            }
-
-            rob[currbot].mem[b] = mod32000(a);
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER]) / 5;
-        }
-    }
-
-    private static void equa()
-    {
-        PushBoolStack((PopIntStack() == PopIntStack()));
+        rob[currbot].mem[b] = mod32000(rob[currbot].mem[b] - IntStack.Pop());
+        rob[currbot].nrg -= SimOpts.Costs[COSTSTORE] * SimOpts.Costs[COSTMULTIPLIER] / 5;
     }
 
     private static void ExecuteAdvancedCommand(int n, int at_position)
     {
         if (n < 13)
-            rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[ADCMDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+            rob[currbot].nrg -= SimOpts.Costs[ADCMDCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
         switch (n)
         {
@@ -758,10 +496,10 @@ internal static class DNAExecution
                 finddist();
                 break;//ceil
             case 3:
-                DNAceil();
+                IntStack.Push(Math.Min(IntStack.Pop(), IntStack.Pop()));
                 break;//floor
             case 4:
-                DNAfloor();
+                IntStack.Push(Max(IntStack.Pop(), IntStack.Pop()));
                 break;// sqr
             case 5:
                 DNASqr();
@@ -786,11 +524,11 @@ internal static class DNAExecution
                 break;
 
             case 11:
-                DNAsin();
+                IntStack.Push((int)(Sin(IntStack.Pop() / 200) * 32000));
                 break;
 
             case 12:
-                DNAcos();
+                IntStack.Push((int)(Cos(IntStack.Pop() / 200) * 32000));
                 break;
 
             case 13:
@@ -808,7 +546,7 @@ internal static class DNAExecution
         //& denotes commands that can be constructed from other commands, but
         //are still basic enough to be listed here
 
-        rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[BCCMDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+        rob[currbot].nrg -= SimOpts.Costs[BCCMDCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
         switch (n)
         {
@@ -819,13 +557,13 @@ internal static class DNAExecution
                 DNASub();
                 break;//mult
             case 3:
-                DNAmult();
+                IntStack.Push(Clamp(IntStack.Pop() * IntStack.Pop()));
                 break;//div
             case 4:
                 DNAdiv();
                 break;//rnd
             case 5:
-                DNArnd();
+                IntStack.Push(Random(0, IntStack.Pop()));
                 break;//dereference AKA *
             case 6:
                 DNAderef();
@@ -834,16 +572,16 @@ internal static class DNAExecution
                 DNAmod();
                 break;//sgn
             case 8:
-                DNAsgn();
+                IntStack.Push(Sign(IntStack.Pop()));
                 break;//absolute value &
             case 9:
-                DNAabs();
+                IntStack.Push(Abs(IntStack.Pop()));
                 break;//dup or dupint
             case 10:
-                DNAdup();
+                IntStack.Push(IntStack.Peek());
                 break;//dropint - Drops the top value on the Int stack
             case 11:
-                PopIntStack();
+                IntStack.Pop();
                 break;//clearint - Clears the Int stack
             case 12:
                 IntStack.Clear();
@@ -859,57 +597,57 @@ internal static class DNAExecution
 
     private static void ExecuteBitwiseCommand(int n)
     {
-        rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[BTCMDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+        rob[currbot].nrg -= SimOpts.Costs[BTCMDCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
         switch (n)
         {
             case 1:  //Compliment ~ (tilde)
-                DNABitwiseCompliment();
+                IntStack.Push(~IntStack.Pop());
                 break;//& And
             case 2:
-                DNABitwiseAND();
+                IntStack.Push(IntStack.Pop() & IntStack.Pop());
                 break;//| or
             case 3:
-                DNABitwiseOR();
+                IntStack.Push(IntStack.Pop() | IntStack.Pop());
                 break;// XOR, ^ (I need another representation)
             case 4:
-                DNABitwiseXOR();
+                IntStack.Push(IntStack.Pop() ^ IntStack.Pop());
                 break;//bitinc ++
             case 5:
-                DNABitwiseINC();
+                IntStack.Push(IntStack.Pop() + 1);
                 break;//bitdec --
             case 6:
-                DNABitwiseDEC();
+                IntStack.Push(IntStack.Pop() - 1);
                 break;//negate
             case 7:
-                PushIntStack(-PopIntStack());
+                IntStack.Push(-IntStack.Pop());
                 break;// <<
             case 8:
-                DNABitwiseShiftLeft();
+                IntStack.Push(IntStack.Pop() << 1);
                 break;// >>
             case 9:
-                DNABitwiseShiftRight();
+                IntStack.Push(IntStack.Pop() >> 1);
                 break;
         }
     }
 
     private static void ExecuteConditions(int n)
     {
-        rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[CONDCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+        rob[currbot].nrg -= SimOpts.Costs[CONDCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
         switch (n)
         {
             case 1:  //<
-                Min();
+                Condst.Push(IntStack.Pop() > IntStack.Pop());
                 break;//>
             case 2:
-                magg();
+                Condst.Push(IntStack.Pop() < IntStack.Pop());
                 break;//=
             case 3:
-                equa();
+                Condst.Push(IntStack.Pop() == IntStack.Pop());
                 break;// <>, !=
             case 4:
-                diff();
+                Condst.Push(IntStack.Pop() != IntStack.Pop());
                 break;// %=
             case 5:
                 cequa();
@@ -924,10 +662,10 @@ internal static class DNAExecution
                 customcdiff();
                 break;//>=
             case 9:
-                maggequal();
+                Condst.Push(IntStack.Pop() <= IntStack.Pop());
                 break;//<=
             case 10:
-                minequal();
+                Condst.Push(IntStack.Pop() >= IntStack.Pop());
                 break;
         }
     }
@@ -936,106 +674,91 @@ internal static class DNAExecution
     {
         currbot = n;
         currgene = 0;
-        CurrentCondFlag = NEXTBODY; //execute body statements if no cond is found
+        CurrentCondFlag = NEXTBODY;
         ingene = false;
-
-        //New bot.  clear the stacks
         IntStack.Clear();
         Condst.Clear();
 
-        //EricL - March 15, 2006 This section initializes the robot's ga() array to all False so that it can
-        //be populated below for those genes that activate this cycle.  Used for displaying
-        //Gene Activations.  Only initialized and populated for the robot with the focus or if the bot's console
-        //is open.
-        if ((n == robfocus) || !(Robots.rob[n].console == null))
+        if (n == robfocus || rob[n].console != null)
         {
-            Robots.rob[n].ga = new bool[Robots.rob[n].genenum];
-            for (var i = 0; i < Robots.rob[n].genenum; i++)
-            {
-                Robots.rob[n].ga[i] = false;
-            }
+            rob[n].ga = new bool[rob[n].genenum];
+            for (var i = 0; i < rob[n].genenum; i++)
+                rob[n].ga[i] = false;
         }
 
-        var rob = Robots.rob[n];
         var a = 1;
-        Robots.rob[n].condnum = 0; // EricL 4/6/2006 reset the COND statement counter to 0
-        Robots.rob[n].dbgstring = ""; //Botsareus 4/5/2016 Safer way to debug DNA
-        while (!(rob.dna[a].tipo == 10 & rob.dna[a].value == 1) && a <= 32000 & a < UBound(rob.dna))
-        { //Botsareus 6/16/2012 Added upper bounds check (This seems like overkill but I had situations where 'end' command did not exisit)
-            var tipo = rob.dna[a].tipo;
+        rob[n].condnum = 0;
+        rob[n].dbgstring = "";
+
+        while (!(rob[n].dna[a].tipo == 10 & rob[n].dna[a].value == 1) && a <= 32000 && a < UBound(rob[n].dna))
+        {
+            var tipo = rob[n].dna[a].tipo;
             switch (tipo)
             {
-                case 0:  //number[
+                case 0:
                     if (CurrentFlow != CLEAR)
                     {
-                        PushIntStack(rob.dna[a].value);
-                        rob.nrg -= (SimOpts.Costs[NUMCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+                        IntStack.Push(rob[n].dna[a].value);
+                        rob[n].nrg -= SimOpts.Costs[NUMCOST] * SimOpts.Costs[COSTMULTIPLIER];
                     }
-                    break;//*number
+                    break;
+
                 case 1:
                     if (CurrentFlow != CLEAR)
                     {
-                        var b = rob.dna[a].value;
-                        if (b > MaxMem || b < 1)
-                        {
-                            b = Abs(rob.dna[a].value) % MaxMem;
-                            if (b == 0)
-                                b = 1000; // Special case that multiples of 1000 should store to location 1000
-                        }
-
-                        PushIntStack(rob.mem[b]);
-                        rob.nrg -= (SimOpts.Costs[DOTNUMCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+                        var b = NormaliseMemoryAddress(rob[n].dna[a].value);
+                        IntStack.Push(rob[n].mem[b]);
+                        rob[n].nrg -= SimOpts.Costs[DOTNUMCOST] * SimOpts.Costs[COSTMULTIPLIER];
                     }
-                    break;//commands (add, sub, etc.)
+                    break;
+
                 case 2:
                     if (CurrentFlow != CLEAR)
-                        ExecuteBasicCommand(rob.dna[a].value);
+                        ExecuteBasicCommand(rob[n].dna[a].value);
+                    break;
 
-                    break;//advanced commands
                 case 3:
                     if (CurrentFlow != CLEAR)
-                        ExecuteAdvancedCommand(rob.dna[a].value, a);
+                        ExecuteAdvancedCommand(rob[n].dna[a].value, a);
+                    break;
 
-                    break;//bitwise commands
                 case 4:
                     if (CurrentFlow != CLEAR)
-                        ExecuteBitwiseCommand(rob.dna[a].value);
+                        ExecuteBitwiseCommand(rob[n].dna[a].value);
+                    break;
 
-                    break;//conditions
                 case 5:
-                    //EricL  11/2007 New execution paradym.  Conditions can now be executeed anywhere in the gene
                     if (CurrentFlow == COND || CurrentFlow == body || CurrentFlow == ELSEBODY)
-                        ExecuteConditions(rob.dna[a].value);
+                        ExecuteConditions(rob[n].dna[a].value);
+                    break;
 
-                    break;//logic commands (and, or, etc.)
                 case 6:
-                    //EricL  11/2007 New execution paradym.  Conditions can now be executeed anywhere in the gene
                     if (CurrentFlow == COND || CurrentFlow == body || CurrentFlow == ELSEBODY)
-                        ExecuteLogic(rob.dna[a].value);
+                        ExecuteLogic(rob[n].dna[a].value);
+                    break;
 
-                    break;//store, inc and dec
                 case 7:
                     if (CurrentFlow == body || CurrentFlow == ELSEBODY)
                     {
-                        if (CondStateIsTrue())
-                        { // Check the Bool stack.  If empty or True on top, do the stores.  Don't if False.
-                            ExecuteStores(rob.dna[a].value);
-                            if (n == robfocus || !(Robots.rob[n].console == null))
-                                Robots.rob[n].ga(currgene) = true; //EricL  This gene fired this cycle!  Populate ga()
+                        if (Condst.Peek())
+                        {
+                            ExecuteStores(rob[n].dna[a].value);
+                            if (n == robfocus || !(rob[n].console == null))
+                                rob[n].ga[currgene] = true;
                         }
                     }
-                    break;//reserved for a future type
-                case 8:
-                    break;//flow commands
-                case 9:
-                    // EricL 4/6/2006 Added If statement.  This counts the number of COND statements in each bot.
-                    if (!ExecuteFlowCommands(rob.dna[a].value, n))
-                        Robots.rob[n].condnum = Robots.rob[n].condnum + 1;
+                    break;
 
-                    rob.mem[thisgene] = currgene;
-                    break;//Master flow, such as end, chromostart, etc.
+                case 8:
+                    break;
+
+                case 9:
+                    if (!ExecuteFlowCommands(rob[n].dna[a].value, n))
+                        rob[n].condnum++;
+                    rob[n].mem[thisgene] = currgene;
+                    break;
+
                 case 10:
-                    //ExecuteMasterFlow .dna[a].value
                     break;
             }
 
@@ -1046,19 +769,21 @@ internal static class DNAExecution
 
     private static bool ExecuteFlowCommands(int n, int bot)
     {
-        rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[FLOWCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+        rob[currbot].nrg -= SimOpts.Costs[FLOWCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
         //returns true if a stop command was found (start, stop, or else)
         //returns false if cond was found
         var ExecuteFlowCommands = false;
+
         switch (n)
         {
-            case 1:  //cond
+            case 1:
                 CurrentFlow = COND;
                 currgene++;
                 Condst.Clear();
                 ingene = true;
-                break;//assume a stop command, or it really is a stop command
+                break;
+
             case 2:
                 //this is supposed to come before case 2 and 3, since these commands
                 //must be executed before start and else have a chance to go
@@ -1070,33 +795,31 @@ internal static class DNAExecution
                     CurrentCondFlag = NEXTBODY;
 
                 if (CurrentCondFlag && (CurrentFlow == ELSEBODY || CurrentFlow == body))
-                { //Botsareus 3/24/2012 Fixed a bug where: any else gene was showing activation
-                  // Need to check this for the case where the gene body doesn't have any stores to trigger the activation dialog
+                {
+                    // Need to check this for the case where the gene body doesn't have any stores to trigger the activation dialog
                     if (bot == robfocus || !(rob[bot].console == null))
-                        rob[bot].ga[currgene] = true; //EricL  This gene fired this cycle!  Populate ga()
+                        rob[bot].ga[currgene] = true;
                 }
 
                 CurrentFlow = CLEAR;
                 switch (n)
                 {
-                    case 2:  //start
+                    case 2:
                         if (!ingene)
                             currgene++;
-
                         ingene = false;
                         if (CurrentCondFlag == NEXTBODY)
                             CurrentFlow = body;
+                        break;
 
-                        break;//else
                     case 3:
                         if (CurrentCondFlag == NEXTELSE)
                             CurrentFlow = ELSEBODY;
-
                         if (!ingene)
                             currgene++;
-
                         ingene = false;
-                        break;// stop
+                        break;
+
                     case 4:
                         ingene = false;
                         CurrentFlow = CLEAR;
@@ -1109,74 +832,62 @@ internal static class DNAExecution
 
     private static void ExecuteLogic(int n)
     {
-        rob[currbot].nrg = rob[currbot].nrg - (SimOpts.Costs[LOGICCOST] * SimOpts.Costs[COSTMULTIPLIER]);
+        rob[currbot].nrg -= SimOpts.Costs[LOGICCOST] * SimOpts.Costs[COSTMULTIPLIER];
 
-        int a, b;
+        bool a, b;
 
         switch (n)
         {
-            case 1:  //and
-                b = PopBoolStack();
-                if (b == -5)
-                    b = 1;
+            case 1:
+                b = Condst.Pop();
+                a = Condst.Pop();
+                Condst.Push(a && b);
+                break;
 
-                a = PopBoolStack();
-
-                if (a != -5)
-                    PushBoolStack(a == 1 && b == 1);
-                else
-                    PushBoolStack(b);
-
-                break;//or
             case 2:
-                b = PopBoolStack();
-                if (b == -5)
-                    b = 1;
+                b = Condst.Pop();
+                a = Condst.Pop();
+                Condst.Push(a || b);
+                break;
 
-                a = PopBoolStack();
-                if (a != -5)
-                    PushBoolStack(a == 1 || b == 1);
-                else
-                    PushBoolStack(true);
-
-                break;//xor
             case 3:
-                b = PopBoolStack();
-                if (b == -5)
-                    b = 1;
+                b = Condst.Pop();
+                a = Condst.Pop();
+                Condst.Push(a ^ b);
+                break;
 
-                a = PopBoolStack();
-                if (a != -5)
-                    PushBoolStack(a == 1 ^ b == 1);
-                else
-                    PushBoolStack(b == 0);
-
-                break;//not
             case 4:
-                b = PopBoolStack();
-                if (b == -5)
-                    b = 1;
+                b = Condst.Pop();
+                Condst.Push(!b);
+                break;
 
-                PushBoolStack(b == 0);
-                break;// true
             case 5:
-                PushBoolStack(true);
-                break;// false
+                Condst.Push(true);
+                break;
+
             case 6:
-                PushBoolStack(false);
-                break;// dropbool
+                Condst.Push(false);
+                break;
+
             case 7:
-                PopBoolStack();
-                break;// clearbool
+                Condst.Pop();
+                break;
+
             case 8:
                 Condst.Clear();
-                break;// dupbool
+                break;
+
             case 9:
-                DupBoolStack();
-                break;// swapbool
+                if (Condst.Count == 0)
+                    return;
+
+                Condst.Push(Condst.Peek());
+                break;
+
             case 10:
                 SwapBoolStack();
-                break;// overbool
+                break;
+
             case 11:
                 OverBoolStack();
                 break;
@@ -1187,24 +898,30 @@ internal static class DNAExecution
     {
         switch (n)
         {
-            case 1:  //store
+            case 1:
                 DNAstore();
-                break;//inc
+                break;
+
             case 2:
                 DNAinc();
-                break;//dec
+                break;
+
             case 3:
                 DNAdec();
-                break;//+= 'Botsareus 9/7/2013 New commannds
+                break;
+
             case 4:
                 DNAaddstore();
-                break;//-=
+                break;
+
             case 5:
                 DNAsubstore();
-                break;//*=
+                break;
+
             case 6:
                 DNAmultstore();
-                break;///=
+                break;
+
             case 7:
                 DNAdivstore();
                 break;
@@ -1241,64 +958,47 @@ internal static class DNAExecution
 
     private static void findang()
     {
-        var b = PopIntStack(); // * Form1.yDivisor
-        var a = PopIntStack(); // * Form1.xDivisor
-        var c = rob[currbot].pos.x / Form1.instance.xDivisor;
-        var d = rob[currbot].pos.y / Form1.instance.yDivisor;
+        var b = IntStack.Pop();
+        var a = IntStack.Pop();
+        var c = rob[currbot].pos.X / Form1.instance.xDivisor;
+        var d = rob[currbot].pos.Y / Form1.instance.yDivisor;
         var e = angnorm(angle(c, d, a, b)) * 200;
-        PushIntStack(e);
+        IntStack.Push(e);
     }
 
     private static void finddist()
     {
-        var b = PopIntStack() * Form1.instance.yDivisor;
-        var a = PopIntStack() * Form1.instance.xDivisor;
-        var c = rob[currbot].pos.x;
-        var d = rob[currbot].pos.y;
-        var e = Sqrt((Pow((c - a), 2) + Pow((d - b), 2)));
-        if (Abs(e) > 2000000000)
-        {
-            e = Sign(e) * 2000000000;
-        }
-        PushIntStack(CLng(e));
-    }
-
-    private static void magg()
-    {
-        PushBoolStack(PopIntStack() < PopIntStack());
-    }
-
-    private static void maggequal()
-    {
-        PushBoolStack(PopIntStack() <= PopIntStack());
-    }
-
-    private static void Min()
-    {
-        PushBoolStack(PopIntStack() > PopIntStack());
-    }
-
-    private static void minequal()
-    {
-        PushBoolStack(PopIntStack() >= PopIntStack());
+        var b = IntStack.Pop() * Form1.instance.yDivisor;
+        var a = IntStack.Pop() * Form1.instance.xDivisor;
+        var c = rob[currbot].pos.X;
+        var d = rob[currbot].pos.Y;
+        var e = Clamp(Sqrt(Pow(c - a, 2) + Pow(d - b, 2)));
+        IntStack.Push(e);
     }
 
     private static int mod32000(int a)
     {
-        //Botsareus 10/6/2015 Fix for out of range
-
         if (a > 0)
         {
             a %= 32000;
             if (a == 0)
-                a = 32000; // Special case 32000
+                a = 32000;
         }
         else if (a < 0)
         {
             a %= 32000;
             if (a == 0)
-                a = -32000; // special case -32000
+                a = -32000;
         }
+
+        return a;
+    }
+
+    private static int NormaliseMemoryAddress(int a)
+    {
+        a = Abs(a) % MaxMem;
+        if (a == 0)
+            a = 1000;
 
         return a;
     }

@@ -504,8 +504,8 @@ namespace DBNet.Forms
             {
                 if (rob[t].exist && !(rob[t].FName == "Base.txt" && hidepred))
                 {
-                    rob[t].pos.x = rob[t].pos.x - (rob[t].vel.x - rob[t].actvel.x);
-                    rob[t].pos.y = rob[t].pos.y - (rob[t].vel.y - rob[t].actvel.y);
+                    rob[t].pos.X = rob[t].pos.X - (rob[t].vel.X - rob[t].actvel.X);
+                    rob[t].pos.Y = rob[t].pos.Y - (rob[t].vel.Y - rob[t].actvel.Y);
                 }
             }
 
@@ -528,8 +528,8 @@ namespace DBNet.Forms
             {
                 if (rob[t].exist && !(rob[t].FName == "Base.txt" && hidepred))
                 {
-                    rob[t].pos.x = rob[t].pos.x + (rob[t].vel.x - rob[t].actvel.x);
-                    rob[t].pos.y = rob[t].pos.y + (rob[t].vel.y - rob[t].actvel.y);
+                    rob[t].pos.X = rob[t].pos.X + (rob[t].vel.X - rob[t].actvel.X);
+                    rob[t].pos.Y = rob[t].pos.Y + (rob[t].vel.Y - rob[t].actvel.Y);
                 }
             }
         }
@@ -2291,8 +2291,8 @@ namespace DBNet.Forms
             //Botsareus 7/2/2014 Overwrite for PlayerBot mode
             if (Button == 1 && MDIForm1.instance.pbOn.Checked)
             {
-                Mouse_loc.x = x;
-                Mouse_loc.y = y;
+                Mouse_loc.X = x;
+                Mouse_loc.Y = y;
             }
         }
 
@@ -2310,8 +2310,8 @@ namespace DBNet.Forms
             if (MDIForm1.instance.pbOn.Checked && !MDIForm1.instance.insrob)
             {
                 MousePointer = vbDefault;
-                Mouse_loc.x = 0;
-                Mouse_loc.y = 0;
+                Mouse_loc.X = 0;
+                Mouse_loc.Y = 0;
             }
         }
 
@@ -2335,8 +2335,8 @@ namespace DBNet.Forms
                     if (tmprob_c < 51)
                     {
                         tmppos[tmprob_c].n = a;
-                        tmppos[tmprob_c].x = rob[robfocus].pos.x - rob[a].pos.x;
-                        tmppos[tmprob_c].y = rob[robfocus].pos.y - rob[a].pos.y;
+                        tmppos[tmprob_c].x = rob[robfocus].pos.X - rob[a].pos.X;
+                        tmppos[tmprob_c].y = rob[robfocus].pos.Y - rob[a].pos.Y;
                     }
                     else
                     {
@@ -2416,8 +2416,8 @@ namespace DBNet.Forms
                     {
                         rob[a].mem[216] = 1;
                     }
-                    rob[a].pos.x = Random(ref SimOpts.Specie[k].Poslf * CSng(SimOpts.FieldWidth - 60), ref SimOpts.Specie[k].Posrg * CSng(SimOpts.FieldWidth - 60));
-                    rob[a].pos.y = Random(ref SimOpts.Specie[k].Postp * CSng(SimOpts.FieldHeight - 60), ref SimOpts.Specie[k].Posdn * CSng(SimOpts.FieldHeight - 60));
+                    rob[a].pos.X = Random(ref SimOpts.Specie[k].Poslf * CSng(SimOpts.FieldWidth - 60), ref SimOpts.Specie[k].Posrg * CSng(SimOpts.FieldWidth - 60));
+                    rob[a].pos.Y = Random(ref SimOpts.Specie[k].Postp * CSng(SimOpts.FieldHeight - 60), ref SimOpts.Specie[k].Posdn * CSng(SimOpts.FieldHeight - 60));
 
                     rob[a].nrg = SimOpts.Specie[k].Stnrg;
                     rob[a].body = 1000;
@@ -2814,8 +2814,8 @@ return;
                         }
                         if (tipo == 3)
                         {
-                            dx = (rob[r].pos.x - rob[t].pos.x) / 2;
-                            dy = (rob[r].pos.y - rob[t].pos.y) / 2;
+                            dx = (rob[r].pos.X - rob[t].pos.X) / 2;
+                            dy = (rob[r].pos.Y - rob[t].pos.Y) / 2;
                             cr = RGB(128, 128, 128);
                             ct = vbWhite;
                             if (rob[r].AbsNum > rob[t].AbsNum)
@@ -3130,7 +3130,7 @@ return;
             {
                 if (xObstacle[o].exist)
                 {
-                    var oo = NewObstacle(xObstacle[o].pos.x * SimOpts.FieldWidth, xObstacle[o].pos.y * SimOpts.FieldHeight, xObstacle[o].Width * SimOpts.FieldWidth, xObstacle[o].Height * SimOpts.FieldHeight);
+                    var oo = NewObstacle(xObstacle[o].pos.X * SimOpts.FieldWidth, xObstacle[o].pos.Y * SimOpts.FieldHeight, xObstacle[o].Width * SimOpts.FieldWidth, xObstacle[o].Height * SimOpts.FieldHeight);
                     Obstacles.Obstacles[oo].color = xObstacle[o].color;
                     Obstacles.Obstacles[oo].vel = xObstacle[o].vel;
                 }
@@ -3152,8 +3152,8 @@ return;
             {
                 if (rob[t].exist && !(rob[t].FName == "Base.txt" && hidepred))
                 {
-                    rob[t].pos.x = rob[t].pos.x - (rob[t].vel.x - rob[t].actvel.x);
-                    rob[t].pos.y = rob[t].pos.y - (rob[t].vel.y - rob[t].actvel.y);
+                    rob[t].pos.X = rob[t].pos.X - (rob[t].vel.X - rob[t].actvel.X);
+                    rob[t].pos.Y = rob[t].pos.Y - (rob[t].vel.Y - rob[t].actvel.Y);
                 }
             }
 
@@ -3163,8 +3163,8 @@ return;
             {
                 if (rob[t].exist && !(rob[t].FName == "Base.txt" && hidepred))
                 {
-                    pist = Pow(rob[t].pos.x - x, 2) + Pow(rob[t].pos.y - y, 2);
-                    if (Abs(rob[t].pos.x - x) < rob[t].radius && Abs(rob[t].pos.y - y) < rob[t].radius && pist < dist && rob[t].exist)
+                    pist = Pow(rob[t].pos.X - x, 2) + Pow(rob[t].pos.Y - y, 2);
+                    if (Abs(rob[t].pos.X - x) < rob[t].radius && Abs(rob[t].pos.Y - y) < rob[t].radius && pist < dist && rob[t].exist)
                     {
                         whichrob = t;
                         dist = pist;
@@ -3176,8 +3176,8 @@ return;
             {
                 if (rob[t].exist && !(rob[t].FName == "Base.txt" & hidepred))
                 {
-                    rob[t].pos.x = rob[t].pos.x + (rob[t].vel.x - rob[t].actvel.x);
-                    rob[t].pos.y = rob[t].pos.y + (rob[t].vel.y - rob[t].actvel.y);
+                    rob[t].pos.X = rob[t].pos.X + (rob[t].vel.X - rob[t].actvel.X);
+                    rob[t].pos.Y = rob[t].pos.Y + (rob[t].vel.Y - rob[t].actvel.Y);
                 }
             }
             return whichrob;

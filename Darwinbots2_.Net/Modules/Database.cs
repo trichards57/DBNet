@@ -1,157 +1,125 @@
 using DBNet.Forms;
-using static DNATokenizing;
-using static Globals;
-using static Microsoft.VisualBasic.Constants;
-using static Microsoft.VisualBasic.Conversion;
-using static Microsoft.VisualBasic.FileSystem;
-using static Microsoft.VisualBasic.Interaction;
-using static Microsoft.VisualBasic.Strings;
-using static Robots;
-using static System.Math;
-using static VBExtension;
+using Microsoft.Win32;
+using System;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
 
 internal static class Database
 {
     private static string SnapName = "";
 
-    public static void AddRecord(int rn)
+    public static async Task AddRecord(int rn)
     {
-        var v = ",";
-        var path1 = MDIForm1.instance.MainDir + "\\Autosave\\DeadRobots.snp";
-        var path2 = MDIForm1.instance.MainDir + "\\Autosave\\DeadRobots_Mutations.txt";
-        // TODO (not supported): On Error GoTo getout
-        if (Dir(path1) == "")
-        { //write first line if no data
-            VBOpenFile(177, path1); 
-            VBWriteFile(177, "Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts"); ;
-            VBCloseFile(177);
-        }
-        if (Dir(path2) == "")
-        { //write first line if no data
-            VBOpenFile(178, path2); 
-            VBWriteFile(178, "Rob id,Mutation History"); 
-            VBCloseFile(178);
-        }
-        //write the record
-        VBOpenFile(177, path1); 
-        VBOpenFile(178, path2); 
+        var folder = $"{MDIForm1.instance.MainDir}\\Autosave";
+
+        Directory.CreateDirectory(folder);
+
+        var path1 = $"{folder}\\DeadRobots.snp";
+        var path2 = $"{folder}\\DeadRobots_Mutations.txt";
+
+        var deadRobotsExists = File.Exists(path1);
+        var deadRobotsMutationExists = File.Exists(path2);
+
+        using var deadRobotsFile = new StreamWriter(path1);
+        using var deadRobotsMutationFile = new StreamWriter(path2);
+
+        if (!deadRobotsExists)
+            await deadRobotsFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
+
+        if (!deadRobotsMutationExists)
+            await deadRobotsMutationFile.WriteLineAsync("Rob id,Mutation History");
 
         var rob = Robots.rob[rn];
 
         if (rob.DnaLen == 1)
-        {
-            VBCloseFile(177);
-            VBCloseFile(178);
             return;
-        }
 
-        VBWriteFile(178, vbCrLf + CStr(rob.AbsNum) + v);
-        VBWriteFile(178, vbCrLf + rob.LastMutDetail);
+        var fitness = GetFitness(rn);
 
-        VBWriteFile(177, vbCrLf + vbCrLf + CStr(rob.AbsNum) + v + CStr(rob.parent) + v + rob.FName + v + CStr(rob.generation) + v + CStr(rob.BirthCycle) + v + CStr(rob.age) + v + CStr(rob.Mutations) + v);
-        VBWriteFile(177, CStr(rob.LastMut) + v + CStr(rob.DnaLen) + v + CStr(rob.SonNumber) + v + CStr(rob.Kills) + v);
-        //lets figureout fitness
+        await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 
-        var sEnergy = IIf(intFindBestV2 > 100, 100, intFindBestV2) / 100;
-        var sPopulation = IIf(intFindBestV2 < 100, 100, 200 - intFindBestV2) / 100;
-        Form1.instance.TotalOffspring = 1;
-        var s = Form1.instance.score(rn, 1, 10, 0) + Robots.rob[rn].nrg + Robots.rob[rn].body * 10; //Botsareus 5/22/2013 Advanced fit test
-        if (s < 0)
-            s = 0; //Botsareus 9/23/2016 Bug fix
-
-        s = Pow(Form1.instance.TotalOffspring, sPopulation) * Pow(s, sEnergy);
-        VBWriteFile(177, CStr(s) + v + CStr(Robots.rob[rn].nrg + Robots.rob[rn].body * 10) + v + rob.chloroplasts + vbCrLf); ;
-        savingtofile = true;
-
-        var d = DetokenizeDNA(rn) + vbCrLf;
-        if (Mid(d, Len(d) - 3, 2) == vbCrLf)
-        {
-            d = Left(d, Len(d) - 2); //Borsareus 7/22/2014 a bug fix
-        }
-        savingtofile = false;
-        VBWriteFile(177, d); ;
-
-        VBCloseFile(177);
-        VBCloseFile(178);
+        DNATokenizing.savingtofile = true;
+        await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.DnaLen},{rob.SonNumber},{rob.Kills},{fitness},{Robots.rob[rn].nrg + Robots.rob[rn].body * 10},{rob.chloroplasts}");
+        await deadRobotsFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rn).Trim());
+        DNATokenizing.savingtofile = false;
     }
 
-    public static void Snapshot()
+    public static async Task Snapshot()
     {
-        Form1.instance.CommonDialog1.FileName = "";
-        SnapBrowse();
-        if (Form1.instance.CommonDialog1.FileName == "")
+        var dialog = new SaveFileDialog
         {
+            FileName = "",
+            InitialDirectory = $"{MDIForm1.instance.MainDir}\\database",
+            Title = "Select a name for your snapshot file.",
+            Filter = "Snapshot Database (*.snp)|*.snp"
+        };
+
+        var result = dialog.ShowDialog();
+
+        if (!result != true)
             return;
-        }
-        var m = MsgBox("Do you want to generate mutation history file as well?", vbYesNo | vbInformation) == vbYes;
-        VBOpenFile(3, SnapName);
-        if (m)
+
+        SnapName = dialog.FileName;
+
+        using var snapFile = new StreamWriter(SnapName);
+
+        await snapFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
+
+        var m = MessageBox.Show("Do you want to generate mutation history file as well?", "Save Mutation History", MessageBoxButton.YesNo, MessageBoxImage.Information, MessageBoxResult.Yes);
+
+        StreamWriter mutationsFiles = null;
+
+        try
         {
-            VBOpenFile(5, extractexactname(SnapName) + "_Mutations.txt"); ;
-        }
-        VBWriteFile(3, "Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts" + vbCrLf,); ;
-        if (m)
-        {
-            VBWriteFile(5, "Rob id,Mutation History"); ;
-        }
-        //records a snapshot of all living robots in a snapshot database
-        var v = ",";
-        Form1.instance.GraphLab.Visible = true;
-        var rn = 0;
-        for (rn = 1; rn < MaxRobs; rn++)
-        {
-            var d = "";
-            if (rob[rn].exist && rob[rn].DnaLen > 1)
+            if (m == MessageBoxResult.Yes)
+            {
+                mutationsFiles = new StreamWriter(Path.Join(Path.GetDirectoryName(SnapName), Path.GetFileNameWithoutExtension(SnapName) + "_Mutations.txt"));
+                await mutationsFiles.WriteLineAsync("Rob id,Mutation History");
+            }
+
+            //records a snapshot of all living robots in a snapshot database
+            Form1.instance.GraphLab.Visibility = Visibility.Visible;
+            for (var rn = 1; rn < Robots.MaxRobs; rn++)
             {
                 var rob = Robots.rob[rn];
 
-                if (m)
-                {
-                    VBWriteFile(5, vbCrLf + CStr(rob.AbsNum), v,); ;
-                    VBWriteFile(5, vbCrLf + rob.LastMutDetail); ;
-                }
+                if (!rob.exist || rob.DnaLen <= 1)
+                    continue;
 
-                VBWriteFile(3, vbCrLf + vbCrLf + CStr(rob.AbsNum) + v + CStr(rob.parent) + v + rob.FName + v + CStr(rob.generation) + v + CStr(rob.BirthCycle) + v + CStr(rob.age) + v + CStr(rob.Mutations) + v);
-                VBWriteFile(3, CStr(rob.LastMut) + v + CStr(rob.DnaLen) + v + CStr(rob.SonNumber) + v + CStr(rob.Kills) + v);
-                //lets figureout fitness
+                await mutationsFiles?.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
-                var sEnergy = IIf(intFindBestV2 > 100, 100, intFindBestV2) / 100;
-                var sPopulation = IIf(intFindBestV2 < 100, 100, 200 - intFindBestV2) / 100;
-                Form1.instance.TotalOffspring = 1;
-                var s = Form1.instance.score(rn, 1, 10, 0) + Robots.rob[rn].nrg + Robots.rob[rn].body * 10; //Botsareus 5/22/2013 Advanced fit test
-                if (s < 0)
-                    s = 0; //Botsareus 9/23/2016 Bug fix
+                var fitness = GetFitness(rn);
+                DNATokenizing.savingtofile = true;
+                await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.DnaLen},{rob.SonNumber},{rob.Kills},{fitness},{Robots.rob[rn].nrg + Robots.rob[rn].body * 10},{rob.chloroplasts}");
+                await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rn).Trim());
+                DNATokenizing.savingtofile = false;
 
-                s = Pow(Form1.instance.TotalOffspring, sPopulation) * Pow(s, sEnergy);
-                VBWriteFile(3, CStr(s) + v + CStr(Robots.rob[rn].nrg + Robots.rob[rn].body * 10) + v + rob.chloroplasts + vbCrLf);
-                d = "";
-                savingtofile = true;
-                d = DetokenizeDNA(rn) + vbCrLf;
-                if (Mid(d, Len(d) - 3, 2) == vbCrLf)
-                {
-                    d = Left(d, Len(d) - 2); //Borsareus 7/22/2014 a bug fix
-                }
-                savingtofile = false;
-                VBWriteFile(3, d);
+                Form1.instance.GraphLab.Content = "Calculating a snapshot: " + (100 * rn / Robots.MaxRobs) + "%";
             }
-            Form1.instance.GraphLab.Caption = "Calculating a snapshot: " + Int(rn / MaxRobs * 100) + "%";
-            DoEvents();
+
+            Form1.instance.GraphLab.Visibility = Visibility.Hidden;
+
+            MessageBox.Show("Saved snapshot successfully.");
         }
-        Form1.instance.GraphLab.Visible = false;
-        VBCloseFile(3);
-        if (m)
+        finally
         {
-            VBCloseFile(5);
+            await snapFile.FlushAsync();
+            await mutationsFiles.FlushAsync();
+            mutationsFiles?.Dispose();
         }
-        MsgBox("Saved snapshot successfully.");
     }
 
-    private static void SnapBrowse()
+    private static double GetFitness(int rn)
     {
-        Form1.instance.CommonDialog1.InitDir = MDIForm1.instance.MainDir + "/database";
-        Form1.instance.CommonDialog1.DialogTitle = "Select a name for your snapshot file.";
-        Form1.instance.CommonDialog1.Filter = "Snapshot Database (*.snp)|*.snp";
-        Form1.instance.CommonDialog1.ShowSave();
-        SnapName = Form1.instance.CommonDialog1.FileName;
+        var sEnergy = (Globals.intFindBestV2 > 100 ? 100 : Globals.intFindBestV2) / 100;
+        var sPopulation = (Globals.intFindBestV2 < 100 ? 100 : 200 - Globals.intFindBestV2) / 100;
+        Form1.instance.TotalOffspring = 1;
+        var fitness = Form1.instance.score(rn, 1, 10, 0) + Robots.rob[rn].nrg + Robots.rob[rn].body * 10; //Botsareus 5/22/2013 Advanced fit test
+        if (fitness < 0)
+            fitness = 0; //Botsareus 9/23/2016 Bug fix
+
+        fitness = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(fitness, sEnergy);
+        return fitness;
     }
 }

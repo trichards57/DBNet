@@ -328,7 +328,7 @@ forceteleport:
             }
             randomV = VectorSet(SimOpts.FieldWidth * Rndy(), SimOpts.FieldHeight * Rndy());
             if (MDIForm1.instance.visualize) {
-              Form1.Line(rob[n].pos.x, rob[n].pos.y)-(randomV.x, randomV.y), vbWhite);
+              Form1.Line(rob[n].pos.X, rob[n].pos.Y)-(randomV.x, randomV.y), vbWhite);
             }
             ReSpawn(n, CLng(randomV.x), CLng(randomV.y));
           }
@@ -611,7 +611,7 @@ for (int redim_iter_8006=0;i<0;redim_iter_8006++) {sAns.Add(redim_iter_8006<sAns
         sAns[lElement] = sFile;
         if (Right(sFile, 3) == "dbo") {
           randomV = VectorSet(SimOpts.FieldWidth * Rndy(), SimOpts.FieldHeight * Rndy());
-          n = LoadOrganism(ref Teleporters(i).intInPath + "\\" + sAns[lElement], ref randomV.x, ref randomV.y);
+          n = LoadOrganism(ref Teleporters(i).intInPath + "\\" + sAns[lElement], ref randomV.X, ref randomV.Y);
           Teleporters(i).NumTeleportedIn = Teleporters(i).NumTeleportedIn + 1;
           File.Delete((Teleporters(i).intInPath + "\\" + sAns(lElement)));;
           MaxBotsPerCyclePerTeleporter = MaxBotsPerCyclePerTeleporter - 1;

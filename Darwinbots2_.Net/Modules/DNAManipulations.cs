@@ -1,4 +1,6 @@
 using DBNet.Forms;
+using Iersera.Model;
+using System.Collections.Generic;
 using static Buckets_Module;
 using static Common;
 using static DNAExecution;
@@ -50,29 +52,13 @@ internal static class DNAManipulations
         return CountGenes;
     }
 
-    public static int DnaLen(block[] dna)
+    public static int DnaLen(IList<block> dna)
     {
         var DnaLen = 1;
         while (!(dna[DnaLen].tipo == 10 & dna[DnaLen].value == 1) && DnaLen <= 32000 & DnaLen < UBound(dna))
             DnaLen++;
 
         return DnaLen;
-    }
-
-    public static void DupBoolStack()
-    {
-        if (Condst.Count == 0)
-            return;
-
-        Condst.Push(Condst.Peek());
-    }
-
-    public static void DupIntStack()
-    {
-        if (IntStack.Count == 0)
-            return;
-
-        IntStack.Push(IntStack.Peek());
     }
 
     public static void exechighlight(int n)
@@ -252,22 +238,6 @@ internal static class DNAManipulations
         IntStack.Push(a);
     }
 
-    public static int PopBoolStack()
-    {
-        if (Condst.Count == 0)
-            return -5;
-
-        return Condst.Pop() ? 1 : 0;
-    }
-
-    public static int PopIntStack()
-    {
-        if (IntStack.Count == 0)
-            return 0;
-
-        return IntStack.Pop();
-    }
-
     public static int PrevStop(block[] dna, int inizio)
     {
         var PrevStop = inizio;
@@ -278,16 +248,6 @@ internal static class DNAManipulations
                 break;
         }
         return PrevStop;
-    }
-
-    public static void PushBoolStack(bool value)
-    {
-        Condst.Push(value);
-    }
-
-    public static void PushIntStack(int value)
-    {
-        IntStack.Push(value);
     }
 
     public static int RobScriptLoad(string path)
@@ -369,13 +329,13 @@ internal static class DNAManipulations
 
     private static void preparerob(int t, string path)
     {
-        rob[t].pos.x = Random(50, (int)Form1.instance.ScaleWidth());
-        rob[t].pos.y = Random(50, (int)Form1.instance.ScaleHeight());
+        rob[t].pos.X = Random(50, (int)Form1.instance.ScaleWidth());
+        rob[t].pos.Y = Random(50, (int)Form1.instance.ScaleHeight());
         rob[t].aim = Random(0, 628) / 100;
-        rob[t].aimvector = VectorSet(Cos(rob[t].aim), Sin(rob[t].aim));
+        rob[t].aimvector = new vector(Cos(rob[t].aim), Sin(rob[t].aim));
         rob[t].exist = true;
-        rob[t].BucketPos.x = -2;
-        rob[t].BucketPos.y = -2;
+        rob[t].BucketPos.X = -2;
+        rob[t].BucketPos.Y = -2;
         UpdateBotBucket(t);
 
         var col1 = Random(50, 255);

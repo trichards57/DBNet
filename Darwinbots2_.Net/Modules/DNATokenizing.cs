@@ -1,10 +1,13 @@
 using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 using static DNAExecution;
 using static DNAManipulations;
 using static Globals;
 using static Microsoft.VisualBasic.Constants;
 using static Microsoft.VisualBasic.Conversion;
-using static Microsoft.VisualBasic.FileSystem;
 using static Microsoft.VisualBasic.Information;
 using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
@@ -23,26 +26,24 @@ internal static class DNATokenizing
     public static void calc_dnamatrix()
     {
         //calculate dna matrix
-        var result = "";
 
         var count = 0;
 
-        for (var y_tipo = 0; y_tipo < 8; y_tipo++)
+        for (var y_tipo = 0; y_tipo < 9; y_tipo++)
         {
-            for (var y_value = 0; y_value < 13; y_value++)
+            for (var y_value = 0; y_value < 14; y_value++)
             {
                 var Y = new block
                 {
                     tipo = y_tipo + 2,
                     value = y_value + 1
                 };
-                Parse(ref result, Y);
+                var result = Parse(Y);
                 if (result != "")
                 {
                     dnamatrix[y_tipo, y_value] = count;
                     count++;
                 }
-                result = "";
             }
         }
     }
@@ -62,7 +63,7 @@ internal static class DNATokenizing
         {
             var temp = "";
             //Gene breaks
-            var rob = Robots.rob[n];
+
             // If a Start or Else
             if (dna[t].tipo == 9 && (dna[t].value == 2 || dna[t].value == 3))
             {
@@ -97,7 +98,7 @@ internal static class DNATokenizing
             }
 
             if (gene != lastgene)
-            { //Botsareus 5/28/2013 Small bug fix: '0' no longer on top of dna
+            {
                 if (gene > 1)
                 {
                     temp += vbCrLf;
@@ -111,12 +112,11 @@ internal static class DNATokenizing
                     temp += vbCrLf;
 
                 DetokenizeDNA += temp;
-                temp = "";
                 lastgene = gene;
             }
 
             var converttosysvar = IIf(dna[t + 1].tipo == 7, true, false);
-            Parse(ref temp, dna[t], n, converttosysvar);
+            temp = Parse(dna[t], n, converttosysvar);
             if (temp == "")
                 temp = "VOID"; //alert user that there is an invalid DNA entry.
 
@@ -152,31 +152,21 @@ internal static class DNATokenizing
     public static int DNAtoInt(int tipo, int value)
     {
         var DNAtoInt = 0;
-        //make value sane
-        if (value > 32000)
-        {
-            value = 32000;
-        }
-        if (value < -32000)
-        {
-            value = -32000;
-        }
+
+        value = Clamp(value, -32000, 32000);
+
         //figure out conversion
         if (tipo < 2)
         {
             DNAtoInt = -16646;
 
             if (Abs(value) > 999)
-            {
                 value = (int)(512 * Sign(value) + value / 2.05);
-            }
 
             DNAtoInt += value;
 
             if (tipo == 1)
-            {
                 DNAtoInt += 32729;
-            }
         }
         else if (tipo > 1)
         {
@@ -190,151 +180,56 @@ internal static class DNATokenizing
     ' loads the dna and parses it
     */
 
-    public static string Hash(string s, int f)
+    public static string Hash(string s)
     {
-        var buf = new int[101];
-        var Hash = "";
-
-        s = s.Trim();
-
-        while (Right(s, 2) == vbCrLf)
-        {
-            s = Left(s, Len(s) - 2);
-        }
-
-        for (var k = 0; k < f; k++)
-            buf[k] = 0;
-
-        for (var k = 1; k < Len(s); k++)
-        {
-            buf[k % f] = buf[k % f] + Asc(Mid(s, k, 1));
-            buf[k % f] = buf[k % f] + buf[(k - 1) % f];
-            buf[k % f] = buf[k % f] % 100;
-        }
-
-        for (var k = 0; k < f - 1; k++)
-            Hash += Chr(buf[k] % 93 + 33);
-
-        return Hash;
+        return Convert.ToHexString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(s)));
     }
 
-    public static bool LoadDNA(string path, int n)
+    public static async Task<bool> LoadDNA(string path, int n)
     {
-        var DNApos = 0;
         var hold = "";
 
-        rob[n].dna = new block[0];
+        rob[n].dna.Clear();
 
         if (path == "")
             return false;
 
-        VBOpenFile(1, path);
-
-        var useref = false;
-
-        while (!EOF(1))
+        var lines = await File.ReadAllLinesAsync(path);
+        foreach (var a in lines)
         {
-            var a = LineInput(1);
-            var clonea = a;
+            var processedLine = a;
 
             // eliminate comments at the end of a line
             // but preserves comments-only lines
             var pos = InStr(a, "'");
-            if (pos > 1)
-            {
-                a = Left(a, pos - 1);
-            }
-            if (Right(a, 2) == vbCrLf)
-            {
-                a = Left(a, Len(a) - 2);
-            }
+            if (a.IndexOf('\'') > 1)
+                processedLine = processedLine.Split("'")[0];
 
-            //Replace any tabs with spaces
-            a = Replace(a, vbTab, " ");
-            a = Trim(a);
+            processedLine = processedLine.Replace('\t', ' ').Trim();
 
-            if ((Left(a, 1) != "'" && Left(a, 1) != "/") && a != "")
+            if (!processedLine.StartsWith("'") && !processedLine.StartsWith("/") && !string.IsNullOrEmpty(processedLine))
             {
-                if (Left(a, 3) == "def")
-                {
+                if (processedLine.StartsWith("def"))
                     insertvar(n, a);
-                    useref = true;
-                }
                 else
                 {
-                    pos = InStr(a, " ");
-                    while (pos != 0)
-                    {
-                        var b = Left(a, pos - 1);
-                        a = Right(a, Len(a) - pos);
+                    var parts = processedLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
-                        while (Left(a, 0) == " ")
-                        {
-                            a = Right(a, Len(a) - 1);
-                        }
-                        pos = InStr(a, " ");
-
-                        if (b != "")
-                        {
-                            DNApos++;
-                            if (DNApos > UBound(rob[n].dna))
-                            {
-                                var robTmp = new block[DNApos + 5];
-                                Array.Copy(rob[n].dna, robTmp, rob[n].dna.Length);
-                                rob[n].dna = robTmp;
-                            }
-                            Parse(ref b, rob[n].dna[DNApos], n);
-                        }
-                    }
-                    if (a != "")
-                    {
-                        DNApos++;
-                        if (DNApos > UBound(rob[n].dna))
-                        {
-                            var robTmp = new block[DNApos + 5];
-                            Array.Copy(rob[n].dna, robTmp, rob[n].dna.Length);
-                            rob[n].dna = robTmp;
-                        }
-                        Parse(ref a, rob[n].dna[DNApos], n);
-                    }
+                    foreach (var b in parts)
+                        rob[n].dna.Add(Parse(b, n));
                 }
             }
             else
             {
-                if (Left(a, 2) == "'#" || Left(a, 2) == "/#")
-                {
-                    // embryo of a new feature, should allow recording
-                    // in dna files info such robot colour, generation,
-                    // mutations etc
+                if (processedLine.StartsWith("'#") || processedLine.StartsWith("/#"))
                     getvals(n, a, hold);
-                }
             }
-            hold = hold + clonea + vbCrLf; //Botsareus 10/8/2015 Simpler hold
+            hold += a + vbCrLf;
         }
-        VBCloseFile(1);
-        var LoadDNA = true;
-        DNApos++;
-        if (DNApos > UBound(rob[n].dna))
-        {
-            var robTmp = new block[DNApos + 1];
-            Array.Copy(rob[n].dna, robTmp, rob[n].dna.Length);
-            rob[n].dna = robTmp;
-        }
-        rob[n].dna[DNApos].tipo = 10;
-        rob[n].dna[DNApos].value = 1;
-        //ReDim Preserve rob[n].DNA(DnaLen(rob[n].DNA())) ' EricL commented out March 15, 2006
-        //Botsareus 6/5/2013 Bug fix to do with leading zero on def
-        if (useref)
-        {
-            if (rob[n].dna[0].tipo == 0 && rob[n].dna[0].value == 0 && rob[n].dna[1].tipo != 9)
-            {
-                for (DNApos = 0; DNApos < UBound(rob[n].dna) - 1; DNApos++)
-                {
-                    rob[n].dna[DNApos] = rob[n].dna[DNApos + 1];
-                }
-            }
-        }
-        return LoadDNA;
+
+        rob[n].dna.Add(new block { tipo = 10, value = 1 });
+
+        return true;
     }
 
     /*
@@ -2670,101 +2565,55 @@ internal static class DNATokenizing
         sysvarOUT[255].value = 924;
     }
 
-    public static void Parse(ref string Command, block bp, int n = 0, bool converttosysvar = true)
+    public static block Parse(string Command, int n = 0)
     {
-        var detok = IIf(Command == "", true, false);
-
-        if (detok)
+        var bp = BasicCommandTok(LCase(Command));
+        if (bp.value == 0)
+            bp = AdvancedCommandTok(LCase(Command));
+        if (bp.value == 0)
+            bp = BitwiseCommandTok(LCase(Command));
+        if (bp.value == 0)
+            bp = ConditionsTok(LCase(Command));
+        if (bp.value == 0)
+            bp = LogicTok(LCase(Command));
+        if (bp.value == 0)
+            bp = StoresTok(LCase(Command));
+        if (bp.value == 0)
+            bp = FlowTok(LCase(Command));
+        if (bp.value == 0)
+            bp = MasterFlowTok(LCase(Command));
+        if (bp.value == 0 & Left(Command, 1) == "*")
         {
-            switch (bp.tipo)
-            {
-                case 0:  //number
-                    Command = converttosysvar ? SysvarDetok(bp.value, n) : bp.value.ToString();
-
-                    break;//*.number
-                case 1:
-                    Command = "*" + SysvarDetok(bp.value, n);
-                    break;//basic commands
-                case 2:
-                    Command = BasicCommandDetok(bp.value);
-                    break;//advanced commands
-                case 3:
-                    Command = AdvancedCommandDetok(bp.value);
-                    break;//bit commands
-                case 4:
-                    Command = BitwiseCommandDetok(bp.value);
-                    break;//conditions
-                case 5:
-                    Command = ConditionsDetok(bp.value);
-                    break;//logic
-                case 6:
-                    Command = LogicDetok(bp.value);
-                    break;//stores
-                case 7:
-                    Command = StoresDetok(bp.value);
-                    break;
-
-                case 8:
-                    //nothing
-                    break;
-
-                case 9:
-                    Command = FlowDetok(bp.value);
-                    break;
-
-                case 10:
-                    Command = MasterFlowDetok(bp.value);
-                    break;
-            }
+            bp.tipo = 1;
+            bp.value = SysvarTok(Right(Command, Len(Command) - 1), n);
         }
-        else
+        else if (bp.value == 0)
         {
-            bp.value = 0;
-
-            //Botsareus 11/27/2013 Automatically lower case var
-            if (bp.value == 0)
-            {
-                bp = BasicCommandTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = AdvancedCommandTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = BitwiseCommandTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = ConditionsTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = LogicTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = StoresTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = FlowTok(LCase(Command));
-            }
-            if (bp.value == 0)
-            {
-                bp = MasterFlowTok(LCase(Command));
-            }
-            if (bp.value == 0 & Left(Command, 1) == "*")
-            {
-                bp.tipo = 1;
-                bp.value = SysvarTok(Right(Command, Len(Command) - 1), n);
-            }
-            else if (bp.value == 0)
-            {
-                bp.tipo = 0;
-                bp.value = SysvarTok(Command, n);
-            }
+            bp.tipo = 0;
+            bp.value = SysvarTok(Command, n);
         }
+
+        return bp;
+    }
+
+    public static string Parse(block bp, int n = 0, bool converttosysvar = true)
+    {
+        return bp.tipo switch
+        {
+            //number
+            0 => converttosysvar ? SysvarDetok(bp.value, n) : bp.value.ToString(),
+            1 => "*" + SysvarDetok(bp.value, n),
+            2 => BasicCommandDetok(bp.value),
+            3 => AdvancedCommandDetok(bp.value),
+            4 => BitwiseCommandDetok(bp.value),
+            5 => ConditionsDetok(bp.value),
+            6 => LogicDetok(bp.value),
+            7 => StoresDetok(bp.value),
+            8 => "",
+            9 => FlowDetok(bp.value),
+            10 => MasterFlowDetok(bp.value),
+            _ => "",
+        };
     }
 
     public static string SaveRobHeader(ref int n)
@@ -2813,16 +2662,14 @@ internal static class DNATokenizing
     {
         var SysvarTok = 0;
 
-        if (Left(a, 1) == ".")
+        if (a.StartsWith("."))
         {
-            a = Right(a, Len(a) - 1);
+            a = a[1..];
 
             for (var t = 1; t < UBound(sysvar); t++)
             {
                 if (LCase(sysvar[t].Name) == LCase(a))
-                {
                     SysvarTok = sysvar[t].value;
-                }
             }
 
             if (n > 0)
@@ -2830,132 +2677,84 @@ internal static class DNATokenizing
                 for (var t = 1; t < UBound(rob[n].vars); t++)
                 {
                     if (rob[n].vars[t].Name == a)
-                    {
                         SysvarTok = rob[n].vars[t].value;
-                    }
                 }
             }
         }
         else
-        {
-            SysvarTok = (int)Val(a);
-        }
+            _ = int.TryParse(a, out SysvarTok);
+
         return SysvarTok;
     }
 
     public static string TipoDetok(int tipo)
     {
-        var TipoDetok = "";
-        switch (tipo)
+        return tipo switch
         {
-            case 0:
-                TipoDetok = "number";
-                break;
-
-            case 1:
-                TipoDetok = "*number";
-                break;
-
-            case 2:
-                TipoDetok = "basic command";
-                break;
-
-            case 3:
-                TipoDetok = "advanced command";
-                break;
-
-            case 4:
-                TipoDetok = "bit command";
-                break;
-
-            case 5:
-                TipoDetok = "condition";
-                break;
-
-            case 6:
-                TipoDetok = "logic operator";
-                break;
-
-            case 7:
-                TipoDetok = "store command";
-                break;
-
-            case 9:
-                TipoDetok = "flow command";
-                break;
-        }
-        return TipoDetok;
+            0 => "number",
+            1 => "*number",
+            2 => "basic command",
+            3 => "advanced command",
+            4 => "bit command",
+            5 => "condition",
+            6 => "logic operator",
+            7 => "store command",
+            9 => "flow command",
+            _ => "",
+        };
     }
 
     private static string AdvancedCommandDetok(int n)
     {
-        var AdvancedCommandDetok = "";
-
         switch (n)
         {
             case 1:
-                AdvancedCommandDetok = "angle";
-                break;
+                return "angle";
 
             case 2:
-                AdvancedCommandDetok = "dist";
-                break;
+                return "dist";
 
             case 3:
-                AdvancedCommandDetok = "ceil";
-                break;
+                return "ceil";
 
             case 4:
-                AdvancedCommandDetok = "floor";
-                break;
+                return "floor";
 
             case 5:
-                AdvancedCommandDetok = "sqr";
-                break;
+                return "sqr";
 
             case 6:
-                AdvancedCommandDetok = "pow";
-                break;
+                return "pow";
 
             case 7:
-                AdvancedCommandDetok = "pyth";
-                break;
+                return "pyth";
 
             case 8:
-                AdvancedCommandDetok = "anglecmp";
-                break;
+                return "anglecmp";
 
             case 9:
-                AdvancedCommandDetok = "root";
-                break;
+                return "root";
 
             case 10:
-                AdvancedCommandDetok = "logx";
-                break;
+                return "logx";
 
             case 11:
-                AdvancedCommandDetok = "sin";
-                break;
+                return "sin";
 
             case 12:
-                AdvancedCommandDetok = "cos";
-                break;
+                return "cos";
 
             case 13:
                 if (!ismutating)
-                {
-                    AdvancedCommandDetok = "debugint"; //Botsareus 1/31/2013 the new debugint command
-                }
+                    return "debugint"; //Botsareus 1/31/2013 the new debugint command
                 break;
 
             case 14:
                 if (!ismutating)
-                {
-                    AdvancedCommandDetok = "debugbool"; //Botsareus 1/31/2013 the new debugbool command
-                }
+                    return "debugbool"; //Botsareus 1/31/2013 the new debugbool command
                 break;
         }
-        return AdvancedCommandDetok;
+        return "";
     }
 
     private static block AdvancedCommandTok(string s)
@@ -3033,67 +2832,24 @@ internal static class DNATokenizing
 
     private static string BasicCommandDetok(int n)
     {
-        var BasicCommandDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                BasicCommandDetok = "add";
-                break;
-
-            case 2:
-                BasicCommandDetok = "sub";
-                break;
-
-            case 3:
-                BasicCommandDetok = "mult";
-                break;
-
-            case 4:
-                BasicCommandDetok = "div";
-                break;
-
-            case 5:
-                BasicCommandDetok = "rnd";
-                break;
-
-            case 6:
-                BasicCommandDetok = "*";
-                break;
-
-            case 7:
-                BasicCommandDetok = "mod";
-                break;
-
-            case 8:
-                BasicCommandDetok = "sgn";
-                break;
-
-            case 9:
-                BasicCommandDetok = "abs";
-                break;
-
-            case 10:
-                BasicCommandDetok = "dup";
-                break;
-
-            case 11:
-                BasicCommandDetok = "drop";
-                break;
-
-            case 12:
-                BasicCommandDetok = "clear";
-                break;
-
-            case 13:
-                BasicCommandDetok = "swap";
-                break;
-
-            case 14:
-                BasicCommandDetok = "over";
-                break;
-        }
-        return BasicCommandDetok;
+            1 => "add",
+            2 => "sub",
+            3 => "mult",
+            4 => "div",
+            5 => "rnd",
+            6 => "*",
+            7 => "mod",
+            8 => "sgn",
+            9 => "abs",
+            10 => "dup",
+            11 => "drop",
+            12 => "clear",
+            13 => "swap",
+            14 => "over",
+            _ => "",
+        };
     }
 
     private static block BasicCommandTok(string s)
@@ -3187,47 +2943,19 @@ internal static class DNATokenizing
 
     private static string BitwiseCommandDetok(int n)
     {
-        var BitwiseCommandDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                BitwiseCommandDetok = "~"; //bitwise compliment
-                break;
-
-            case 2:
-                BitwiseCommandDetok = "&"; //bitwise AND
-                break;
-
-            case 3:
-                BitwiseCommandDetok = "|"; //bitwise OR
-                break;
-
-            case 4:
-                BitwiseCommandDetok = "^"; //bitwise XOR
-                break;
-
-            case 5:
-                BitwiseCommandDetok = "++";
-                break;
-
-            case 6:
-                BitwiseCommandDetok = "--";
-                break;
-
-            case 7:
-                BitwiseCommandDetok = "-";
-                break;
-
-            case 8:
-                BitwiseCommandDetok = "<<"; //bit shift left
-                break;
-
-            case 9:
-                BitwiseCommandDetok = ">>"; //bit shift right
-                break;
-        }
-        return BitwiseCommandDetok;
+            1 => "~",//bitwise compliment
+            2 => "&",//bitwise AND
+            3 => "|",//bitwise OR
+            4 => "^",//bitwise XOR
+            5 => "++",
+            6 => "--",
+            7 => "-",
+            8 => "<<",//bit shift left
+            9 => ">>",//bit shift right
+            _ => "",
+        };
     }
 
     private static block BitwiseCommandTok(string s)
@@ -3281,51 +3009,20 @@ internal static class DNATokenizing
 
     private static string ConditionsDetok(int n)
     {
-        var ConditionsDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                ConditionsDetok = "<";
-                break;
-
-            case 2:
-                ConditionsDetok = ">";
-                break;
-
-            case 3:
-                ConditionsDetok = "=";
-                break;
-
-            case 4:
-                ConditionsDetok = "!=";
-                break;
-
-            case 5:
-                ConditionsDetok = "%=";
-                break;
-
-            case 6:
-                ConditionsDetok = "!%=";
-                break;
-
-            case 7:
-                ConditionsDetok = "~=";
-                break;
-
-            case 8:
-                ConditionsDetok = "!~=";
-                break;
-
-            case 9:
-                ConditionsDetok = ">=";
-                break;
-
-            case 10:
-                ConditionsDetok = "<=";
-                break;
-        }
-        return ConditionsDetok;
+            1 => "<",
+            2 => ">",
+            3 => "=",
+            4 => "!=",
+            5 => "%=",
+            6 => "!%=",
+            7 => "~=",
+            8 => "!~=",
+            9 => ">=",
+            10 => "<=",
+            _ => "",
+        };
     }
 
     private static block ConditionsTok(string s)
@@ -3383,29 +3080,14 @@ internal static class DNATokenizing
 
     private static string FlowDetok(int n)
     {
-        var FlowDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                FlowDetok = "cond";
-                break;
-
-            case 2:
-                FlowDetok = "start";
-                break;
-
-            case 3:
-                FlowDetok = "else";
-                break;
-
-            case 4:
-                FlowDetok = "stop";
-                //   Case 5
-                //     FlowDetok = "cross"
-                break;
-        }
-        return FlowDetok;
+            1 => "cond",
+            2 => "start",
+            3 => "else",
+            4 => "stop",
+            _ => "",
+        };
     }
 
     private static block FlowTok(string s)
@@ -3439,18 +3121,9 @@ internal static class DNATokenizing
 
     private static void getvals(int n, string a, string hold)
     {
-        // here we divide the string in its two parts
-        // parameter's name and value, which shall be separated by ':'
-        var Name = Left(a, InStr(a, ":") - 1);
-        var value = Right(a, Len(a) - InStr(a, ":"));
-        Name = Trim(Name);
-        Name = Mid(Name, 3);
-        value = Trim(value);
-
-        // Botsareus 10/8/2015
-        // here we take the appropriate action
-        // depending on the parameter's name
-        // we record it in the rob structure
+        var parts = a.Split(":", 2);
+        var Name = parts[0].Trim()[3..];
+        var value = parts[1].Trim();
 
         if (Name == "generation")
             rob[n].generation = (int)Val(value);
@@ -3463,7 +3136,7 @@ internal static class DNATokenizing
 
         if (Name == "hash")
         {
-            var value2 = Hash(hold, 20);
+            var value2 = Hash(hold);
             if (value2 != value)
             {
                 rob[n].generation = 0;
@@ -3474,55 +3147,21 @@ internal static class DNATokenizing
 
     private static string LogicDetok(int n)
     {
-        var LogicDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                LogicDetok = "and";
-                break;
-
-            case 2:
-                LogicDetok = "or";
-                break;
-
-            case 3:
-                LogicDetok = "xor";
-                break;
-
-            case 4:
-                LogicDetok = "not";
-                break;
-
-            case 5:
-                LogicDetok = "true";
-                break;
-
-            case 6:
-                LogicDetok = "false";
-                break;
-
-            case 7:
-                LogicDetok = "dropbool";
-                break;
-
-            case 8:
-                LogicDetok = "clearbool";
-                break;
-
-            case 9:
-                LogicDetok = "dupbool";
-                break;
-
-            case 10:
-                LogicDetok = "swapbool";
-                break;
-
-            case 11:
-                LogicDetok = "overbool";
-                break;
-        }
-        return LogicDetok;
+            1 => "and",
+            2 => "or",
+            3 => "xor",
+            4 => "not",
+            5 => "true",
+            6 => "false",
+            7 => "dropbool",
+            8 => "clearbool",
+            9 => "dupbool",
+            10 => "swapbool",
+            11 => "overbool",
+            _ => "",
+        };
     }
 
     private static block LogicTok(string s)
@@ -3584,15 +3223,11 @@ internal static class DNATokenizing
 
     private static string MasterFlowDetok(int n)
     {
-        var MasterFlowDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                MasterFlowDetok = "end";
-                break;
-        }
-        return MasterFlowDetok;
+            1 => "end",
+            _ => "",
+        };
     }
 
     private static block MasterFlowTok(string s)
@@ -3614,73 +3249,34 @@ internal static class DNATokenizing
 
     private static string StoresDetok(int n)
     {
-        var StoresDetok = "";
-
-        switch (n)
+        return n switch
         {
-            case 1:
-                StoresDetok = "store";
-                break;
-
-            case 2:
-                StoresDetok = "inc";
-                break;
-
-            case 3:
-                StoresDetok = "dec";
-                break;//Botsareus 9/7/2013 New dna commands
-            case 4:
-                StoresDetok = "addstore";
-                break;
-
-            case 5:
-                StoresDetok = "substore";
-                break;
-
-            case 6:
-                StoresDetok = "multstore";
-                break;
-
-            case 7:
-                StoresDetok = "divstore";
-                break;
-
-            case 8:
-                StoresDetok = "ceilstore";
-                break;
-
-            case 9:
-                StoresDetok = "floorstore";
-                break;
-
-            case 10:
-                StoresDetok = "rndstore";
-                break;
-
-            case 11:
-                StoresDetok = "sgnstore";
-                break;
-
-            case 12:
-                StoresDetok = "absstore";
-                break;
-
-            case 13:
-                StoresDetok = "sqrstore";
-                break;
-
-            case 14:
-                StoresDetok = "negstore";
-                break;
-        }
-        return StoresDetok;
+            1 => "store",
+            2 => "inc",
+            3 => "dec",
+            4 => "addstore",
+            5 => "substore",
+            6 => "multstore",
+            7 => "divstore",
+            8 => "ceilstore",
+            9 => "floorstore",
+            10 => "rndstore",
+            11 => "sgnstore",
+            12 => "absstore",
+            13 => "sqrstore",
+            14 => "negstore",
+            _ => "",
+        };
     }
 
     private static block StoresTok(string s)
     {
-        block StoresTok = null;
-        StoresTok.value = 0;
-        StoresTok.tipo = 7;
+        var StoresTok = new block
+        {
+            value = 0,
+            tipo = 7
+        };
+
         switch (s)
         {
             case "store":
@@ -3740,20 +3336,4 @@ internal static class DNATokenizing
         }
         return StoresTok;
     }
-
-    /*
-    ' embryo of a new feature, should allow recording
-    ' in dna files info such robot colour, generation, mutations etc
-    */
-    /*
-    ' calculates the hash function, i.e. simply a string of length f
-    ' which is unlikely to be generated by a different input s
-    */
-    /*
-    ' saves a robot's header informations; can be padded with any
-    ' other information, such as color, base energy, etc.
-    */
-    /*
-    ' loads the sysvars.txt file
-    */
 }

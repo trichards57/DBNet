@@ -448,7 +448,7 @@ public class robot {
  public int[] usedvars = new int[1000];
  public int[] epimem = new int[14];
  public int[] mem = new int[1000];
- public block[] dna = new block[];
+ public List<block> dna = new ();
  public int lastopp = 0;
  public int lastopptype = 0;
  public vector lastopppos = null;
@@ -961,7 +961,7 @@ public static double FindRadius(int n, decimal mult= 1) {
 ' returns an absolute acceleration, given up-down,
 ' left-right values and aim
 */
-public static decimal absx(ref decimal aim, int up, int dn, int sx, int dx) {
+public static double absx(double aim, int up, int dn, int sx, int dx) {
   decimal absx = 0;
   decimal upTotal = 0;
 
@@ -988,7 +988,7 @@ public static decimal absx(ref decimal aim, int up, int dn, int sx, int dx) {
   return absx;
 }
 
-public static decimal absy(ref decimal aim, int up, int dn, int sx, int dx) {
+public static double absy( decimal aim, int up, int dn, int sx, int dx) {
   decimal absy = 0;
   decimal upTotal = 0;
 

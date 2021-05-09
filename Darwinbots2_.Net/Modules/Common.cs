@@ -1,12 +1,12 @@
 using DBNet.Forms;
+using Iersera.Model;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using static Globals;
-using static Master;
 using static Microsoft.VisualBasic.Conversion;
-using static Microsoft.VisualBasic.VBMath;
 using static System.Math;
 using static VBExtension;
 
@@ -19,16 +19,16 @@ internal static class Common
     private static bool called = false;
     private static double gset;
     private static int iset;
-    private static int y;
+    private static Random rand;
 
     public static double Cross(vector V1, vector V2)
     {
-        return V1.x * V2.y - V1.y * V2.x;
+        return V1.X * V2.Y - V1.Y * V2.X;
     }
 
     public static double Dot(vector V1, vector V2)
     {
-        return V1.x * V2.x + V1.y * V2.y;
+        return V1.X * V2.X + V1.Y * V2.Y;
     }
 
     public static int fRnd(int low, int up)
@@ -64,10 +64,6 @@ internal static class Common
         return Gauss;
     }
 
-    [DllImport("user32.dll")] public static extern int GetInputState();
-
-    [DllImport("kernel32.dll")] public static extern int GetTickCount();
-
     public static int nextlowestmultof2(int value)
     {
         var a = 1;
@@ -81,11 +77,10 @@ internal static class Common
 
     public static int Random(int low, int hi)
     {
-        var Random = (int)Int((hi - low + 1) * rndy() + low);
         if (hi < low && hi == 0)
-            Random = 0;
+            return 0;
 
-        return Random;
+        return (int)Int((hi - low + 1) * rndy() + low);
     }
 
     public static void restarter()
@@ -96,100 +91,66 @@ internal static class Common
         called = true;
 
         traycleanup();
-        Process.Start(App.path + "\\Restarter.exe " + App.path + "\\" + App.EXEName);
+
+        var appPath = Assembly.GetEntryAssembly().Location;
+
+        Process.Start(Path.GetDirectoryName(appPath) + "\\Restarter.exe", appPath);
     }
 
     public static double rndy()
     {
-        double rndy = 0;
-        if (UseIntRnd)
-        {
-            if (y == 0)
-            {
-                Randomize(rndylist[cprndy]);
-                cprndy++;
-                if (cprndy == 3900)
-                    savenow = true; //Time for an autosave
-
-                if (cprndy > 3999)
-                {
-                    cprndy = 0;
-                    File.Delete(App.path + "\\" + filemem); ; //kill current file and grab the next
-                    MDIForm1.instance.grabfile();
-                }
-                y = (int)(Rnd() * 1500) + 1;
-            }
-
-            rndy = Rnd();
-
-            y--;
-        }
-        else
-            rndy = Rnd();
-
-        return rndy;
+        return rand.NextDouble();
     }
 
     public static int TargetDNASize(int size)
     {
-        var Max = 250;
+        var max = 250;
         for (var i = 1; i < size; i++)
         {
-            if (i > Max)
+            if (i > max)
             {
-                var overload = (5000 - Max) / 4750;
+                var overload = (5000 - max) / 4750;
                 if (overload < 0)
                 {
                     overload = 0;
                 }
-                Max = Max + 10 + overload * 250;
+                max += 10 + overload * 250;
             }
         }
-        return Max;
+        return max;
     }
 
+    [Obsolete("Use + operator instead")]
     public static vector VectorAdd(vector V1, vector V2)
     {
-        return new vector
-        {
-            x = V1.x + V2.x,
-            y = V1.y + V2.y
-        };
+        return V1 + V2;
     }
 
+    [Obsolete("Use .Magnitude instead")]
     public static double VectorInvMagnitude(vector V1)
     {
-        var mag = VectorMagnitude(V1);
+        var mag = V1.Magnitude();
         return mag == 0 ? -1 : 1 / mag;
     }
 
+    [Obsolete("Use .Magnitude instead")]
     public static double VectorMagnitude(vector V1)
     {
-        // This might seem overly complicated compared to sqr(X^2 + Y^2),
-        // But it gives better numerical behavior
-        var minVal = Min(Abs(V1.x), Abs(V1.y));
-        var maxVal = Max(Abs(V1.x), Abs(V1.y));
-
-        return maxVal < 0.00001 ? 0 : maxVal * Sqrt(Pow(1 + (minVal / maxVal), 2));
+        return V1.Magnitude();
     }
 
+    [Obsolete("Use .MagnitudeSquare instead")]
     public static double VectorMagnitudeSquare(vector V1)
     {
-        if (Abs(V1.x) > 32000)
-            V1.x = Sign(V1.x) * 32000;
-
-        if (Abs(V1.y) > 32000)
-            V1.y = Sign(V1.y) * 32000;
-
-        return V1.x * V1.x + V1.y * V1.y;
+        return V1.MagnitudeSquare();
     }
 
     public static vector VectorMax(vector x, vector y)
     {
         return new vector
         {
-            x = Max(x.x, y.x),
-            y = Max(x.y, y.y)
+            X = Max(x.X, y.X),
+            Y = Max(x.Y, y.Y)
         };
     }
 
@@ -197,56 +158,37 @@ internal static class Common
     {
         return new vector
         {
-            x = Min(x.x, y.x),
-            y = Min(x.y, y.y)
+            X = Min(x.X, y.X),
+            Y = Min(x.Y, y.Y)
         };
     }
 
+    [Obsolete("Use * instead")]
     public static vector VectorScalar(vector V1, double k)
     {
-        if (Abs(k) > 32000)
-            k = Sign(k) * 32000;
-
-        if (Abs(V1.x) > 32000)
-            V1.x = Sign(V1.x) * 32000;
-
-        if (Abs(V1.y) > 32000)
-            V1.y = Sign(V1.y) * 32000;
-
-        return new vector
-        {
-            x = V1.x * k,
-            y = V1.y * k
-        };
+        return V1 * k;
     }
 
+    [Obsolete("Use new vector(x,y) instead")]
     public static vector VectorSet(double x, double y)
     {
         return new vector
         {
-            x = x,
-            y = y
+            X = x,
+            Y = y
         };
     }
 
+    [Obsolete("Use - instead")]
     public static vector VectorSub(vector V1, vector V2)
     {
-        return new vector
-        {
-            x = V1.x - V2.x,
-            y = V1.y - V2.y
-        };
+        return V1 - V2;
     }
 
+    [Obsolete("Use .Unit instead")]
     public static vector VectorUnit(vector V1)
     {
-        var mag = VectorInvMagnitude(V1);
-
-        return new vector
-        {
-            x = V1.x * mag,
-            y = V1.y * mag
-        };
+        return V1.Unit();
     }
 
     private static double gasdev()
@@ -287,11 +229,5 @@ internal static class Common
             Form1.instance.t.Remove();
             MDIForm1.instance.stealthmode = false;
         }
-    }
-
-    public class vector
-    {
-        public double x = 0;
-        public double y = 0;
     }
 }

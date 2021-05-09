@@ -598,10 +598,10 @@ public static bool ObstacleCollision(ref int n, ref int o) {
 
   ObstacleCollision = false;
 
-  botrightedge = rob[n].pos.x + rob[n].radius;
-  botleftedge = rob[n].pos.x - rob[n].radius;
-  bottopedge = rob[n].pos.y - rob[n].radius;
-  botbottomedge = rob[n].pos.y + rob[n].radius;
+  botrightedge = rob[n].pos.X + rob[n].radius;
+  botleftedge = rob[n].pos.X - rob[n].radius;
+  bottopedge = rob[n].pos.Y - rob[n].radius;
+  botbottomedge = rob[n].pos.Y + rob[n].radius;
 
   if ((botrightedge > Obstacles(o).pos.x) And(botleftedge < Obstacles(o).pos.x + Obstacles(o).Width) And(botbottomedge > Obstacles(o).pos.y) And(bottopedge < Obstacles(o).pos.y + Obstacles(o).Height)) {
     ObstacleCollision = true;
@@ -674,15 +674,15 @@ public static dynamic DoObstacleCollisions(ref int n) {
 goto ;
           }
 //Push the bot out the closest edge
-          distup = (rob[n].pos.y + rob[n].radius) - Obstacles(i).pos.y; //- (rob[n].vel.y / 2)
-          distdown = Obstacles(i).pos.y + Obstacles(i).Height - (rob[n].pos.y - rob[n].radius); //- (rob[n].vel.y / 2)
-          distleft = (rob[n].pos.x + rob[n].radius) - Obstacles(i).pos.x; //- (rob[n].vel.x / 2)
-          distright = Obstacles(i).pos.x + Obstacles(i).Width - (rob[n].pos.x - rob[n].radius); //- (rob[n].vel.x / 2)
+          distup = (rob[n].pos.Y + rob[n].radius) - Obstacles(i).pos.y; //- (rob[n].vel.y / 2)
+          distdown = Obstacles(i).pos.y + Obstacles(i).Height - (rob[n].pos.Y - rob[n].radius); //- (rob[n].vel.y / 2)
+          distleft = (rob[n].pos.X + rob[n].radius) - Obstacles(i).pos.x; //- (rob[n].vel.x / 2)
+          distright = Obstacles(i).pos.x + Obstacles(i).Width - (rob[n].pos.X - rob[n].radius); //- (rob[n].vel.x / 2)
 
           if ((Min(distleft, distright) < Min(distup, distdown) And(LastPush != 1 && LastPush != 2)) Or(LastPush == 3 || LastPush == 4)) {
 //Push out left or right
             if (((distleft <= distright) Or(Obstacles(i).pos.x + Obstacles(i).Width) >= SimOpts.FieldWidth) And(Obstacles(i).pos.x > 0)) {
-              if (rob[n].pos.x - rob[n].radius < Obstacles(i).pos.x) {
+              if (rob[n].pos.X - rob[n].radius < Obstacles(i).pos.x) {
                 _WithVar_5122.pos.x = Obstacles(i).pos.x - rob[n].radius;
                 _WithVar_5122.ImpulseRes.x = _WithVar_5122.ImpulseRes.x + _WithVar_5122.vel.x * b;
                 touch(n, _WithVar_5122.pos.x + _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, right side
@@ -693,7 +693,7 @@ goto ;
               }
               LastPush = 1;
             } else {
-              if (rob[n].pos.x + rob[n].radius > Obstacles(i).pos.x + Obstacles(i).Width) {
+              if (rob[n].pos.X + rob[n].radius > Obstacles(i).pos.x + Obstacles(i).Width) {
                 _WithVar_5122.pos.x = Obstacles(i).pos.x + Obstacles(i).Width + rob[n].radius;
                 _WithVar_5122.ImpulseRes.x = _WithVar_5122.ImpulseRes.x + _WithVar_5122.vel.x * b;
                 touch(n, _WithVar_5122.pos.x - _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, left side
@@ -707,7 +707,7 @@ goto ;
           } else {
 //Push out up or down
             if (((distup <= distdown) Or(Obstacles(i).pos.y + Obstacles(i).Height) >= SimOpts.FieldHeight) And(Obstacles(i).pos.y > 0)) {
-              if (rob[n].pos.y - rob[n].radius < Obstacles(i).pos.y) {
+              if (rob[n].pos.Y - rob[n].radius < Obstacles(i).pos.y) {
                 _WithVar_5122.pos.y = Obstacles(i).pos.y - rob[n].radius;
                 _WithVar_5122.ImpulseRes.y = _WithVar_5122.ImpulseRes.y + _WithVar_5122.vel.y * b;
                 touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y + _WithVar_5122.radius); // Update hit senses, bottom
@@ -718,7 +718,7 @@ goto ;
               }
               LastPush = 3;
             } else {
-              if (rob[n].pos.y + rob[n].radius > Obstacles(i).pos.y + Obstacles(i).Height) {
+              if (rob[n].pos.Y + rob[n].radius > Obstacles(i).pos.y + Obstacles(i).Height) {
                 _WithVar_5122.pos.y = Obstacles(i).pos.y + Obstacles(i).Height + rob[n].radius;
                 _WithVar_5122.ImpulseRes.y = _WithVar_5122.ImpulseRes.y + _WithVar_5122.vel.y * b;
                 touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y - _WithVar_5122.radius); // Update hit senses, bottom
