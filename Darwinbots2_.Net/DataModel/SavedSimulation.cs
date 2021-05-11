@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Iersera.DataModel
+{
+    class SavedSimulation
+    {
+        public bool BlockedVegs { get; internal set; }
+        public double CostExecCond { get; internal set; }
+        public bool DeadRobotSnp { get; internal set; }
+        public bool SnpExcludeVegs { get; internal set; }
+        public bool DisableTies { get; internal set; }
+        public bool EnergyExType { get; internal set; }
+        public int EnergyFix { get; internal set; }
+        public decimal EnergyProp { get; internal set; }
+        public int FieldHeight { get; internal set; }
+        public int FieldSize { get; internal set; }
+        public int FieldWidth { get; internal set; }
+        public bool KillDistVegs { get; internal set; }
+        public int MaxEnergy { get; internal set; }
+        public int MaxPopulation { get; internal set; }
+        public int MinVegs { get; internal set; }
+        public decimal MutCurrMult { get; internal set; }
+        public int MutCycMax { get; internal set; }
+        public int MutCycMin { get; internal set; }
+        public bool MutOscill { get; internal set; }
+        public decimal PhysBrown { get; internal set; }
+        public decimal Ygravity { get; internal set; }
+        public decimal Zgravity { get; internal set; }
+        public decimal PhysMoving { get; internal set; }
+        public decimal PhysSwim { get; internal set; }
+        public int PopLimMethod { get; internal set; }
+        public string SimName { get; internal set; }
+        public int SpeciesNum { get; internal set; }
+        public bool Toroidal { get; internal set; }
+        public int TotBorn { get; internal set; }
+        public int TotRunCycle { get; internal set; }
+        public int TotRunTime { get; internal set; }
+        public bool Pondmode { get; internal set; }
+        public int LightIntensity { get; internal set; }
+        public bool CorpseEnabled { get; internal set; }
+        public decimal Decay { get; internal set; }
+        public double Gradient { get; internal set; }
+        public bool DayNight { get; internal set; }
+        public int CycleLength { get; internal set; }
+        public int DecayDelay { get; internal set; }
+        public int DecayType { get; internal set; }
+        public double[] Costs { get; internal set; }
+        public bool F1 { get; internal set; }
+        public bool Restart { get; internal set; }
+        public bool DxSxConnected { get; internal set; }
+        public bool UpDnConnected { get; internal set; }
+        public int RepopAmount { get; internal set; }
+        public int RepopCooldown { get; internal set; }
+        public bool ZeroMomentum { get; internal set; }
+        public int UserSeedNumber { get; internal set; }
+        public IEnumerable<SavedSpecies> Species { get; internal set; }
+        public decimal VegFeedingToBody { get; internal set; }
+        public decimal CoefficientStatic { get; internal set; }
+        public decimal CoefficientKinetic { get; internal set; }
+        public bool PlanetEaters { get; internal set; }
+        public decimal PlanetEatersG { get; internal set; }
+        public decimal Viscosity { get; internal set; }
+        public decimal Density { get; internal set; }
+        public int BadWastelevel { get; internal set; }
+        public int ChartingInterval { get; internal set; }
+        public decimal CoefficientElasticity { get; internal set; }
+        public int FluidSolidCustom { get; internal set; }
+        public int CostRadioSetting { get; internal set; }
+        public double MaxVelocity { get; internal set; }
+        public bool NoShotDecay { get; internal set; }
+        public int SunUpThreshold { get; internal set; }
+        public bool SunUp { get; internal set; }
+        public int SunDownThreshold { get; internal set; }
+        public bool SunDown { get; internal set; }
+        public bool FixedBotRadii { get; internal set; }
+        public int DayNightCycleCounter { get; internal set; }
+        public bool Daytime { get; internal set; }
+        public int SunThresholdMode { get; internal set; }
+        public IEnumerable<SavedTeleporter> Teleporters { get; internal set; }
+        public IEnumerable<SavedObstacle> Obstacles { get; internal set; }
+        public bool ShapesAreVisable { get; internal set; }
+        public bool AllowVerticalShapeDrift { get; internal set; }
+        public bool AllowHorizontalShapeDrift { get; internal set; }
+        public bool ShapesAreSeeThrough { get; internal set; }
+        public bool ShapesAbsorbShots { get; internal set; }
+        public int ShapeDriftRate { get; internal set; }
+        public bool MakeAllShapesTransparent { get; internal set; }
+        public bool MakeAllShapesBlack { get; internal set; }
+        public IEnumerable<SavedShot> Shots { get; internal set; }
+        public int MaxAbsNum { get; internal set; }
+        public string StrSimStart { get; internal set; }
+        public string StrGraphQuery2 { get; internal set; }
+        public int EGridWidth { get; internal set; }
+        public bool EGridEnabled { get; internal set; }
+        public double OldCostX { get; internal set; }
+        public bool DisableMutations { get; internal set; }
+        public int SimGUID { get; internal set; }
+        public int SpeciationGenerationalDistance { get; internal set; }
+        public int SpeciationGeneticDistance { get; internal set; }
+        public bool EnableAutoSpeciation { get; internal set; }
+        public int SpeciationMinimumPopulation { get; internal set; }
+        public int SpeciationForkInterval { get; internal set; }
+        public bool DisableTypArepro { get; internal set; }
+        public string StrGraphQuery1 { get; internal set; }
+        public string StrGraphQuery3 { get; internal set; }
+        public IEnumerable<SavedShot> Graphs { get; internal set; }
+        public bool NoWShotDecay { get; internal set; }
+        public decimal EnergyDdif { get; internal set; }
+        public decimal EnergyDifX { get; internal set; }
+        public decimal EnergyDifXP { get; internal set; }
+        public int ModeChangeCycles { get; internal set; }
+        public int HidePredOffset { get; internal set; }
+        public bool HidePred { get; internal set; }
+        public decimal EnergyDif2 { get; internal set; }
+        public decimal EnergyDifX2 { get; internal set; }
+        public decimal EnergyDifXP2 { get; internal set; }
+        public bool SunOnRnd { get; internal set; }
+        public bool DisableFixing { get; internal set; }
+        public double SunPosition { get; internal set; }
+        public decimal SunRange { get; internal set; }
+        public double SunChange { get; internal set; }
+        public int Tides { get; internal set; }
+        public int TidesOf { get; internal set; }
+        public bool MutOscillSine { get; internal set; }
+        public bool Stagnent { get; internal set; }
+        public IEnumerable<SavedShot> Robots { get; internal set; }
+    }
+}

@@ -18,7 +18,7 @@ internal static class DNAManipulations
     //That is, anything that searches DNA, etc.
     // loads a dna file, inserting the robot in the simulation
 
-    public static int CountGenes(block[] dna)
+    public static int CountGenes(IList<block> dna)
     {
         var CountGenes = 0;
         var counter = 1;

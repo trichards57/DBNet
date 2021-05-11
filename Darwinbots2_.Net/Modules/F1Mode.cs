@@ -1,8 +1,11 @@
 using DBNet.Forms;
+using Iersera.DataModel;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using static Common;
 using static DNAExecution;
@@ -70,15 +73,8 @@ internal static class F1Mode
 
     private static bool setoldpop;
 
-    public static void Countpop()
+    public static async Task Countpop()
     {
-        //counts population of robots at regular intervals
-        //for auto-combat mode and for automatic reset of starting conditions
-
-        string Winner = "";
-
-        double Wins = 0;
-
         for (var t = 1; t < 20; t++)
         {
             PopArray[t].population = 0;
@@ -91,7 +87,7 @@ internal static class F1Mode
             {
                 for (var SpeciePointer = 1; SpeciePointer < TotSpecies; SpeciePointer++)
                 {
-                   var realname = Left(rob[t].FName, Len(rob[t].FName) - 4);
+                    var realname = Left(rob[t].FName, Len(rob[t].FName) - 4);
                     if (realname == PopArray[SpeciePointer].SpName)
                     {
                         PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
@@ -101,10 +97,10 @@ internal static class F1Mode
                 }
             }
         }
+
         if (Contests < MinRounds)
-        {
             Contest_Form.instance.Contests.Content = Contests + 1;
-        }
+
         Contest_Form.instance.Maxrounds.Content = IIf(optMinRounds < Maxrounds && (string)Contest_Form.instance.Winner.Content == "" || Maxrounds == 0, optMinRounds, Maxrounds);
         var SpeciesLeft = 0;
         for (var p = 1; p < TotSpecies; p++)
@@ -188,9 +184,8 @@ internal static class F1Mode
         {
             if (PopArray[1].population > MaxPop || PopArray[2].population > MaxPop)
             {
-                var erase1 = 0;
-                var erase2 = 0;
-
+                int erase1;
+                int erase2;
                 if (PopArray[1].population > PopArray[2].population)
                 {
                     erase1 = MaxPop - PopArray[1].population;
@@ -202,10 +197,8 @@ internal static class F1Mode
                     erase1 = erase2 * (PopArray[1].population / PopArray[2].population);
                 }
 
-                double calcminenergy = 0;
-
-                int selectrobot = 0;
-
+                var selectrobot = 0;
+                double calcminenergy;
                 for (var l = 0; l < -erase1; l++)
                 { //only erase robots with lowest energy
                     calcminenergy = 320000;
@@ -229,7 +222,7 @@ internal static class F1Mode
                 for (var l = 0; l < -erase2; l++)
                 { //only erase robots with lowest energy
                     calcminenergy = 320000;
-                    for (t = 1; t < MaxRobs; t++)
+                    for (var t = 1; t < MaxRobs; t++)
                     {
                         if (rob[t].exist)
                         {
@@ -265,14 +258,14 @@ internal static class F1Mode
                 {
                     if ((PopArray[1].population - oldpop1) < (PopArray[2].population - oldpop2) && PopArray[2].population > 10)
                     {
-                        optMaxCycles = optMaxCycles + 1000 / (1 / (PopArray[1].population / PopArray[2].population - 1) + 1);
+                        optMaxCycles += 1000 / (1 / (PopArray[1].population / PopArray[2].population - 1) + 1);
                     }
                 }
                 if (PopArray[2].population > PopArray[1].population)
                 {
                     if ((PopArray[2].population - oldpop2) < (PopArray[1].population - oldpop1) && PopArray[1].population > 10)
                     {
-                        optMaxCycles = optMaxCycles + 1000 / (1 / (PopArray[2].population / PopArray[1].population - 1) + 1);
+                        optMaxCycles += 1000 / (1 / (PopArray[2].population / PopArray[1].population - 1) + 1);
                     }
                 }
                 oldpop1 = PopArray[1].population;
@@ -310,6 +303,10 @@ internal static class F1Mode
             }
         }
 
+        //counts population of robots at regular intervals
+        //for auto-combat mode and for automatic reset of starting conditions
+
+        var Winner = "";
         //Botsareus 2/11/2014 check here for max per contestent
         if (Maxrounds > 0)
         {
@@ -323,8 +320,7 @@ internal static class F1Mode
         }
 
         F1count = 0;
-        Wins = Math.Sqrt(MinRounds) + (MinRounds / 2);
-
+        var Wins = Math.Sqrt(MinRounds) + MinRounds / 2;
         if (SpeciesLeft == 0)
         { //in very rear cases both robots are dead when checking, start another round
             StartAnotherRound = true;
@@ -349,69 +345,54 @@ internal static class F1Mode
                             case 10:
                                 if (Winner == "robotA")
                                 {
-                                    FileCopy(MDIForm1.instance.MainDir + "\\league\\robotA.txt", MDIForm1.instance.MainDir + "\\league\\seeded\\" + robotA);
+                                    FileCopy($@"{MDIForm1.instance.MainDir}\league\robotA.txt", $@"{MDIForm1.instance.MainDir}\league\seeded\{robotA}");
                                 }
-                                VBOpenFile(1, App.path + "\\restartmode.gset"); ;
-                                Write(1, 10);
-                                Write(1, x_filenumber);
-                                VBCloseFile(1);
-                                VBOpenFile(1, App.path + "\\Safemode.gset"); ;
-                                Write(1, false);
-                                VBCloseFile(1);
+                                await Iersera.DataModel.RestartMode.Save(10, x_filenumber);
+                                await SafeMode.Save(false);
                                 restarter();
                                 break;
 
                             case 6:
                                 if (Winner == "Test")
-                                {
-                                    UpdateWonF1();
-                                }
+                                    await UpdateWonF1();
                                 if (Winner == "Base")
-                                {
-                                    UpdateLostF1();
-                                }
+                                    await UpdateLostF1();
                                 break;
 
                             case 0:
-                                MsgBox(Winner + " has won.");
+                                MessageBox.Show(Winner + " has won.");
                                 MinRounds = optMinRounds;
                                 break;
 
                             case 2:
                                 //R E S T A R T  N E X T
                                 //first we make sure next round folder is there
-                                if (!FolderExists(MDIForm1.instance.MainDir + "\\league\\round" + (x_filenumber + 1)))
-                                {
-                                    MkDir(MDIForm1.instance.MainDir + "\\league\\round" + (x_filenumber + 1));
-                                }
+                                Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\league\round{x_filenumber + 1}");
+
                                 if (Winner == "robotA")
-                                {
-                                    FileCopy(MDIForm1.instance.MainDir + "\\league\\robotA.txt", MDIForm1.instance.MainDir + "\\league\\round" + (x_filenumber + 1) + "\\" + robotA);
-                                }
+                                    File.Copy($@"{MDIForm1.instance.MainDir}\league\robotA.txt", $@"{MDIForm1.instance.MainDir}\league\round{x_filenumber + 1}\{robotA}");
+
                                 if (Winner == "robotB")
-                                {
-                                    FileCopy(MDIForm1.instance.MainDir + "\\league\\robotB.txt", MDIForm1.instance.MainDir + "\\league\\round" + (x_filenumber + 1) + "\\" + robotB);
-                                }
-                                VBOpenFile(1, App.path + "\\Safemode.gset"); ;
-                                Write(1, false);
-                                VBCloseFile(1);
+                                    FileCopy($@"{MDIForm1.instance.MainDir}\league\robotB.txt", $@"{MDIForm1.instance.MainDir}\league\round{x_filenumber + 1}\{robotB}");
+
+                                await SafeMode.Save(false);
+
                                 restarter();
                                 break;
 
                             case 3:
                                 if (Winner == "robotA")
-                                {
-                                    populateladder();
-                                }
+                                    await populateladder();
+
                                 if (Winner == "robotB")
                                 {
                                     //move file to current position
-                                    robotB = Dir(leagueSourceDir + "\\*.*");
-                                    movetopos(leagueSourceDir + "\\" + robotB, x_filenumber);
+                                    robotB = Directory.GetFiles(leagueSourceDir, "*.*").First();
+                                    movetopos($"{leagueSourceDir}\\{robotB}", x_filenumber);
                                     //reset filenumber
                                     x_filenumber = 0;
                                     //start another round
-                                    populateladder();
+                                    await populateladder();
                                 }
                                 break;
                         }
@@ -423,97 +404,70 @@ internal static class F1Mode
                     }
                 }
                 Contest_Form.instance.Winner.Content = Winner;
+
                 if (Winner != "Statistical Draw. Extending contest.")
-                {
                     Contest_Form.instance.Winner1.Content = "Winner";
-                }
                 else
-                {
-                    MinRounds = MinRounds + 1;
-                }
+                    MinRounds++;
             }
+
             if (Contests + 1 <= MinRounds && Over == false)
             {
-                Contests = Contests + 1;
+                Contests++;
                 StartAnotherRound = true;
                 startnovid = loadstartnovid; //Botsareus bugfix for no vedio
                 SimOpts.TotRunCycle = 0;
                 setoldpop = false;
             }
             else
-            {
                 StartAnotherRound = false;
-            }
         }
     }
 
     public static void dreason(string Name, string tag, string reason)
     {
         //format the tag
-        string blank = "";
-
-        if (Left(tag, 45) == Left(blank, 45))
-        {
+        if (tag[..45].Trim() == string.Empty)
             tag = "";
-        }
         else
-        {
-            tag = "(" + Trim(Left(tag, 45)) + ")";
-        }
+            tag = $"({tag[..45].Trim()})";
 
-        //update list
-        VBOpenFile(1, MDIForm1.MainDir + "\\Disqualifications.txt"); ;
-        VBWriteFile(1, "Robot \"" + Name + "\"" + tag + " has been disqualified for " + reason + "."); ;
-        VBCloseFile(1);
-
-        int t = 0;
+        File.AppendAllText($@"{MDIForm1.instance.MainDir}\Disqualifications.txt", $"Robot \"{Name}\"{tag} has been disqualified for {reason}.");
 
         //kill species
-        for (t = 1; t < MaxRobs; t++)
+        for (var t = 1; t < MaxRobs; t++)
         {
-            if (!rob[t].Veg && !rob[t].Corpse && rob[t].exist)
-            {
-                if (rob[t].FName == Name)
-                {
-                    KillRobot(t);
-                }
-            }
+            if (!rob[t].Veg && !rob[t].Corpse && rob[t].exist && rob[t].FName == Name)
+                KillRobot(t);
         }
     }
 
     public static void FindSpecies()
     {
-        //counts species of robots at beginning of simulation
-        int SpeciePointer = 0;
-
-        int t = 0;
-
-        List<int> robcol = new List<int>(new int[11]);
-
-        string realname = "";
+        var robcol = new int[11];
 
         TotSpecies = 0;
-        if (Contests == 0)
-        {
-            ResetContest();
-        }
 
-        for (t = 1; t < 20; t++)
+        if (Contests == 0)
+            ResetContest();
+
+        for (var t = 1; t < 20; t++)
         {
             PopArray[t].SpName = "";
             PopArray[t].population = 0;
-            //If Contests = 0 Then PopArray[t].Wins = 0
         }
+
         Contest_Form.instance.Show();
         Contest_Form.instance.Contests.Content = Str(Contests);
 
-        for (t = 0; t < MaxRobs; t++)
-        { //Botsareus 2/5/2014 A little mod here
+        for (var t = 0; t < MaxRobs; t++)
+        {
             if (!rob[t].Veg && !rob[t].Corpse && rob[t].exist)
             {
-                for (SpeciePointer = 1; SpeciePointer < 20; SpeciePointer++)
+                //counts species of robots at beginning of simulation
+                for (var SpeciePointer = 1; SpeciePointer < 20; SpeciePointer++)
                 {
-                    realname = Left(rob[t].FName, Len(rob[t].FName) - 4);
+                    var realname = Left(rob[t].FName, Len(rob[t].FName) - 4);
                     if (realname == PopArray[SpeciePointer].SpName)
                     {
                         PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
@@ -521,7 +475,7 @@ internal static class F1Mode
                     }
                     if (PopArray[SpeciePointer].SpName == "")
                     {
-                        TotSpecies = TotSpecies + 1;
+                        TotSpecies++;
                         PopArray[SpeciePointer].SpName = realname;
                         PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
                         robcol[SpeciePointer] = rob[t].color;
@@ -533,8 +487,8 @@ internal static class F1Mode
         if (TotSpecies == 1)
         {
             ContestMode = false;
-            MDIForm1.instance.F1Piccy.setVisible(false);
-            Contest_Form.instance.Visible = false;
+            MDIForm1.instance.F1Piccy.Visibility = Visibility.Hidden;
+            Contest_Form.instance.Visibility = Visibility.Hidden;
             MsgBox("You have only selected one species for combat. Formula 1 mode disabled", vbOKOnly);
             return;
         }
@@ -546,9 +500,7 @@ internal static class F1Mode
             MsgBox("You have selected more then two species for combat. Cycle limit and max population disabled", vbOKOnly);
         }
         else
-        {
             optMaxCycles = MaxCycles;
-        }
 
         if (PopArray[1].SpName != "")
         {
@@ -625,96 +577,73 @@ internal static class F1Mode
             Contest_Form.instance.Pop5.Content = "";
             Contest_Form.instance.Option1_5.setVisible(false);
         }
+
         if (ContestMode)
-        {
             Contest_Form.instance.Visibility = Visibility.Visible;
-            //Contests = 0
-        }
     }
 
-    public static void populateladder()
-    { //populate one step ladder round
-      //erase robots A and B optionally
-        VBOpenFile(1, MDIForm1.instance.MainDir + "\\league\\robotA.txt");
-        VBWriteFile(1, "0");
-        VBCloseFile(1);
-        VBOpenFile(1, MDIForm1.instance.MainDir + "\\league\\robotB.txt");
-        VBWriteFile(1, "0");
-        VBCloseFile(1);
-        File.Delete(MDIForm1.instance.MainDir + "\\league\\robotA.txt");
-        File.Delete(MDIForm1.instance.MainDir + "\\league\\robotB.txt");
-        //update file number
-        x_filenumber = x_filenumber + 1;
-        VBOpenFile(1, App.path + "\\restartmode.gset"); ;
-        Write(1, 3);
-        Write(1, x_filenumber);
-        VBCloseFile(1);
-        string tmpname = "";
+    public static async Task populateladder()
+    {
+        //populate one step ladder round
+        File.Delete($@"{MDIForm1.instance.MainDir}\league\robotA.txt");
+        File.Delete($@"{MDIForm1.instance.MainDir}\league\robotB.txt");
 
-        string file_name = "";
+        //update file number
+        x_filenumber++;
+        await Iersera.DataModel.RestartMode.Save(3, x_filenumber);
+
+
+        string file_name;
 
         //files in stepladder
-        Collection files = null;
 
-        files = getfiles(MDIForm1.instance.MainDir + "\\league\\stepladder");
+        var files = Directory.GetFiles($@"{MDIForm1.instance.MainDir}\league\stepladder");
 
-        if (x_filenumber > files.count)
-        { //if filenumber maxed out we need to move robot and reset filenumber
+        if (x_filenumber > files.Length)
+        {
+            //if filenumber maxed out we need to move robot and reset filenumber
             //move file to last position
-            file_name = Dir(leagueSourceDir + "\\*.*");
-            movetopos(leagueSourceDir + "\\" + file_name, x_filenumber);
+            file_name = Directory.GetFiles(leagueSourceDir, "*.*").First();
+            movetopos($@"{leagueSourceDir}\{file_name}", x_filenumber);
 
             //reset file number
             x_filenumber = 1;
-            VBOpenFile(1, App.path + "\\restartmode.gset"); ;
-            Write(1, 3);
-            Write(1, x_filenumber);
-            VBCloseFile(1);
+            await Iersera.DataModel.RestartMode.Save(3, x_filenumber);
         }
 
         //RobotB
-        file_name = Dir(leagueSourceDir + "\\*.*");
+        file_name = Directory.GetFiles(leagueSourceDir, "*.*").First();
         if (file_name == "")
         {
             x_restartmode = 0;
-            File.Delete(App.path + "\\restartmode.gset"); ;
-            MsgBox("Go to " + MDIForm1.instance.MainDir + "\\league\\stepladder to view your results.", vbExclamation, "League Complete!");
+            File.Delete("restartmode.gset"); ;
+            MessageBox.Show($@"Go to {MDIForm1.instance.MainDir}\league\stepladder to view your results.", "League Complete!", MessageBoxButton.OK,MessageBoxImage.Exclamation);
             return;
         }
         else
-        {
-            FileCopy(leagueSourceDir + "\\" + file_name, MDIForm1.instance.MainDir + "\\league\\robotB.txt");
-        }
-
-        int j = 0;
+            File.Copy($@"{leagueSourceDir}\{file_name}", $@"{MDIForm1.instance.MainDir}\league\robotB.txt");
 
         //RobotA
         //find a file prefixed i
-        for (j = 1; j < files.Count; j++)
+        for (var j = 1; j < files.Length; j++)
         {
-            tmpname = extractname(files(j));
+            var tmpname = Path.GetFileName(files[j]);
             if (tmpname == x_filenumber + "-*")
-            {
                 FileCopy(files[j], MDIForm1.instance.MainDir + "\\league\\robotA.txt");
-            }
         }
 
-        //Restart
-        VBOpenFile(1, App.path + "\\Safemode.gset"); ;
-        Write(1, false);
-        VBCloseFile(1);
+        await SafeMode.Save(false);
+
         restarter();
     }
 
     //for eye fudging.  Search 'fudge' to see what I mean
     public static void ResetContest()
     {
-        int t = 0;
-
         Contests = 0;
         Contest_Form.instance.Winner.Content = "";
         Contest_Form.instance.Winner1.Content = "";
-        for (t = 1; t < 5; t++)
+        for (var t = 1; t < 5; t++)
         {
             PopArray[t].SpName = "";
             PopArray[t].population = 0;

@@ -274,28 +274,28 @@ goto ;
               for(t=1; t<MaxRobs; t++) {
                 if (rob(t).exist && rob(t).FName == "Base.txt") {
                   for(i=1; i<MaxRobs; i++) {
-                    if (rob(i).exist && rob(i).FName == "Mutate.txt") {
+                    if (rob[i].exist && rob[i].FName == "Mutate.txt") {
 //calculate ingagment distance
-                      if (rob(t).body > rob(i).body) {
+                      if (rob(t).body > rob[i].body) {
                         if (rob(t).body > 10) {
                           ingdist = Log(rob(t).body) * 60 + 41;
                         } else {
                           ingdist = 40;
                         }
                       } else {
-                        if (rob(i).body > 10) {
-                          ingdist = Log(rob(i).body) * 60 + 41;
+                        if (rob[i].body > 10) {
+                          ingdist = Log(rob[i].body) * 60 + 41;
                         } else {
                           ingdist = 40;
                         }
                       }
-                      ingdist = rob(t).radius + rob(i).radius + ingdist + 40; //both radii plus shot dist plus offset 1 shot travel dist
+                      ingdist = rob(t).radius + rob[i].radius + ingdist + 40; //both radii plus shot dist plus offset 1 shot travel dist
 
-                      posdif = VectorSub(ref rob(t).pos, ref rob(i).pos);
+                      posdif = VectorSub(ref rob(t).pos, ref rob[i].pos);
                       if (VectorMagnitude(ref posdif) < ingdist) {
 //if the distance between the robots is less then ingagment distance
                         dynamic _WithVar_5785;
-                        _WithVar_5785 = rob(i);
+                        _WithVar_5785 = rob[i];
                           ingdist = ingdist - VectorMagnitude(ref posdif); //ingdist becomes offset dist
                           newpoz = VectorSub(ref _WithVar_5785.pos, ref VectorScalar(ref VectorUnit(ref posdif), ref ingdist)); //offset the multibot by ingagment distance
 

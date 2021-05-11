@@ -1,3 +1,4 @@
+using Iersera.Model;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -110,20 +111,20 @@ internal static class Globals
     public static bool FudgeEyes = false;
 
     //Botsareus 5/25/2013 Two more graphs, moved to globals
-    public static List<int> graphfilecounter = new List<int>(new int[(NUMGRAPHS + 1)]);
+    public static int[] graphfilecounter = new int[(NUMGRAPHS + 1)];
 
     // TODO: Confirm Array Size By Token
-    public static List<int> graphleft = new List<int>(new int[(NUMGRAPHS + 1)]);
+    public static int[] graphleft = new int[(NUMGRAPHS + 1)];
 
-    public static List<bool> graphsave = new List<bool>(new bool[(NUMGRAPHS + 1)]);
+    public static bool[] graphsave = new bool[(NUMGRAPHS + 1)];
 
     // TODO: Confirm Array Size By Token
-    public static List<int> graphtop = new List<int>(new int[(NUMGRAPHS + 1)]);
+    public static int[] graphtop = new int[(NUMGRAPHS + 1)];
 
     public static bool GraphUp = false;
 
     // TODO: Confirm Array Size By Token
-    public static List<bool> graphvisible = new List<bool>(new bool[(NUMGRAPHS + 1)]);
+    public static bool[] graphvisible = new bool[(NUMGRAPHS + 1)];
 
     public static bool HideDB = false;
 
@@ -164,7 +165,7 @@ internal static class Globals
     //Botsareus 12/16/2013 Normalize DNA length
     public static bool NormMut = false;
 
-    public static List<keydata> PB_keys = new List<keydata> { };
+    public static List<keydata> PB_keys = new() { };
 
     public static bool reprofix = false;
 
@@ -247,7 +248,7 @@ internal static class Globals
 
     //used only by "load simulation"
     //Botsareus 1/5/2014 Copy of Obstacle array
-    public static List<Obstacle> xObstacle = new List<Obstacle> { };
+    public static List<Obstacle> xObstacle = new() { };
 
     public static byte y_eco_im = 0;
 
@@ -354,16 +355,7 @@ internal static class Globals
             rob[a].generation = 0;
             rob[a].SonNumber = 0;
             rob[a].parent = 0;
-            //    rob[a].mem(468) = 32000 Botsareus 10/5/2015 why set memory right before an erase call?
-            //    rob[a].mem(AimSys) = Random(1, 1256) / 200
-            //    rob[a].mem(SetAim) = rob[a].aim * 200
-            //    rob[a].mem(480) = 32000
-            //    rob[a].mem(481) = 32000
-            //    rob[a].mem(482) = 32000
-            //    rob[a].mem(483) = 32000
-            //    rob[a].aim = Rnd(PI)
             Array.Clear(rob[a].mem, 0, rob[a].mem.Length);
-            //If rob[a].Veg Then rob[a].Feed = 8
             if (rob[a].Fixed)
             {
                 rob[a].mem[216] = 1;
@@ -375,11 +367,8 @@ internal static class Globals
             rob[a].mem[SetAim] = (int)rob[a].aim * 200;
 
             //Bot is already in a bucket due to the prepare routine
-            // rob[a].BucketPos.x = -2
-            // rob[a].BucketPos.Y = -2
             UpdateBotBucket(a);
             rob[a].nrg = SimOpts.Specie[r].Stnrg;
-            // EnergyAddedPerCycle = EnergyAddedPerCycle + rob[a].nrg
             rob[a].Mutables = SimOpts.Specie[r].Mutables;
 
             rob[a].Vtimer = 0;
@@ -422,13 +411,9 @@ internal static class Globals
             var x = Random((int)(rob.pos.X - rob.radius), (int)(rob.pos.X + rob.radius));
             var y = Random((int)(rob.pos.Y - rob.radius), (int)(rob.pos.Y + rob.radius));
             if (Random(1, 2) == 1)
-            {
                 createshot(x, y, vx, vy, -100, 0, 0, RobSize * 2, Robots.rob[n].color);
-            }
             else
-            {
                 createshot(x, y, vx, vy, -100, 0, 0, RobSize * 2, DBrite(Robots.rob[n].color));
-            }
         }
     }
 
@@ -442,8 +427,6 @@ internal static class Globals
 
     private static bool checkvegstatus(int r)
     {
-        var FName = extractname(SimOpts.Specie[r].Name);
-
         var checkvegstatus = false;
 
         if (SimOpts.Specie[r].Veg == true && SimOpts.Specie[r].Native)
@@ -472,9 +455,7 @@ internal static class Globals
 
             for (var t = 1; t < MaxRobs; t++)
             {
-                dynamic _WithVar_7204;
-                _WithVar_7204 = rob[t];
-                if (_WithVar_7204.exist && _WithVar_7204.Veg && _WithVar_7204.age > 0)
+                if (Robots.rob[t].exist && Robots.rob[t].Veg && Robots.rob[t].age > 0)
                 { //Botsareus 11/4/2015 age test makes sure all robots spawn
                     checkvegstatus = false;
                     return checkvegstatus;
@@ -502,10 +483,4 @@ internal static class Globals
         public string Name = "";
         public int value = 0;
     }
-
-    /*
-    ' not sure where to put this function, so it's going here
-    ' adds robots on the fly loading the script of Specie[r]
-    ' if r=-1 loads a vegetable (used for repopulation)
-    */
 }
