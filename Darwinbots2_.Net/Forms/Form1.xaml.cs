@@ -464,7 +464,7 @@ namespace DBNet.Forms
             }
         }
 
-        public void NewGraph(ref int n, ref string YLab)
+        public void NewGraph( int n,  string YLab)
         {
             if ((Charts[n].graf == null))
             {

@@ -14,7 +14,6 @@ internal static class Common
 {
     public static int cprndy = 0;
     public static string filemem = "";
-    public static List<double> rndylist = new List<double> { };
     public static int timerthis = 0;
     private static bool called = false;
     private static double gset;

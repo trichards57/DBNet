@@ -106,6 +106,7 @@ using static DBNet.Forms.frmFirstTimeInfo;
 using System.IO;
 using Iersera.DataModel;
 using System.Text.Json;
+using System.Reflection;
 
 static class HDRoutines
 {
@@ -116,11 +117,11 @@ static class HDRoutines
     public static void movetopos(string s, int pos)
     { //Botsareus 3/7/2014 Used in Stepladder to move files in specific order
 
-        var files = Directory.GetFiles($@"{MDIForm1.instance.MainDir}\league\stepladder");
+        var files = Directory.GetFiles(@"league\stepladder");
         if (pos > files.Length)
         {
             //just put at end
-            File.Copy(s, $@"{MDIForm1.instance.MainDir}\league\stepladder\{files.Length + 1}-{System.IO.Path.GetFileName(s)}");
+            File.Copy(s, $@"league\stepladder\{files.Length + 1}-{System.IO.Path.GetFileName(s)}");
         }
         else
         {
@@ -133,12 +134,12 @@ static class HDRoutines
                     var parts = System.IO.Path.GetFileName(files[j]).Split("-", 2);
                     if (parts[0] == i.ToString())
                     {
-                        File.Move(files[j], $@"{MDIForm1.instance.MainDir}\league\stepladder\{i + 1}-{parts[1]}");
+                        File.Move(files[j], $@"league\stepladder\{i + 1}-{parts[1]}");
                         break;
                     }
                 }
             }
-            File.Copy(s, $@"{MDIForm1.instance.MainDir}\league\stepladder\{pos}-" + System.IO.Path.GetFileName(s));
+            File.Copy(s, $@"league\stepladder\{pos}-" + System.IO.Path.GetFileName(s));
         }
 
         File.Delete(s);
@@ -152,7 +153,7 @@ static class HDRoutines
         {
             var lastLine = (await File.ReadAllLinesAsync(files[i])).Last();
             lastLine = lastLine.Replace("'#tag:", "");
-            File.Copy(files[i], MDIForm1.instance.MainDir + "\\league\\Tournament_Results\\" + lastLine);
+            File.Copy(files[i], $@"\league\Tournament_Results\{lastLine}");
         }
     }
 
@@ -534,17 +535,67 @@ static class HDRoutines
 
     private static SavedTeleporter SaveTeleporters(Teleporter t)
     {
-        throw new NotImplementedException();
+        return new SavedTeleporter
+        {
+            Position = t.pos,
+            Width = t.Width,
+            Height = t.Height,
+            Color = t.color,
+            Velocity = t.vel,
+            Path = t.path,
+            In = t.In,
+            Out = t.Out,
+            Local = t.local,
+            DriftHorizontal = t.driftHorizontal,
+            DriftVertical = t.driftVertical,
+            Highlight = t.highlight,
+            TeleportVeggies = t.teleportVeggies,
+            TeleportCorpses = t.teleportCorpses,
+            RespectShapes = t.RespectShapes,
+            TeleportHeterotrophs = t.teleportHeterotrophs,
+            InboundPollCycles = t.InboundPollCycles,
+            BotsPerPoll = t.BotsPerPoll,
+            PollCountDown = t.PollCountDown,
+            Internet = t.Internet
+        };
     }
 
     private static SavedObstacle SaveObstacles(Obstacle o)
     {
-        throw new NotImplementedException();
+        return new SavedObstacle
+        {
+            Exist = o.exist,
+            Position = o.pos,
+            Width = o.Width,
+            Height = o.Height,
+            Color = o.color,
+            Velocity = o.vel
+        };
     }
 
     private static SavedShot SaveShots(shot s)
     {
-        throw new NotImplementedException();
+        return new SavedShot
+        {
+            Exists = s.exist,
+            Position = s.pos,
+            OPosition = s.opos,
+            Velocity = s.velocity,
+            Parent = s.parent,
+            Age = s.age,
+            Energy = s.nrg,
+            Range = s.Range,
+            Value = s.value,
+            Color = s.color,
+            ShotType = s.shottype,
+            FromVeg = s.fromveg,
+            FromSpecies = s.FromSpecie,
+            MemoryLocation = s.memloc,
+            MemoryValue = s.Memval,
+            Dna = s.dna,
+            GeneNumber = s.genenum,
+            Stored = s.stored,
+        };
     }
 
     private static SavedShot SaveRobots(robot r)
@@ -552,9 +603,9 @@ static class HDRoutines
         throw new NotImplementedException();
     }
 
-    private static SavedShot SaveGraphs(int i)
+    private static SavedGraph SaveGraphs(int i)
     {
-        return new SavedShot
+        return new SavedGraph
         {
             FileCounter = graphfilecounter[i],
             Visible = graphvisible[i],
@@ -600,7 +651,7 @@ static class HDRoutines
             EGridEnabled = SimOpts.EGridEnabled,
             EGridWidth = SimOpts.EGridWidth,
             EnableAutoSpeciation = SimOpts.EnableAutoSpeciation,
-            EnergyDdif = energydif,
+            EnergyDif = energydif,
             EnergyDif2 = energydif2,
             EnergyDifX = energydifX,
             EnergyDifX2 = energydifX2,
@@ -700,7 +751,7 @@ static class HDRoutines
     /*
     'Botsareus 3/15/2013 load global settings
     */
-    public static void LoadGlobalSettings()
+    public static async Task LoadGlobalSettings()
     {
         //defaults
         bodyfix = 32100;
@@ -708,14 +759,13 @@ static class HDRoutines
         chseedloadsim = true;
         GraphUp = false;
         HideDB = false;
-        MDIForm1.instance.MainDir = App.path;
         UseSafeMode = true; //Botsareus 10/5/2015
         UseEpiGene = false; //Botsareus 10/8/2015
         UseIntRnd = false; //Botsareus 10/8/2015
         intFindBestV2 = 100;
         UseOldColor = true;
         //mutations tab
-        epiresetemp = 1.3m;
+        epiresetemp = 1.3;
         epiresetOP = 17;
         //Delta2
         Delta2 = false;
@@ -731,327 +781,101 @@ static class HDRoutines
         NormMut = false;
         valNormMut = 1071;
         valMaxNormMut = 1071;
-        string holdmaindir = "";
-
 
         y_hidePredCycl = 1500;
         y_LFOR = 10;
 
         y_zblen = 255;
 
-        //see if maindir overwrite exisits
-        if (dir(App.path + "\\Maindir.gset") != "")
-        {
-            //load the new maindir
-            VBOpenFile(1, App.path + "\\Maindir.gset"); ;
-            Input(1, holdmaindir);
-            VBCloseFile(1); ();
-            if (dir(holdmaindir + "\\", vbDirectory) != "")
-            { //Botsareus 6/11/2013 small bug fix to do with no longer finding a main directory
-                MDIForm1.instance.MainDir = holdmaindir;
-            }
-        }
-
-        leagueSourceDir = MDIForm1.instance.MainDir + "\\Robots\\F1league";
+        leagueSourceDir = "Robots\\F1league";
 
         //see if eco exsists
-        y_eco_im = 0;
-        if (dir(App.path + "\\im.gset") != "")
-        {
-            VBOpenFile(1, App.path + "\\im.gset"); ;
-            Input(1, y_eco_im);
-            VBCloseFile(1); ();
-            y_eco_im = y_eco_im + 1;
-        }
+        y_eco_im = await EcoMode.Load();
 
         //see if restartmode exisit
 
-        if (dir(App.path + "\\restartmode.gset") != "")
+        var restartMode = await Iersera.DataModel.RestartMode.Load();
+        x_restartmode = restartMode.Mode;
+        x_filenumber = restartMode.FileNumber;
+
+        var globalSettings = await GlobalSettings.Load();
+
+        if (globalSettings != null)
         {
-            VBOpenFile(1, App.path + "\\restartmode.gset"); ;
-            Input(1, x_restartmode);
-            Input(1, x_filenumber);
-            VBCloseFile(1); ();
-        }
+            screenratiofix = globalSettings.ScreenRatioFix;
+            bodyfix = globalSettings.BodyFix;
+            reprofix = globalSettings.ReproFix;
+            chseedstartnew = globalSettings.ChSeedStartNew;
+            chseedloadsim = globalSettings.ChSeedLoadSim;
+            UseSafeMode = globalSettings.UseSafeMode;
+            intFindBestV2 = globalSettings.IntFindBestV2;
+            UseOldColor = globalSettings.UseOldColor;
+            boylabldisp = globalSettings.BoyLablDisp;
+            startnovid = globalSettings.StartNovId;
+            epireset = globalSettings.EpiReset;
+            epiresetemp = globalSettings.EpiResetTemp;
+            epiresetOP = globalSettings.EpiResetOP;
+            sunbelt = globalSettings.SunBelt;
+            Delta2 = globalSettings.Delta2;
+            DeltaMainExp = globalSettings.DeltaMainExp;
+            DeltaMainLn = globalSettings.DeltaMainLn;
+            DeltaDevExp = globalSettings.DeltaDevExp;
+            DeltaDevLn = globalSettings.DeltaDevLn;
+            DeltaPM = globalSettings.DeltaPM;
+            NormMut = globalSettings.NormMut;
+            valNormMut = globalSettings.ValNormMut;
+            valMaxNormMut = globalSettings.ValMaxNormMut;
+            DeltaWTC = globalSettings.DeltaWTC;
+            DeltaMainChance = globalSettings.DeltaMainChance;
+            DeltaDevChance = globalSettings.DeltaDevChance;
+            leagueSourceDir = globalSettings.LeagueSourceDir;
+            UseStepladder = globalSettings.UseStepladder;
+            x_fudge = globalSettings.XFudge;
+            StartChlr = globalSettings.StartChlr;
+            Disqualify = globalSettings.Disqualify;
+            y_robdir = globalSettings.YRobDir;
+            y_graphs = globalSettings.YGraphs;
 
-        //see if settings exsist
-        if (dir(MDIForm1.instance.MainDir + "\\Global.gset") != "")
-        {
-            //load all settings
-            VBOpenFile(1, MDIForm1.MainDir + "\\Global.gset"); ;
-            Input(1, screenratiofix);
-            if (!EOF(1))
-            {
-                Input(1, bodyfix);
-            }
-            if (!EOF(1))
-            {
-                Input(1, reprofix);
-            }
-            if (!EOF(1))
-            {
-                Input(1, chseedstartnew);
-            }
-            if (!EOF(1))
-            {
-                Input(1, chseedloadsim);
-            }
-            if (!EOF(1))
-            {
-                Input(1, UseSafeMode);
-            }
-            if (!EOF(1))
-            {
-                Input(1, intFindBestV2);
-            }
-            if (!EOF(1))
-            {
-                Input(1, UseOldColor);
-            }
-            if (!EOF(1))
-            {
-                Input(1, boylabldisp);
-            }
-            if (!EOF(1))
-            {
-                Input(1, startnovid);
-            }
-            if (!EOF(1))
-            {
-                Input(1, epireset);
-            }
-            if (!EOF(1))
-            {
-                Input(1, epiresetemp);
-            }
-            if (!EOF(1))
-            {
-                Input(1, epiresetOP);
-            }
-            if (!EOF(1))
-            {
-                Input(1, sunbelt);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, Delta2);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaMainExp);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaMainLn);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaDevExp);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaDevLn);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaPM);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, NormMut);
-            }
-            if (!EOF(1))
-            {
-                Input(1, valNormMut);
-            }
-            if (!EOF(1))
-            {
-                Input(1, valMaxNormMut);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, DeltaWTC);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaMainChance);
-            }
-            if (!EOF(1))
-            {
-                Input(1, DeltaDevChance);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, leagueSourceDir);
-            }
-            if (!EOF(1))
-            {
-                Input(1, UseStepladder);
-            }
-            if (!EOF(1))
-            {
-                Input(1, x_fudge);
-            }
-            if (!EOF(1))
-            {
-                Input(1, StartChlr);
-            }
-            if (!EOF(1))
-            {
-                Input(1, Disqualify);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, y_robdir);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_graphs);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_normsize);
-            }
-            //Botsareus 10/6/2015 Overwrite y_normsize
             if (x_restartmode < 4 || x_restartmode == 10)
-            {
                 y_normsize = false;
-            }
+            else
+                y_normsize = globalSettings.YNormSize;
 
-            if (!EOF(1))
-            {
-                Input(1, y_hidePredCycl);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_LFOR);
-            }
+            y_hidePredCycl = globalSettings.YHidePredCycl;
+            y_LFOR = globalSettings.YLFOR;
+            y_zblen = globalSettings.YZblen;
+            x_res_kill_chlr = globalSettings.XResKillChlr;
+            x_res_kill_mb = globalSettings.XResKillMb;
+            x_res_other = globalSettings.XResOther;
+            y_res_kill_chlr = globalSettings.YResKillChlr;
+            y_res_kill_mb = globalSettings.YResKillMb;
+            y_res_kill_dq = globalSettings.YResKillDq;
+            y_res_other = globalSettings.YResOther;
+            x_res_kill_mb_veg = globalSettings.XResKillMbVeg;
+            x_res_other_veg = globalSettings.XResOtherVeg;
+            y_res_kill_mb_veg = globalSettings.YResKillMbVeg;
+            y_res_kill_dq_veg = globalSettings.YResKillDqVeg;
+            y_res_other_veg = globalSettings.YResOtherVeg;
 
-            bool unused = false;
-
-            if (!EOF(1))
-            {
-                Input(1, unused);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, y_zblen);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, x_res_kill_chlr);
-            }
-            if (!EOF(1))
-            {
-                Input(1, x_res_kill_mb);
-            }
-            if (!EOF(1))
-            {
-                Input(1, x_res_other);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, y_res_kill_chlr);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_res_kill_mb);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_res_kill_dq);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_res_other);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, x_res_kill_mb_veg);
-            }
-            if (!EOF(1))
-            {
-                Input(1, x_res_other_veg);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, y_res_kill_mb_veg);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_res_kill_dq_veg);
-            }
-            if (!EOF(1))
-            {
-                Input(1, y_res_other_veg);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, GraphUp);
-            }
-            if (!EOF(1))
-            {
-                Input(1, HideDB);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, UseEpiGene);
-            }
-
-            if (!EOF(1))
-            {
-                Input(1, UseIntRnd);
-            }
-
-            VBCloseFile(1); ();
+            GraphUp = globalSettings.GraphUp;
+            HideDB = globalSettings.HideDB;
+            UseEpiGene = globalSettings.UseEpiGene;
+            UseIntRnd = globalSettings.UseIntRnd;
         }
 
         //some global settings change during simulation (copy is here)
         loadboylabldisp = boylabldisp;
         loadstartnovid = startnovid;
 
-        //see if safemode settings exisit
-        if (dir(App.path + "\\Safemode.gset") != "")
-        {
-            //load all settings
-            VBOpenFile(1, App.path + "\\Safemode.gset"); ;
-            Input(1, simalreadyrunning);
-            VBCloseFile(1); ();
-        }
+        simalreadyrunning = await SafeMode.Load();
+        autosaved = await AutoSaved.Load();
 
-
-        //see if autosaved file exisit
-        if (dir(App.path + "\\autosaved.gset") != "")
-        {
-            //load all settings
-            VBOpenFile(1, App.path + "\\autosaved.gset"); ;
-            Input(1, autosaved);
-            VBCloseFile(1); ();
-        }
-
-        //Botsareus  10/31/2015 Moved for bug fix
         //If we are not using safe mode assume simulation is not runnin'
         if (UseSafeMode == false)
-        {
             simalreadyrunning = false;
-        }
 
         if (simalreadyrunning == false)
-        {
             autosaved = false;
-        }
 
         //Botsareus 3/16/2014 If autosaved, we change restartmode, this forces system to run in diagnostic mode
         //The difference between x_restartmode 0 and 5 is that 5 uses hidepred settings
@@ -1063,26 +887,25 @@ static class HDRoutines
         if (autosaved && x_restartmode == 7)
         {
             x_restartmode = 8; //Botsareus 4/14/2014 same deal for zb evo
-            intFindBestV2 = 20 + Rnd(-(x_filenumber + 1)) * 40; //Botsareus 10/26/2015 Value more interesting
+            intFindBestV2 = 20 + (int)Rnd(-(x_filenumber + 1)) * 40; //Botsareus 10/26/2015 Value more interesting
         }
 
         //Botsareus 3/19/2014 Load data for evo mode
         if (x_restartmode == 4 || x_restartmode == 5 || x_restartmode == 6)
         {
-            VBOpenFile(1, MDIForm1.MainDir + "\\evolution\\data.gset"); ;
-            Input(1, LFOR); //LFOR init
-            Input(1, LFORdir); //dir
-            Input(1, LFORcorr); //corr
+            var evoData = await EvoData.Load();
 
-            Input(1, hidePredCycl); //hidePredCycl
-
-            Input(1, curr_dna_size); //curr_dna_size
-            Input(1, target_dna_size); //target_dna_size
-
-            Input(1, Init_hidePredCycl);
-
-            Input(1, y_Stgwins);
-            VBCloseFile(1); ();
+            if (evoData != null)
+            {
+                LFOR = evoData.LFOR;
+                LFORdir = evoData.LFORdir;
+                LFORcorr = evoData.LFORcorr;
+                hidePredCycl = evoData.hidePredCycl;
+                curr_dna_size = evoData.curr_dna_size;
+                target_dna_size = evoData.target_dna_size;
+                Init_hidePredCycl = evoData.Init_hidePredCycl;
+                y_Stgwins = evoData.y_Stgwins;
+            }
         }
         else
         {
@@ -1092,1743 +915,1130 @@ static class HDRoutines
         //Botsareus 3/22/2014 Initial hidepred offset is normal
 
         hidePredOffset = hidePredCycl / 6;
-
-        if (UseIntRnd)
-        {
-            //Use pictures from internet as randomizer
-            cprndy = 0;
-            List<> rndylist_4922_tmp = new List<>();
-            for (int redim_iter_4002 = 0; i < 3999; redim_iter_4002++) { rndylist.Add(null); }
-            MDIForm1.instance.grabfile();
-        }
-
     }
 
     /*
     ' loads a whole simulation
     */
-    public static void LoadSimulation(ref string path)
+    public static async Task LoadSimulation(string path)
     {
-        Form1.camfix = false; //Botsareus 2/23/2013 When simulation starts the screen is normailized
+        Form1.instance.camfix = false; //Botsareus 2/23/2013 When simulation starts the screen is normailized
 
-        //Because of the way that loadrobot and saverobot work, all save and load
-        //sim routines are backwards and forwards compatible after 2.37.2
-        //(not 2.37.2, but everything that comes after)
-        int j = 0;
-
-        int k = 0;
-
-        int X = 0;
-
-        int t = 0;
-
-        decimal s = 0;//EricL 4/1/2006 Use this to read in single values
-
-        bool tempbool = false;
-
-        int tempint = 0;
-
-        string temp = "";
-
-        string s2 = "";
+        var input = await File.ReadAllTextAsync(path);
+        var savedFile = JsonSerializer.Deserialize<SavedSimulation>(input);
 
 
         Form1.MousePointer = vbHourglass;
 
-        //For k = 0 To MaxRobs
-        //  Erase rob[k].DNA()
-        //  ReDim rob[k].DNA(1)
-        //  rob[k].exist = False
-        //Next k
-        //Erase rob()
-        //Init_Buckets
-
-        VBOpenFile(1, path); ;
-
-        //As of 2.42.8, indicates a value less than the "real" MaxRobs, not a high water mark, since only existing bots are stored post 2.42.8
-        Get(1);
-
-        //Round up to the next multiple of 500
-        List<> rob_973_tmp = new List<>();
-        for (int redim_iter_6126 = 0; i < 0; redim_iter_6126++) { rob.Add(null); }
-
-        Form1.lblSaving.Visible = true; //Botsareus 1/14/2014 New code to display load status
-        Form1.Visible = true;
-
-        for (k = 1; k < MaxRobs; k++)
-        {
-            LoadRobot(1, k);
-            if (k % 20 == 0)
-            {
-                Form1.lblSaving.Caption = "Loading... (" + Int(k / MaxRobs * 100) + "%)"; //Botsareus 1/14/2014
-                DoEvents();
-            }
-            Next(k);
-
-            // As of 2.42.8, the sim file is packed.  Every bot stored is guarenteed to exist, yet their bot numbers, when loaded, may be
-            // different from the sim they came from.  Thus, we remap all the ties from all the loaded bots.
-            RemapAllTies(MaxRobs);
-
-
-            Get(1);
-            temp = Space(k);
-            Get(1);
-            Get(1);
-            Get(1);
-            temp = Space(k);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            temp = Space(k);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            SimOpts.SimName = Space(Abs(k));
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            //Get 1, , SimOpts.KineticEnergy
-            Get(1); //dummy variable
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-            Get(1);
-
-            //obsolete
-            Get(1);
-
-            Get(1);
-            Get(1);
-
-            //newer stuff
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-
-            if (!EOF(1))
-            {
-                Get(1);
-            }
-
-            for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-            {
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                    SimOpts.Specie[k].Name = Space(Abs(j));
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-
-                //obsolete
-                //If Not EOF(1) Then Get 1, , SimOpts.Specie[k].omnifeed
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-
-                if (!EOF(1))
-                {
-                    Get(1);
-                    SimOpts.Specie[k].path = Space(j);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-
-                    //Botsareus 8/21/2012 Had to dump this, VERY BUGY!
-                    //        'New for 2.42.5.  Insure the path points to our main directory. It might be a sim that was saved before hand on a different machine.
-                    //        'First, we strip off the working directory portion of the robot path
-                    //        'We have to do it this way since the sim could have come from a different machine with a different install directory
-                    //        temp = SimOpts.Specie[k].path
-                    //        s2 = Left(temp, 7)
-                    //        While s2 <> "\Robots" And Len(temp) > 7
-                    //          temp = Right(temp, Len(temp) - 1)
-                    //          s2 = Left(temp, 7)
-                    //        Wend
-                    //        SimOpts.Specie[k].path = temp
-
-                    //        'Now we add on the main directory to get the full path.  The sim may have come from a different machine, but at least
-                    //        'now the path points to the right main directory...
-                    //        SimOpts.Specie[k].path = MDIForm1.MainDir + SimOpts.Specie[k].path
-                }
-
-                if (!EOF(1))
-                {
-                    Get(1); //SimOpts.Specie[k].Posdn 'EricL 4/1/06 Changed these to use the variable s
-                }
-                if (!EOF(1))
-                {
-                    Get(1); //SimOpts.Specie[k].Poslf
-                }
-                if (!EOF(1))
-                {
-                    Get(1); //SimOpts.Specie[k].Posrg
-                }
-                if (!EOF(1))
-                {
-                    Get(1); //SimOpts.Specie[k].Postp
-                }
-
-                SimOpts.Specie[k].Posdn = 1;
-                SimOpts.Specie[k].Posrg = 1;
-                SimOpts.Specie[k].Poslf = 0;
-                SimOpts.Specie[k].Postp = 0;
-
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                Next(k);
-
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-
-                //New for 2.4
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-                if (!EOF(1))
-                {
-                    Get(1);
-                }
-
-                //EricL - 4/1/06 Fixed bug by adding -1.  Loop was executing one too many times...
-                for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                {
-                    if (!EOF(1))
-                    {
-                        Get(1);
-                    }
-                    if (!EOF(1))
-                    {
-                        Get(1);
-                    }
-
-                    for (j = 0; j < 20; j++)
-                    {
-                        if (!EOF(1))
-                        {
-                            Get(1);
-                        }
-                        if (!EOF(1))
-                        {
-                            Get(1);
-                        }
-                        Next(j);
-                        Next(k);
-
-                        for (k = 0; k < 70; k++)
-                        {
-                            if (!EOF(1))
-                            {
-                                Get(1);
-                            }
-                            Next(k);
-
-                            for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                            {
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-                                Next(k);
-
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 4/1/2006 Added this
-                                }
-                                //EricL 4/1/2006 Default value so as to avoid divide by zero problems when loading older saved sim files
-                                if (SimOpts.BadWastelevel == 0)
-                                {
-                                    SimOpts.BadWastelevel = 400;
-                                }
-
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 4/1/2006 Added this
-                                }
-                                //EricL May be cases where 0 is read from old format files which can cause divide by 0 problems later
-                                if (SimOpts.chartingInterval <= 0 || SimOpts.chartingInterval > 32000)
-                                {
-                                    SimOpts.chartingInterval = 200;
-                                }
-
-                                SimOpts.CoefficientElasticity = 0; //Set a reasonable value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 4/29/2006 Added this
-                                }
-
-                                SimOpts.FluidSolidCustom = 2; //Set to custom as a default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 5/7/2006 Added this for UI initialization
-                                }
-                                if (SimOpts.FluidSolidCustom < 0 || SimOpts.FluidSolidCustom > 2)
-                                {
-                                    SimOpts.FluidSolidCustom = 2;
-                                }
-
-                                SimOpts.CostRadioSetting = 2; //Set to custom as a default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 5/7/2006 Added this for UI initialization
-                                }
-                                if (SimOpts.CostRadioSetting < 0 || SimOpts.CostRadioSetting > 2)
-                                {
-                                    SimOpts.CostRadioSetting = 2;
-                                }
-
-                                SimOpts.MaxVelocity = 40; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 5/16/2006 Added this - was not saved before
-                                }
-                                if (SimOpts.MaxVelocity <= 0 || SimOpts.MaxVelocity > 200)
-                                {
-                                    SimOpts.MaxVelocity = 40;
-                                }
-
-                                SimOpts.NoShotDecay = false; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 6/8/2006 Added this
-                                }
-
-                                SimOpts.SunUpThreshold = 500000; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 6/8/2006 Added this
-                                }
-
-                                SimOpts.SunUp = false; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 6/8/2006 Added this
-                                }
-
-                                SimOpts.SunDownThreshold = 1000000; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 6/8/2006 Added this
-                                }
-
-                                SimOpts.SunDown = false; //Set to a reasonable default value for older saved sim files
-                                if (!EOF(1))
-                                {
-                                    Get(1); //EricL 6/8/2006 Added this
-                                }
-
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                SimOpts.FixedBotRadii = false;
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                SimOpts.DayNightCycleCounter = 0;
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                SimOpts.Daytime = true;
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                SimOpts.SunThresholdMode = 0;
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                numTeleporters = 0;
-                                if (!EOF(1))
-                                {
-                                    Get(1);
-                                }
-
-                                t = numTeleporters;
-
-                                for (X = 1; X < numTeleporters; X++)
-                                {
-                                    LoadTeleporter(1, X);
-                                    Next(X);
-
-                                    for (X = 1; X < numTeleporters; X++)
-                                    {
-                                        if (Teleporters(X).Internet)
-                                        {
-                                            DeleteTeleporter((X));
-                                        }
-                                        Next(X);
-
-                                        numObstacles = 0;
-                                        if (!EOF(1))
-                                        {
-                                            Get(1);
-                                        }
-
-                                        for (X = 1; X < numObstacles; X++)
-                                        {
-                                            LoadObstacle(1, X);
-                                            Next(X);
-
-                                            if (!EOF(1))
-                                            {
-                                                Get(1);
-                                            }
-
-                                            for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                                            {
-                                                SimOpts.Specie[k].CantSee = false;
-                                                SimOpts.Specie[k].DisableDNA = false;
-                                                SimOpts.Specie[k].DisableMovementSysvars = false;
-
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-                                                Next(k);
-
-                                                SimOpts.shapesAreVisable = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.allowVerticalShapeDrift = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.allowHorizontalShapeDrift = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.shapesAreSeeThrough = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.shapesAbsorbShots = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.shapeDriftRate = 0;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.makeAllShapesTransparent = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                SimOpts.makeAllShapesBlack = false;
-                                                if (!EOF(1))
-                                                {
-                                                    Get(1);
-                                                }
-
-                                                for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                                                {
-                                                    SimOpts.Specie[k].CantReproduce = false;
-                                                    if (!EOF(1))
-                                                    {
-                                                        Get(1);
-                                                    }
-                                                    Next(k);
-
-                                                    maxshotarray = 0;
-                                                    if (!EOF(1))
-                                                    {
-                                                        Get(1);
-                                                    }
-
-                                                    if (maxshotarray != 0 & maxshotarray > 0 & maxshotarray < 1000000)
-                                                    {
-                                                        List<> Shots_5059_tmp = new List<>();
-                                                        for (int redim_iter_8156 = 0; i < 0; redim_iter_8156++) { Shots.Add(null); }
-
-                                                        for (j = 1; j < maxshotarray; j++)
-                                                        {
-                                                            LoadShot(1, j);
-                                                            Next(j);
-                                                            RemapAllShots(maxshotarray);
-                                                        } else
-                                                        {
-                                                            // Old sim with no saved shots
-                                                            // Init the shots array (this used to be done in StartLoaded
-                                                            maxshotarray = 100;
-                                                            List<> Shots_3552_tmp = new List<>();
-                                                            for (int redim_iter_4086 = 0; i < 0; redim_iter_4086++) { Shots.Add(null); }
-                                                            for (j = 1; j < maxshotarray; j++)
-                                                            {
-                                                                Shots(j).stored = false;
-                                                                Shots(j).exist = false;
-                                                                Shots(j).parent = 0;
-                                                                Next(j);
-                                                            }
-
-                                                            SimOpts.MaxAbsNum = MaxRobs;
-                                                            if (!EOF(1))
-                                                            {
-                                                                Get(1);
-                                                            }
-
-                                                            for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                                                            {
-                                                                SimOpts.Specie[k].VirusImmune = false;
-                                                                if (!EOF(1))
-                                                                {
-                                                                    Get(1);
-                                                                }
-                                                                Next(k);
-
-                                                                for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                                                                {
-                                                                    SimOpts.Specie[k].population = 0;
-                                                                    if (!EOF(1))
-                                                                    {
-                                                                        Get(1);
-                                                                    }
-
-                                                                    SimOpts.Specie[k].SubSpeciesCounter = 0;
-                                                                    if (!EOF(1))
-                                                                    {
-                                                                        Get(1);
-                                                                    }
-                                                                    Next(k);
-
-                                                                    for (k = 0; k < SimOpts.SpeciesNum - 1; k++)
-                                                                    {
-                                                                        SimOpts.Specie[k].Native = true; // Default
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        Next(k);
-
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        SimOpts.EGridEnabled = false;
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        SimOpts.DisableMutations = false;
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (CInt(SimOpts.DisableMutations) > 1 || CInt(SimOpts.DisableMutations) < 0)
-                                                                        {
-                                                                            SimOpts.DisableMutations = false;
-                                                                        }
-
-                                                                        SimOpts.SimGUID = CLng(Rnd);
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        SimOpts.SpeciationForkInterval = 5000;
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        //Botsareus 4/17/2013
-                                                                        SimOpts.DisableTypArepro = false;
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-
-                                                                        //Botsareus 5/31/2013 Load all graph data
-                                                                        //strings
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                            strGraphQuery1 = Space(j);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                            strGraphQuery2 = Space(j);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                            strGraphQuery3 = Space(j);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                            strSimStart = Space(j);
-                                                                        }
-                                                                        if (!EOF(1))
-                                                                        {
-                                                                            Get(1);
-                                                                        }
-                                                                        //the graphs themselfs
-                                                                        for (k = 1; k < NUMGRAPHS; k++)
-                                                                        {
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (graphvisible(k))
-                                                                            {
-                                                                                switch (k)
-                                                                                {
-                                                                                    case 1:
-                                                                                        Form1.NewGraph(POPULATION_GRAPH, "Populations");
-                                                                                        break;
-                                                                                    case 2:
-                                                                                        Form1.NewGraph(MUTATIONS_GRAPH, "Average_Mutations");
-                                                                                        break;
-                                                                                    case 3:
-                                                                                        Form1.NewGraph(AVGAGE_GRAPH, "Average_Age");
-                                                                                        break;
-                                                                                    case 4:
-                                                                                        Form1.NewGraph(OFFSPRING_GRAPH, "Average_Offspring");
-                                                                                        break;
-                                                                                    case 5:
-                                                                                        Form1.NewGraph(ENERGY_GRAPH, "Average_Energy");
-                                                                                        break;
-                                                                                    case 6:
-                                                                                        Form1.NewGraph(DNALENGTH_GRAPH, "Average_DNA_length");
-                                                                                        break;
-                                                                                    case 7:
-                                                                                        Form1.NewGraph(DNACOND_GRAPH, "Average_DNA_Cond_statements");
-                                                                                        break;
-                                                                                    case 8:
-                                                                                        Form1.NewGraph(MUT_DNALENGTH_GRAPH, "Average_Mutations_per_DNA_length_x1000-");
-                                                                                        break;
-                                                                                    case 9:
-                                                                                        Form1.NewGraph(ENERGY_SPECIES_GRAPH, "Total_Energy_per_Species_x1000-");
-                                                                                        break;
-                                                                                    case 10:
-                                                                                        Form1.NewGraph(DYNAMICCOSTS_GRAPH, "Dynamic_Costs");
-                                                                                        break;
-                                                                                    case 11:
-                                                                                        Form1.NewGraph(SPECIESDIVERSITY_GRAPH, "Species_Diversity");
-                                                                                        break;
-                                                                                    case 12:
-                                                                                        Form1.NewGraph(AVGCHLR_GRAPH, "Average_Chloroplasts");
-                                                                                        break;
-                                                                                    case 13:
-                                                                                        Form1.NewGraph(GENETIC_DIST_GRAPH, "Genetic_Distance_x1000-");
-                                                                                        break;
-                                                                                    case 14:
-                                                                                        Form1.NewGraph(GENERATION_DIST_GRAPH, "Max_Generational_Distance");
-                                                                                        break;
-                                                                                    case 15:
-                                                                                        Form1.NewGraph(GENETIC_SIMPLE_GRAPH, "Simple_Genetic_Distance_x1000-");
-                                                                                        break;
-                                                                                    case 16:
-                                                                                        Form1.NewGraph(CUSTOM_1_GRAPH, "Customizable_Graph_1-");
-                                                                                        break;
-                                                                                    case 17:
-                                                                                        Form1.NewGraph(CUSTOM_2_GRAPH, "Customizable_Graph_2-");
-                                                                                        break;
-                                                                                    case 18:
-                                                                                        Form1.NewGraph(CUSTOM_3_GRAPH, "Customizable_Graph_3-");
-                                                                                        break;
-                                                                                }
-                                                                            }
-                                                                            Next(k);
-
-                                                                            SimOpts.NoWShotDecay = false; //Load information about not decaying waste shots
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1); //EricL 6/8/2006 Added this
-                                                                            }
-
-                                                                            //evo stuff
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            //some more simopts stuff
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            SimOpts.DisableFixing = false;
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            //Botsareus 10/13/2014
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            //Botsareus 10/8/2015
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            //Botsareus 10/20/2015
-                                                                            if (!EOF(1))
-                                                                            {
-                                                                                Get(1);
-                                                                            }
-
-                                                                            Form1.lblSaving.Visible = false; //Botsareus 1/14/2014
-
-                                                                            VBCloseFile(1); ();
-
-                                                                            if (SimOpts.Costs(DYNAMICCOSTSENSITIVITY) == 0)
-                                                                            {
-                                                                                SimOpts.Costs(DYNAMICCOSTSENSITIVITY) = 500;
-                                                                            }
-
-                                                                            //EricL 3/28/2006 This line insures that all the simulation dialog options get set to match the loaded sim
-                                                                            TmpOpts = SimOpts;
-
-                                                                            Form1.MousePointer = vbArrow;
-                                                                        }
-
-                                                                        /*
-                                                                        ' loads a single robot
-                                                                        */
-                                                                        public static void LoadRobot(ref int fnum, int n)
-                                                                        {
-                                                                            LoadRobotBody(fnum, n);
-                                                                            if (rob[n].exist)
-                                                                            {
-                                                                                GiveAbsNum(n);
-                                                                                insertsysvars(n);
-                                                                                ScanUsedVars(n);
-                                                                                makeoccurrlist(n);
-                                                                                rob[n].DnaLen = DnaLen(ref rob[n].dna());
-                                                                                rob[n].genenum = CountGenes(ref rob[n].dna());
-                                                                                rob[n].mem(DnaLenSys) = rob[n].DnaLen;
-                                                                                rob[n].mem(GenesSys) = rob[n].genenum;
-                                                                                // UpdateBotBucket n
-                                                                            }
-                                                                        }
-
-                                                                        /*
-                                                                        ' assignes a robot his unique code
-                                                                        */
-                                                                        public static void GiveAbsNum(ref int k)
-                                                                        {
-                                                                            // Dim n As Integer, Max As Long
-                                                                            //For n = 1 To MaxRobs
-                                                                            //  If Max < rob[n].AbsNum Then
-                                                                            //    Max = rob[n].AbsNum
-                                                                            //  End If
-                                                                            //Next n
-                                                                            //rob[k].AbsNum = Max + 1
-                                                                            if (rob[k].AbsNum == 0)
-                                                                            {
-                                                                                SimOpts.MaxAbsNum = SimOpts.MaxAbsNum + 1;
-                                                                                rob[k].AbsNum = SimOpts.MaxAbsNum;
-                                                                            }
-                                                                        }
-
-                                                                        /*
-                                                                        ' loads the body of the robot
-                                                                        */
-                                                                        private static void LoadRobotBody(ref int n, ref int r)
-                                                                        {
-                                                                            //robot r
-                                                                            //file #n,
-                                                                            int t = 0;
-                                                                            int k = 0;
-                                                                            int ind = 0;
-                                                                            byte Fe = 0;
-                                                                            int L1 = 0;
-                                                                            int inttmp = 0;
-
-                                                                            bool MessedUpMutations = false;
-
-                                                                            int longtmp = 0;//Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
-
-
-                                                                            MessedUpMutations = false;
-                                                                            dynamic _WithVar_2822;
-                                                                            _WithVar_2822 = rob(r);
-                                                                            Get(#n);
-    Get(#n);
-    Get(#n);
-
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n); //momento angolare
-    Get(#n); //momento torcente
-
-    _WithVar_2822.BucketPos.X = -2;
-                                                                            _WithVar_2822.BucketPos.Y = -2;
-
-                                                                            //ties
-                                                                            for (t = 0; t < MAXTIES; t++)
-                                                                            {
-                                                                                Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Get(#n);
-      Next(t);
-
-                                                                                Get(#n);
-
-      for (t = 1; t < 50; t++)
-                                                                                {
-                                                                                    Get(#n);
-        _WithVar_2822.vars(t).Name = Space(k);
-                                                                                    Get(#n); //|
-        Get(#n);
-        Next(t);
-                                                                                    Get(#n); //| variabili private
-
-// macchina virtuale
-        Get(#n); // memoria dati
-        Get(#n);
-        List <> dna_4061_tmp = new List<>();
-                                                                                    for (int redim_iter_8013 = 0; i < 0; redim_iter_8013++) { dna.Add(null); }
-
-                                                                                    for (t = 1; t < k; t++)
-                                                                                    {
-                                                                                        Get(#n);
-          Get(#n);
-          Next(t);
-
-                                                                                        //Force an end base pair to protect against DNA corruption
-                                                                                        _WithVar_2822.dna(k).tipo = 10;
-                                                                                        _WithVar_2822.dna(k).value = 1;
-
-
-                                                                                        //EricL Set reasonable default values to protect against corrupted sims that don't read these values
-                                                                                        SetDefaultMutationRates(_WithVar_2822.Mutables, true);
-
-                                                                                        for (t = 0; t < 20; t++)
-                                                                                        {
-                                                                                            Get(#n);
-            Next(t);
-
-                                                                                            // informative
-                                                                                            Get(#n);
-            Get(#n);
-            _WithVar_2822.Mutations = inttmp;
-                                                                                            Get(#n);
-            _WithVar_2822.LastMut = inttmp;
-                                                                                            Get(#n);
-            Get(#n);
-            Get(#n);
-            Get(#n);
-            Get(#n);
-            Get(#n);
-
-// aspetto
-            Get(#n);
-            Get(#n);
-
-//new stuff using FileContinue conditions for backward and forward compatability
-            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-              _WithVar_2822.radius = FindRadius(r);
-                                                                                            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-              _WithVar_2822.FName = Space(k);
-                                                                                            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-              _WithVar_2822.LastOwner = Space(k);
-                                                                                            }
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-                                                                                            if (_WithVar_2822.LastOwner == "")
-                                                                                            {
-                                                                                                _WithVar_2822.LastOwner = "Local";
-                                                                                            }
-
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-
-                                                                                            //EricL 5/2/2006  This needs some explaining.  The length of the mutation details can exceed 2^15 -1 for bots with lots
-                                                                                            //of mutations.  If we are reading an old file, the length could be negative in which case we read what we can and then punt and skip the
-                                                                                            //rest of the bot.  We will miss some stuff, like the mutation settings, but at least the sim will load.
-                                                                                            //If the sim file was stored with 2.42.4 or later and this bot has a ton of mutation details, then an Int value of 1
-                                                                                            //indicates the actual length of the mutation details is stored as a Long in which case we read that and continue.
-                                                                                            if (k < 0)
-                                                                                            {
-                                                                                                //Its an old corrupted file with > 2^15 worth of mutation details.  Bail.
-                                                                                                _WithVar_2822.LastMutDetail = "Problem reading mutation details.  May be a very old sim.  Please tell the developers.  Mutation Details deleted.";
-
-                                                                                                //EricL Set reasonable default values for everything read from this point on.
-                                                                                                _WithVar_2822.Mutables.Mutations = true;
-
-                                                                                                SetDefaultMutationRates(_WithVar_2822.Mutables, true);
-
-                                                                                                _WithVar_2822.View = true;
-                                                                                                _WithVar_2822.NewMove = false;
-                                                                                                _WithVar_2822.oldBotNum = 0;
-                                                                                                _WithVar_2822.CantSee = false;
-                                                                                                _WithVar_2822.DisableDNA = false;
-                                                                                                _WithVar_2822.DisableMovementSysvars = false;
-                                                                                                _WithVar_2822.CantReproduce = false;
-                                                                                                _WithVar_2822.VirusImmune = false;
-                                                                                                _WithVar_2822.shell = 0;
-                                                                                                _WithVar_2822.Slime = 0;
-
-                                                                                                goto ;
-                                                                                            }
-                                                                                            if (k == 1)
-                                                                                            {
-                                                                                                //Its a new file with lots of mutations.  Read the actual length stored as a Long
-                                                                                                Get(#n);
-            }
-                                                                                            else
-                                                                                            {
-                                                                                                //Not that many mutations for this bot (It's possible its an old file with lots of mutations and the len wrapped.
-                                                                                                //If so, we just read the postiive len and keep going.  Everything following this will be wrong, but the sim should
-                                                                                                //still load.  It's a corner case.  The alternative is to try to parse the mutation details strings directly.  No thanks.
-                                                                                                L1 = CLng(k);
-                                                                                            }
-
-                                                                                            if (Form1.lblSaving.Visible)
-                                                                                            { //Botsareus 4/18/2016 Bug fix to prevent string buffer overflow
-                                                                                                _WithVar_2822.LastMutDetail = Space(L1);
-                                                                                                if (FileContinue(n))
-                                                                                                {
-                                                                                                    Get(#n);
-              }
-                                                                                            }
-                                                                                            else
-                                                                                            {
-                                                                                                if (L1 > (100000000 / TotalRobotsDisplayed))
-                                                                                                {
-                                                                                                    Seek(#n, L1 + Seek(n));
-              }
-                                                                                                else
-                                                                                                {
-                                                                                                    _WithVar_2822.LastMutDetail = Space(L1);
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                }
-                                                                                            }
-
-                                                                                            if (FileContinue(n))
-                                                                                            {
-                                                                                                Get(#n);
-            }
-
-                                                                                            for (t = 0; t < 20; t++)
-                                                                                            {
-                                                                                                if (FileContinue(n))
-                                                                                                {
-                                                                                                    Get(#n);
-              }
-                                                                                                if (FileContinue(n))
-                                                                                                {
-                                                                                                    Get(#n);
-              }
-                                                                                                Next(t);
-
-                                                                                                for (t = 0; t < 20; t++)
-                                                                                                {
-                                                                                                    if (_WithVar_2822.Mutables.Mean(t) < 0 || _WithVar_2822.Mutables.Mean(t) > 32000 || _WithVar_2822.Mutables.StdDev(t) < 0 || _WithVar_2822.Mutables.StdDev(t) > 32000)
-                                                                                                    {
-                                                                                                        MessedUpMutations = true;
-                                                                                                    }
-                                                                                                    Next(t);
-
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    if (_WithVar_2822.Mutables.CopyErrorWhatToChange < 0 || _WithVar_2822.Mutables.CopyErrorWhatToChange > 32000 || _WithVar_2822.Mutables.PointWhatToChange < 0 || _WithVar_2822.Mutables.PointWhatToChange > 32000)
-                                                                                                    {
-                                                                                                        MessedUpMutations = true;
-                                                                                                    }
-
-                                                                                                    //If we read wacky values, the file was saved with an older version which messed these up.  Set the defaults.
-                                                                                                    if (MessedUpMutations)
-                                                                                                    {
-                                                                                                        SetDefaultMutationRates(_WithVar_2822.Mutables, true);
-                                                                                                    }
-
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    _WithVar_2822.oldBotNum = 0;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    _WithVar_2822.CantSee = false;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (CInt(_WithVar_2822.CantSee) > 0 || CInt(_WithVar_2822.CantSee) < -1)
-                                                                                                    {
-                                                                                                        _WithVar_2822.CantSee = false; // Protection against corrpt sim files.
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.DisableDNA = false;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (CInt(_WithVar_2822.DisableDNA) > 0 || CInt(_WithVar_2822.DisableDNA) < -1)
-                                                                                                    {
-                                                                                                        _WithVar_2822.DisableDNA = false; // Protection against corrpt sim files.
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.DisableMovementSysvars = false;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (CInt(_WithVar_2822.DisableMovementSysvars) > 0 || CInt(_WithVar_2822.DisableMovementSysvars) < -1)
-                                                                                                    {
-                                                                                                        _WithVar_2822.DisableMovementSysvars = false; // Protection against corrpt sim files.
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.CantReproduce = false;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (CInt(_WithVar_2822.CantReproduce) > 0 || CInt(_WithVar_2822.CantReproduce) < -1)
-                                                                                                    {
-                                                                                                        _WithVar_2822.CantReproduce = false; // Protection against corrpt sim files.
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.shell = 0;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    if (_WithVar_2822.shell > 32000)
-                                                                                                    {
-                                                                                                        _WithVar_2822.shell = 32000;
-                                                                                                    }
-                                                                                                    if (_WithVar_2822.shell < 0)
-                                                                                                    {
-                                                                                                        _WithVar_2822.shell = 0;
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.Slime = 0;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    if (_WithVar_2822.Slime > 32000)
-                                                                                                    {
-                                                                                                        _WithVar_2822.Slime = 32000;
-                                                                                                    }
-                                                                                                    if (_WithVar_2822.Slime < 0)
-                                                                                                    {
-                                                                                                        _WithVar_2822.Slime = 0;
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.VirusImmune = false;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-                                                                                                    if (CInt(_WithVar_2822.VirusImmune) > 0 || CInt(_WithVar_2822.VirusImmune) < -1)
-                                                                                                    {
-                                                                                                        _WithVar_2822.VirusImmune = false; // Protection against corrpt sim files.
-                                                                                                    }
-
-                                                                                                    _WithVar_2822.SubSpecies = 0; // For older sims saved before this was implemented, set the sup species to be the bot's number.  Every bot is a sub species.
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                }
-
-                                                                                                    _WithVar_2822.spermDNAlen = 0;
-                                                                                                    if (FileContinue(n))
-                                                                                                    {
-                                                                                                        Get(#n);
-                  List <> spermDNA_1155_tmp = new List<>();
-                                                                                                        for (int redim_iter_9379 = 0; i < 0; redim_iter_9379++) { spermDNA.Add(null); }
-                                                                                                    }
-                                                                                                    for (t = 1; t < _WithVar_2822.spermDNAlen; t++)
-                                                                                                    {
-                                                                                                        if (FileContinue(n))
-                                                                                                        {
-                                                                                                            Get(#n);
-                  }
-                                                                                                        if (FileContinue(n))
-                                                                                                        {
-                                                                                                            Get(#n);
-                  }
-                                                                                                        Next(t);
-
-                                                                                                        _WithVar_2822.fertilized = -1;
-                                                                                                        if (FileContinue(n))
-                                                                                                        {
-                                                                                                            Get(#n);
-                  }
-
-                                                                                                        //Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
-                                                                                                        if (FileContinue(n))
-                                                                                                        {
-                                                                                                            Get(#n);
-                  }
-                                                                                                        for (t = 0; t < 500; t++)
-                                                                                                        {
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            Next(t);
-
-                                                                                                            _WithVar_2822.sim = 0;
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            //Botsareus 2/23/2013 Rest of tie data
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            for (t = 0; t < MAXTIES; t++)
-                                                                                                            {
-                                                                                                                if (FileContinue(n))
-                                                                                                                {
-                                                                                                                    Get(#n);
-                      }
-                                                                                                                if (FileContinue(n))
-                                                                                                                {
-                                                                                                                    Get(#n);
-                      }
-                                                                                                                if (FileContinue(n))
-                                                                                                                {
-                                                                                                                    Get(#n);
-                      }
-                                                                                                                if (FileContinue(n))
-                                                                                                                {
-                                                                                                                    Get(#n);
-                      }
-                                                                                                                //Botsareus 4/18/2016 Protection against currupt file
-                                                                                                                if (_WithVar_2822.Ties(t).NaturalLength < 0)
-                                                                                                                {
-                                                                                                                    _WithVar_2822.Ties(t).NaturalLength = 0;
-                                                                                                                }
-                                                                                                                if (_WithVar_2822.Ties(t).NaturalLength > 1500)
-                                                                                                                {
-                                                                                                                    _WithVar_2822.Ties(t).NaturalLength = 1500;
-                                                                                                                }
-                                                                                                            }
-
-                                                                                                            //Botsareus 4/9/2013 For genetic distance graph
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            _WithVar_2822.GenMut = _WithVar_2822.DnaLen / GeneticSensitivity;
-
-                                                                                                            //Panda 2013/08/11 chloroplasts
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            //Botsareus 4/18/2016 Protection against currupt file
-                                                                                                            if (_WithVar_2822.chloroplasts < 0)
-                                                                                                            {
-                                                                                                                _WithVar_2822.chloroplasts = 0;
-                                                                                                            }
-                                                                                                            if (_WithVar_2822.chloroplasts > 32000)
-                                                                                                            {
-                                                                                                                _WithVar_2822.chloroplasts = 32000;
-                                                                                                            }
-
-                                                                                                            //Botsareus 12/3/2013 Read epigenetic information
-
-                                                                                                            for (t = 0; t < 14; t++)
-                                                                                                            {
-                                                                                                                if (FileContinue(n))
-                                                                                                                {
-                                                                                                                    Get(#n);
-                      }
-                                                                                                            }
-
-                                                                                                            //Botsareus 1/28/2014 Read robot tag
-
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            //Read if robot is using sunbelt
-
-                                                                                                            bool usesunbelt = false;//sunbelt mutations
-
-
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            //Botsareus 3/28/2014 Read if disable chloroplasts
-
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            //Botsareus 3/28/2014 Read kill resrictions
-
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (_WithVar_2822.Chlr_Share_Delay > 8)
-                                                                                                            {
-                                                                                                                _WithVar_2822.Chlr_Share_Delay = 8; //Botsareus 4/18/2016 Protection against currupt file
-                                                                                                            }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (_WithVar_2822.dq > 3)
-                                                                                                            {
-                                                                                                                _WithVar_2822.dq = 3; //Botsareus 4/18/2016 Protection against currupt file
-                                                                                                            }
-
-                                                                                                            //Botsareus 10/8/2015 Keep track of mutations from old dna file
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            //Botsareus 6/22/2016 Actual velocity
-
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-                                                                                                            if (FileContinue(n))
-                                                                                                            {
-                                                                                                                Get(#n);
-                    }
-
-                                                                                                            _WithVar_2822.dq = _WithVar_2822.dq - IIf(_WithVar_2822.dq > 1, 2, 0);
-
-                                                                                                            if (!.Veg)
-                                                                                                            {
-                                                                                                                if (y_eco_im > 0 & Form1.lblSaving.Visible == false)
-                                                                                                                {
-                                                                                                                    if (Trim(Right(_WithVar_2822.tag, 5)) != Trim(Left(_WithVar_2822.nrg + _WithVar_2822.nrg, 5)))
-                                                                                                                    {
-                                                                                                                        _WithVar_2822.dq = 2 + (_WithVar_2822.dq == 1) * true;
-                                                                                                                    }
-                                                                                                                    if (_WithVar_2822.FName != "Mutate.txt" && _WithVar_2822.FName != "Base.txt" && _WithVar_2822.FName != "Corpse")
-                                                                                                                    {
-                                                                                                                        _WithVar_2822.dq = 2 + (_WithVar_2822.dq == 1) * true;
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            }
-                                                                                                            else
-                                                                                                            {
-                                                                                                                if (y_eco_im > 0 & _WithVar_2822.chloroplasts < 2000)
-                                                                                                                {
-                                                                                                                    _WithVar_2822.Dead = true;
-                                                                                                                }
-                                                                                                                if (TotalChlr > SimOpts.MaxPopulation)
-                                                                                                                {
-                                                                                                                    _WithVar_2822.Dead = true;
-                                                                                                                }
-                                                                                                            }
-                                                                                                            if (_WithVar_2822.FName == "Corpse")
-                                                                                                            {
-                                                                                                                _WithVar_2822.nrg = 0;
-                                                                                                            }
-
-                                                                                                        //Botsareus 10/5/2015 Replaced with something better
-                                                                                                        //Botsareus 9/16/2014 Read gene kill resrictions
-                                                                                                        //    ReDim .delgenes(0)
-                                                                                                        //    ReDim .delgenes(0).dna(0)
-                                                                                                        //    Dim x As Integer
-                                                                                                        //    Dim y As Integer
-                                                                                                        //    Dim poz As Long
-                                                                                                        //    poz = Seek(n)
-                                                                                                        //    Get #n, , x
-                                                                                                        //    If x < 0 Then
-                                                                                                        //        Get #n, poz - 1, Fe
-                                                                                                        //        If y_eco_im > 0 And Form1.lblSaving.Visible = False Then
-                                                                                                        //            .dq = 2 + (.dq = 1) * True
-                                                                                                        //        End If
-                                                                                                        //        GoTo OldFile
-                                                                                                        //    End If
-                                                                                                        //    ReDim .delgenes(x)
-                                                                                                        //    For y = 0 To x
-                                                                                                        //        Get #n, , .delgenes(y).position
-                                                                                                        //        Get #n, , k
-                                                                                                        //        ReDim .delgenes(y).dna(k)
-                                                                                                        //        For t = 0 To k
-                                                                                                        //          Get #n, , .delgenes(y).dna(t).tipo
-                                                                                                        //          Get #n, , .delgenes(y).dna(t).value
-                                                                                                        //        Next t
-                                                                                                        //    Next
-
-                                                                                                        //read in any future data here
-
-                                                                                                        OldFile:
-                                                                                                            //burn through any new data from a different version
-                                                                                                            While(FileContinue(n));
-                                                                                                            Get(#n);
-                    Wend();
-
-                                                                                                            //grab these three FE codes
-                                                                                                            Get(#n);
-                    Get(#n);
-                    Get(#n);
-
-//don't you dare put anything after this!
-//except some initialization stuff
-                    _WithVar_2822.Vtimer = 0;
-                                                                                                            _WithVar_2822.virusshot = 0;
-
-                                                                                                            //Botsareus 2/21/2014 Special case reset sunbelt mutations
-
-                                                                                                            if (!usesunbelt)
-                                                                                                            {
-                                                                                                                _WithVar_2822.Mutables.mutarray(P2UP) = 0;
-                                                                                                                _WithVar_2822.Mutables.mutarray(CE2UP) = 0;
-                                                                                                                _WithVar_2822.Mutables.mutarray(AmplificationUP) = 0;
-                                                                                                                _WithVar_2822.Mutables.mutarray(TranslocationUP) = 0;
-                                                                                                            }
-                                                                                                        }
-
-                                                                                                        private static bool FileContinue(ref int filenumber)
-                                                                                                        {
-                                                                                                            bool FileContinue = false;
-                                                                                                            //three FE bytes (ie: 254) means we are at the end of the record
-
-                                                                                                            byte Fe = 0;
-
-                                                                                                            int Position = 0;
-
-                                                                                                            int k = 0;
-
-
-                                                                                                            FileContinue = false;
-                                                                                                            Position() = Seek(filenumber);
-
-                                                                                                            do
-                                                                                                            {
-                                                                                                                if (!EOF(filenumber))
-                                                                                                                {
-                                                                                                                    Get(#filenumber);
+        MaxRobs = savedFile.Robots.Count();
+
+        Form1.instance.lblSaving.Visible = true; //Botsareus 1/14/2014 New code to display load status
+        Form1.instance.Visible = true;
+
+        await LoadRobots(savedFile.Robots);
+
+        // As of 2.42.8, the sim file is packed.  Every bot stored is guarenteed to exist, yet their bot numbers, when loaded, may be
+        // different from the sim they came from.  Thus, we remap all the ties from all the loaded bots.
+        RemapAllTies(MaxRobs);
+
+        SimOpts.BlockedVegs = savedFile.BlockedVegs;
+        SimOpts.Costs = savedFile.Costs;
+        SimOpts.CostExecCond = savedFile.CostExecCond;
+        SimOpts.DeadRobotSnp = savedFile.DeadRobotSnp;
+        SimOpts.SnpExcludeVegs = savedFile.SnpExcludeVegs;
+        SimOpts.DisableTies = savedFile.DisableTies;
+        SimOpts.EnergyExType = savedFile.EnergyExType;
+        SimOpts.EnergyFix = savedFile.EnergyFix;
+        SimOpts.EnergyProp = savedFile.EnergyProp;
+        SimOpts.FieldHeight = savedFile.FieldHeight;
+        SimOpts.FieldSize = savedFile.FieldSize;
+        SimOpts.FieldWidth = savedFile.FieldWidth;
+        SimOpts.KillDistVegs = savedFile.KillDistVegs;
+        SimOpts.MaxEnergy = savedFile.MaxEnergy;
+        SimOpts.MaxPopulation = savedFile.MaxPopulation;
+        SimOpts.MinVegs = savedFile.MinVegs;
+        SimOpts.MutCurrMult = savedFile.MutCurrMult;
+        SimOpts.MutCycMax = savedFile.MutCycMax;
+        SimOpts.MutCycMin = savedFile.MutCycMin;
+        SimOpts.MutOscill = savedFile.MutOscill;
+        SimOpts.PhysBrown = savedFile.PhysBrown;
+        SimOpts.Ygravity = savedFile.Ygravity;
+        SimOpts.Zgravity = savedFile.Zgravity;
+        SimOpts.PhysMoving = savedFile.PhysMoving;
+        SimOpts.PhysSwim = savedFile.PhysSwim;
+        SimOpts.PopLimMethod = savedFile.PopLimMethod;
+        SimOpts.SimName = savedFile.SimName;
+        SimOpts.SpeciesNum = savedFile.SpeciesNum;
+        SimOpts.Toroidal = savedFile.Toroidal;
+        SimOpts.TotBorn = savedFile.TotBorn;
+        SimOpts.TotRunCycle = savedFile.TotRunCycle;
+        SimOpts.TotRunTime = savedFile.TotRunTime;
+        SimOpts.Pondmode = savedFile.Pondmode;
+        SimOpts.CorpseEnabled = savedFile.CorpseEnabled;
+        SimOpts.LightIntensity = savedFile.LightIntensity;
+        SimOpts.Decay = savedFile.Decay;
+        SimOpts.Gradient = savedFile.Gradient;
+        SimOpts.DayNight = savedFile.DayNight;
+        SimOpts.CycleLength = savedFile.CycleLength;
+        SimOpts.Decaydelay = savedFile.DecayDelay;
+        SimOpts.DecayType = savedFile.DecayType;
+        SimOpts.F1 = savedFile.F1;
+        SimOpts.Restart = savedFile.Restart;
+        SimOpts.Dxsxconnected = savedFile.DxSxConnected;
+        SimOpts.Updnconnected = savedFile.UpDnConnected;
+        SimOpts.RepopAmount = savedFile.RepopAmount;
+        SimOpts.RepopCooldown = savedFile.RepopCooldown;
+        SimOpts.ZeroMomentum = savedFile.ZeroMomentum;
+        SimOpts.UserSeedNumber = savedFile.UserSeedNumber;
+        SimOpts.SpeciesNum = savedFile.SpeciesNum;
+        LoadSpecies(savedFile.Species);
+        SimOpts.VegFeedingToBody = savedFile.VegFeedingToBody;
+        SimOpts.CoefficientStatic = savedFile.CoefficientStatic;
+        SimOpts.CoefficientKinetic = savedFile.CoefficientKinetic;
+        SimOpts.PlanetEaters = savedFile.PlanetEaters;
+        SimOpts.PlanetEatersG = savedFile.PlanetEatersG;
+        SimOpts.Viscosity = savedFile.Viscosity;
+        SimOpts.Density = savedFile.Density;
+        SimOpts.Costs = savedFile.Costs;
+        SimOpts.BadWastelevel = savedFile.BadWastelevel;
+        SimOpts.chartingInterval = savedFile.ChartingInterval;
+        SimOpts.CoefficientElasticity = savedFile.CoefficientElasticity;
+        SimOpts.FluidSolidCustom = savedFile.FluidSolidCustom;
+        SimOpts.CostRadioSetting = savedFile.CostRadioSetting;
+        SimOpts.MaxVelocity = savedFile.MaxVelocity;
+        SimOpts.NoShotDecay = savedFile.NoShotDecay;
+        SimOpts.SunUpThreshold = savedFile.SunUpThreshold;
+        SimOpts.SunUp = savedFile.SunUp;
+        SimOpts.SunDownThreshold = savedFile.SunDownThreshold;
+        SimOpts.SunDown = savedFile.SunDown;
+        SimOpts.FixedBotRadii = savedFile.FixedBotRadii;
+        SimOpts.DayNightCycleCounter = savedFile.DayNightCycleCounter;
+        SimOpts.Daytime = savedFile.Daytime;
+        SimOpts.SunThresholdMode = savedFile.SunThresholdMode;
+        LoadTeleporters(savedFile.Teleporters.Where(t => !t.Internet));
+        LoadObstacles(savedFile.Obstacles);
+        SimOpts.shapesAreVisable = savedFile.ShapesAreVisable;
+        SimOpts.allowVerticalShapeDrift = savedFile.AllowVerticalShapeDrift;
+        SimOpts.allowHorizontalShapeDrift = savedFile.AllowHorizontalShapeDrift;
+        SimOpts.shapesAreSeeThrough = savedFile.ShapesAreSeeThrough;
+        SimOpts.shapesAbsorbShots = savedFile.ShapesAbsorbShots;
+        SimOpts.shapeDriftRate = savedFile.ShapeDriftRate;
+        SimOpts.makeAllShapesTransparent = savedFile.MakeAllShapesTransparent;
+        SimOpts.makeAllShapesBlack = savedFile.MakeAllShapesBlack;
+        LoadShots(savedFile.Shots);
+        RemapAllShots(maxshotarray);
+        SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
+        SimOpts.EGridWidth = savedFile.EGridWidth;
+        SimOpts.EGridEnabled = savedFile.EGridEnabled;
+        SimOpts.oldCostX = savedFile.OldCostX;
+        SimOpts.DisableMutations = savedFile.DisableMutations;
+        SimOpts.SimGUID = savedFile.SimGUID;
+        SimOpts.SpeciationGenerationalDistance = savedFile.SpeciationGenerationalDistance;
+        SimOpts.SpeciationGeneticDistance = savedFile.SpeciationGeneticDistance;
+        SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
+        SimOpts.SpeciationMinimumPopulation = savedFile.SpeciationMinimumPopulation;
+        SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
+        SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
+        strGraphQuery1 = savedFile.StrGraphQuery1;
+        strGraphQuery2 = savedFile.StrGraphQuery2;
+        strGraphQuery3 = savedFile.StrGraphQuery3;
+        strSimStart = savedFile.StrSimStart;
+        LoadGraphs(savedFile.Graphs);
+        SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
+
+        energydif = savedFile.EnergyDif;
+        energydifX = savedFile.EnergyDifX;
+        energydifXP = savedFile.EnergyDifXP;
+        ModeChangeCycles = savedFile.ModeChangeCycles;
+        hidePredOffset = savedFile.HidePredOffset;
+        hidepred = savedFile.HidePred;
+        energydif2 = savedFile.EnergyDif2;
+        energydifX2 = savedFile.EnergyDifX2;
+        energydifXP2 = savedFile.EnergyDifXP2;
+
+        SimOpts.SunOnRnd = savedFile.SunOnRnd;
+        SimOpts.DisableFixing = savedFile.DisableFixing;
+
+        SunPosition = savedFile.SunPosition;
+        SunRange = savedFile.SunRange;
+        SunChange = savedFile.SunChange;
+
+        SimOpts.Tides = savedFile.Tides;
+        SimOpts.TidesOf = savedFile.TidesOf;
+
+        SimOpts.MutOscillSine = savedFile.MutOscillSine;
+
+        stagnent = savedFile.Stagnent;
+
+        Form1.instance.lblSaving.Visibility = Visibility.Hidden; //Botsareus 1/14/2014
+
+        //EricL 3/28/2006 This line insures that all the simulation dialog options get set to match the loaded sim
+        TmpOpts = SimOpts;
+
+        Form1.instance.MousePointer = vbArrow;
     }
-                                                                                                                else
-                                                                                                                {
-                                                                                                                    FileContinue = false;
-                                                                                                                    Fe = 254;
-                                                                                                                }
 
-                                                                                                                k = k + 1;
+    private static void LoadGraphs(IEnumerable<SavedGraph> graphs)
+    {
+        var graphsArray = graphs.ToArray();
 
-                                                                                                                if (Fe != 254)
-                                                                                                                {
-                                                                                                                    FileContinue = true;
-                                                                                                                    //exit immediatly, we are done
-                                                                                                                }
-                                                                                                            } while (!(!FileContinue && k < 3);
+        for (var i = 0; i < graphsArray.Length; i++)
+        {
+            var g = graphsArray[i];
 
-                                                                                                            //reset position
-                                                                                                            Get(#filenumber, Position() - 1, Fe);
+            graphfilecounter[i] = g.FileCounter;
+            graphvisible[i] = g.Visible;
+            graphleft[i] = g.Left;
+            graphtop[i] = g.Top;
+            graphsave[i] = g.Save;
+
+            if (g.Visible)
+            {
+                switch (i)
+                {
+                    case 1:
+                        Form1.instance.NewGraph(POPULATION_GRAPH, "Populations");
+                        break;
+                    case 2:
+                        Form1.instance.NewGraph(MUTATIONS_GRAPH, "Average_Mutations");
+                        break;
+                    case 3:
+                        Form1.instance.NewGraph(AVGAGE_GRAPH, "Average_Age");
+                        break;
+                    case 4:
+                        Form1.instance.NewGraph(OFFSPRING_GRAPH, "Average_Offspring");
+                        break;
+                    case 5:
+                        Form1.instance.NewGraph(ENERGY_GRAPH, "Average_Energy");
+                        break;
+                    case 6:
+                        Form1.instance.NewGraph(DNALENGTH_GRAPH, "Average_DNA_length");
+                        break;
+                    case 7:
+                        Form1.instance.NewGraph(DNACOND_GRAPH, "Average_DNA_Cond_statements");
+                        break;
+                    case 8:
+                        Form1.instance.NewGraph(MUT_DNALENGTH_GRAPH, "Average_Mutations_per_DNA_length_x1000-");
+                        break;
+                    case 9:
+                        Form1.instance.NewGraph(ENERGY_SPECIES_GRAPH, "Total_Energy_per_Species_x1000-");
+                        break;
+                    case 10:
+                        Form1.instance.NewGraph(DYNAMICCOSTS_GRAPH, "Dynamic_Costs");
+                        break;
+                    case 11:
+                        Form1.instance.NewGraph(SPECIESDIVERSITY_GRAPH, "Species_Diversity");
+                        break;
+                    case 12:
+                        Form1.instance.NewGraph(AVGCHLR_GRAPH, "Average_Chloroplasts");
+                        break;
+                    case 13:
+                        Form1.instance.NewGraph(GENETIC_DIST_GRAPH, "Genetic_Distance_x1000-");
+                        break;
+                    case 14:
+                        Form1.instance.NewGraph(GENERATION_DIST_GRAPH, "Max_Generational_Distance");
+                        break;
+                    case 15:
+                        Form1.instance.NewGraph(GENETIC_SIMPLE_GRAPH, "Simple_Genetic_Distance_x1000-");
+                        break;
+                    case 16:
+                        Form1.instance.NewGraph(CUSTOM_1_GRAPH, "Customizable_Graph_1-");
+                        break;
+                    case 17:
+                        Form1.instance.NewGraph(CUSTOM_2_GRAPH, "Customizable_Graph_2-");
+                        break;
+                    case 18:
+                        Form1.instance.NewGraph(CUSTOM_3_GRAPH, "Customizable_Graph_3-");
+                        break;
+                }
+            }
+        }
+    }
+
+    private static void LoadShots(IEnumerable<SavedShot> savedShots)
+    {
+        foreach (var s in savedShots)
+        {
+            Shots.Add(new shot
+            {
+                exist = s.Exists,
+                pos = s.Position,
+                opos = s.OPosition,
+                velocity = s.Velocity,
+                parent = s.Parent,
+                age = s.Age,
+                nrg = s.Energy,
+                Range = s.Range,
+                value = s.Value,
+                color = s.Color,
+                shottype = s.ShotType,
+                fromveg = s.FromVeg,
+                FromSpecie = s.FromSpecies,
+                memloc = s.MemoryLocation,
+                Memval = s.MemoryValue,
+                dna = s.Dna,
+                DnaLen = s.Dna.Length,
+                genenum = s.GeneNumber,
+                stored = s.Stored,
+            });
+        }
+    }
+
+    private static void LoadObstacles(IEnumerable<SavedObstacle> obstacles)
+    {
+        foreach (var o in obstacles)
+        {
+            Obstacles.Obstacles.Add(new Obstacle
+            {
+                exist = o.Exist,
+                pos = o.Position,
+                Width = o.Width,
+                Height = o.Height,
+                color = o.Color,
+                vel = o.Velocity
+            });
+        }
+    }
+
+    private static void LoadTeleporters(IEnumerable<SavedTeleporter> teleporters)
+    {
+        foreach (var t in teleporters)
+        {
+            Teleporters.Add(new Teleporter
+            {
+                pos = t.Position,
+                Width = t.Width,
+                Height = t.Height,
+                color = t.Color,
+                vel = t.Velocity,
+                path = t.Path,
+                In = t.In,
+                Out = t.Out,
+                local = t.Local,
+                driftHorizontal = t.DriftHorizontal,
+                driftVertical = t.DriftVertical,
+                highlight = t.Highlight,
+                teleportVeggies = t.TeleportVeggies,
+                teleportCorpses = t.TeleportCorpses,
+                RespectShapes = t.RespectShapes,
+                teleportHeterotrophs = t.TeleportHeterotrophs,
+                InboundPollCycles = t.InboundPollCycles,
+                BotsPerPoll = t.BotsPerPoll,
+                PollCountDown = t.PollCountDown,
+                Internet = t.Internet
+            });
+        }
+    }
+
+    private static void LoadSpecies(IEnumerable<SavedSpecies> species)
+    {
+        SimOpts.Specie.AddRange(species.Select(s => new datispecie
+        {
+            Colind = s.Colind,
+            color = s.Color,
+            Fixed = s.Fixed,
+            Mutables = new mutationprobs
+            {
+                mutarray = s.MutArray,
+                Mutations = s.Mutations,
+                CopyErrorWhatToChange = s.CopyErrorWhatToChange,
+                PointWhatToChange = s.PointWhatToChange,
+                Mean = s.MutationsMeans,
+                StdDev = s.MutationsStdDevs
+            },
+            Name = s.Name,
+            path = s.Path,
+            Posdn = s.Posdn,
+            Posrg = s.Posrg,
+            Poslf = s.Poslf,
+            Postp = s.Postp,
+            qty = s.Qty,
+            Skin = s.Skin,
+            Stnrg = s.Stnrg,
+            Veg = s.Veg,
+            CantSee = s.CantSee,
+            DisableDNA = s.DisableDNA,
+            DisableMovementSysvars = s.DisableMovem,
+            VirusImmune = s.VirusImmune,
+            population = s.Population,
+            SubSpeciesCounter = s.SubSpeciesCounter,
+            Native = s.Native
+        }));
+    }
+
+    /*
+    ' loads a single robot
+    */
+    public static void LoadRobot(ref int fnum, int n)
+    {
+        LoadRobotBody(fnum, n);
+        if (rob[n].exist)
+        {
+            GiveAbsNum(n);
+            insertsysvars(n);
+            ScanUsedVars(n);
+            makeoccurrlist(n);
+            rob[n].DnaLen = DnaLen(ref rob[n].dna());
+            rob[n].genenum = CountGenes(ref rob[n].dna());
+            rob[n].mem(DnaLenSys) = rob[n].DnaLen;
+            rob[n].mem(GenesSys) = rob[n].genenum;
+            // UpdateBotBucket n
+        }
+    }
+
+    /*
+    ' assignes a robot his unique code
+    */
+    public static void GiveAbsNum(ref int k)
+    {
+        // Dim n As Integer, Max As Long
+        //For n = 1 To MaxRobs
+        //  If Max < rob[n].AbsNum Then
+        //    Max = rob[n].AbsNum
+        //  End If
+        //Next n
+        //rob[k].AbsNum = Max + 1
+        if (rob[k].AbsNum == 0)
+        {
+            SimOpts.MaxAbsNum = SimOpts.MaxAbsNum + 1;
+            rob[k].AbsNum = SimOpts.MaxAbsNum;
+        }
+    }
+
+    /*
+    ' loads the body of the robot
+    */
+    private static void LoadRobotBody(ref int n, ref int r)
+    {
+        //robot r
+        //file #n,
+        int t = 0;
+        int k = 0;
+        int ind = 0;
+        byte Fe = 0;
+        int L1 = 0;
+        int inttmp = 0;
+
+        bool MessedUpMutations = false;
+
+        int longtmp = 0;//Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
+
+
+        MessedUpMutations = false;
+        dynamic _WithVar_2822;
+        _WithVar_2822 = rob(r);
+        Get(n);
+        Get(n);
+        Get(n);
+
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n); //momento angolare
+        Get(n); //momento torcente
+
+        _WithVar_2822.BucketPos.X = -2;
+        _WithVar_2822.BucketPos.Y = -2;
+
+        //ties
+        for (t = 0; t < MAXTIES; t++)
+        {
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+            Get(n);
+        }
+
+        Get(n);
+
+        for (t = 1; t < 50; t++)
+        {
+            Get(n);
+            _WithVar_2822.vars(t).Name = Space(k);
+            Get(n); //|
+            Get(n);
+        }
+        Get(n); //| variabili private
+
+        // macchina virtuale
+        Get(n); // memoria dati
+        Get(n);
+        List<> dna_4061_tmp = new List<>();
+        for (int redim_iter_8013 = 0; i < 0; redim_iter_8013++) { dna.Add(null); }
+
+        for (t = 1; t < k; t++)
+        {
+            Get(n);
+            Get(n);
+        }
+
+        //Force an end base pair to protect against DNA corruption
+        _WithVar_2822.dna(k).tipo = 10;
+        _WithVar_2822.dna(k).value = 1;
+
+
+        //EricL Set reasonable default values to protect against corrupted sims that don't read these values
+        SetDefaultMutationRates(_WithVar_2822.Mutables, true);
+
+        for (t = 0; t < 20; t++)
+        {
+            Get(n);
+        }
+
+        // informative
+        Get(n);
+        Get(n);
+        _WithVar_2822.Mutations = inttmp;
+        Get(n);
+        _WithVar_2822.LastMut = inttmp;
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n);
+        Get(n);
+
+        // aspetto
+        Get(n);
+        Get(n);
+
+        //new stuff using FileContinue conditions for backward and forward compatability
+        if (FileContinue(n))
+        {
+            Get(n);
+            _WithVar_2822.radius = FindRadius(r);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+            _WithVar_2822.FName = Space(k);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+            _WithVar_2822.LastOwner = Space(k);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (_WithVar_2822.LastOwner == "")
+        {
+            _WithVar_2822.LastOwner = "Local";
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //EricL 5/2/2006  This needs some explaining.  The length of the mutation details can exceed 2^15 -1 for bots with lots
+        //of mutations.  If we are reading an old file, the length could be negative in which case we read what we can and then punt and skip the
+        //rest of the bot.  We will miss some stuff, like the mutation settings, but at least the sim will load.
+        //If the sim file was stored with 2.42.4 or later and this bot has a ton of mutation details, then an Int value of 1
+        //indicates the actual length of the mutation details is stored as a Long in which case we read that and continue.
+        if (k < 0)
+        {
+            //Its an old corrupted file with > 2^15 worth of mutation details.  Bail.
+            _WithVar_2822.LastMutDetail = "Problem reading mutation details.  May be a very old sim.  Please tell the developers.  Mutation Details deleted.";
+
+            //EricL Set reasonable default values for everything read from this point on.
+            _WithVar_2822.Mutables.Mutations = true;
+
+            SetDefaultMutationRates(_WithVar_2822.Mutables, true);
+
+            _WithVar_2822.View = true;
+            _WithVar_2822.NewMove = false;
+            _WithVar_2822.oldBotNum = 0;
+            _WithVar_2822.CantSee = false;
+            _WithVar_2822.DisableDNA = false;
+            _WithVar_2822.DisableMovementSysvars = false;
+            _WithVar_2822.CantReproduce = false;
+            _WithVar_2822.VirusImmune = false;
+            _WithVar_2822.shell = 0;
+            _WithVar_2822.Slime = 0;
+
+            goto ;
+        }
+        if (k == 1)
+        {
+            //Its a new file with lots of mutations.  Read the actual length stored as a Long
+            Get(n);
+        }
+        else
+        {
+            //Not that many mutations for this bot (It's possible its an old file with lots of mutations and the len wrapped.
+            //If so, we just read the postiive len and keep going.  Everything following this will be wrong, but the sim should
+            //still load.  It's a corner case.  The alternative is to try to parse the mutation details strings directly.  No thanks.
+            L1 = CLng(k);
+        }
+
+        if (Form1.lblSaving.Visible)
+        { //Botsareus 4/18/2016 Bug fix to prevent string buffer overflow
+            _WithVar_2822.LastMutDetail = Space(L1);
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+        }
+        else
+        {
+            if (L1 > (100000000 / TotalRobotsDisplayed))
+            {
+                Seek(#n, L1 + Seek(n));
+              }
+            else
+            {
+                _WithVar_2822.LastMutDetail = Space(L1);
+                if (FileContinue(n))
+                {
+                    Get(n);
+                }
+            }
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        for (t = 0; t < 20; t++)
+        {
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+        }
+
+        for (t = 0; t < 20; t++)
+        {
+            if (_WithVar_2822.Mutables.Mean(t) < 0 || _WithVar_2822.Mutables.Mean(t) > 32000 || _WithVar_2822.Mutables.StdDev(t) < 0 || _WithVar_2822.Mutables.StdDev(t) > 32000)
+            {
+                MessedUpMutations = true;
+            }
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        if (_WithVar_2822.Mutables.CopyErrorWhatToChange < 0 || _WithVar_2822.Mutables.CopyErrorWhatToChange > 32000 || _WithVar_2822.Mutables.PointWhatToChange < 0 || _WithVar_2822.Mutables.PointWhatToChange > 32000)
+        {
+            MessedUpMutations = true;
+        }
+
+        //If we read wacky values, the file was saved with an older version which messed these up.  Set the defaults.
+        if (MessedUpMutations)
+        {
+            SetDefaultMutationRates(_WithVar_2822.Mutables, true);
+        }
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        _WithVar_2822.oldBotNum = 0;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        _WithVar_2822.CantSee = false;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (CInt(_WithVar_2822.CantSee) > 0 || CInt(_WithVar_2822.CantSee) < -1)
+        {
+            _WithVar_2822.CantSee = false; // Protection against corrpt sim files.
+        }
+
+        _WithVar_2822.DisableDNA = false;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (CInt(_WithVar_2822.DisableDNA) > 0 || CInt(_WithVar_2822.DisableDNA) < -1)
+        {
+            _WithVar_2822.DisableDNA = false; // Protection against corrpt sim files.
+        }
+
+        _WithVar_2822.DisableMovementSysvars = false;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (CInt(_WithVar_2822.DisableMovementSysvars) > 0 || CInt(_WithVar_2822.DisableMovementSysvars) < -1)
+        {
+            _WithVar_2822.DisableMovementSysvars = false; // Protection against corrpt sim files.
+        }
+
+        _WithVar_2822.CantReproduce = false;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (CInt(_WithVar_2822.CantReproduce) > 0 || CInt(_WithVar_2822.CantReproduce) < -1)
+        {
+            _WithVar_2822.CantReproduce = false; // Protection against corrpt sim files.
+        }
+
+        _WithVar_2822.shell = 0;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        if (_WithVar_2822.shell > 32000)
+        {
+            _WithVar_2822.shell = 32000;
+        }
+        if (_WithVar_2822.shell < 0)
+        {
+            _WithVar_2822.shell = 0;
+        }
+
+        _WithVar_2822.Slime = 0;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        if (_WithVar_2822.Slime > 32000)
+        {
+            _WithVar_2822.Slime = 32000;
+        }
+        if (_WithVar_2822.Slime < 0)
+        {
+            _WithVar_2822.Slime = 0;
+        }
+
+        _WithVar_2822.VirusImmune = false;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (CInt(_WithVar_2822.VirusImmune) > 0 || CInt(_WithVar_2822.VirusImmune) < -1)
+        {
+            _WithVar_2822.VirusImmune = false; // Protection against corrpt sim files.
+        }
+
+        _WithVar_2822.SubSpecies = 0; // For older sims saved before this was implemented, set the sup species to be the bot's number.  Every bot is a sub species.
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        _WithVar_2822.spermDNAlen = 0;
+        if (FileContinue(n))
+        {
+            Get(n);
+            List<> spermDNA_1155_tmp = new List<>();
+            for (int redim_iter_9379 = 0; i < 0; redim_iter_9379++) { spermDNA.Add(null); }
+        }
+        for (t = 1; t < _WithVar_2822.spermDNAlen; t++)
+        {
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+        }
+
+        _WithVar_2822.fertilized = -1;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        for (t = 0; t < 500; t++)
+        {
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+        }
+
+        _WithVar_2822.sim = 0;
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Botsareus 2/23/2013 Rest of tie data
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        for (t = 0; t < MAXTIES; t++)
+        {
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+            //Botsareus 4/18/2016 Protection against currupt file
+            if (_WithVar_2822.Ties(t).NaturalLength < 0)
+            {
+                _WithVar_2822.Ties(t).NaturalLength = 0;
+            }
+            if (_WithVar_2822.Ties(t).NaturalLength > 1500)
+            {
+                _WithVar_2822.Ties(t).NaturalLength = 1500;
+            }
+        }
+
+        //Botsareus 4/9/2013 For genetic distance graph
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        _WithVar_2822.GenMut = _WithVar_2822.DnaLen / GeneticSensitivity;
+
+        //Panda 2013/08/11 chloroplasts
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        //Botsareus 4/18/2016 Protection against currupt file
+        if (_WithVar_2822.chloroplasts < 0)
+        {
+            _WithVar_2822.chloroplasts = 0;
+        }
+        if (_WithVar_2822.chloroplasts > 32000)
+        {
+            _WithVar_2822.chloroplasts = 32000;
+        }
+
+        //Botsareus 12/3/2013 Read epigenetic information
+
+        for (t = 0; t < 14; t++)
+        {
+            if (FileContinue(n))
+            {
+                Get(n);
+            }
+        }
+
+        //Botsareus 1/28/2014 Read robot tag
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Read if robot is using sunbelt
+
+        bool usesunbelt = false;//sunbelt mutations
+
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Botsareus 3/28/2014 Read if disable chloroplasts
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Botsareus 3/28/2014 Read kill resrictions
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (_WithVar_2822.Chlr_Share_Delay > 8)
+        {
+            _WithVar_2822.Chlr_Share_Delay = 8; //Botsareus 4/18/2016 Protection against currupt file
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (_WithVar_2822.dq > 3)
+        {
+            _WithVar_2822.dq = 3; //Botsareus 4/18/2016 Protection against currupt file
+        }
+
+        //Botsareus 10/8/2015 Keep track of mutations from old dna file
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        //Botsareus 6/22/2016 Actual velocity
+
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+        if (FileContinue(n))
+        {
+            Get(n);
+        }
+
+        _WithVar_2822.dq = _WithVar_2822.dq - IIf(_WithVar_2822.dq > 1, 2, 0);
+
+        if (!.Veg)
+        {
+            if (y_eco_im > 0 & Form1.lblSaving.Visible == false)
+            {
+                if (Trim(Right(_WithVar_2822.tag, 5)) != Trim(Left(_WithVar_2822.nrg + _WithVar_2822.nrg, 5)))
+                {
+                    _WithVar_2822.dq = 2 + (_WithVar_2822.dq == 1) * true;
+                }
+                if (_WithVar_2822.FName != "Mutate.txt" && _WithVar_2822.FName != "Base.txt" && _WithVar_2822.FName != "Corpse")
+                {
+                    _WithVar_2822.dq = 2 + (_WithVar_2822.dq == 1) * true;
+                }
+            }
+        }
+        else
+        {
+            if (y_eco_im > 0 & _WithVar_2822.chloroplasts < 2000)
+            {
+                _WithVar_2822.Dead = true;
+            }
+            if (TotalChlr > SimOpts.MaxPopulation)
+            {
+                _WithVar_2822.Dead = true;
+            }
+        }
+        if (_WithVar_2822.FName == "Corpse")
+        {
+            _WithVar_2822.nrg = 0;
+        }
+
+    //Botsareus 10/5/2015 Replaced with something better
+    //Botsareus 9/16/2014 Read gene kill resrictions
+    //    ReDim .delgenes(0)
+    //    ReDim .delgenes(0).dna(0)
+    //    Dim x As Integer
+    //    Dim y As Integer
+    //    Dim poz As Long
+    //    poz = Seek(n)
+    //    Get #n, , x
+    //    If x < 0 Then
+    //        Get #n, poz - 1, Fe
+    //        If y_eco_im > 0 And Form1.lblSaving.Visible = False Then
+    //            .dq = 2 + (.dq = 1) * True
+    //        End If
+    //        GoTo OldFile
+    //    End If
+    //    ReDim .delgenes(x)
+    //    For y = 0 To x
+    //        Get #n, , .delgenes(y).position
+    //        Get #n, , k
+    //        ReDim .delgenes(y).dna(k)
+    //        For t = 0 To k
+    //          Get #n, , .delgenes(y).dna(t).tipo
+    //          Get #n, , .delgenes(y).dna(t).value
+    //        Next t
+    //    Next
+
+    //read in any future data here
+
+    OldFile:
+        //burn through any new data from a different version
+        While(FileContinue(n));
+        Get(n);
+        Wend();
+
+        //grab these three FE codes
+        Get(n);
+        Get(n);
+        Get(n);
+
+        //don't you dare put anything after this!
+        //except some initialization stuff
+        _WithVar_2822.Vtimer = 0;
+        _WithVar_2822.virusshot = 0;
+
+        //Botsareus 2/21/2014 Special case reset sunbelt mutations
+
+        if (!usesunbelt)
+        {
+            _WithVar_2822.Mutables.mutarray(P2UP) = 0;
+            _WithVar_2822.Mutables.mutarray(CE2UP) = 0;
+            _WithVar_2822.Mutables.mutarray(AmplificationUP) = 0;
+            _WithVar_2822.Mutables.mutarray(TranslocationUP) = 0;
+        }
+    }
+
+    private static bool FileContinue(ref int filenumber)
+    {
+        bool FileContinue = false;
+        //three FE bytes (ie: 254) means we are at the end of the record
+
+        byte Fe = 0;
+
+        int Position = 0;
+
+        int k = 0;
+
+
+        FileContinue = false;
+        Position() = Seek(filenumber);
+
+        do
+        {
+            if (!EOF(filenumber))
+            {
+                Get(#filenumber);
+    }
+            else
+            {
+                FileContinue = false;
+                Fe = 254;
+            }
+
+            k = k + 1;
+
+            if (Fe != 254)
+            {
+                FileContinue = true;
+                //exit immediatly, we are done
+            }
+        } while (!(!FileContinue && k < 3);
+
+        //reset position
+        Get(#filenumber, Position() - 1, Fe);
   return FileContinue;
-                                                                                                        }
+    }
 
-                                                                                                        /*
-                                                                                                        ' saves the body of the robot
-                                                                                                        */
-                                                                                                        private static void SaveRobotBody(ref int n, ref int r)
-                                                                                                        {
-                                                                                                            int t = 0;
-                                                                                                            int k = 0;
+    /*
+    ' saves the body of the robot
+    */
+    private static void SaveRobotBody(ref int n, ref int r)
+    {
+        int t = 0;
+        int k = 0;
 
-                                                                                                            string s = "";
+        string s = "";
 
-                                                                                                            string s2 = "";
+        string s2 = "";
 
-                                                                                                            string temp = "";
+        string temp = "";
 
-                                                                                                            int longtmp = 0;
+        int longtmp = 0;
 
 
-                                                                                                            const byte Fe = 254;
-                                                                                                            // Dim space As Integer
+        const byte Fe = 254;
+        // Dim space As Integer
 
-                                                                                                            s = "Mutation Details removed in last save.";
+        s = "Mutation Details removed in last save.";
 
-                                                                                                            dynamic _WithVar_7882;
-                                                                                                            _WithVar_7882 = rob(r);
+        dynamic _WithVar_7882;
+        _WithVar_7882 = rob(r);
 
-                                                                                                            Put(#n);
+        Put(#n);
     Put(#n);
     Put(#n);
 
@@ -2842,8 +2052,8 @@ static class HDRoutines
     Put(#n); //momento torcente
 
     for (t = 0; t < MAXTIES; t++)
-                                                                                                            {
-                                                                                                                Put(#n);
+        {
+            Put(#n);
       Put(#n);
       Put(#n);
       Put(#n);
@@ -2858,38 +2068,38 @@ static class HDRoutines
       Put(#n);
       Put(#n);
       Put(#n);
-      Next(t);
+      }
 
-                                                                                                                // biologiche
-                                                                                                                Put(#n);
+        // biologiche
+        Put(#n);
 
 //custom variables we're saving
       for (t = 1; t < 50; t++)
-                                                                                                                {
-                                                                                                                    Put(#n);
+        {
+            Put(#n);
         Put(#n); //|
         Put(#n);
-        Next(t);
+        }
 
-                                                                                                                    Put(#n); //| variabili private
+        Put(#n); //| variabili private
 
 // macchina virtuale
         Put(#n);
         k = DnaLen(ref rob(r).dna());
-                                                                                                                    Put(#n);
+        Put(#n);
         for (t = 1; t < k; t++)
-                                                                                                                    {
-                                                                                                                        Put(#n);
+        {
+            Put(#n);
           Put(#n);
-          Next(t);
+          }
 
-                                                                                                                        for (t = 0; t < 20; t++)
-                                                                                                                        {
-                                                                                                                            Put(#n);
-            Next(t);
+        for (t = 0; t < 20; t++)
+        {
+            Put(#n);
+            }
 
-                                                                                                                            // informative
-                                                                                                                            Put(#n);
+        // informative
+        Put(#n);
             Put(#n);
             Put(#n);
             Put(#n);
@@ -2924,42 +2134,42 @@ static class HDRoutines
 
 //EricL 5/8/2006 New feature allows for saving sims without all the mutations details
             if (MDIForm1.instance.SaveWithoutMutations)
-                                                                                                                            {
-                                                                                                                                Put(#n);
+        {
+            Put(#n);
               Put(#n);
             }
-                                                                                                                            else
-                                                                                                                            {
-                                                                                                                                //EricL 5/3/2006  This needs some explaining.  It's all about backward compatability.  The length of the mutation details
-                                                                                                                                //was stored as an Integer in older sim file versions.  It can overflow and go negative or even wrap positive
-                                                                                                                                //again in sims with lots of mutations.  So, we test to see if it would have overflowed and it so, we write
-                                                                                                                                //the interger 1 there instead of the actual length.  Since the actual details, being string descriptions,
-                                                                                                                                //should never have length 1, this is a signal to the sim file read routine that the real length is a Long
-                                                                                                                                //stored right after the Int.
-                                                                                                                                if (CLng(Len(_WithVar_7882.LastMutDetail)) > CLng((2 ^ 15 - 1)))
-                                                                                                                                {
-                                                                                                                                    // Lots of mutations.  Tell the read routine that the real length is Long valued and coming up next.
-                                                                                                                                    Put(#n);
+        else
+        {
+            //EricL 5/3/2006  This needs some explaining.  It's all about backward compatability.  The length of the mutation details
+            //was stored as an Integer in older sim file versions.  It can overflow and go negative or even wrap positive
+            //again in sims with lots of mutations.  So, we test to see if it would have overflowed and it so, we write
+            //the interger 1 there instead of the actual length.  Since the actual details, being string descriptions,
+            //should never have length 1, this is a signal to the sim file read routine that the real length is a Long
+            //stored right after the Int.
+            if (CLng(Len(_WithVar_7882.LastMutDetail)) > CLng((2 ^ 15 - 1)))
+            {
+                // Lots of mutations.  Tell the read routine that the real length is Long valued and coming up next.
+                Put(#n);
                 Put(#n); // The real length
               }
-                                                                                                                                else
-                                                                                                                                {
-                                                                                                                                    //Not so many mutation details.  Leave the length as an Int for backward compatability
-                                                                                                                                    Put(#n);
+            else
+            {
+                //Not so many mutation details.  Leave the length as an Int for backward compatability
+                Put(#n);
               }
-                                                                                                                                Put(#n);
+            Put(#n);
             }
 
-                                                                                                                            //EricL 3/30/2006 Added the following line.  Looks like it was just missing.  Mutations were turned off after loading save...
-                                                                                                                            Put(#n);
+        //EricL 3/30/2006 Added the following line.  Looks like it was just missing.  Mutations were turned off after loading save...
+        Put(#n);
 
             for (t = 0; t < 20; t++)
-                                                                                                                            {
-                                                                                                                                Put(#n);
+        {
+            Put(#n);
               Put(#n);
-              Next(t);
+             }
 
-                                                                                                                                Put(#n);
+        Put(#n);
               Put(#n);
 
               Put(#n);
@@ -2976,70 +2186,70 @@ static class HDRoutines
               Put(#n);
 
               if (_WithVar_7882.fertilized < 0)
-                                                                                                                                {
-                                                                                                                                    _WithVar_7882.spermDNAlen = 0;
-                                                                                                                                }
+        {
+            _WithVar_7882.spermDNAlen = 0;
+        }
 
-                                                                                                                                Put(#n);
+        Put(#n);
               for (t = 1; t < _WithVar_7882.spermDNAlen; t++)
-                                                                                                                                {
-                                                                                                                                    Put(#n);
+        {
+            Put(#n);
                 Put(#n);
-                Next(t);
-                                                                                                                                    Put(#n);
+                }
+        Put(#n);
 
 //Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
                 Put(#n);
                 for (t = 0; t < 500; t++)
-                                                                                                                                    {
-                                                                                                                                        Put(#n);
+        {
+            Put(#n);
                   Put(#n);
                   Put(#n);
-                  Next(t);
+                  }
 
-                                                                                                                                        Put(#n);
+        Put(#n);
                   Put(#n);
 
 //Botsareus 2/23/2013 Rest of tie data
                   Put(#n);
                   for (t = 0; t < MAXTIES; t++)
-                                                                                                                                        {
-                                                                                                                                            Put(#n);
+        {
+            Put(#n);
                     Put(#n);
                     Put(#n);
                     Put(#n);
                   }
 
-                                                                                                                                        //Botsareus 4/9/2013 For genetic distance graph
-                                                                                                                                        Put(#n);
+        //Botsareus 4/9/2013 For genetic distance graph
+        Put(#n);
 
 //Panda 8/13/2013 Write chloroplasts
                   Put(#n);
 
 //Botsareus 12/3/2013 Write epigenetic information
                   for (t = 0; t < 14; t++)
-                                                                                                                                        {
-                                                                                                                                            Put(#n);
+        {
+            Put(#n);
                   }
 
-                                                                                                                                        //Botsareus 1/28/2014 Write robot tag
+        //Botsareus 1/28/2014 Write robot tag
 
-                                                                                                                                        string blank = "";
+        string blank = "";
 
 
-                                                                                                                                        if (!.Veg)
-                                                                                                                                        {
-                                                                                                                                            if (y_eco_im > 0 & Form1.lblSaving.Visible == false && _WithVar_7882.dq < 2)
-                                                                                                                                            {
-                                                                                                                                                if (Left(_WithVar_7882.tag, 45) == Left(blank, 45))
-                                                                                                                                                {
-                                                                                                                                                    _WithVar_7882.tag = _WithVar_7882.FName;
-                                                                                                                                                }
-                                                                                                                                                _WithVar_7882.tag = Left(_WithVar_7882.tag, 45) + Left(_WithVar_7882.nrg + _WithVar_7882.nrg, 5);
-                                                                                                                                            }
-                                                                                                                                        }
+        if (!.Veg)
+        {
+            if (y_eco_im > 0 & Form1.lblSaving.Visible == false && _WithVar_7882.dq < 2)
+            {
+                if (Left(_WithVar_7882.tag, 45) == Left(blank, 45))
+                {
+                    _WithVar_7882.tag = _WithVar_7882.FName;
+                }
+                _WithVar_7882.tag = Left(_WithVar_7882.tag, 45) + Left(_WithVar_7882.nrg + _WithVar_7882.nrg, 5);
+            }
+        }
 
-                                                                                                                                        Put(#n);
+        Put(#n);
 
 //Botsareus 1/28/2014 Write if robot is using sunbelt
 
@@ -3087,432 +2297,136 @@ static class HDRoutines
                   Put(#n);
               }
 
-                                                                                                                                    /*
-                                                                                                                                    ' saves a robot dna     !!!New routine from Carlo!!!
-                                                                                                                                    'Botsareus 10/8/2015 Code simplification
-                                                                                                                                    */
-                                                                                                                                    static void salvarob(ref int n, ref string path)
-                                                                                                                                    {
-                                                                                                                                        string hold = "";
+    /*
+    ' saves a robot dna     !!!New routine from Carlo!!!
+    'Botsareus 10/8/2015 Code simplification
+    */
+    static void salvarob(ref int n, ref string path)
+    {
+        string hold = "";
 
-                                                                                                                                        string hashed = "";
-
-
-                                                                                                                                        int a = 0;
-
-                                                                                                                                        string epigene = "";
+        string hashed = "";
 
 
-                                                                                                                                        VBCloseFile(1); ();
-                                                                                                                                        VBOpenFile(1, path); ;
-                                                                                                                                        hold = SaveRobHeader(ref n);
+        int a = 0;
 
-                                                                                                                                        //Botsareus 10/8/2015 New code to save epigenetic memory as gene
+        string epigene = "";
 
-                                                                                                                                        if (UseEpiGene)
-                                                                                                                                        {
-                                                                                                                                            for (a = 971; a < 990; a++)
-                                                                                                                                            {
-                                                                                                                                                if (rob[n].mem(a) != 0)
-                                                                                                                                                {
-                                                                                                                                                    epigene = epigene + rob[n].mem(a) + " " + a + " store" + vbCrLf;
-                                                                                                                                                }
-                                                                                                                                            }
 
-                                                                                                                                            if (epigene != "")
-                                                                                                                                            {
-                                                                                                                                                epigene = "start" + vbCrLf + epigene + "*.thisgene .delgene store" + vbCrLf + "stop";
+        VBCloseFile(1); ();
+        VBOpenFile(1, path); ;
+        hold = SaveRobHeader(ref n);
 
-                                                                                                                                                hold = hold + epigene;
+        //Botsareus 10/8/2015 New code to save epigenetic memory as gene
 
-                                                                                                                                            }
+        if (UseEpiGene)
+        {
+            for (a = 971; a < 990; a++)
+            {
+                if (rob[n].mem(a) != 0)
+                {
+                    epigene = epigene + rob[n].mem(a) + " " + a + " store" + vbCrLf;
+                }
+            }
 
-                                                                                                                                        }
+            if (epigene != "")
+            {
+                epigene = "start" + vbCrLf + epigene + "*.thisgene .delgene store" + vbCrLf + "stop";
 
-                                                                                                                                        savingtofile = true; //Botsareus 2/28/2014 when saving to file the def sysvars should not save
-                                                                                                                                        hold = hold + DetokenizeDNA(ref n, ref 0);
-                                                                                                                                        savingtofile = false;
-                                                                                                                                        hashed = Hash(ref hold, ref 20);
-                                                                                                                                        VBWriteFile(1, hold); ;
-                                                                                                                                        VBWriteFile(1, ""); ;
-                                                                                                                                        VBWriteFile(1, "'#hash: " + hashed); ;
-                                                                                                                                        string blank = "";
+                hold = hold + epigene;
 
-                                                                                                                                        if (Left(rob[n].tag, 45) != Left(blank, 45))
-                                                                                                                                        {
-                                                                                                                                            VBWriteFile(1, "'#tag:" + Left(rob[n].tag, 45) + vbCrLf); ;
-                                                                                                                                        }
-                                                                                                                                        VBCloseFile(1); ();
+            }
 
-                                                                                                                                        //Botsareus 12/11/2013 Save mrates file
-                                                                                                                                        Save_mrates(rob[n].Mutables, extractpath(ref path) + "\\" + extractexactname(ref extractname(ref path)) + ".mrate");
+        }
 
-                                                                                                                                        if (x_restartmode > 0)
-                                                                                                                                        {
-                                                                                                                                            return;//Botsareus 10/8/2015 Can not rename robot in any special restart mode
+        savingtofile = true; //Botsareus 2/28/2014 when saving to file the def sysvars should not save
+        hold = hold + DetokenizeDNA(ref n, ref 0);
+        savingtofile = false;
+        hashed = Hash(ref hold, ref 20);
+        VBWriteFile(1, hold); ;
+        VBWriteFile(1, ""); ;
+        VBWriteFile(1, "'#hash: " + hashed); ;
+        string blank = "";
 
-                                                                                                                                        }
+        if (Left(rob[n].tag, 45) != Left(blank, 45))
+        {
+            VBWriteFile(1, "'#tag:" + Left(rob[n].tag, 45) + vbCrLf); ;
+        }
+        VBCloseFile(1); ();
 
-                                                                                                                                        if (MsgBox("Do you want to change robot's name to " + extractname(ref path) + " ?", vbYesNo, "Robot DNA saved") == vbYes)
-                                                                                                                                        {
-                                                                                                                                            rob[n].FName = extractname(ref path);
-                                                                                                                                        }
-                                                                                                                                    }
+        //Botsareus 12/11/2013 Save mrates file
+        Save_mrates(rob[n].Mutables, extractpath(ref path) + "\\" + extractexactname(ref extractname(ref path)) + ".mrate");
 
-                                                                                                                                    /*
-                                                                                                                                    ' saves a Teleporter
-                                                                                                                                    */
-                                                                                                                                    private static void SaveTeleporter(ref int n, ref int t)
-                                                                                                                                    {
-                                                                                                                                        const byte Fe = 254;
+        if (x_restartmode > 0)
+        {
+            return;//Botsareus 10/8/2015 Can not rename robot in any special restart mode
 
-                                                                                                                                        dynamic _WithVar_7039;
-                                                                                                                                        _WithVar_7039 = Teleporters(t);
-                                                                                                                                        Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
+        }
 
-//write any future data here
+        if (MsgBox("Do you want to change robot's name to " + extractname(ref path) + " ?", vbYesNo, "Robot DNA saved") == vbYes)
+        {
+            rob[n].FName = extractname(ref path);
+        }
+    }
 
-    Put(#n);
-    Put(#n);
-    Put(#n);
-//don't you dare put anything after this!
+    /*
+    'M U T A T I O N  F I L E Botsareus 12/11/2013
 
+    'generate mrates file
+    */
+    static void Save_mrates(ref mutationprobs mut, ref string FName)
+    {
+        byte m = 0;
+
+        VBOpenFile(1, FName); ;
+        mutationprobs _WithVar_mut;
+        _WithVar_mut = mut;
+        Write(1, _WithVar_mut.PointWhatToChange);
+        Write(1, _WithVar_mut.CopyErrorWhatToChange);
+        for (m = 0; m < 10; m++)
+        { //Need to change this if adding more mutation types (Trying to keep some backword compatability here)
+            Write(1, _WithVar_mut.mutarray(m));
+            Write(1, _WithVar_mut.Mean(m));
+            Write(1, _WithVar_mut.StdDev(m));
+        }
+        mut = _WithVar_mut;
+        VBCloseFile(1); ();
+    }
+
+    /*
+    'load mrates file
+    */
+    public static mutationprobs Load_mrates(ref string FName)
+    {
+        mutationprobs Load_mrates = null;
+        byte m = 0;
+
+        VBOpenFile(1, FName); ;
+        mutationprobs _WithVar_Load_mrates;
+        _WithVar_Load_mrates = Load_mrates;
+        Input(1, _WithVar_Load_mrates.PointWhatToChange);
+        Input(1, _WithVar_Load_mrates.CopyErrorWhatToChange);
+        for (m = 0; m < 10; m++)
+        { //Need to change this if adding more mutation types (needs to have eofs if more then 10 for backword compatability)
+            Input(1, _WithVar_Load_mrates.mutarray(m));
+            Input(1, _WithVar_Load_mrates.Mean(m));
+            Input(1, _WithVar_Load_mrates.StdDev(m));
+        }
+        Load_mrates = _WithVar_Load_mrates;
+        VBCloseFile(1); ();
+        return Load_mrates;
+    }
+
+    /*
+    'D A T A C O N V E R S I O N S Botsareus 12/18/2013
+    */
+    private static int sint(int lval)
+    {
+        int sint = 0;
+        lval = lval % 32000;
+        sint = lval;
+        return sint;
+    }
 }
-
-                                                                                                                                    /*
-                                                                                                                                    ' loads a Teleporter
-                                                                                                                                    */
-                                                                                                                                    private static void LoadTeleporter(ref int n, ref int t)
-                                                                                                                                    {
-                                                                                                                                        int k = 0;
-
-                                                                                                                                        byte Fe = 0;
-
-
-                                                                                                                                        dynamic _WithVar_6152;
-                                                                                                                                        _WithVar_6152 = Teleporters(t);
-                                                                                                                                        Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    _WithVar_6152.path = Space(k);
-                                                                                                                                        Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-
-    _WithVar_6152.teleportHeterotrophs = true;
-                                                                                                                                        _WithVar_6152.InboundPollCycles = 10;
-                                                                                                                                        _WithVar_6152.BotsPerPoll = 10;
-                                                                                                                                        _WithVar_6152.PollCountDown = 10;
-
-                                                                                                                                        if (FileContinue(n))
-                                                                                                                                        {
-                                                                                                                                            Get(#n);
-    }
-                                                                                                                                        if (FileContinue(n))
-                                                                                                                                        {
-                                                                                                                                            Get(#n);
-    }
-                                                                                                                                        if (FileContinue(n))
-                                                                                                                                        {
-                                                                                                                                            Get(#n);
-    }
-                                                                                                                                        if (FileContinue(n))
-                                                                                                                                        {
-                                                                                                                                            Get(#n);
-    }
-                                                                                                                                        if (FileContinue(n))
-                                                                                                                                        {
-                                                                                                                                            Get(#n);
-    }
-
-
-                                                                                                                                        //burn through any new data from a newer version
-                                                                                                                                        While(FileContinue(n));
-                                                                                                                                        Get(#n);
-    Wend();
-
-                                                                                                                                        //grab these three FE codes
-                                                                                                                                        Get(#n);
-    Get(#n);
-    Get(#n);
-//don't you dare put anything after this!
-
-}
-
-                                                                                                                                    /*
-                                                                                                                                    ' saves a Obstacle
-                                                                                                                                    */
-                                                                                                                                    private static void SaveObstacle(ref int n, ref int t)
-                                                                                                                                    {
-                                                                                                                                        const byte Fe = 254;
-
-                                                                                                                                        dynamic _WithVar_5847;
-                                                                                                                                        _WithVar_5847 = Obstacles.Obstacles(t);
-                                                                                                                                        Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-    Put(#n);
-
-//write any future data here
-
-    Put(#n);
-    Put(#n);
-    Put(#n);
-//don't you dare put anything after this!
-
-}
-
-                                                                                                                                    /*
-                                                                                                                                    ' loads an Obstacle
-                                                                                                                                    */
-                                                                                                                                    private static void LoadObstacle(ref int n, ref int t)
-                                                                                                                                    {
-                                                                                                                                        int k = 0;
-
-                                                                                                                                        byte Fe = 0;
-
-
-                                                                                                                                        dynamic _WithVar_9798;
-                                                                                                                                        _WithVar_9798 = Obstacles.Obstacles(t);
-                                                                                                                                        Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-    Get(#n);
-
-//burn through any new data from a different version
-    While(FileContinue(n));
-                                                                                                                                        Get(#n);
-    Wend();
-
-                                                                                                                                        //grab these three FE codes
-                                                                                                                                        Get(#n);
-    Get(#n);
-    Get(#n);
-
-//don't you dare put anything after this!
-}
-
-                                                                                                                                    /*
-                                                                                                                                    'Saves a Shot
-                                                                                                                                    'New routine by EricL
-                                                                                                                                    */
-                                                                                                                                    private static void SaveShot(ref int n, ref int t)
-                                                                                                                                    {
-                                                                                                                                        int k = 0;
-
-                                                                                                                                        int X = 0;
-
-
-                                                                                                                                        const byte Fe = 254;
-
-                                                                                                                                        dynamic _WithVar_7715;
-                                                                                                                                        _WithVar_7715 = Shots(t);
-                                                                                                                                        Put(#n); // exists?
-    Put(#n); // position vector
-    Put(#n); // old position vector
-    Put(#n); // velocity vector
-    Put(#n); // who shot it?
-    Put(#n); // shot age
-    Put(#n); // energy carrier
-    Put(#n); // shot range (the maximum .nrg ever was)
-    Put(#n); // power of shot for negative shots (or amt of shot, etc.), value to write for > 0
-    Put(#n); // colour
-    Put(#n); // carried location/value couple
-    Put(#n); // does shot come from veg?
-    Put(#n);
-    Put(#n); // Which species fired the shot
-    Put(#n); // Memory location for custom poison and venom
-    Put(#n); // Value to insert into custom venom location
-
-// Somewhere to store genetic code for a virus or sperm
-    if ((_WithVar_7715.shottype == -7 || _WithVar_7715.shottype == -8) && _WithVar_7715.exist && _WithVar_7715.DnaLen > 0)
-                                                                                                                                        {
-                                                                                                                                            Put(#n);
-      for (X = 1; X < _WithVar_7715.DnaLen; X++)
-                                                                                                                                            {
-                                                                                                                                                Put(#n);
-        Put(#n);
-        Next(X);
-                                                                                                                                            } else
-                                                                                                                                            {
-                                                                                                                                                k = 0;
-                                                                                                                                                Put(#n);
-      }
-
-                                                                                                                                            Put(#n); // which gene to copy in host bot
-      Put(#n); // for virus shots (and maybe future types) this shot is stored inside the bot until it's ready to be launched
-
-
-//write any future data here
-
-      Put(#n);
-      Put(#n);
-      Put(#n);
-//don't you dare put anything after this!
-
-  }
-
-                                                                                                                                        /*
-                                                                                                                                        'Loads a Shot
-                                                                                                                                        'New routine from EricL
-                                                                                                                                        */
-                                                                                                                                        private static void LoadShot(ref int n, ref int t)
-                                                                                                                                        {
-                                                                                                                                            int k = 0;
-
-                                                                                                                                            int X = 0;
-
-                                                                                                                                            byte Fe = 0;
-
-
-                                                                                                                                            dynamic _WithVar_2687;
-                                                                                                                                            _WithVar_2687 = Shots(t);
-                                                                                                                                            Get(#n); // exists?
-    Get(#n); // position vector
-    Get(#n); // old position vector
-    Get(#n); // velocity vector
-    Get(#n); // who shot it?
-    Get(#n); // shot age
-    Get(#n); // energy carrier
-    Get(#n); // shot range (the maximum .nrg ever was)
-    Get(#n); // power of shot for negative shots (or amt of shot, etc.), value to write for > 0
-    Get(#n); // colour
-    Get(#n); // carried location/value couple
-    Get(#n); // does shot come from veg?
-
-    Get(#n);
-    _WithVar_2687.FromSpecie = Space(k);
-                                                                                                                                            Get(#n); // Which species fired the shot
-
-    Get(#n); // Memory location for custom poison and venom
-    Get(#n); // Value to insert into custom venom location
-
-
-// Somewhere to store genetic code for a virus
-    Get(#n);
-    if (k > 0)
-                                                                                                                                            {
-                                                                                                                                                List<> dna_4226_tmp = new List<>();
-                                                                                                                                                for (int redim_iter_3051 = 0; i < 0; redim_iter_3051++) { dna.Add(null); }
-                                                                                                                                                for (X = 1; X < k; X++)
-                                                                                                                                                {
-                                                                                                                                                    Get(#n);
-        Get(#n);
-        Next(X);
-                                                                                                                                                }
-
-                                                                                                                                                _WithVar_2687.DnaLen = k;
-
-                                                                                                                                                Get(#n); // which gene to copy in host bot
-      Get(#n); // for virus shots (and maybe future types) this shot is stored inside the bot until it's ready to be launched
-
-//burn through any new data from a different version
-      While(FileContinue(n));
-                                                                                                                                                Get(#n);
-      Wend();
-
-                                                                                                                                                //grab these three FE codes
-                                                                                                                                                Get(#n);
-      Get(#n);
-      Get(#n);
-
-//don't you dare put anything after this!
-  }
-
-                                                                                                                                            /*
-                                                                                                                                            'M U T A T I O N  F I L E Botsareus 12/11/2013
-
-                                                                                                                                            'generate mrates file
-                                                                                                                                            */
-                                                                                                                                            static void Save_mrates(ref mutationprobs mut, ref string FName)
-                                                                                                                                            {
-                                                                                                                                                byte m = 0;
-
-                                                                                                                                                VBOpenFile(1, FName); ;
-                                                                                                                                                mutationprobs _WithVar_mut;
-                                                                                                                                                _WithVar_mut = mut;
-                                                                                                                                                Write(1, _WithVar_mut.PointWhatToChange);
-                                                                                                                                                Write(1, _WithVar_mut.CopyErrorWhatToChange);
-                                                                                                                                                for (m = 0; m < 10; m++)
-                                                                                                                                                { //Need to change this if adding more mutation types (Trying to keep some backword compatability here)
-                                                                                                                                                    Write(1, _WithVar_mut.mutarray(m));
-                                                                                                                                                    Write(1, _WithVar_mut.Mean(m));
-                                                                                                                                                    Write(1, _WithVar_mut.StdDev(m));
-                                                                                                                                                }
-                                                                                                                                                mut = _WithVar_mut;
-                                                                                                                                                VBCloseFile(1); ();
-                                                                                                                                            }
-
-                                                                                                                                            /*
-                                                                                                                                            'load mrates file
-                                                                                                                                            */
-                                                                                                                                            public static mutationprobs Load_mrates(ref string FName)
-                                                                                                                                            {
-                                                                                                                                                mutationprobs Load_mrates = null;
-                                                                                                                                                byte m = 0;
-
-                                                                                                                                                VBOpenFile(1, FName); ;
-                                                                                                                                                mutationprobs _WithVar_Load_mrates;
-                                                                                                                                                _WithVar_Load_mrates = Load_mrates;
-                                                                                                                                                Input(1, _WithVar_Load_mrates.PointWhatToChange);
-                                                                                                                                                Input(1, _WithVar_Load_mrates.CopyErrorWhatToChange);
-                                                                                                                                                for (m = 0; m < 10; m++)
-                                                                                                                                                { //Need to change this if adding more mutation types (needs to have eofs if more then 10 for backword compatability)
-                                                                                                                                                    Input(1, _WithVar_Load_mrates.mutarray(m));
-                                                                                                                                                    Input(1, _WithVar_Load_mrates.Mean(m));
-                                                                                                                                                    Input(1, _WithVar_Load_mrates.StdDev(m));
-                                                                                                                                                }
-                                                                                                                                                Load_mrates = _WithVar_Load_mrates;
-                                                                                                                                                VBCloseFile(1); ();
-                                                                                                                                                return Load_mrates;
-                                                                                                                                            }
-
-                                                                                                                                            /*
-                                                                                                                                            'D A T A C O N V E R S I O N S Botsareus 12/18/2013
-                                                                                                                                            */
-                                                                                                                                            private static int sint(int lval)
-                                                                                                                                            {
-                                                                                                                                                int sint = 0;
-                                                                                                                                                lval = lval % 32000;
-                                                                                                                                                sint = lval;
-                                                                                                                                                return sint;
-                                                                                                                                            }
-                                                                                                                                        }
 
                                                                                                                                     }

@@ -81,28 +81,28 @@ internal static class Globals
     //Botsareus 12/16/2013 Delta2 on mutations tab
     public static bool Delta2 = false;
 
-    public static byte DeltaDevChance = 0;
+    public static int DeltaDevChance = 0;
 
-    public static decimal DeltaDevExp = 0;
+    public static double DeltaDevExp = 0;
 
-    public static decimal DeltaDevLn = 0;
+    public static double DeltaDevLn = 0;
 
-    public static byte DeltaMainChance = 0;
+    public static int DeltaMainChance = 0;
 
-    public static decimal DeltaMainExp = 0;
+    public static double DeltaMainExp = 0;
 
-    public static decimal DeltaMainLn = 0;
+    public static double DeltaMainLn = 0;
 
     public static int DeltaPM = 0;
 
-    public static byte DeltaWTC = 0;
+    public static int DeltaWTC = 0;
 
-    public static byte Disqualify = 0;
+    public static int Disqualify = 0;
 
     //Botsareus 11/29/2013 The mutations tab
     public static bool epireset = false;
 
-    public static decimal epiresetemp = 0;
+    public static double epiresetemp = 0;
 
     public static int epiresetOP = 0;
 
@@ -229,39 +229,39 @@ internal static class Globals
 
     public static int x_filenumber = 0;
 
-    public static byte x_fudge = 0;
+    public static int x_fudge = 0;
 
     //Variables below prefixed x_ are used for league and evolution, y_ are used only for evolution
     //Variables prefixed _res_ are used for restriction overwrites
-    public static byte x_res_kill_chlr = 0;
+    public static int x_res_kill_chlr = 0;
 
     public static bool x_res_kill_mb = false;
 
     public static bool x_res_kill_mb_veg = false;
 
-    public static byte x_res_other = 0;
+    public static int x_res_other = 0;
 
-    public static byte x_res_other_veg = 0;
+    public static int x_res_other_veg = 0;
 
     //Botsareus 1/31/2014 Restart modes
-    public static byte x_restartmode = 0;
+    public static int x_restartmode = 0;
 
     //used only by "load simulation"
     //Botsareus 1/5/2014 Copy of Obstacle array
     public static List<Obstacle> xObstacle = new() { };
 
-    public static byte y_eco_im = 0;
+    public static int y_eco_im = 0;
 
     public static bool y_graphs = false;
 
     public static int y_hidePredCycl = 0;
 
-    public static decimal y_LFOR = 0;
+    public static double y_LFOR = 0;
 
     public static bool y_normsize = false;
 
     // TODO - Specified Minimum Array Boundary Not Supported: Public xObstacle() As Obstacle
-    public static byte y_res_kill_chlr = 0;
+    public static int y_res_kill_chlr = 0;
 
     public static bool y_res_kill_dq = false;
 
@@ -271,9 +271,9 @@ internal static class Globals
 
     public static bool y_res_kill_mb_veg = false;
 
-    public static byte y_res_other = 0;
+    public static int y_res_other = 0;
 
-    public static byte y_res_other_veg = 0;
+    public static int y_res_other_veg = 0;
 
     //Botsareus 2/12/2014 Start repopulating robots with chloroplasts
     //Botsareus 2/14/2014 Used to calculate time difference and mode change for survival

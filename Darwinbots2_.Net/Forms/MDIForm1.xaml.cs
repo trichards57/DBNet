@@ -149,8 +149,6 @@ public partial class MDIForm1 : Window {
 //Botsareus 4/17/2013 Added a bunch of new components
 private byte lockswitch = 0;
 public int zoomval = 0;
-//Public startdir As String 'Botsareus 5/10/2013 startdir does not look like it is ever used, disabeling
-public string MainDir = "";
 public string BaseCaption = "";
 public bool insrob = false;
 private bool AspettaFlag = false;

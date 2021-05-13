@@ -196,7 +196,7 @@ public class SimOptions {
  public int TotRunTime = 0;
  public int TotBorn = 0;
  public int SpeciesNum = 0;
- public datispecie[] Specie = new datispecie[MAXNATIVESPECIES + 1];
+ public List<datispecie> Specie = new List<datispecie>();
  public int FieldSize = 0;
  public int FieldWidth = 0;
  public int FieldHeight = 0;
@@ -223,7 +223,7 @@ public class SimOptions {
  public int UserSeedNumber = 0;
  public int MaxEnergy = 0;
  public bool ZeroMomentum = false;
- public decimal CostExecCond = 0;
+ public double CostExecCond = 0;
  public double[] Costs = new decimal[70];
  public bool Pondmode = false;
  public int LightIntensity = 0;
