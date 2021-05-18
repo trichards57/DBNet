@@ -105,89 +105,104 @@ using static DBNet.Forms.frmEYE;
 using static DBNet.Forms.frmFirstTimeInfo;
 
 
-static class stuffcolors {
-public class R_G_B {
- public int r = 0;
- public int g = 0;
- public int b = 0;
-}
-public class H_S_L {
- public float h = 0;
- public float s = 0;
- public float l = 0;
-}
-public static int chartcolor = 0;
-public static int backgcolor = 0;
+static class stuffcolors
+{
+    public class R_G_B
+    {
+        public int r = 0;
+        public int g = 0;
+        public int b = 0;
+    }
+    public class H_S_L
+    {
+        public float h = 0;
+        public float s = 0;
+        public float l = 0;
+    }
+    public static int chartcolor = 0;
+    public static int backgcolor = 0;
 
 
-public static R_G_B hsltorgb(ref H_S_L hslin) {
-  R_G_B hsltorgb = null;
-  hsltorgb = huetorgb(ref hslin.h);
-  R_G_B c = null;
+    public static R_G_B hsltorgb(H_S_L hslin)
+    {
+        R_G_B hsltorgb = null;
+        hsltorgb = huetorgb(hslin.h);
+        R_G_B c = null;
 
-  c.r = 127.5m;
-  c.g = 127.5m;
-  c.b = 127.5m;
-  hsltorgb = mixrgb(ref hsltorgb, ref c, ref 1 - (hslin.s / 240));
-  if (hslin.l < 120) {
-    c.r = 0;
-    c.g = 0;
-    c.b = 0;
-    hsltorgb = mixrgb(ref c, ref hsltorgb, ref hslin.l / 120);
-  } else {
-    c.r = 255;
-    c.g = 255;
-    c.b = 255;
-    hsltorgb = mixrgb(ref hsltorgb, ref c, ref (hslin.l - 120) / 120);
-  }
-  return hsltorgb;
-}
+        c.r = 127.5m;
+        c.g = 127.5m;
+        c.b = 127.5m;
+        hsltorgb = mixrgb(hsltorgb, c, 1 - (hslin.s / 240));
+        if (hslin.l < 120)
+        {
+            c.r = 0;
+            c.g = 0;
+            c.b = 0;
+            hsltorgb = mixrgb(c, hsltorgb, hslin.l / 120);
+        }
+        else
+        {
+            c.r = 255;
+            c.g = 255;
+            c.b = 255;
+            hsltorgb = mixrgb(hsltorgb, c, (hslin.l - 120) / 120);
+        }
+        return hsltorgb;
+    }
 
-public static R_G_B huetorgb(ref dynamic h) {
-  R_G_B huetorgb = null;
-  decimal Delta = 0;
+    public static R_G_B huetorgb(dynamic h)
+    {
+        R_G_B huetorgb = null;
+        decimal Delta = 0;
 
-  Delta = Int(h) % 40;
-  h = h - Delta;
-  Delta = 255 / 40 * Delta;
-  if (h < 240) {
-    huetorgb.r = 255;
-    huetorgb.g = 0;
-    huetorgb.b = 255 - Delta;
-  }
-  if (h < 200) {
-    huetorgb.r = Delta;
-    huetorgb.g = 0;
-    huetorgb.b = 255;
-  }
-  if (h < 160) {
-    huetorgb.r = 0;
-    huetorgb.g = 255 - Delta;
-    huetorgb.b = 255;
-  }
-  if (h < 120) {
-    huetorgb.r = 0;
-    huetorgb.g = 255;
-    huetorgb.b = Delta;
-  }
-  if (h < 80) {
-    huetorgb.r = 255 - Delta;
-    huetorgb.g = 255;
-    huetorgb.b = 0;
-  }
-  if (h < 40) {
-    huetorgb.r = 255;
-    huetorgb.g = Delta;
-    huetorgb.b = 0;
-  }
-  return huetorgb;
-}
+        Delta = Int(h) % 40;
+        h = h - Delta;
+        Delta = 255 / 40 * Delta;
+        if (h < 240)
+        {
+            huetorgb.r = 255;
+            huetorgb.g = 0;
+            huetorgb.b = 255 - Delta;
+        }
+        if (h < 200)
+        {
+            huetorgb.r = Delta;
+            huetorgb.g = 0;
+            huetorgb.b = 255;
+        }
+        if (h < 160)
+        {
+            huetorgb.r = 0;
+            huetorgb.g = 255 - Delta;
+            huetorgb.b = 255;
+        }
+        if (h < 120)
+        {
+            huetorgb.r = 0;
+            huetorgb.g = 255;
+            huetorgb.b = Delta;
+        }
+        if (h < 80)
+        {
+            huetorgb.r = 255 - Delta;
+            huetorgb.g = 255;
+            huetorgb.b = 0;
+        }
+        if (h < 40)
+        {
+            huetorgb.r = 255;
+            huetorgb.g = Delta;
+            huetorgb.b = 0;
+        }
+        return huetorgb;
+    }
 
-public static R_G_B mixrgb(ref R_G_B c1, ref R_G_B c2, ref dynamic factor) {
-  R_G_B mixrgb = null;
-  mixrgb.r = c1.r * (1 - factor) + c2.r * factor;
-  mixrgb.g = c1.g * (1 - factor) + c2.g * factor;
-  mixrgb.b = c1.b * (1 - factor) + c2.b * factor;
-  return mixrgb;
-}
+    public static R_G_B mixrgb(R_G_B c1, R_G_B c2, dynamic factor)
+    {
+        R_G_B mixrgb = null;
+        mixrgb.r = c1.r * (1 - factor) + c2.r * factor;
+        mixrgb.g = c1.g * (1 - factor) + c2.g * factor;
+        mixrgb.b = c1.b * (1 - factor) + c2.b * factor;
+        return mixrgb;
+    }
 }

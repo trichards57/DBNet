@@ -49,7 +49,7 @@ namespace Iersera.DataModel
         public bool FixedBotRadii { get; internal set; }
         public int FluidSolidCustom { get; internal set; }
         public double Gradient { get; internal set; }
-        public IEnumerable<SavedShot> Graphs { get; internal set; }
+        public IEnumerable<SavedGraph> Graphs { get; internal set; }
         public bool HidePred { get; internal set; }
         public int HidePredOffset { get; internal set; }
         public bool KillDistVegs { get; internal set; }
@@ -81,7 +81,7 @@ namespace Iersera.DataModel
         public int RepopAmount { get; internal set; }
         public int RepopCooldown { get; internal set; }
         public bool Restart { get; internal set; }
-        public IEnumerable<SavedShot> Robots { get; internal set; }
+        public IEnumerable<SavedRobot> Robots { get; internal set; }
         public int ShapeDriftRate { get; internal set; }
         public bool ShapesAbsorbShots { get; internal set; }
         public bool ShapesAreSeeThrough { get; internal set; }

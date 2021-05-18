@@ -217,7 +217,7 @@ static class Shots_Module
     ' creates a shot shooted by robot n, with couple location/value
     ' returns the shot num of the shot
     */
-    public static int newshot(ref int n, int shottype, decimal val, ref decimal rngmultiplier, ref bool offset)
+    public static int newshot(int n, int shottype, decimal val, decimal rngmultiplier, bool offset)
     {
         int newshot = 0;
         int a = 0;
@@ -278,8 +278,8 @@ static class Shots_Module
                                            //If Shots(a).memloc > 1000 Then Shots(a).memloc = ((Shots(a).memloc - 1) Mod 1000) + 1
         Shots(a).Memval = rob[n].mem(836); //value to insert into venom target location
 
-        //If val > 32000 Then val = 32000 'EricL March 16, 2006 This line commented out since moved to above
-        ran = Random(ref -2, ref 2) / 20;
+        //If val > 32000 Then val = 32000 'EricL March 16, 2006 This line commented since moved to above
+        ran = Random(-2, 2) / 20;
 
         if (rob[n].mem(backshot) == 0)
         {
@@ -299,22 +299,22 @@ static class Shots_Module
             rob[n].mem(aimshoot) = 0;
         }
 
-        ShAngle = ShAngle + Random(ref -20, ref 20) / 200;
+        ShAngle = ShAngle + Random(-20, 20) / 200;
 
         angle() = VectorSet(Cos(ShAngle), -Sin(ShAngle));
-        Shots(a).pos = VectorAdd(ref rob[n].pos, ref VectorScalar(ref angle(), ref rob[n].radius));
+        Shots(a).pos = VectorAdd(rob[n].pos, VectorScalar(angle(), rob[n].radius));
 
         //Botsareus 6/23/2016 Takes care of shot position bug - so it matches the painted robot position
         if (offset)
         {
-            Shots(a).pos = VectorSub(ref Shots(a).pos, ref rob[n].vel);
-            Shots(a).pos = VectorAdd(ref Shots(a).pos, ref rob[n].actvel);
+            Shots(a).pos = VectorSub(Shots(a).pos, rob[n].vel);
+            Shots(a).pos = VectorAdd(Shots(a).pos, rob[n].actvel);
         }
 
 
-        Shots(a).velocity = VectorAdd(ref rob[n].actvel, ref VectorScalar(ref angle(), ref 40));
+        Shots(a).velocity = VectorAdd(rob[n].actvel, VectorScalar(angle(), 40));
 
-        Shots(a).opos = VectorSub(ref Shots(a).pos, ref Shots(a).velocity);
+        Shots(a).opos = VectorSub(Shots(a).pos, Shots(a).velocity);
 
         if (rob[n].vbody > 10)
         {
@@ -339,7 +339,7 @@ static class Shots_Module
             Shots(a).color = vbCyan;
             Shots(a).genenum = val;
             Shots(a).stored = true;
-            if (!copygene(ref a, Shots(a).genenum))
+            if (!copygene(a, Shots(a).genenum))
             {
                 Shots(a).exist = false;
                 Shots(a).stored = false;
@@ -406,7 +406,7 @@ static class Shots_Module
         Shots(a).pos.Y = Y; //+ vy
         Shots(a).velocity.X = vx;
         Shots(a).velocity.Y = vy;
-        Shots(a).opos = VectorSub(ref Shots(a).pos, ref Shots(a).velocity);
+        Shots(a).opos = VectorSub(Shots(a).pos, Shots(a).velocity);
 
         Shots(a).age = 0;
         Shots(a).color = col;
@@ -659,7 +659,7 @@ static class Shots_Module
                         DoShotObstacleCollisions(t);
                     }
                     Shots(t).opos = Shots(t).pos;
-                    Shots(t).pos = VectorAdd(ref Shots(t).pos, ref Shots(t).velocity); //Euler integration
+                    Shots(t).pos = VectorAdd(Shots(t).pos, Shots(t).velocity); //Euler integration
 
                     //Age shots unless we are not decaying them.  At some point, we may want to see how old shots are, so
                     //this may need to be changed at some point but for now, it lets shots never die by never growing old.
@@ -687,1204 +687,1204 @@ static class Shots_Module
                 }
 
             }
-            Next(t);
-
-            // Here we test for sparsity of the shots array.  If the number of shots is less than 70% of the array size, then we
-            // compact the array and reset maxshotarray
-            if ((numshots < (maxshotarray * 0.7m)) && (maxshotarray > 100))
-            {
-                CompactShots();
-                if (numshots < 90)
-                {
-                    maxshotarray = CLng(100);
-                }
-                else
-                {
-                    maxshotarray = CLng(numshots * 1.2m);
-                }
-                shotpointer = numshots; // set the shot pointer at the beginning of the free space in the newly shrunk array
-                List<> Shots_1619_tmp = new List<>();
-                for (int redim_iter_9590 = 0; i < 0; redim_iter_9590++) { Shots.Add(redim_iter_9590 < Shots.Count ? Shots(redim_iter_9590) : null); }
-            }
-            ShotsThisCycle = numshots;
         }
 
-        public static void CompactShots()
+        // Here we test for sparsity of the shots array.  If the number of shots is less than 70% of the array size, then we
+        // compact the array and reset maxshotarray
+        if ((numshots < (maxshotarray * 0.7m)) && (maxshotarray > 100))
         {
-            int i = 0;
-
-            int j = 0;
-
-            int X = 0;
-
-
-            j = 1;
-            for (i = 1; i < maxshotarray; i++)
+            CompactShots();
+            if (numshots < 90)
             {
-                if (Shots(i).exist)
+                maxshotarray = CLng(100);
+            }
+            else
+            {
+                maxshotarray = CLng(numshots * 1.2m);
+            }
+            shotpointer = numshots; // set the shot pointer at the beginning of the free space in the newly shrunk array
+            List<> Shots_1619_tmp = new List<>();
+            for (int redim_iter_9590 = 0; i < 0; redim_iter_9590++) { Shots.Add(redim_iter_9590 < Shots.Count ? Shots(redim_iter_9590) : null); }
+        }
+        ShotsThisCycle = numshots;
+    }
+
+    public static void CompactShots()
+    {
+        int i = 0;
+
+        int j = 0;
+
+        int X = 0;
+
+
+        j = 1;
+        for (i = 1; i < maxshotarray; i++)
+        {
+            if (Shots(i).exist)
+            {
+                if (Shots(i).stored)
                 {
-                    if (Shots(i).stored)
+                    if (rob(Shots(i).parent).exist && !(rob(Shots(i).parent).FName == "Base.txt" && hidepred))
                     {
-                        if (rob(Shots(i).parent).exist && !(rob(Shots(i).parent).FName == "Base.txt" && hidepred))
-                        {
-                            rob(Shots(i).parent).virusshot = j;
-                        }
-                        else
-                        {
-                            Shots(i).exist = false;
-                            Shots(i).stored = false;
-                            Shots(i).DnaLen = 0;
-                        }
+                        rob(Shots(i).parent).virusshot = j;
                     }
-                    if (i != j)
+                    else
                     {
-                        if ((Shots(j).shottype == -8 || Shots(j).shottype == -7) && Shots(i).DnaLen > 0)
-                        {
-                            List<> Shots_6408_tmp = new List<>();
-                            for (int redim_iter_6087 = 0; i < 0; redim_iter_6087++) { Shots.Add(null); }
-                        }
-                        Shots(j) = Shots(i);
                         Shots(i).exist = false;
                         Shots(i).stored = false;
                         Shots(i).DnaLen = 0;
-                        //ReDim Shots(i).DNA(1) ' 1 so as to not hit the bounded routine exception everytime
                     }
-                    j = j + 1;
                 }
-                Next(i);
-            }
-
-            public static void Decay(ref int n)
-            { //corpse decaying as waste shot, energy shot or no shot
-                int SH = 0;
-
-                decimal va = 0;
-
-                rob[n].DecayTimer = rob[n].DecayTimer + 1;
-                if (rob[n].DecayTimer >= SimOpts.Decaydelay)
+                if (i != j)
                 {
-                    rob[n].DecayTimer = 0;
-
-                    rob[n].aim = rndy() * 2 * PI;
-                    rob[n].aimvector = VectorSet(Cos(rob[n].aim), Sin(rob[n].aim));
-
-                    if (rob[n].body > SimOpts.Decay / 10)
+                    if ((Shots(j).shottype == -8 || Shots(j).shottype == -7) && Shots(i).DnaLen > 0)
                     {
-                        va = SimOpts.Decay;
+                        List<> Shots_6408_tmp = new List<>();
+                        for (int redim_iter_6087 = 0; i < 0; redim_iter_6087++) { Shots.Add(null); }
                     }
-                    else if (rob[n].body > 0)
-                    {
-                        va = rob[n].body;
-                    }
-                    else
-                    {
-                        va = 0;
-                    }
-
-                    if (SimOpts.DecayType == 2 && va != 0)
-                    {
-                        SH = -4;
-                        newshot(n, SH, va, 1);
-                    }
-
-                    if (SimOpts.DecayType == 3 && va != 0)
-                    {
-                        SH = -2;
-                        newshot(n, SH, va, 1);
-                    }
-
-
-                    rob[n].body = rob[n].body - SimOpts.Decay / 10;
-                    rob[n].radius = FindRadius(n);
+                    Shots(j) = Shots(i);
+                    Shots(i).exist = false;
+                    Shots(i).stored = false;
+                    Shots(i).DnaLen = 0;
+                    //ReDim Shots(i).DNA(1) ' 1 so as to not hit the bounded routine exception everytime
                 }
+                j = j + 1;
+            }
+        }
+    }
+
+    public static void Decay(int n)
+    { //corpse decaying as waste shot, energy shot or no shot
+        int SH = 0;
+
+        decimal va = 0;
+
+        rob[n].DecayTimer = rob[n].DecayTimer + 1;
+        if (rob[n].DecayTimer >= SimOpts.Decaydelay)
+        {
+            rob[n].DecayTimer = 0;
+
+            rob[n].aim = rndy() * 2 * PI;
+            rob[n].aimvector = VectorSet(Cos(rob[n].aim), Sin(rob[n].aim));
+
+            if (rob[n].body > SimOpts.Decay / 10)
+            {
+                va = SimOpts.Decay;
+            }
+            else if (rob[n].body > 0)
+            {
+                va = rob[n].body;
+            }
+            else
+            {
+                va = 0;
             }
 
-            public static void defacate(ref int n)
-            { //only used to get rid of massive amounts of waste
-                int SH = 0;
-
-                decimal va = 0;
-
+            if (SimOpts.DecayType == 2 && va != 0)
+            {
                 SH = -4;
-                va = 200;
-
-                if (va > rob[n].Waste)
-                {
-                    va = rob[n].Waste;
-                }
-                if (rob[n].Waste > 32000)
-                {
-                    rob[n].Waste = 31500;
-                    va = 500;
-                }
-
-                rob[n].Waste = rob[n].Waste - va;
-                rob[n].nrg = rob[n].nrg - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)) / (IIf(rob[n].numties < 0, 0, rob[n].numties) + 1);
-                newshot(n, SH, va, 1, true);
-                rob[n].Pwaste = rob[n].Pwaste + va / 1000;
+                newshot(n, SH, va, 1);
             }
 
-            /*
-            ' robot n, hit by shot t, releases energy
-            */
-            public static void releasenrg(int n, int t)
+            if (SimOpts.DecayType == 3 && va != 0)
             {
-                //n=robot number
-                //t=shot number
-                vector vel = null;
+                SH = -2;
+                newshot(n, SH, va, 1);
+            }
 
 
-                int vs = 0;
+            rob[n].body = rob[n].body - SimOpts.Decay / 10;
+            rob[n].radius = FindRadius(n);
+        }
+    }
 
-                decimal vr = 0;
+    public static void defacate(int n)
+    { //only used to get rid of massive amounts of waste
+        int SH = 0;
 
-                decimal power = 0;
+        decimal va = 0;
 
-                decimal Range = 0;
+        SH = -4;
+        va = 200;
 
-                decimal scalingfactor = 0;
+        if (va > rob[n].Waste)
+        {
+            va = rob[n].Waste;
+        }
+        if (rob[n].Waste > 32000)
+        {
+            rob[n].Waste = 31500;
+            va = 500;
+        }
 
-                decimal Newangle = 0;
+        rob[n].Waste = rob[n].Waste - va;
+        rob[n].nrg = rob[n].nrg - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER)) / (IIf(rob[n].numties < 0, 0, rob[n].numties) + 1);
+        newshot(n, SH, va, 1, true);
+        rob[n].Pwaste = rob[n].Pwaste + va / 1000;
+    }
 
-                vector startingPos = null;
-
-                vector incoming = null;
-
-                decimal offcenter = 0;
-
-                vector shotNow = null;
-
-                decimal X = 0;
-
-                decimal Y = 0;
-
-                decimal angle = 0;
-
-                vector relVel = null;
-
-                decimal EnergyLost = 0;
-
-                int a = 0;
+    /*
+    ' robot n, hit by shot t, releases energy
+    */
+    public static void releasenrg(int n, int t)
+    {
+        //n=robot number
+        //t=shot number
+        vector vel = null;
 
 
-                a = FirstSlot;
+        int vs = 0;
 
-                if (rob[n].nrg <= 0.5m)
-                {
-                    // rob[n].Dead = True ' Don't kill them here so they can be corpses.  Still might have body.
-                    goto ;
-                }
+        decimal vr = 0;
 
-                vel = VectorSub(ref rob[n].actvel, ref Shots(t).velocity); //negative relative velocity of shot hitting bot 'Botsareus 6/22/2016 Now based on robots actual velocity
-                                                                           //the shot to the hit bot
-                vel = VectorAdd(ref vel, ref VectorScalar(ref rob[n].actvel, ref 0.5m)); //then add in half the velocity of hit robot
+        decimal power = 0;
 
-                if (SimOpts.EnergyExType)
-                {
-                    if (Shots(t).Range == 0)
-                    { // Divide by zero protection
-                        power = 0;
-                    }
-                    else
-                    {
-                        power = CSng(Shots(t).value) * Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * SimOpts.EnergyProp;
-                    }
-                    if (Shots(t).nrg < 0)
-                    {
-                        goto getout;
-                    }
-                }
-                else
-                {
-                    power = SimOpts.EnergyFix;
-                }
+        decimal Range = 0;
 
-                //If power > rob[n].nrg + rob[n].poison And rob[n].nrg > 0 Then
-                //  power = rob[n].nrg + rob[n].poison
-                //End If
+        decimal scalingfactor = 0;
 
-                if (rob[n].Corpse)
-                {
-                    power = power * 0.5m; //half power against corpses.  Most of your shot is wasted 'The only way I can see this happening is if something tie injected energy into corpse
-                }
+        decimal Newangle = 0;
 
-                Range = Shots(t).Range * 2; //returned energy shots have twice the range as the shot that it came from (but half the velocity)
+        vector startingPos = null;
 
-                if (rob[n].poison > power)
-                { //create poison shot
-                    createshot(Shots(t).pos.X, Shots(t).pos.Y, vel.X, vel.Y, -5, n, power, Range * (RobSize / 3), vbYellow);
-                    //  rob[n].Waste = rob[n].Waste + (power * 0.1)
-                    rob[n].poison = rob[n].poison - (power * 0.9m);
-                    if (rob[n].poison < 0)
-                    {
-                        rob[n].poison = 0;
-                    }
-                    rob[n].mem(poison) = rob[n].poison;
-                }
-                else
-                { // create energy shot
+        vector incoming = null;
 
-                    EnergyLost = power * 0.9m;
-                    if (EnergyLost > rob[n].nrg)
-                    {
-                        //   EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
-                        power = rob[n].nrg;
-                        rob[n].nrg = 0;
-                    }
-                    else
-                    {
-                        rob[n].nrg = rob[n].nrg - EnergyLost; //some of shot comes from nrg
-                                                              //  EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost
-                    }
+        decimal offcenter = 0;
 
-                    EnergyLost = power * 0.01m;
-                    if (EnergyLost > rob[n].body)
-                    {
-                        //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
-                        rob[n].body = 0;
-                    }
-                    else
-                    {
-                        rob[n].body = rob[n].body - EnergyLost; //some of shot comes from body
-                                                                // EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost * 10
-                    }
+        vector shotNow = null;
 
-                    // pass local vars to createshot so that no Shots array elements are on the stack in case the Shots array gets redimmed
-                    X = Shots(t).pos.X;
-                    Y = Shots(t).pos.Y;
+        decimal X = 0;
 
-                    createshot(X, Y, vel.X, vel.Y, -2, n, power, Range * (RobSize / 3), vbWhite);
-                    rob[n].radius = FindRadius(n);
-                }
+        decimal Y = 0;
 
-                if (rob[n].body <= 0.5m || rob[n].nrg <= 0.5m)
-                {
-                    rob[n].Dead = true;
-                    rob(Shots(t).parent).Kills = rob(Shots(t).parent).Kills + 1;
-                    rob(Shots(t).parent).mem(220) = rob(Shots(t).parent).Kills;
-                }
-            getout:
+        decimal angle = 0;
+
+        vector relVel = null;
+
+        decimal EnergyLost = 0;
+
+        int a = 0;
+
+
+        a = FirstSlot;
+
+        if (rob[n].nrg <= 0.5m)
+        {
+            // rob[n].Dead = True ' Don't kill them here so they can be corpses.  Still might have body.
+            goto ;
+        }
+
+        vel = VectorSub(rob[n].actvel, Shots(t).velocity); //negative relative velocity of shot hitting bot 'Botsareus 6/22/2016 Now based on robots actual velocity
+                                                                   //the shot to the hit bot
+        vel = VectorAdd(vel, VectorScalar(rob[n].actvel, 0.5m)); //then add in half the velocity of hit robot
+
+        if (SimOpts.EnergyExType)
+        {
+            if (Shots(t).Range == 0)
+            { // Divide by zero protection
+                power = 0;
+            }
+            else
+            {
+                power = CSng(Shots(t).value) * Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * SimOpts.EnergyProp;
+            }
+            if (Shots(t).nrg < 0)
+            {
+                goto getout;
+            }
+        }
+        else
+        {
+            power = SimOpts.EnergyFix;
+        }
+
+        //If power > rob[n].nrg + rob[n].poison And rob[n].nrg > 0 Then
+        //  power = rob[n].nrg + rob[n].poison
+        //End If
+
+        if (rob[n].Corpse)
+        {
+            power = power * 0.5m; //half power against corpses.  Most of your shot is wasted 'The only way I can see this happening is if something tie injected energy into corpse
+        }
+
+        Range = Shots(t).Range * 2; //returned energy shots have twice the range as the shot that it came from (but half the velocity)
+
+        if (rob[n].poison > power)
+        { //create poison shot
+            createshot(Shots(t).pos.X, Shots(t).pos.Y, vel.X, vel.Y, -5, n, power, Range * (RobSize / 3), vbYellow);
+            //  rob[n].Waste = rob[n].Waste + (power * 0.1)
+            rob[n].poison = rob[n].poison - (power * 0.9m);
+            if (rob[n].poison < 0)
+            {
+                rob[n].poison = 0;
+            }
+            rob[n].mem(poison) = rob[n].poison;
+        }
+        else
+        { // create energy shot
+
+            EnergyLost = power * 0.9m;
+            if (EnergyLost > rob[n].nrg)
+            {
+                //   EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
+                power = rob[n].nrg;
+                rob[n].nrg = 0;
+            }
+            else
+            {
+                rob[n].nrg = rob[n].nrg - EnergyLost; //some of shot comes from nrg
+                                                      //  EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost
+            }
+
+            EnergyLost = power * 0.01m;
+            if (EnergyLost > rob[n].body)
+            {
+                //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
+                rob[n].body = 0;
+            }
+            else
+            {
+                rob[n].body = rob[n].body - EnergyLost; //some of shot comes from body
+                                                        // EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost * 10
+            }
+
+            // pass local vars to createshot so that no Shots array elements are on the stack in case the Shots array gets redimmed
+            X = Shots(t).pos.X;
+            Y = Shots(t).pos.Y;
+
+            createshot(X, Y, vel.X, vel.Y, -2, n, power, Range * (RobSize / 3), vbWhite);
+            rob[n].radius = FindRadius(n);
+        }
+
+        if (rob[n].body <= 0.5m || rob[n].nrg <= 0.5m)
+        {
+            rob[n].Dead = true;
+            rob(Shots(t).parent).Kills = rob(Shots(t).parent).Kills + 1;
+            rob(Shots(t).parent).mem(220) = rob(Shots(t).parent).Kills;
+        }
+    getout:
 }
 
-            private static void releasebod(int n, int t)
-            { //a robot is shot by a -6 shot and releases energy directly from body points
-              //much more effective against a corpse
-                vector vel = null;
+    private static void releasebod(int n, int t)
+    { //a robot is shot by a -6 shot and releases energy directly from body points
+      //much more effective against a corpse
+        vector vel = null;
 
-                decimal Range = 0;
+        decimal Range = 0;
 
-                decimal power = 0;
+        decimal power = 0;
 
-                decimal shell = 0;
+        decimal shell = 0;
 
-                decimal EnergyLost = 0;
+        decimal EnergyLost = 0;
 
 
-                //If rob[n].body <= 0 Or rob[n].wall Then goto getout
-                if (rob[n].body <= 0)
+        //If rob[n].body <= 0 Or rob[n].wall Then goto getout
+        if (rob[n].body <= 0)
+        {
+            goto getout;
+        }
+
+
+        vel = VectorSub(rob[n].actvel, Shots(t).velocity); //negative relative velocity of shot hitting bot 'Botsareus 6/22/2016 Now based on robots actual velocity
+                                                                   //the shot to the hit bot
+        vel = VectorAdd(vel, VectorScalar(rob[n].actvel, 0.5m)); //then add in half the velocity of hit robot
+                                                                                 // vel = VectorScalar(VectorSub(rob[n].vel, Shots(t).velocity), 0.5) 'half the relative velocity of
+                                                                                 //the shot to the hit bot
+                                                                                 //vel = VectorAdd(vel, rob[n].vel) 'then add in the velocity of hit robot
+
+        if (SimOpts.EnergyExType)
+        {
+            if (Shots(t).Range == 0)
+            { // Divide by zero protection
+                power = 0;
+            }
+            else
+            {
+                power = CSng(Shots(t).value) * Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * SimOpts.EnergyProp;
+            }
+        }
+        else
+        {
+            power = SimOpts.EnergyFix;
+        }
+
+        if (power > 32000)
+        {
+            power = 32000;
+        }
+
+        shell = rob[n].shell * CSng(ShellEffectiveness);
+
+        if (power > ((rob[n].body * 10) / 0.8m + shell))
+        {
+            power = (rob[n].body * 10) / 0.8m + shell;
+        }
+
+        if (power < shell)
+        {
+            rob[n].shell = rob[n].shell - power / ShellEffectiveness;
+            if (rob[n].shell < 0)
+            {
+                rob[n].shell = 0;
+            }
+            rob[n].mem(823) = rob[n].shell;
+            goto ;
+        }
+        else
+        {
+            rob[n].shell = rob[n].shell - power / ShellEffectiveness;
+            if (rob[n].shell < 0)
+            {
+                rob[n].shell = 0;
+            }
+            rob[n].mem(823) = rob[n].shell;
+            power = power - shell;
+        }
+
+        if (power <= 0)
+        {
+            goto getout;
+        }
+
+        Range = Shots(t).Range * 2; //new range formula based on range of incoming shot
+
+        // create energy shot
+        if (rob[n].Corpse == true)
+        {
+            power = power * 4; //So effective against corpses it makes me siiiiiinnnnnggg
+            if (power > rob[n].body * 10)
+            {
+                power = rob[n].body * 10;
+            }
+            rob[n].body = rob[n].body - power / 10; //all energy comes from body
+                                                    //  EnergyLostPerCycle = EnergyLostPerCycle - power
+            rob[n].radius = FindRadius(n);
+        }
+        else
+        {
+            decimal leftover = 0;
+
+
+            leftover = 0;
+            EnergyLost = power * 0.2m;
+            if (EnergyLost > rob[n].nrg)
+            {
+                //   EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
+                leftover = EnergyLost - rob[n].nrg;
+                rob[n].nrg = 0;
+            }
+            else
+            {
+                rob[n].nrg = rob[n].nrg - EnergyLost; //some of shot comes from nrg
+                                                      //   EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost
+            }
+
+            EnergyLost = power * 0.08m;
+            if (EnergyLost > rob[n].body)
+            {
+                //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
+                leftover = leftover + EnergyLost - rob[n].body * 10;
+                rob[n].body = 0;
+            }
+            else
+            {
+                rob[n].body = rob[n].body - EnergyLost; //some of shot comes from body
+                                                        //   EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost * 10
+            }
+
+            dynamic _WithVar_4298;
+            _WithVar_4298 = rob[n];
+            if (leftover > 0)
+            {
+                if (_WithVar_4298.nrg > 0 & _WithVar_4298.nrg > leftover)
                 {
-                    goto getout;
-                }
-
-
-                vel = VectorSub(ref rob[n].actvel, ref Shots(t).velocity); //negative relative velocity of shot hitting bot 'Botsareus 6/22/2016 Now based on robots actual velocity
-                                                                           //the shot to the hit bot
-                vel = VectorAdd(ref vel, ref VectorScalar(ref rob[n].actvel, ref 0.5m)); //then add in half the velocity of hit robot
-                                                                                         // vel = VectorScalar(VectorSub(rob[n].vel, Shots(t).velocity), 0.5) 'half the relative velocity of
-                                                                                         //the shot to the hit bot
-                                                                                         //vel = VectorAdd(vel, rob[n].vel) 'then add in the velocity of hit robot
-
-                if (SimOpts.EnergyExType)
-                {
-                    if (Shots(t).Range == 0)
-                    { // Divide by zero protection
-                        power = 0;
-                    }
-                    else
-                    {
-                        power = CSng(Shots(t).value) * Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * SimOpts.EnergyProp;
-                    }
-                }
-                else
-                {
-                    power = SimOpts.EnergyFix;
-                }
-
-                if (power > 32000)
-                {
-                    power = 32000;
-                }
-
-                shell = rob[n].shell * CSng(ShellEffectiveness);
-
-                if (power > ((rob[n].body * 10) / 0.8m + shell))
-                {
-                    power = (rob[n].body * 10) / 0.8m + shell;
-                }
-
-                if (power < shell)
-                {
-                    rob[n].shell = rob[n].shell - power / ShellEffectiveness;
-                    if (rob[n].shell < 0)
-                    {
-                        rob[n].shell = 0;
-                    }
-                    rob[n].mem(823) = rob[n].shell;
-                    goto ;
-                }
-                else
-                {
-                    rob[n].shell = rob[n].shell - power / ShellEffectiveness;
-                    if (rob[n].shell < 0)
-                    {
-                        rob[n].shell = 0;
-                    }
-                    rob[n].mem(823) = rob[n].shell;
-                    power = power - shell;
-                }
-
-                if (power <= 0)
-                {
-                    goto getout;
-                }
-
-                Range = Shots(t).Range * 2; //new range formula based on range of incoming shot
-
-                // create energy shot
-                if (rob[n].Corpse == true)
-                {
-                    power = power * 4; //So effective against corpses it makes me siiiiiinnnnnggg
-                    if (power > rob[n].body * 10)
-                    {
-                        power = rob[n].body * 10;
-                    }
-                    rob[n].body = rob[n].body - power / 10; //all energy comes from body
-                                                            //  EnergyLostPerCycle = EnergyLostPerCycle - power
-                    rob[n].radius = FindRadius(n);
-                }
-                else
-                {
-                    decimal leftover = 0;
-
-
+                    _WithVar_4298.nrg = _WithVar_4298.nrg - leftover;
+                    //  EnergyLostPerCycle = EnergyLostPerCycle - leftover
                     leftover = 0;
-                    EnergyLost = power * 0.2m;
-                    if (EnergyLost > rob[n].nrg)
-                    {
-                        //   EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
-                        leftover = EnergyLost - rob[n].nrg;
-                        rob[n].nrg = 0;
-                    }
-                    else
-                    {
-                        rob[n].nrg = rob[n].nrg - EnergyLost; //some of shot comes from nrg
-                                                              //   EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost
-                    }
-
-                    EnergyLost = power * 0.08m;
-                    if (EnergyLost > rob[n].body)
-                    {
-                        //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
-                        leftover = leftover + EnergyLost - rob[n].body * 10;
-                        rob[n].body = 0;
-                    }
-                    else
-                    {
-                        rob[n].body = rob[n].body - EnergyLost; //some of shot comes from body
-                                                                //   EnergyLostPerCycle = EnergyLostPerCycle - EnergyLost * 10
-                    }
-
-                    dynamic _WithVar_4298;
-                    _WithVar_4298 = rob[n];
-                    if (leftover > 0)
-                    {
-                        if (_WithVar_4298.nrg > 0 & _WithVar_4298.nrg > leftover)
-                        {
-                            _WithVar_4298.nrg = _WithVar_4298.nrg - leftover;
-                            //  EnergyLostPerCycle = EnergyLostPerCycle - leftover
-                            leftover = 0;
-                        }
-                        else if (_WithVar_4298.nrg > 0 & _WithVar_4298.nrg < leftover)
-                        {
-                            leftover = leftover - _WithVar_4298.nrg;
-                            //  EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
-                            _WithVar_4298.nrg = 0;
-                        }
-
-                        if (_WithVar_4298.body > 0 & _WithVar_4298.body * 10 > leftover)
-                        {
-                            _WithVar_4298.body = _WithVar_4298.body - leftover * 0.1m;
-                            //   EnergyLostPerCycle = EnergyLostPerCycle - leftover
-                            leftover = 0;
-                        }
-                        else if (rob[n].body > 0 & rob[n].body * 10 < leftover)
-                        {
-                            //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
-                            _WithVar_4298.body = 0;
-                        }
-                    }
-                    rob[n].radius = FindRadius(n);
                 }
-
-                if (rob[n].body <= 0.5m || rob[n].nrg <= 0.5m)
+                else if (_WithVar_4298.nrg > 0 & _WithVar_4298.nrg < leftover)
                 {
-                    rob[n].Dead = true;
-                    rob(Shots(t).parent).Kills = rob(Shots(t).parent).Kills + 1;
-                    rob(Shots(t).parent).mem(220) = rob(Shots(t).parent).Kills;
+                    leftover = leftover - _WithVar_4298.nrg;
+                    //  EnergyLostPerCycle = EnergyLostPerCycle - rob[n].nrg
+                    _WithVar_4298.nrg = 0;
                 }
 
-                createshot(Shots(t).pos.X, Shots(t).pos.Y, vel.X, vel.Y, -2, n, power, Range * (RobSize / 3), vbWhite);
-            getout:
+                if (_WithVar_4298.body > 0 & _WithVar_4298.body * 10 > leftover)
+                {
+                    _WithVar_4298.body = _WithVar_4298.body - leftover * 0.1m;
+                    //   EnergyLostPerCycle = EnergyLostPerCycle - leftover
+                    leftover = 0;
+                }
+                else if (rob[n].body > 0 & rob[n].body * 10 < leftover)
+                {
+                    //   EnergyLostPerCycle = EnergyLostPerCycle - (rob[n].body * 10)
+                    _WithVar_4298.body = 0;
+                }
+            }
+            rob[n].radius = FindRadius(n);
+        }
+
+        if (rob[n].body <= 0.5m || rob[n].nrg <= 0.5m)
+        {
+            rob[n].Dead = true;
+            rob(Shots(t).parent).Kills = rob(Shots(t).parent).Kills + 1;
+            rob(Shots(t).parent).mem(220) = rob(Shots(t).parent).Kills;
+        }
+
+        createshot(Shots(t).pos.X, Shots(t).pos.Y, vel.X, vel.Y, -2, n, power, Range * (RobSize / 3), vbWhite);
+    getout:
 }
 
-            /*
-            ' robot n takes the energy carried by shot t
-            */
-            private static void takenrg(int n, int t)
+    /*
+    ' robot n takes the energy carried by shot t
+    */
+    private static void takenrg(int n, int t)
+    {
+        decimal partial = 0;
+
+        decimal overflow = 0;
+
+
+        //If rob[n].Corpse Or rob[n].wall Then goto getout
+        if (rob[n].Corpse)
+        {
+            goto getout;
+        }
+
+        if (Shots(t).Range < 0.00001m)
+        {
+            partial = 0;
+        }
+        else
+        {
+            // If SimOpts.NoShotDecay Then
+            partial = Shots(t).nrg;
+            // Else
+            //   partial = CSng(Shots(t).nrg / CSng(Shots(t).Range * (RobSize / 3)) * Shots(t).value)
+            // End If
+        }
+
+        if ((rob[n].nrg + partial * 0.95m) > 32000)
+        {
+            overflow = rob[n].nrg + (partial * 0.95m) - 32000;
+            rob[n].nrg = 32000;
+        }
+        else
+        {
+            rob[n].nrg = rob[n].nrg + partial * 0.95m; //95% of energy goes to nrg
+        }
+
+        if ((rob[n].body + partial * 0.004m) + (overflow * 0.1m) > 32000)
+        {
+            rob[n].body = 32000;
+        }
+        else
+        {
+            rob[n].body = rob[n].body + (partial * 0.004m) + (overflow * 0.1m); //4% goes to body
+        }
+
+        rob[n].Waste = rob[n].Waste + partial * 0.01m; //1% goes to waste
+
+        //Shots(t).Exist = False
+        rob[n].radius = FindRadius(n);
+    getout:
+}
+
+    /*
+    '  robot takes a venomous shot and becomes seriously messed up
+    */
+    private static void takeven(int n, int t)
+    {
+        decimal power = 0;
+
+        decimal temp = 0;
+
+
+        //If rob[n].Corpse Or rob[n].wall Then goto getout
+        if (rob[n].Corpse)
+        {
+            goto getout;
+        }
+
+        power = CSng(Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * Shots(t).value);
+
+        if (power < 1)
+        {
+            goto getout;
+        }
+
+        if (Shots(t).FromSpecie == rob[n].FName)
+        { //Robot is immune to venom from his own species
+            rob[n].venom = rob[n].venom + power; //Robot absorbs venom fired by conspec
+
+            //EricL 4/10/2006 This line prevents an overflow when power is too large
+            if (((rob[n].venom) > 32000))
             {
-                decimal partial = 0;
+                rob[n].venom = 32000;
+            }
 
-                decimal overflow = 0;
-
-
-                //If rob[n].Corpse Or rob[n].wall Then goto getout
-                if (rob[n].Corpse)
-                {
-                    goto getout;
-                }
-
-                if (Shots(t).Range < 0.00001m)
-                {
-                    partial = 0;
-                }
-                else
-                {
-                    // If SimOpts.NoShotDecay Then
-                    partial = Shots(t).nrg;
-                    // Else
-                    //   partial = CSng(Shots(t).nrg / CSng(Shots(t).Range * (RobSize / 3)) * Shots(t).value)
-                    // End If
-                }
-
-                if ((rob[n].nrg + partial * 0.95m) > 32000)
-                {
-                    overflow = rob[n].nrg + (partial * 0.95m) - 32000;
-                    rob[n].nrg = 32000;
-                }
-                else
-                {
-                    rob[n].nrg = rob[n].nrg + partial * 0.95m; //95% of energy goes to nrg
-                }
-
-                if ((rob[n].body + partial * 0.004m) + (overflow * 0.1m) > 32000)
-                {
-                    rob[n].body = 32000;
-                }
-                else
-                {
-                    rob[n].body = rob[n].body + (partial * 0.004m) + (overflow * 0.1m); //4% goes to body
-                }
-
-                rob[n].Waste = rob[n].Waste + partial * 0.01m; //1% goes to waste
-
-                //Shots(t).Exist = False
-                rob[n].radius = FindRadius(n);
-            getout:
-}
-
-            /*
-            '  robot takes a venomous shot and becomes seriously messed up
-            */
-            private static void takeven(int n, int t)
+            rob[n].mem(825) = rob[n].venom;
+        }
+        else
+        {
+            power = power * VenumEffectivenessVSShell; //Botsareus 3/6/2013 max power for venum is capped at 100 so I multiply to get an average
+            if (power < rob[n].shell * ShellEffectiveness)
             {
-                decimal power = 0;
-
-                decimal temp = 0;
-
-
-                //If rob[n].Corpse Or rob[n].wall Then goto getout
-                if (rob[n].Corpse)
+                rob[n].shell = rob[n].shell - power / ShellEffectiveness;
+                rob[n].mem(823) = rob[n].shell;
+                goto ; //Botsareus 3/6/2013 Exit sub if enough shell
+            }
+            else
+            {
+                temp = power;
+                power = power - rob[n].shell * ShellEffectiveness;
+                rob[n].shell = rob[n].shell - temp / ShellEffectiveness;
+                if (rob[n].shell < 0)
                 {
-                    goto getout;
+                    rob[n].shell = 0;
+                }
+                rob[n].mem(823) = rob[n].shell;
+            }
+            power = power / VenumEffectivenessVSShell; //Botsareus 3/6/2013 after shell conversion devide
+
+            if (power < 1)
+            {
+                goto getout;
+            }
+
+            rob[n].Paralyzed = true;
+
+            //EricL - Following lines added March 15, 2006 to avoid Paracount being overflowed.
+            if (((rob[n].Paracount + power) > 32000))
+            {
+                rob[n].Paracount = 32000;
+            }
+            else
+            {
+                rob[n].Paracount = rob[n].Paracount + power;
+            }
+
+            if (Shots(t).memloc > 0)
+            { //Botsareus 10/6/2015 Minor bug fixing
+                rob[n].Vloc = (Shots(t).memloc - 1) % 1000 + 1;
+                if (rob[n].Vloc == 340)
+                {
+                    rob[n].Vloc = 0; //protection from delgene attacks Botsareus 10/7/2015 Moved here after mod
+                }
+            }
+            else
+            {
+                do
+                {
+                    rob[n].Vloc = Random(1, 1000);
+                } while (!(rob[n].Vloc != 340);
+            }
+
+            rob[n].Vval = Shots(t).Memval;
+        }
+    //Shots(t).Exist = False
+    getout:
+}
+
+    /*
+    '  Robot n takes shot t and adds its value to his waste reservoir
+    */
+    private static void takewaste(int n, int t)
+    {
+        decimal power = 0;
+
+
+        //  If rob[n].wall Then goto getout
+
+        power = Shots(t).nrg / (Shots(t).Range * (RobSize / 3)) * Shots(t).value;
+        if (power < 0)
+        {
+            goto getout;
+        }
+        rob[n].Waste = rob[n].Waste + power;
+    // Shots(t).Exist = False
+    getout:
+}
+
+    /*
+    ' Robot receives poison shot and becomes disorientated
+    */
+    private static void takepoison(int n, int t)
+    {
+        decimal power = 0;
+
+
+        //If rob[n].Corpse Or rob[n].wall Then goto getout
+        if (rob[n].Corpse)
+        {
+            goto getout;
+        }
+
+        power = CSng(Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * Shots(t).value);
+
+        if (power < 1)
+        {
+            goto getout;
+        }
+
+        if (Shots(t).FromSpecie == rob[n].FName)
+        { //Robot is immune to poison from his own species
+            rob[n].poison = rob[n].poison + power; //Robot absorbs poison fired by conspecs
+            if (rob[n].poison > 32000)
+            {
+                rob[n].poison = 32000;
+            }
+            rob[n].mem(827) = rob[n].poison;
+        }
+        else
+        {
+            rob[n].Poisoned = true;
+            rob[n].Poisoncount = rob[n].Poisoncount + power / 1.5m; //Botsareus 6/24/3016 Div by 1.5 to make poison shots more proportenal to venom shots
+            if (rob[n].Poisoncount > 32000)
+            {
+                rob[n].Poisoncount = 32000;
+            }
+            if (Shots(t).memloc > 0)
+            { //Botsareus 10/6/2015 Minor bug fixing
+                rob[n].Ploc = (Shots(t).memloc - 1) % 1000 + 1;
+                if (rob[n].Ploc == 340)
+                {
+                    rob[n].Ploc = 0; //protection from delgene attacks Botsareus 10/7/2015 Moved here after mod
+                }
+            }
+            else
+            {
+                do
+                {
+                    rob[n].Ploc = Random(1, 1000);
+                } while (!(rob[n].Ploc != 340);
+            }
+            rob[n].Pval = Shots(t).Memval;
+        }
+    //  Shots(t).Exist = False
+    getout:
+}
+
+    /*
+    'Robot is hit by sperm shot and becomes fertilized for potential sexual reproduction
+    */
+    private static void takesperm(int n, int t)
+    {
+        if (rob[n].fertilized < -10)
+        {
+            return;//block sex repro when necessary
+
+        }
+
+        int X = 0;
+
+
+        if (Shots(t).DnaLen == 0)
+        {
+            goto getout;
+        }
+        rob[n].fertilized = 10; // bots stay fertilized for 10 cycles currently
+        rob[n].mem(SYSFERTILIZED) = 10;
+        List<> rob_349_tmp = new List<>();// copy the male's DNA to the female's bot structure
+        for (int redim_iter_5502 = 0; i < 0; redim_iter_5502++) { rob.Add(null); }
+        rob[n].spermDNA = Shots(t).dna;
+        rob[n].spermDNAlen = Shots(t).DnaLen;
+    getout:
+}
+
+    /*
+    '' checks the collisions between robots and shots
+    'Private Function ShotColl(n As Integer) As Integer
+    ' ' Dim nd As node
+    ''  Dim vel As vector
+
+    ' ' Dim dist As Single
+
+    '  With Shots(n)
+
+    '  If SimOpts.Updnconnected = True Then
+    '    If .pos.y > SimOpts.FieldHeight Then
+    '      .pos.y = .pos.y - SimOpts.FieldHeight
+    '    ElseIf .pos.y < 0 Then
+    '      .pos.y = .pos.y + SimOpts.FieldHeight
+    '    End If
+    '  Else
+    '    If .pos.y > SimOpts.FieldHeight Or .pos.y < 0 Then
+    '      .velocity.y = -.velocity.y
+    '    End If
+    '  End If
+
+    '  If SimOpts.Dxsxconnected = True Then
+    '    If .pos.x > SimOpts.FieldWidth Then
+    '      .pos.x = .pos.x - SimOpts.FieldWidth
+    '    ElseIf .pos.x < 0 Then
+    '      .pos.x = .pos.x + SimOpts.FieldWidth
+    '    End If
+    '  Else
+    '    If .pos.x > SimOpts.FieldWidth Or .pos.x < 0 Then
+    '      .velocity.x = -.velocity.x
+    '    End If
+    '  End If
+
+
+    '  'ShotColl = OldShotColl(n)
+    '  ShotColl = NewShotCollision(n)
+
+    '  End With
+    'End Function
+
+    'EricL 5/16/2006 Checks for collisions between shots and bots.  Takes into consideration
+    'motion of target bot as well as shots which potentially pass through the target bot during the cycle
+    'Argument: The shot number to check
+    'Returns: bot number of the hit bot if a collison occurred, 0 otherwise
+    'Side Effect: On a hit, changes the shot position to be the point of impact with the bot
+    */
+    private static int NewShotCollision(int shotnum)
+    {
+        int NewShotCollision = 0;
+        int robnum = 0;
+
+        vector B0 = null;//Position of bot at time 0
+
+        vector b = null;//Position of bot at time 0 < t < 1
+
+        vector S0 = null;//Position of shot at time 0
+
+        vector S1 = null;//Position of shot at time 1
+
+        vector s = null;//Position of shot at time 0 < t < 1
+
+        vector vs = null;//Velocity of the shot
+
+        vector vb = null;//Velocity of the bot
+
+        vector d = null;//Vector from bot center to shot at time 0
+
+        decimal D2 = 0;
+
+        decimal r = 0;//Bot radius
+
+        decimal t = 0;//Loop counter
+
+        decimal hitTime = 0;// time in the cycle when collision occurred.
+
+        decimal earliestCollision = 0;//Used to find which bot was hit earliest in the cycle.
+
+        //The time in the cycle at which the earliest collision with the shot occurred.
+        decimal time0 = 0;
+
+        decimal time1 = 0;
+
+        vector p = null;//Position Vector - Realtive positions of bot and shot over time
+
+        decimal L1 = 0;
+
+        decimal P2 = 0;
+
+        decimal X = 0;
+
+        decimal Y = 0;
+
+        decimal DdotP = 0;
+
+        bool usetime0 = false;
+
+        bool usetime1 = false;
+
+
+        // Check for collisions with the field edges
+        dynamic _WithVar_6918;
+        _WithVar_6918 = Shots(shotnum);
+        if (SimOpts.Updnconnected == true)
+        {
+            if (_WithVar_6918.pos.Y > SimOpts.FieldHeight)
+            {
+                _WithVar_6918.pos.Y = _WithVar_6918.pos.Y - SimOpts.FieldHeight;
+            }
+            else if (_WithVar_6918.pos.Y < 0)
+            {
+                _WithVar_6918.pos.Y = _WithVar_6918.pos.Y + SimOpts.FieldHeight;
+            }
+        }
+        else
+        {
+            if (_WithVar_6918.pos.Y > SimOpts.FieldHeight)
+            {
+                _WithVar_6918.pos.Y = SimOpts.FieldHeight;
+                _WithVar_6918.velocity.Y = -1 * Abs(_WithVar_6918.velocity.Y);
+            }
+            else if (_WithVar_6918.pos.Y < 0)
+            {
+                _WithVar_6918.pos.Y = 0;
+                _WithVar_6918.velocity.Y = Abs(_WithVar_6918.velocity.Y);
+            }
+        }
+
+        if (SimOpts.Dxsxconnected == true)
+        {
+            if (_WithVar_6918.pos.X > SimOpts.FieldWidth)
+            {
+                _WithVar_6918.pos.X = _WithVar_6918.pos.X - SimOpts.FieldWidth;
+            }
+            else if (_WithVar_6918.pos.X < 0)
+            {
+                _WithVar_6918.pos.X = _WithVar_6918.pos.X + SimOpts.FieldWidth;
+            }
+        }
+        else
+        {
+            if (_WithVar_6918.pos.X > SimOpts.FieldWidth)
+            {
+                _WithVar_6918.pos.X = SimOpts.FieldWidth;
+                _WithVar_6918.velocity.X = -1 * Abs(_WithVar_6918.velocity.X);
+            }
+            else if (_WithVar_6918.pos.X < 0)
+            {
+                _WithVar_6918.pos.X = 0;
+                _WithVar_6918.velocity.X = Abs(_WithVar_6918.velocity.X);
+            }
+        }
+
+
+        //Initialize the return value in case no collision is found.
+        NewShotCollision = 0;
+
+        //Initialize that the earliest collision to 100 to indicate no collision has been detected
+        earliestCollision = 100;
+
+        S0 = Shots(shotnum).pos;
+        vs = Shots(shotnum).velocity;
+
+        for (robnum = 1; robnum < MaxRobs; robnum++)
+        { // Walk through all the bots
+
+            //Make sure the bot is eligable to be hit by the shot.  It has to exist, it can't have been the one who
+            //fired the shot, it can't be a wall bot and it has to be close enough that an impact is possible.  Note that for perf reasons we
+            //ignore edge cases here where the field is a torus and a shot wraps around so it's possible to miss collisons in such cases.
+            if (rob(robnum).exist && (Shots(shotnum).parent != robnum) && !(rob(robnum).FName == "Base.txt" && hidepred(And(Abs(Shots(shotnum).opos.X - rob(robnum).pos.X,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -) < MaxBotShotSeperation && Abs(Shots(shotnum).opos.Y - rob(robnum).pos.Y) < MaxBotShotSeperation)) {
+                r = rob(robnum).radius; // + 5 ' Tweak the bot radius up a bit to handle the issue with bots appearing a little larger than then are
+
+
+                //Note that this routine is called before the position for both the bot and the shot is updated this cycle.  This means
+                //we are looking forward in time, from the current positions to where they will be at the end of this cycle.  This is why
+                //we can use .pos and not .opos
+                B0 = rob(robnum).pos;
+
+                //Botsareus 6/22/2016 The robots actual velocity and non collision velocity can be different - correct here
+                B0 = VectorSub(B0, rob(robnum).vel);
+                B0 = VectorAdd(B0, rob(robnum).actvel);
+
+                p = VectorSub(S0, B0);
+
+                if (VectorMagnitude(p) < r)
+                { // shot is inside the target at Time 0.  Did we miss the entry last cycle?  How?
+                    hitTime = 0;
+                    earliestCollision = 0;
+                    NewShotCollision = robnum;
+                    goto ;
                 }
 
-                power = CSng(Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * Shots(t).value);
+                vb = rob(robnum).actvel;
+                d = VectorSub(vs, vb); // Vector of velocity change from both bot and shot over time t
+                P2 = VectorMagnitudeSquare(p); // |P|^2
 
-                if (power < 1)
+                D2 = VectorMagnitudeSquare(d); // |D|^2
+                if (D2 == 0)
                 {
-                    goto getout;
+                    goto CheckRestOfBots;
+                }
+                DdotP = Dot(d, p);
+                X = -DdotP;
+                Y = DdotP ^ 2 - D2 * (P2 - r ^ 2);
+
+                if (Y < 0)
+                {
+                    goto CheckRestOfBots; // No collision
                 }
 
-                if (Shots(t).FromSpecie == rob[n].FName)
-                { //Robot is immune to venom from his own species
-                    rob[n].venom = rob[n].venom + power; //Robot absorbs venom fired by conspec
+                Y = Sqr(Y);
 
-                    //EricL 4/10/2006 This line prevents an overflow when power is too large
-                    if (((rob[n].venom) > 32000))
-                    {
-                        rob[n].venom = 32000;
-                    }
+                time0 = (X - Y) / D2;
+                time1 = (X + Y) / D2;
 
-                    rob[n].mem(825) = rob[n].venom;
+                usetime0 = false;
+                usetime1 = false;
+
+                if (!(time0 <= 0 || time0 >= 1))
+                {
+                    usetime0 = true;
+                }
+                if (!(time1 <= 0 || time1 >= 1))
+                {
+                    usetime1 = true;
+                }
+                if ((!usetime0) && (!usetime1))
+                {
+                    goto ;
+                }
+                else if (usetime0 & usetime1)
+                {
+                    hitTime = Min(time0, time1);
+                    NewShotCollision = robnum;
+                }
+                else if (usetime0)
+                {
+                    hitTime = time0;
+                    NewShotCollision = robnum;
                 }
                 else
                 {
-                    power = power * VenumEffectivenessVSShell; //Botsareus 3/6/2013 max power for venum is capped at 100 so I multiply to get an average
-                    if (power < rob[n].shell * ShellEffectiveness)
-                    {
-                        rob[n].shell = rob[n].shell - power / ShellEffectiveness;
-                        rob[n].mem(823) = rob[n].shell;
-                        goto ; //Botsareus 3/6/2013 Exit sub if enough shell
-                    }
-                    else
-                    {
-                        temp = power;
-                        power = power - rob[n].shell * ShellEffectiveness;
-                        rob[n].shell = rob[n].shell - temp / ShellEffectiveness;
-                        if (rob[n].shell < 0)
-                        {
-                            rob[n].shell = 0;
-                        }
-                        rob[n].mem(823) = rob[n].shell;
-                    }
-                    power = power / VenumEffectivenessVSShell; //Botsareus 3/6/2013 after shell conversion devide
-
-                    if (power < 1)
-                    {
-                        goto getout;
-                    }
-
-                    rob[n].Paralyzed = true;
-
-                    //EricL - Following lines added March 15, 2006 to avoid Paracount being overflowed.
-                    if (((rob[n].Paracount + power) > 32000))
-                    {
-                        rob[n].Paracount = 32000;
-                    }
-                    else
-                    {
-                        rob[n].Paracount = rob[n].Paracount + power;
-                    }
-
-                    if (Shots(t).memloc > 0)
-                    { //Botsareus 10/6/2015 Minor bug fixing
-                        rob[n].Vloc = (Shots(t).memloc - 1) % 1000 + 1;
-                        if (rob[n].Vloc == 340)
-                        {
-                            rob[n].Vloc = 0; //protection from delgene attacks Botsareus 10/7/2015 Moved here after mod
-                        }
-                    }
-                    else
-                    {
-                        do
-                        {
-                            rob[n].Vloc = Random(ref 1, ref 1000);
-                        } while (!(rob[n].Vloc != 340);
-                    }
-
-                    rob[n].Vval = Shots(t).Memval;
+                    hitTime = time1;
+                    NewShotCollision = robnum;
                 }
-            //Shots(t).Exist = False
-            getout:
-}
 
-            /*
-            '  Robot n takes shot t and adds its value to his waste reservoir
-            */
-            private static void takewaste(int n, int t)
-            {
-                decimal power = 0;
-
-
-                //  If rob[n].wall Then goto getout
-
-                power = Shots(t).nrg / (Shots(t).Range * (RobSize / 3)) * Shots(t).value;
-                if (power < 0)
+                if (hitTime < earliestCollision)
                 {
-                    goto getout;
+                    earliestCollision = hitTime;
                 }
-                rob[n].Waste = rob[n].Waste + power;
-            // Shots(t).Exist = False
-            getout:
-}
 
-            /*
-            ' Robot receives poison shot and becomes disorientated
-            */
-            private static void takepoison(int n, int t)
-            {
-                decimal power = 0;
-
-
-                //If rob[n].Corpse Or rob[n].wall Then goto getout
-                if (rob[n].Corpse)
+                //If the collision occurred early enough in the cycle, we can assume no other bot could have been hit ealier and we can
+                //skip checking the rest of the bots.  This is all about perf.
+                if (earliestCollision <= MinBotRadius)
                 {
-                    goto getout;
-                }
-
-                power = CSng(Shots(t).nrg / CSng((Shots(t).Range * (RobSize / 3))) * Shots(t).value);
-
-                if (power < 1)
-                {
-                    goto getout;
-                }
-
-                if (Shots(t).FromSpecie == rob[n].FName)
-                { //Robot is immune to poison from his own species
-                    rob[n].poison = rob[n].poison + power; //Robot absorbs poison fired by conspecs
-                    if (rob[n].poison > 32000)
-                    {
-                        rob[n].poison = 32000;
-                    }
-                    rob[n].mem(827) = rob[n].poison;
+                    goto ;
                 }
                 else
                 {
-                    rob[n].Poisoned = true;
-                    rob[n].Poisoncount = rob[n].Poisoncount + power / 1.5m; //Botsareus 6/24/3016 Div by 1.5 to make poison shots more proportenal to venom shots
-                    if (rob[n].Poisoncount > 32000)
-                    {
-                        rob[n].Poisoncount = 32000;
-                    }
-                    if (Shots(t).memloc > 0)
-                    { //Botsareus 10/6/2015 Minor bug fixing
-                        rob[n].Ploc = (Shots(t).memloc - 1) % 1000 + 1;
-                        if (rob[n].Ploc == 340)
-                        {
-                            rob[n].Ploc = 0; //protection from delgene attacks Botsareus 10/7/2015 Moved here after mod
-                        }
-                    }
-                    else
-                    {
-                        do
-                        {
-                            rob[n].Ploc = Random(ref 1, ref 1000);
-                        } while (!(rob[n].Ploc != 340);
-                    }
-                    rob[n].Pval = Shots(t).Memval;
+                    goto ;
                 }
-            //  Shots(t).Exist = False
-            getout:
+            }
+        //We jump here if we found a collision with the current bot, but it was late enough in the cycle that another
+        //bot could have been hit earlier in the cycle, so we keep checking the rest of the bots
+        //Or if we have ruled a possibile collision between this shot and the current bot.
+        CheckRestOfBots:
+                    }
+    //We jump here if we are confident that the collision occurred early enough in the cycle that no other bot could have been
+    //hit before this one.  Note that this is sensitive to shot speed and minumum bot radius
+    FinialCollisionDetected:
+        if (earliestCollision <= 1)
+        {
+            //This is a total hack, but if we found a collision, any collision, then we set the position of the shot to be the point of the earliest
+            //collision so that in the case where a return shot is generated, that return shot starts from the point of impact and not
+            //from wherever the shot would have ended up at the end of the cycle had it not collided (which it did!)
+            Shots(shotnum).pos = VectorAdd(VectorScalar(vs, earliestCollision), S0);
+        }
+        return NewShotCollision;
+    }
+
+    /*
+    'Botsareus 10/5/2015 Bug fix for negative values in virus
+    */
+    public static void Vshoot(int n, int thisshot)
+    {
+        //here we shoot a virus
+
+        decimal tempa = 0;
+
+        decimal ShAngle = 0;
+
+
+        if (!Shots(thisshot).exist)
+        {
+            goto getout;
+        }
+        if (!Shots(thisshot).stored)
+        {
+            goto getout;
+        }
+
+        if (rob[n].mem(VshootSys) < 0)
+        {
+            rob[n].mem(VshootSys) = 1;
+        }
+
+        tempa = CSng(rob[n].mem(VshootSys)) * 20; //.vshoot * 20
+        if (tempa > 32000)
+        {
+            tempa = 32000;
+        }
+        if (tempa < 0)
+        {
+            tempa = 0;
+        }
+
+        Shots(thisshot).nrg = tempa;
+        rob[n].nrg = rob[n].nrg - (tempa / 20) - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER));
+
+        Shots(thisshot).Range = 11 + CInt((rob[n].mem(VshootSys)) / 2);
+        rob[n].nrg = rob[n].nrg - CSng(rob[n].mem(VshootSys)) - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER));
+
+        dynamic _WithVar_8912;
+        _WithVar_8912 = Shots(thisshot);
+        ShAngle = Random(1, 1256) / 200;
+        _WithVar_8912.stored = false;
+        _WithVar_8912.pos.X = (rob[n].pos.X + Cos(ShAngle) * rob[n].radius);
+        _WithVar_8912.pos.Y = (rob[n].pos.Y - Sin(ShAngle) * rob[n].radius);
+
+        _WithVar_8912.velocity.X = absx(ShAngle, RobSize / 3, 0, 0, 0); // set shot speed x seems to not work well at high bot speeds
+        _WithVar_8912.velocity.Y = absy(ShAngle, RobSize / 3, 0, 0, 0); // set shot speed y
+
+        _WithVar_8912.velocity.X = _WithVar_8912.velocity.X + rob[n].actvel.X;
+        _WithVar_8912.velocity.Y = _WithVar_8912.velocity.Y + rob[n].actvel.Y;
+
+        _WithVar_8912.opos.X = _WithVar_8912.pos.X - _WithVar_8912.velocity.X;
+        _WithVar_8912.opos.Y = _WithVar_8912.pos.Y - _WithVar_8912.velocity.Y;
+    getout:
 }
 
-            /*
-            'Robot is hit by sperm shot and becomes fertilized for potential sexual reproduction
-            */
-            private static void takesperm(int n, int t)
+    public static bool MakeVirus(int robn, int gene)
+    {
+        bool MakeVirus = false;
+        rob(robn).virusshot = newshot(robn, -7, Int(gene), 1);
+        if (rob(robn).virusshot > 0)
+        {
+            MakeVirus = true;
+        }
+        else
+        {
+            MakeVirus = false;
+        }
+        return MakeVirus;
+    }
+
+    /*
+    ' copy gene number p from robot that fired shot n into shot n dna (virus)
+    */
+    public static bool copygene(int n, int p)
+    {
+        bool copygene = false;
+        int t = 0;
+
+        int parent = 0;
+
+        int genelen = 0;
+
+        int GeneStart = 0;
+
+        int GeneEnding = 0;
+
+
+        parent = Shots(n).parent;
+
+        if ((p > rob(parent).genenum) || p < 1)
+        {
+            // target gene is beyond the DNA bounds
+            copygene = false;
+            goto ;
+        }
+
+        GeneStart = genepos(rob(parent).dna, p);
+        GeneEnding = GeneEnd(rob(parent).dna, GeneStart);
+        genelen = GeneEnding - GeneStart + 1;
+
+        if (genelen < 1)
+        {
+            copygene = false;
+            goto ;
+        }
+
+        List<> Shots_6806_tmp = new List<>();
+        for (int redim_iter_2721 = 0; i < 0; redim_iter_2721++) { Shots.Add(null); }
+
+        // Put an end on it just in case...
+        // Shots(n).DNA(genelen).tipo = 10
+        //Shots(n).DNA(genelen).value = 1
+
+        for (t = 0; t < genelen - 1; t++)
+        {
+            Shots(n).dna(t) = rob(parent).dna(GeneStart + t);
+        }
+
+        Shots(n).DnaLen = genelen;
+
+        copygene = true;
+    getout:
+        return copygene;
+    }
+
+    /*
+    ' adds gene from shot p to robot n dna
+    */
+    public static int addgene(int n, int p)
+    {
+        int addgene = 0;
+        int t = 0;
+
+        int Insert = 0;
+
+        int vlen = 0;//length of the DNA code of the virus
+
+        int Position = 0;//gene position to insert the virus
+
+        decimal power = 0;
+
+
+        //Dead bodies and virus immune bots can't catch a virus
+        if (rob[n].Corpse || (rob[n].VirusImmune))
+        {
+            goto getout;
+        }
+
+        power = Shots(p).nrg / (Shots(p).Range * RobSize / 3) * Shots(p).value;
+
+        if (power < rob[n].Slime * SlimeEffectiveness)
+        {
+            rob[n].Slime = rob[n].Slime - power / SlimeEffectiveness;
+            goto ;
+        }
+        else
+        {
+            rob[n].Slime = rob[n].Slime - power / SlimeEffectiveness;
+            power = power - rob[n].Slime * SlimeEffectiveness;
+            if (rob[n].Slime < 0.5m)
             {
-                if (rob[n].fertilized < -10)
-                {
-                    return;//block sex repro when necessary
+                rob[n].Slime = 0;
+            }
+        }
 
-                }
-
-                int X = 0;
-
-
-                if (Shots(t).DnaLen == 0)
-                {
-                    goto getout;
-                }
-                rob[n].fertilized = 10; // bots stay fertilized for 10 cycles currently
-                rob[n].mem(SYSFERTILIZED) = 10;
-                List<> rob_349_tmp = new List<>();// copy the male's DNA to the female's bot structure
-                for (int redim_iter_5502 = 0; i < 0; redim_iter_5502++) { rob.Add(null); }
-                rob[n].spermDNA = Shots(t).dna;
-                rob[n].spermDNAlen = Shots(t).DnaLen;
-            getout:
-}
-
-            /*
-            '' checks the collisions between robots and shots
-            'Private Function ShotColl(n As Integer) As Integer
-            ' ' Dim nd As node
-            ''  Dim vel As vector
-
-            ' ' Dim dist As Single
-
-            '  With Shots(n)
-
-            '  If SimOpts.Updnconnected = True Then
-            '    If .pos.y > SimOpts.FieldHeight Then
-            '      .pos.y = .pos.y - SimOpts.FieldHeight
-            '    ElseIf .pos.y < 0 Then
-            '      .pos.y = .pos.y + SimOpts.FieldHeight
-            '    End If
-            '  Else
-            '    If .pos.y > SimOpts.FieldHeight Or .pos.y < 0 Then
-            '      .velocity.y = -.velocity.y
-            '    End If
-            '  End If
-
-            '  If SimOpts.Dxsxconnected = True Then
-            '    If .pos.x > SimOpts.FieldWidth Then
-            '      .pos.x = .pos.x - SimOpts.FieldWidth
-            '    ElseIf .pos.x < 0 Then
-            '      .pos.x = .pos.x + SimOpts.FieldWidth
-            '    End If
-            '  Else
-            '    If .pos.x > SimOpts.FieldWidth Or .pos.x < 0 Then
-            '      .velocity.x = -.velocity.x
-            '    End If
-            '  End If
-
-
-            '  'ShotColl = OldShotColl(n)
-            '  ShotColl = NewShotCollision(n)
-
-            '  End With
-            'End Function
-
-            'EricL 5/16/2006 Checks for collisions between shots and bots.  Takes into consideration
-            'motion of target bot as well as shots which potentially pass through the target bot during the cycle
-            'Argument: The shot number to check
-            'Returns: bot number of the hit bot if a collison occurred, 0 otherwise
-            'Side Effect: On a hit, changes the shot position to be the point of impact with the bot
-            */
-            private static int NewShotCollision(ref int shotnum)
+        Position() = Random(0, rob[n].genenum); //randomize the gene number
+        if (Position() == 0)
+        {
+            Insert = 0;
+        }
+        else
+        {
+            Insert = GeneEnd(rob[n].dna, genepos(rob[n].dna, Position()));
+            if (Insert == (rob[n].DnaLen))
             {
-                int NewShotCollision = 0;
-                int robnum = 0;
-
-                vector B0 = null;//Position of bot at time 0
-
-                vector b = null;//Position of bot at time 0 < t < 1
-
-                vector S0 = null;//Position of shot at time 0
-
-                vector S1 = null;//Position of shot at time 1
-
-                vector s = null;//Position of shot at time 0 < t < 1
-
-                vector vs = null;//Velocity of the shot
-
-                vector vb = null;//Velocity of the bot
-
-                vector d = null;//Vector from bot center to shot at time 0
-
-                decimal D2 = 0;
-
-                decimal r = 0;//Bot radius
-
-                decimal t = 0;//Loop counter
-
-                decimal hitTime = 0;// time in the cycle when collision occurred.
-
-                decimal earliestCollision = 0;//Used to find which bot was hit earliest in the cycle.
-
-                //The time in the cycle at which the earliest collision with the shot occurred.
-                decimal time0 = 0;
-
-                decimal time1 = 0;
-
-                vector p = null;//Position Vector - Realtive positions of bot and shot over time
-
-                decimal L1 = 0;
-
-                decimal P2 = 0;
-
-                decimal X = 0;
-
-                decimal Y = 0;
-
-                decimal DdotP = 0;
-
-                bool usetime0 = false;
-
-                bool usetime1 = false;
-
-
-                // Check for collisions with the field edges
-                dynamic _WithVar_6918;
-                _WithVar_6918 = Shots(shotnum);
-                if (SimOpts.Updnconnected == true)
-                {
-                    if (_WithVar_6918.pos.Y > SimOpts.FieldHeight)
-                    {
-                        _WithVar_6918.pos.Y = _WithVar_6918.pos.Y - SimOpts.FieldHeight;
-                    }
-                    else if (_WithVar_6918.pos.Y < 0)
-                    {
-                        _WithVar_6918.pos.Y = _WithVar_6918.pos.Y + SimOpts.FieldHeight;
-                    }
-                }
-                else
-                {
-                    if (_WithVar_6918.pos.Y > SimOpts.FieldHeight)
-                    {
-                        _WithVar_6918.pos.Y = SimOpts.FieldHeight;
-                        _WithVar_6918.velocity.Y = -1 * Abs(_WithVar_6918.velocity.Y);
-                    }
-                    else if (_WithVar_6918.pos.Y < 0)
-                    {
-                        _WithVar_6918.pos.Y = 0;
-                        _WithVar_6918.velocity.Y = Abs(_WithVar_6918.velocity.Y);
-                    }
-                }
-
-                if (SimOpts.Dxsxconnected == true)
-                {
-                    if (_WithVar_6918.pos.X > SimOpts.FieldWidth)
-                    {
-                        _WithVar_6918.pos.X = _WithVar_6918.pos.X - SimOpts.FieldWidth;
-                    }
-                    else if (_WithVar_6918.pos.X < 0)
-                    {
-                        _WithVar_6918.pos.X = _WithVar_6918.pos.X + SimOpts.FieldWidth;
-                    }
-                }
-                else
-                {
-                    if (_WithVar_6918.pos.X > SimOpts.FieldWidth)
-                    {
-                        _WithVar_6918.pos.X = SimOpts.FieldWidth;
-                        _WithVar_6918.velocity.X = -1 * Abs(_WithVar_6918.velocity.X);
-                    }
-                    else if (_WithVar_6918.pos.X < 0)
-                    {
-                        _WithVar_6918.pos.X = 0;
-                        _WithVar_6918.velocity.X = Abs(_WithVar_6918.velocity.X);
-                    }
-                }
-
-
-                //Initialize the return value in case no collision is found.
-                NewShotCollision = 0;
-
-                //Initialize that the earliest collision to 100 to indicate no collision has been detected
-                earliestCollision = 100;
-
-                S0 = Shots(shotnum).pos;
-                vs = Shots(shotnum).velocity;
-
-                for (robnum = 1; robnum < MaxRobs; robnum++)
-                { // Walk through all the bots
-
-                    //Make sure the bot is eligable to be hit by the shot.  It has to exist, it can't have been the one who
-                    //fired the shot, it can't be a wall bot and it has to be close enough that an impact is possible.  Note that for perf reasons we
-                    //ignore edge cases here where the field is a torus and a shot wraps around so it's possible to miss collisons in such cases.
-                    if (rob(robnum).exist && (Shots(shotnum).parent != robnum) && !(rob(robnum).FName == "Base.txt" && hidepred(And(Abs(Shots(shotnum).opos.X - rob(robnum).pos.X,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,, - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -) < MaxBotShotSeperation && Abs(Shots(shotnum).opos.Y - rob(robnum).pos.Y) < MaxBotShotSeperation)) {
-                        r = rob(robnum).radius; // + 5 ' Tweak the bot radius up a bit to handle the issue with bots appearing a little larger than then are
-
-
-                        //Note that this routine is called before the position for both the bot and the shot is updated this cycle.  This means
-                        //we are looking forward in time, from the current positions to where they will be at the end of this cycle.  This is why
-                        //we can use .pos and not .opos
-                        B0 = rob(robnum).pos;
-
-                        //Botsareus 6/22/2016 The robots actual velocity and non collision velocity can be different - correct here
-                        B0 = VectorSub(ref B0, ref rob(robnum).vel);
-                        B0 = VectorAdd(ref B0, ref rob(robnum).actvel);
-
-                        p = VectorSub(ref S0, ref B0);
-
-                        if (VectorMagnitude(ref p) < r)
-                        { // shot is inside the target at Time 0.  Did we miss the entry last cycle?  How?
-                            hitTime = 0;
-                            earliestCollision = 0;
-                            NewShotCollision = robnum;
-                            goto ;
-                        }
-
-                        vb = rob(robnum).actvel;
-                        d = VectorSub(ref vs, ref vb); // Vector of velocity change from both bot and shot over time t
-                        P2 = VectorMagnitudeSquare(ref p); // |P|^2
-
-                        D2 = VectorMagnitudeSquare(ref d); // |D|^2
-                        if (D2 == 0)
-                        {
-                            goto CheckRestOfBots;
-                        }
-                        DdotP = Dot(ref d, ref p);
-                        X = -DdotP;
-                        Y = DdotP ^ 2 - D2 * (P2 - r ^ 2);
-
-                        if (Y < 0)
-                        {
-                            goto CheckRestOfBots; // No collision
-                        }
-
-                        Y = Sqr(Y);
-
-                        time0 = (X - Y) / D2;
-                        time1 = (X + Y) / D2;
-
-                        usetime0 = false;
-                        usetime1 = false;
-
-                        if (!(time0 <= 0 || time0 >= 1))
-                        {
-                            usetime0 = true;
-                        }
-                        if (!(time1 <= 0 || time1 >= 1))
-                        {
-                            usetime1 = true;
-                        }
-                        if ((!usetime0) && (!usetime1))
-                        {
-                            goto ;
-                        }
-                        else if (usetime0 & usetime1)
-                        {
-                            hitTime = Min(time0, time1);
-                            NewShotCollision = robnum;
-                        }
-                        else if (usetime0)
-                        {
-                            hitTime = time0;
-                            NewShotCollision = robnum;
-                        }
-                        else
-                        {
-                            hitTime = time1;
-                            NewShotCollision = robnum;
-                        }
-
-                        if (hitTime < earliestCollision)
-                        {
-                            earliestCollision = hitTime;
-                        }
-
-                        //If the collision occurred early enough in the cycle, we can assume no other bot could have been hit ealier and we can
-                        //skip checking the rest of the bots.  This is all about perf.
-                        if (earliestCollision <= MinBotRadius)
-                        {
-                            goto ;
-                        }
-                        else
-                        {
-                            goto ;
-                        }
-                    }
-                //We jump here if we found a collision with the current bot, but it was late enough in the cycle that another
-                //bot could have been hit earlier in the cycle, so we keep checking the rest of the bots
-                //Or if we have ruled out a possibile collision between this shot and the current bot.
-                CheckRestOfBots:
-                    Next(robnum);
-                //We jump here if we are confident that the collision occurred early enough in the cycle that no other bot could have been
-                //hit before this one.  Note that this is sensitive to shot speed and minumum bot radius
-                FinialCollisionDetected:
-                    if (earliestCollision <= 1)
-                    {
-                        //This is a total hack, but if we found a collision, any collision, then we set the position of the shot to be the point of the earliest
-                        //collision so that in the case where a return shot is generated, that return shot starts from the point of impact and not
-                        //from wherever the shot would have ended up at the end of the cycle had it not collided (which it did!)
-                        Shots(shotnum).pos = VectorAdd(ref VectorScalar(ref vs, ref earliestCollision), ref S0);
-                    }
-                    return NewShotCollision;
-                }
-
-                /*
-                'Botsareus 10/5/2015 Bug fix for negative values in virus
-                */
-                public static void Vshoot(ref int n, ref int thisshot)
-                {
-                    //here we shoot a virus
-
-                    decimal tempa = 0;
-
-                    decimal ShAngle = 0;
-
-
-                    if (!Shots(thisshot).exist)
-                    {
-                        goto getout;
-                    }
-                    if (!Shots(thisshot).stored)
-                    {
-                        goto getout;
-                    }
-
-                    if (rob[n].mem(VshootSys) < 0)
-                    {
-                        rob[n].mem(VshootSys) = 1;
-                    }
-
-                    tempa = CSng(rob[n].mem(VshootSys)) * 20; //.vshoot * 20
-                    if (tempa > 32000)
-                    {
-                        tempa = 32000;
-                    }
-                    if (tempa < 0)
-                    {
-                        tempa = 0;
-                    }
-
-                    Shots(thisshot).nrg = tempa;
-                    rob[n].nrg = rob[n].nrg - (tempa / 20) - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER));
-
-                    Shots(thisshot).Range = 11 + CInt((rob[n].mem(VshootSys)) / 2);
-                    rob[n].nrg = rob[n].nrg - CSng(rob[n].mem(VshootSys)) - (SimOpts.Costs(SHOTCOST) * SimOpts.Costs(COSTMULTIPLIER));
-
-                    dynamic _WithVar_8912;
-                    _WithVar_8912 = Shots(thisshot);
-                    ShAngle = Random(ref 1, ref 1256) / 200;
-                    _WithVar_8912.stored = false;
-                    _WithVar_8912.pos.X = (rob[n].pos.X + Cos(ShAngle) * rob[n].radius);
-                    _WithVar_8912.pos.Y = (rob[n].pos.Y - Sin(ShAngle) * rob[n].radius);
-
-                    _WithVar_8912.velocity.X = absx(ref ShAngle, RobSize / 3, 0, 0, 0); // set shot speed x seems to not work well at high bot speeds
-                    _WithVar_8912.velocity.Y = absy(ref ShAngle, RobSize / 3, 0, 0, 0); // set shot speed y
-
-                    _WithVar_8912.velocity.X = _WithVar_8912.velocity.X + rob[n].actvel.X;
-                    _WithVar_8912.velocity.Y = _WithVar_8912.velocity.Y + rob[n].actvel.Y;
-
-                    _WithVar_8912.opos.X = _WithVar_8912.pos.X - _WithVar_8912.velocity.X;
-                    _WithVar_8912.opos.Y = _WithVar_8912.pos.Y - _WithVar_8912.velocity.Y;
-                getout:
-}
-
-                public static bool MakeVirus(ref int robn, int gene)
-                {
-                    bool MakeVirus = false;
-                    rob(robn).virusshot = newshot(ref robn, -7, Int(gene), ref 1);
-                    if (rob(robn).virusshot > 0)
-                    {
-                        MakeVirus = true;
-                    }
-                    else
-                    {
-                        MakeVirus = false;
-                    }
-                    return MakeVirus;
-                }
-
-                /*
-                ' copy gene number p from robot that fired shot n into shot n dna (virus)
-                */
-                public static bool copygene(ref int n, int p)
-                {
-                    bool copygene = false;
-                    int t = 0;
-
-                    int parent = 0;
-
-                    int genelen = 0;
-
-                    int GeneStart = 0;
-
-                    int GeneEnding = 0;
-
-
-                    parent = Shots(n).parent;
-
-                    if ((p > rob(parent).genenum) || p < 1)
-                    {
-                        // target gene is beyond the DNA bounds
-                        copygene = false;
-                        goto ;
-                    }
-
-                    GeneStart = genepos(ref rob(parent).dna, p);
-                    GeneEnding = GeneEnd(ref rob(parent).dna, GeneStart);
-                    genelen = GeneEnding - GeneStart + 1;
-
-                    if (genelen < 1)
-                    {
-                        copygene = false;
-                        goto ;
-                    }
-
-                    List<> Shots_6806_tmp = new List<>();
-                    for (int redim_iter_2721 = 0; i < 0; redim_iter_2721++) { Shots.Add(null); }
-
-                    // Put an end on it just in case...
-                    // Shots(n).DNA(genelen).tipo = 10
-                    //Shots(n).DNA(genelen).value = 1
-
-                    for (t = 0; t < genelen - 1; t++)
-                    {
-                        Shots(n).dna(t) = rob(parent).dna(GeneStart + t);
-                        Next(t);
-
-                        Shots(n).DnaLen = genelen;
-
-                        copygene = true;
-                    getout:
-                        return copygene;
-                    }
-
-                    /*
-                    ' adds gene from shot p to robot n dna
-                    */
-                    public static int addgene(int n, int p)
-                    {
-                        int addgene = 0;
-                        int t = 0;
-
-                        int Insert = 0;
-
-                        int vlen = 0;//length of the DNA code of the virus
-
-                        int Position = 0;//gene position to insert the virus
-
-                        decimal power = 0;
-
-
-                        //Dead bodies and virus immune bots can't catch a virus
-                        if (rob[n].Corpse || (rob[n].VirusImmune))
-                        {
-                            goto getout;
-                        }
-
-                        power = Shots(p).nrg / (Shots(p).Range * RobSize / 3) * Shots(p).value;
-
-                        if (power < rob[n].Slime * SlimeEffectiveness)
-                        {
-                            rob[n].Slime = rob[n].Slime - power / SlimeEffectiveness;
-                            goto ;
-                        }
-                        else
-                        {
-                            rob[n].Slime = rob[n].Slime - power / SlimeEffectiveness;
-                            power = power - rob[n].Slime * SlimeEffectiveness;
-                            if (rob[n].Slime < 0.5m)
-                            {
-                                rob[n].Slime = 0;
-                            }
-                        }
-
-                        Position() = Random(ref 0, ref rob[n].genenum); //randomize the gene number
-                        if (Position() == 0)
-                        {
-                            Insert = 0;
-                        }
-                        else
-                        {
-                            Insert = GeneEnd(ref rob[n].dna, genepos(ref rob[n].dna, Position()));
-                            if (Insert == (rob[n].DnaLen))
-                            {
-                                Insert = rob[n].DnaLen;
-                            }
-                        }
-
-                        //  vlen = DnaLen(Shots(P).DNA())
-                        vlen = Shots(p).DnaLen;
-
-                        if (MakeSpace(ref rob[n].dna, Insert, vlen))
-                        { //Moves genes back to make space
-                            for (t = Insert; t < Insert + vlen - 1; t++)
-                            {
-                                rob[n].dna(t + 1) == Shots(p).dna(t - Insert);
-                                Next(t);
-                            }
-
-                            makeoccurrlist(n);
-                            rob[n].DnaLen = DnaLen(ref rob[n].dna());
-                            rob[n].genenum = CountGenes(ref rob[n].dna);
-                            rob[n].mem(DnaLenSys) = rob[n].DnaLen;
-                            rob[n].mem(GenesSys) = rob[n].genenum;
-
-                            rob[n].SubSpecies = NewSubSpecies(ref n); // Infection with a virus counts as a new subspecies
-                            logmutation(n, "Infected with virus of length " + Str(vlen) + " during cycle " + Str(SimOpts.TotRunCycle) + " at pos " + Str(Insert));
-                            rob[n].Mutations = rob[n].Mutations + 1;
-                            rob[n].LastMut = rob[n].LastMut + 1;
-                        getout:
-                            return addgene;
-                        }
-
-private static shot) As Boolean IsArrayBounded(ref dynamic ArrayIn(_UNUSED) {
-        shot) As Boolean IsArrayBounded = null;
+                Insert = rob[n].DnaLen;
+            }
+        }
+
+        //  vlen = DnaLen(Shots(P).DNA())
+        vlen = Shots(p).DnaLen;
+
+        if (MakeSpace(rob[n].dna, Insert, vlen))
+        { //Moves genes back to make space
+            for (t = Insert; t < Insert + vlen - 1; t++)
+            {
+                rob[n].dna(t + 1) == Shots(p).dna(t - Insert);
+            }
+        }
+
+        makeoccurrlist(n);
+        rob[n].DnaLen = DnaLen(rob[n].dna());
+        rob[n].genenum = CountGenes(rob[n].dna);
+        rob[n].mem(DnaLenSys) = rob[n].DnaLen;
+        rob[n].mem(GenesSys) = rob[n].genenum;
+
+        rob[n].SubSpecies = NewSubSpecies(n); // Infection with a virus counts as a new subspecies
+        logmutation(n, "Infected with virus of length " + Str(vlen) + " during cycle " + Str(SimOpts.TotRunCycle) + " at pos " + Str(Insert));
+        rob[n].Mutations = rob[n].Mutations + 1;
+        rob[n].LastMut = rob[n].LastMut + 1;
+    getout:
+        return addgene;
+    }
+
+    private static bool IsArrayBounded(dynamic ArrayIn)
+    {
         // TODO (not supported): On Error GoTo getout
 
         IsArrayBounded = (UBound(ArrayIn) >= LBound(ArrayIn));

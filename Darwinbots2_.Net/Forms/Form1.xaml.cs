@@ -122,7 +122,7 @@ namespace DBNet.Forms
             if (_instance != null) instance.Close(); _instance = null;
         }
 
-        public void CloseGraph(ref int n)
+        public void CloseGraph(int n)
         {
             if (!(Charts[n].graf == null))
             {
@@ -254,13 +254,13 @@ namespace DBNet.Forms
             //      if (rob[robfocus].mem(EyeStart + a + 1) > 0) {
             //        DrawMode = vbNotMergePen;
 
-            //        length = (1 / Sqr(rob[robfocus].mem(EyeStart + a + 1))) * (EyeSightDistance(ref AbsoluteEyeWidth(ref rob[robfocus].mem(EYE1WIDTH + a)), ref robfocus) + rob[robfocus].radius) + rob[robfocus].radius;
+            //        length = (1 / Sqr(rob[robfocus].mem(EyeStart + a + 1))) * (EyeSightDistance(AbsoluteEyeWidth(rob[robfocus].mem(EYE1WIDTH + a)), robfocus) + rob[robfocus].radius) + rob[robfocus].radius;
             //        if (length < 0) {
             //          length = 0;
             //        }
             //      } else {
             //        DrawMode = vbCopyPen;
-            //        length = EyeSightDistance(ref AbsoluteEyeWidth(ref rob[robfocus].mem(EYE1WIDTH + a)), ref robfocus) + rob[robfocus].radius + rob[robfocus].radius;
+            //        length = EyeSightDistance(AbsoluteEyeWidth(rob[robfocus].mem(EYE1WIDTH + a)), robfocus) + rob[robfocus].radius + rob[robfocus].radius;
             //      }
 
             //      Circle((rob[robfocus].pos.x, rob[robfocus].pos.y), length, vbCyan, -low, -hi);
@@ -393,7 +393,7 @@ namespace DBNet.Forms
             //FillColor = BackColor;
         }
 
-        public void FeedGraph(ref int GraphNumber)
+        public void FeedGraph(int GraphNumber)
         {
             string[] nomi = new string[MAXSPECIES + 1];
             float[,] dati = new float[MAXSPECIES + 1, NUMGRAPHS + 1];
@@ -464,7 +464,7 @@ namespace DBNet.Forms
             }
         }
 
-        public void NewGraph( int n,  string YLab)
+        public void NewGraph(int n, string YLab)
         {
             if ((Charts[n].graf == null))
             {
@@ -485,7 +485,7 @@ namespace DBNet.Forms
             }
 
             Charts[n].graf.chk_GDsave.value = IIf(graphsave[n], 1, 0);
-            //Charts[n].graf.SetYLabel YLab ' EricL 4/7/2006 Commented out - just no longer need to call SetYLabel
+            //Charts[n].graf.SetYLabel YLab ' EricL 4/7/2006 Commented - just no longer need to call SetYLabel
 
             //EricL 4/7/2006 Just set the caption directly now without adding "/ Cycles..." to teh end of the caption
             Charts[n].graf.Caption = YLab;
@@ -534,7 +534,7 @@ namespace DBNet.Forms
             }
         }
 
-        public void ResetGraphs(ref int i)
+        public void ResetGraphs(int i)
         {
             if (i > 0)
             {
@@ -610,7 +610,7 @@ namespace DBNet.Forms
             return calc_graphs;
         }
 
-        private void CalcStats(ref dynamic nomi, ref dynamic dati, ref int graphNum)
+        private void CalcStats(dynamic nomi, dynamic dati, int graphNum)
         { //Botsareus 8/3/2012 use names for graph id mod
             int p = 0;
             int t = 0;
@@ -782,10 +782,10 @@ namespace DBNet.Forms
                                     copyl = 0;
 
                                     for (x = t + 1; x < MaxRobs; x++)
-                                    { //search trough all robots and figure out genetic distance for the once that have enough mutations
+                                    { //search trough all robots and figure genetic distance for the once that have enough mutations
                                         if (rob[x].exist && !rob[x].Corpse && rob[x].FName == rob[t].FName && rob[x].GenMut == 0)
                                         { // Must exist, have enugh mutations, and be of same species
-                                            l = DoGeneticDistance(ref t, ref x) * 1000;
+                                            l = DoGeneticDistance(t, x) * 1000;
                                             if (l > copyl)
                                             {
                                                 copyl = l; //here we store the max genetic distance for a given robot
@@ -1207,10 +1207,10 @@ namespace DBNet.Forms
                                 copyl = 0;
 
                                 for (x = t + 1; x < MaxRobs; x++)
-                                { //search trough all robots and figure out genetic distance for the once that have enough mutations
+                                { //search trough all robots and figure genetic distance for the once that have enough mutations
                                     if (rob[x].exist && !rob[x].Corpse && rob[x].FName == rob[t].FName && rob[x].GenMut == 0)
                                     { // Must exist, have enugh mutations, and be of same species
-                                        l = DoGeneticDistance(ref t, ref x) * 1000;
+                                        l = DoGeneticDistance(t, x) * 1000;
                                         if (l > copyl)
                                         {
                                             copyl = l; //here we store the max genetic distance for a given robot
@@ -1291,7 +1291,7 @@ namespace DBNet.Forms
                             {
                                 if (rob[x].exist && !rob[x].Corpse && rob[x].FName == rob[t].FName)
                                 { // Must exist, and be of same species
-                                    l = DoGeneticDistance(ref t, ref x) * 1000;
+                                    l = DoGeneticDistance(t, x) * 1000;
                                     if (l > dati[p, GENETIC_SIMPLE_GRAPH])
                                     {
                                         dati[p, GENETIC_SIMPLE_GRAPH] = l; //here we store the max generational distance for a given robot
@@ -1375,7 +1375,7 @@ namespace DBNet.Forms
             //  Line(-(0, -0), vbWhite);
         }
 
-        private void DrawMonitor(ref int n)
+        private void DrawMonitor(int n)
         {
             //double rangered = 0;
 
@@ -1431,7 +1431,7 @@ namespace DBNet.Forms
             //Line((rob[n].pos.x - rob[n].radius * 1.1, rob[n].pos.y - rob[n].radius * 1.1m / aspectmod)-(rob[n].pos.x + rob[n].radius * 1.1, rob[n].pos.y + rob[n].radius * 1.1m / aspectmod), RGB(valred, valgreen, valblue), B);
         }
 
-        private void DrawRobAim(ref int n)
+        private void DrawRobAim(int n)
         {
             //  int x = 0;
             //  int y = 0;
@@ -1455,7 +1455,7 @@ namespace DBNet.Forms
             //    pos.x = rob[n].aimvector.x;
             //    pos.y = -rob[n].aimvector.y;
 
-            //    pos2 = VectorAdd(ref rob[n].pos, ref VectorScalar(ref VectorUnit(ref pos), ref rob[n].radius));
+            //    pos2 = VectorAdd(rob[n].pos, VectorScalar(VectorUnit(pos), rob[n].radius));
             //    PSet((pos2.x, pos2.y), vbWhite);
 
             //    if (MDIForm1.instance.displayMovementVectorsToggle) {
@@ -1467,15 +1467,15 @@ namespace DBNet.Forms
             //        if (.lastup > 1000) {
             //          rob[n].lastup = 1000;
             //        }
-            //        vol = VectorAdd(ref pos2, ref VectorScalar(ref pos, ref CSng(rob[n].lastup)));
+            //        vol = VectorAdd(pos2, VectorScalar(pos, CSng(rob[n].lastup)));
             //        Line((pos2.x, pos2.y)-(vol.x, vol.y), rob[n].color);
 
-            //        arrow3 = VectorAdd(ref vol, ref VectorScalar(ref pos, ref 15)); // point of the arrowhead
+            //        arrow3 = VectorAdd(vol, VectorScalar(pos, 15)); // point of the arrowhead
             //        temp = VectorSet(Cos(rob[n].aim - PI / 2), Sin(rob[n].aim - PI / 2));
             //        temp.y = -temp.y;
-            //        pos2 = VectorScalar(ref temp, ref 10);
-            //        arrow1 = VectorAdd(ref vol, ref pos2); // left side of arrowhead
-            //        arrow2 = VectorSub(ref vol, ref pos2); // right side of arrowhead
+            //        pos2 = VectorScalar(temp, 10);
+            //        arrow1 = VectorAdd(vol, pos2); // left side of arrowhead
+            //        arrow2 = VectorSub(vol, pos2); // right side of arrowhead
             //        Line((arrow1.x, arrow1.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow2.x, arrow2.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow1.x, arrow1.y)-(arrow2.x, arrow2.y), rob[n].color);
@@ -1487,16 +1487,16 @@ namespace DBNet.Forms
             //        if (rob[n].lastdown > 1000) {
             //          rob[n].lastdown = 1000;
             //        }
-            //        pos2 = VectorSub(ref rob[n].pos, ref VectorScalar(ref pos, ref rob[n].radius));
-            //        vol = VectorSub(ref pos2, ref VectorScalar(ref pos, ref CSng(rob[n].lastdown)));
+            //        pos2 = VectorSub(rob[n].pos, VectorScalar(pos, rob[n].radius));
+            //        vol = VectorSub(pos2, VectorScalar(pos, CSng(rob[n].lastdown)));
             //        Line((pos2.x, pos2.y)-(vol.x, vol.y), rob[n].color);
 
-            //        arrow3 = VectorAdd(ref vol, ref VectorScalar(ref pos, ref -15)); // point of the arrowhead
+            //        arrow3 = VectorAdd(vol, VectorScalar(pos, -15)); // point of the arrowhead
             //        temp = VectorSet(Cos(rob[n].aim - PI / 2), Sin(rob[n].aim - PI / 2));
             //        temp.y = -temp.y;
-            //        pos2 = VectorScalar(ref temp, ref 10);
-            //        arrow1 = VectorAdd(ref vol, ref pos2); // left side of arrowhead
-            //        arrow2 = VectorSub(ref vol, ref pos2); // right side of arrowhead
+            //        pos2 = VectorScalar(temp, 10);
+            //        arrow1 = VectorAdd(vol, pos2); // left side of arrowhead
+            //        arrow2 = VectorSub(vol, pos2); // right side of arrowhead
             //        Line((arrow1.x, arrow1.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow2.x, arrow2.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow1.x, arrow1.y)-(arrow2.x, arrow2.y), rob[n].color);
@@ -1510,16 +1510,16 @@ namespace DBNet.Forms
             //        }
             //        pos = VectorSet(Cos(rob[n].aim - PI / 2), Sin(rob[n].aim - PI / 2));
             //        pos.y = -pos.y;
-            //        pos2 = VectorAdd(ref rob[n].pos, ref VectorScalar(ref pos, ref rob[n].radius));
-            //        vol = VectorAdd(ref pos2, ref VectorScalar(ref pos, ref CSng(rob[n].lastleft)));
+            //        pos2 = VectorAdd(rob[n].pos, VectorScalar(pos, rob[n].radius));
+            //        vol = VectorAdd(pos2, VectorScalar(pos, CSng(rob[n].lastleft)));
             //        Line((pos2.x, pos2.y)-(vol.x, vol.y), rob[n].color);
 
-            //        arrow3 = VectorAdd(ref vol, ref VectorScalar(ref pos, ref 15)); // point of the arrowhead
+            //        arrow3 = VectorAdd(vol, VectorScalar(pos, 15)); // point of the arrowhead
             //        temp = rob[n].aimvector;
             //        temp.y = -temp.y;
-            //        pos2 = VectorScalar(ref temp, ref 10);
-            //        arrow1 = VectorAdd(ref vol, ref pos2); // left side of arrowhead
-            //        arrow2 = VectorSub(ref vol, ref pos2); // right side of arrowhead
+            //        pos2 = VectorScalar(temp, 10);
+            //        arrow1 = VectorAdd(vol, pos2); // left side of arrowhead
+            //        arrow2 = VectorSub(vol, pos2); // right side of arrowhead
             //        Line((arrow1.x, arrow1.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow2.x, arrow2.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow1.x, arrow1.y)-(arrow2.x, arrow2.y), rob[n].color);
@@ -1533,16 +1533,16 @@ namespace DBNet.Forms
             //        }
             //        pos = VectorSet(Cos(rob[n].aim + PI / 2), Sin(rob[n].aim + PI / 2));
             //        pos.y = -pos.y;
-            //        pos2 = VectorAdd(ref rob[n].pos, ref VectorScalar(ref pos, ref rob[n].radius));
-            //        vol = VectorAdd(ref pos2, ref VectorScalar(ref pos, ref CSng(rob[n].lastright)));
+            //        pos2 = VectorAdd(rob[n].pos, VectorScalar(pos, rob[n].radius));
+            //        vol = VectorAdd(pos2, VectorScalar(pos, CSng(rob[n].lastright)));
             //        Line((pos2.x, pos2.y)-(vol.x, vol.y), rob[n].color);
 
-            //        arrow3 = VectorAdd(ref vol, ref VectorScalar(ref pos, ref 15)); // point of the arrowhead
+            //        arrow3 = VectorAdd(vol, VectorScalar(pos, 15)); // point of the arrowhead
             //        temp = rob[n].aimvector;
             //        temp.y = -temp.y;
-            //        pos2 = VectorScalar(ref temp, ref 10);
-            //        arrow1 = VectorAdd(ref vol, ref pos2); // left side of arrowhead
-            //        arrow2 = VectorSub(ref vol, ref pos2); // right side of arrowhead
+            //        pos2 = VectorScalar(temp, 10);
+            //        arrow1 = VectorAdd(vol, pos2); // left side of arrowhead
+            //        arrow2 = VectorSub(vol, pos2); // right side of arrowhead
             //        Line((arrow1.x, arrow1.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow2.x, arrow2.y)-(arrow3.x, arrow3.y), rob[n].color);
             //        Line((arrow1.x, arrow1.y)-(arrow2.x, arrow2.y), rob[n].color);
@@ -1551,7 +1551,7 @@ namespace DBNet.Forms
             //  }
         }
 
-        private void DrawRobDistPer(ref int n)
+        private void DrawRobDistPer( int n)
         {
             //int CentreX = 0;
             //int CentreY = 0;
@@ -1575,7 +1575,7 @@ namespace DBNet.Forms
             //Circle((CentreX, CentreY), rob[n].radius, rob[n].color);
         }
 
-        private void DrawRobPer(ref int n)
+        private void DrawRobPer(int n)
         {
             //int Sides = 0;
 
@@ -1725,7 +1725,7 @@ namespace DBNet.Forms
             //}
         }
 
-        private void DrawRobSkin(ref int n)
+        private void DrawRobSkin(int n)
         {
             //  int x1 = 0;
 
@@ -1759,7 +1759,7 @@ namespace DBNet.Forms
             //  }
         }
 
-        private void DrawRobTies(ref int t, ref int w, int s_UNUSED)
+        private void DrawRobTies(int t, int w, int s_UNUSED)
         {
             //byte k = 0;
 
@@ -1801,7 +1801,7 @@ namespace DBNet.Forms
             //k = k + 1;
         }
 
-        private void DrawRobTiesCol(ref int t, ref int w, int s_UNUSED)
+        private void DrawRobTiesCol(int t, int w, int s_UNUSED)
         {
             //byte k = 0;
 
@@ -1867,10 +1867,10 @@ namespace DBNet.Forms
             return FindGenerationalDistance;
         }
 
-        private int fittest()
+        public int fittest()
         {
             int fittest = 0;
-            //Botsareus 5/22/2013 Lets figure out what we are searching for
+            //Botsareus 5/22/2013 Lets figure what we are searching for
             double sPopulation = 0;
 
             double sEnergy = 0;
@@ -1891,7 +1891,7 @@ namespace DBNet.Forms
                 {
                     TotalOffspring = 1;
                     Cancer = false;
-                    s = score(t, 1, ref 10, ref 0) + rob[t].nrg + rob[t].body * 10; //Botsareus 5/22/2013 Advanced fit test
+                    s = score(t, 1, 10, 0) + rob[t].nrg + rob[t].body * 10; //Botsareus 5/22/2013 Advanced fit test
                     if (s < 0)
                     {
                         s = 0; //Botsareus 9/23/2016 Bug fix
@@ -2017,7 +2017,7 @@ namespace DBNet.Forms
             }
         }
 
-        private void Form_KeyDown(ref int KeyCode, ref int Shift_UNUSED)
+        private void Form_KeyDown(int KeyCode, int Shift_UNUSED)
         {
             if (PlayerBot.Visibility == Visibility.Visible)
             {
@@ -2031,7 +2031,7 @@ namespace DBNet.Forms
             }
         }
 
-        private void Form_KeyUp(ref int KeyCode, ref int Shift_UNUSED)
+        private void Form_KeyUp(int KeyCode, int Shift_UNUSED)
         {
             if (PlayerBot.Visibility == Visibility.Visible)
             {
@@ -2075,7 +2075,7 @@ namespace DBNet.Forms
             ContestMode = false;
         }
 
-        private void Form_MouseDown(ref int Button, ref int Shift, ref float x, ref float y)
+        private void Form_MouseDown(int Button, int Shift, float x, float y)
         {
             if (lblSafeMode.Visibility == Visibility.Visible)
             {
@@ -2249,7 +2249,7 @@ namespace DBNet.Forms
 
             if (Button == 1 && robfocus > 0 & DraggingBot)
             {
-                vel = VectorSub(ref rob[robfocus].pos, ref VectorSet(x, y));
+                vel = VectorSub(rob[robfocus].pos, VectorSet(x, y));
                 rob[robfocus].pos = VectorSet(x, y);
                 rob[robfocus].vel = VectorSet(0, 0);
                 rob[robfocus].actvel = VectorSet(0, 0); //Botsareus 6/24/2016 Bug fix
@@ -2296,7 +2296,7 @@ namespace DBNet.Forms
             }
         }
 
-        private void Form_MouseUp(ref int Button_UNUSED, ref int Shift_UNUSED, ref float x, ref float y)
+        private void Form_MouseUp(int Button_UNUSED, int Shift_UNUSED, float x, float y)
         {
             if (lblSafeMode.Visibility == Visibility.Visible)
             {
@@ -2372,7 +2372,7 @@ namespace DBNet.Forms
             return IMgetname;
         }
 
-        private double InvestedEnergy(ref int t)
+        private double InvestedEnergy(int t)
         {//Botsareus 5/22/2013 Calculate both population and energy
             double InvestedEnergy = 0;
             InvestedEnergy = rob[t].nrg + rob[t].body * 10; //botschange fittest
@@ -2416,8 +2416,8 @@ namespace DBNet.Forms
                     {
                         rob[a].mem[216] = 1;
                     }
-                    rob[a].pos.X = Random(ref SimOpts.Specie[k].Poslf * CSng(SimOpts.FieldWidth - 60), ref SimOpts.Specie[k].Posrg * CSng(SimOpts.FieldWidth - 60));
-                    rob[a].pos.Y = Random(ref SimOpts.Specie[k].Postp * CSng(SimOpts.FieldHeight - 60), ref SimOpts.Specie[k].Posdn * CSng(SimOpts.FieldHeight - 60));
+                    rob[a].pos.X = Random(SimOpts.Specie[k].Poslf * CSng(SimOpts.FieldWidth - 60), SimOpts.Specie[k].Posrg * CSng(SimOpts.FieldWidth - 60));
+                    rob[a].pos.Y = Random(SimOpts.Specie[k].Postp * CSng(SimOpts.FieldHeight - 60), SimOpts.Specie[k].Posdn * CSng(SimOpts.FieldHeight - 60));
 
                     rob[a].nrg = SimOpts.Specie[k].Stnrg;
                     rob[a].body = 1000;
@@ -2599,7 +2599,7 @@ return;
         {
             int p = 0;
 
-            p = parent(ref t);
+            p = parent(t);
             while (p > 0)
             {
                 t = p;
@@ -2802,7 +2802,7 @@ return;
                         }
                         if (tipo == 0)
                         {
-                            score_v = score_v + InvestedEnergy(ref t); //Botsareus 8/3/2012 generational distance code
+                            score_v = score_v + InvestedEnergy(t); //Botsareus 8/3/2012 generational distance code
                         }
                         if (tipo == 4 && reclev > p_reclev)
                         {
@@ -2869,10 +2869,10 @@ return;
             tmphsl.l = 222 + Int(Rnd() * 2) * 6;
             R_G_B tmprgb = null;
 
-            tmprgb = hsltorgb(ref tmphsl);
+            tmprgb = hsltorgb(tmphsl);
             chartcolor = RGB(tmprgb.r, tmprgb.g, tmprgb.b);
             tmphsl.l -= 195;
-            tmprgb = hsltorgb(ref tmphsl);
+            tmprgb = hsltorgb(tmphsl);
             backgcolor = RGB(tmprgb.r, tmprgb.g, tmprgb.b);
             //Botsareus 6/8/2013 Overwrite skin as nessisary
             if (UseOldColor)
@@ -2908,7 +2908,7 @@ return;
             plink = 0.1m;
             mlink = RobSize * 1.5m;
 
-            //EricL - This is used in Shot collision as a fast way to weed out bots that could not possibily have collided with a shot
+            //EricL - This is used in Shot collision as a fast way to weed bots that could not possibily have collided with a shot
             //this cycle.  It is the maximum possible distance a bot center can be from a shot and still have had the shot impact.
             //This is the case where a bot with 32000 body and a shot are traveling at maximum velocity in opposite directions and the shot just
             //grazes the edge of the bot.  If the shot was just about to hit the bot at the end of the last cycle, then it's distance at
@@ -2985,10 +2985,10 @@ return;
             tmphsl.l = 222 + Int(Rnd() * 2) * 6;
             R_G_B tmprgb = null;
 
-            tmprgb = hsltorgb(ref tmphsl);
+            tmprgb = hsltorgb(tmphsl);
             chartcolor = RGB(tmprgb.r, tmprgb.g, tmprgb.b);
             tmphsl.l = tmphsl.l - 195;
-            tmprgb = hsltorgb(ref tmphsl);
+            tmprgb = hsltorgb(tmphsl);
             backgcolor = RGB(tmprgb.r, tmprgb.g, tmprgb.b);
             //Botsareus 6/8/2013 Overwrite skin as nessisary
             if (UseOldColor)
@@ -3056,7 +3056,7 @@ return;
             plink = 0.1m;
             mlink = RobSize * 1.5m;
 
-            //EricL - This is used in Shot collision as a fast way to weed out bots that could not possibily have collided with a shot
+            //EricL - This is used in Shot collision as a fast way to weed bots that could not possibily have collided with a shot
             //this cycle.  It is the maximum possible distance a bot center can be from a shot and still have had the shot impact.
             //This is the case where the bot and shot are traveling at maximum velocity in opposite directions and the shot just
             //grazes the edge of the bot.  If the shot was just about to hit the bot at the end of the last cycle, then it's distance at

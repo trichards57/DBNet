@@ -14,7 +14,7 @@ namespace Iersera.DataModel
         public int InboundPollCycles { get; internal set; }
         public bool Internet { get; internal set; }
         public bool Local { get; internal set; }
-        public bool Out { get; internal set; }
+        public bool { get; internal set; }
         public string Path { get; internal set; }
         public int PollCountDown { get; internal set; }
         public vector Position { get; internal set; }

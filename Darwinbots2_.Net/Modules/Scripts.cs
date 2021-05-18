@@ -105,53 +105,63 @@ using static DBNet.Forms.frmEYE;
 using static DBNet.Forms.frmFirstTimeInfo;
 
 
-static class Scripts {
-// Option Explicit
-// for DNA scripts
-private class Script {
- public int Index = 0;
- public string Condition = "";
- public string Item = "";
- public string Action = "";
-}
-
-
-public static void SaveScripts() {
-  List<Script> ScriptList = new List<Script> (new Script[10]);
-
-  int t = 0;
-
-
-  for(t=1; t<9; t++) {
-    Write(#1, ScriptList(t).Action);
-    Write(#1, ScriptList(t).Condition);
-    Write(#1, ScriptList(t).Index);
-    Write(#1, ScriptList(t).Item);
-    Next(t);
-  }
-
-public static void LoadScripts() {
-  List<Script> ScriptList = new List<Script> (new Script[10]);
-
-  int t = 0;
-
-  for(t=1; t<9; t++) {
-    ScriptList(t).Action = "";
-    ScriptList(t).Condition = "";
-    ScriptList(t).Index = 0;
-    ScriptList(t).Item = "";
-    if (!EOF(1)) {
-      Input(#1, ScriptList(t).Action);
+static class Scripts
+{
+    // Option Explicit
+    // for DNA scripts
+    private class Script
+    {
+        public int Index = 0;
+        public string Condition = "";
+        public string Item = "";
+        public string Action = "";
     }
-    if (!EOF(1)) {
-      Input(#1, ScriptList(t).Condition);
+
+
+    public static void SaveScripts()
+    {
+        List<Script> ScriptList = new List<Script>(new Script[10]);
+
+        int t = 0;
+
+
+        for (t = 1; t < 9; t++)
+        {
+            Write(1, ScriptList(t).Action);
+            Write(1, ScriptList(t).Condition);
+            Write(1, ScriptList(t).Index);
+            Write(1, ScriptList(t).Item);
+        }
     }
-    if (!EOF(1)) {
-      Input(#1, ScriptList(t).Index);
+
+    public static void LoadScripts()
+    {
+        List<Script> ScriptList = new List<Script>(new Script[10]);
+
+        int t = 0;
+
+        for (t = 1; t < 9; t++)
+        {
+            ScriptList(t).Action = "";
+            ScriptList(t).Condition = "";
+            ScriptList(t).Index = 0;
+            ScriptList(t).Item = "";
+            if (!EOF(1))
+            {
+                Input(1, ScriptList(t).Action);
+            }
+            if (!EOF(1))
+            {
+                Input(1, ScriptList(t).Condition);
+            }
+            if (!EOF(1))
+            {
+                Input(1, ScriptList(t).Index);
+            }
+            if (!EOF(1))
+            {
+                Input(1, ScriptList(t).Item);
+            }
+        }
     }
-    if (!EOF(1)) {
-      Input(#1, ScriptList(t).Item);
-    }
-    Next(t);
-  }
 }

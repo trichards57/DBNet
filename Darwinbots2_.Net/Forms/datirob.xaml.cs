@@ -62,6 +62,40 @@ namespace DBNet.Forms
             return GetRobMemoryString;
         }
 
+        public void infoupdate(int n, double nrg, int par, int mut, int age, int son, double pmut_UNUSED, string FName, int gn, int mo, int gennum_UNUSED, int DnaLen, string lastown, double Waste, double body, double mass, double venom, double shell, double Slime, double ChlrVal)
+        {
+            robnum.Content = Str(n);
+            UniqueBotID.Content = Str((rob[n].AbsNum));
+            robnrg.Content = Str(Round(nrg, 2));
+            robbody.Content = Str(Round(body, 2)); //EricL 4/14/2006 Removed Int()  Need to see the decimal value
+            robmass.Content = Str(Round(mass, 2));
+            robvenom.Content = Str(Round(venom, 2));
+            robshell.Content = Str(Round(rob[n].shell, 2));
+            robslime.Content = Str(Round(rob[n].Slime, 2));
+            PoisonLabel.Content = Str(Round(rob[n].poison, 2));
+            VTimerLabel.Content = Str(rob[n].Vtimer);
+            robparent.Content = Str(par);
+            robmutations.Content = Str(mo);
+            robage.Content = Str(age); // EricL 4/13/2006 Now reads actual age
+            robson.Content = Str(son);
+            robfname.Content = FName;
+            robgene.Content = Str(gn);
+            robover.Content = Str(mut);
+            robgener.Content = rob[n].generation;
+            totlenlab.Content = Str(DnaLen);
+            ChlrLabel.Content = Str(ChlrVal);
+            wasteval.Content = Str(Round(Waste, 2));
+            VelocityLabel.Content = Str(Round(VectorMagnitude(rob[n].vel), 2));
+            RadiusLabel.Content = Str(Round(rob[n].radius, 2));
+            if (lastown != "")
+                LastOwnLab.Content = lastown;
+            else
+                LastOwnLab.Content = "Self";
+
+            if (enlarged && showingMemory)
+                dnatext.Text = GetRobMemoryString(n);
+        }
+
         public void RefreshDna()
         {
             if (enlarged)
@@ -111,7 +145,7 @@ namespace DBNet.Forms
             Frame2.Width = 4695 + 8055;
             enlarged = true;
             if (rob[robfocus].exist)
-                dnatext.Text = DetokenizeDNA(robfocus); 
+                dnatext.Text = DetokenizeDNA(robfocus);
             else
                 dnatext.Text = "This Robot is dead.  No DNA available.";
 
@@ -151,41 +185,6 @@ namespace DBNet.Forms
                 GiveMutationDetails = "No mutations";
             }
             return GiveMutationDetails;
-        }
-
-        private void infoupdate( int n,  float nrg,  int par,  int mut,  int age,  int son,  float pmut_UNUSED,  string FName,  int gn,  int mo,  int gennum_UNUSED,  int DnaLen,  string lastown,  float Waste,  float body,  float mass,  float venom,  float shell,  float Slime,  float ChlrVal)
-        {
-
-            robnum.Content = Str(n);
-            UniqueBotID.Content = Str((rob[n].AbsNum));
-            robnrg.Content = Str(Round(nrg, 2));
-            robbody.Content = Str(Round(body, 2)); //EricL 4/14/2006 Removed Int()  Need to see the decimal value
-            robmass.Content = Str(Round(mass, 2));
-            robvenom.Content = Str(Round(venom, 2));
-            robshell.Content = Str(Round(rob[n].shell, 2));
-            robslime.Content = Str(Round(rob[n].Slime, 2));
-            PoisonLabel.Content = Str(Round(rob[n].poison, 2));
-            VTimerLabel.Content = Str(rob[n].Vtimer);
-            robparent.Content = Str(par);
-            robmutations.Content = Str(mo);
-            robage.Content = Str(age); // EricL 4/13/2006 Now reads actual age
-            robson.Content = Str(son);
-            robfname.Content = FName;
-            robgene.Content = Str(gn);
-            robover.Content = Str(mut);
-            robgener.Content = rob[n].generation;
-            totlenlab.Content = Str(DnaLen);
-            ChlrLabel.Content = Str(ChlrVal);
-            wasteval.Content = Str(Round(Waste, 2));
-            VelocityLabel.Content = Str(Round(VectorMagnitude(rob[n].vel), 2));
-            RadiusLabel.Content = Str(Round(rob[n].radius, 2));
-            if (lastown != "")
-                LastOwnLab.Content = lastown;
-            else
-                LastOwnLab.Content = "Self";
-
-            if (enlarged && showingMemory)
-                dnatext.Text = GetRobMemoryString(n);
         }
 
         private void MemoryCommand_Click(object sender, RoutedEventArgs e)

@@ -1,6 +1,5 @@
 #define ADD_LINE_LOGIC
 
-using Microsoft.VisualBasic.Compatibility.VB6;
 using System.Runtime.InteropServices;
 using System.Windows;
 
@@ -124,7 +123,7 @@ public class CRect
         }
     }
 
-    public bool PtInRect(ref decimal x, ref decimal y)
+    public bool PtInRect(decimal x, decimal y)
     {
         bool PtInRect;
 
@@ -140,23 +139,23 @@ public class CRect
         return PtInRect;
     }
 
-    public void ScreenToTwips(ref dynamic ctl)
+    public void ScreenToTwips(dynamic ctl)
     {
         POINTAPI pt = null;
 
         pt.x = m_Rect.Left;
         pt.y = m_Rect.Top;
-        ScreenToClient(ctl.parent.hWnd(), ref pt);
+        ScreenToClient(ctl.parent.hWnd(), pt);
         m_Rect.Left = (int)(pt.x * Support.TwipsPerPixelX());
         m_Rect.Top = (int)(pt.y * Support.TwipsPerPixelY());
         pt.x = m_Rect.Right;
         pt.y = m_Rect.Bottom;
-        ScreenToClient(ctl.parent.hWnd(), ref pt);
+        ScreenToClient(ctl.parent.hWnd(), pt);
         m_Rect.Right = (int)(pt.x * Support.TwipsPerPixelX());
         m_Rect.Bottom = (int)(pt.y * Support.TwipsPerPixelY());
     }
 
-    public void SetCtrlToRect(ref Window ctl, ref Window parent, ref Window superparent, ref Window masterparent)
+    public void SetCtrlToRect(Window ctl, Window parent, Window superparent, Window masterparent)
     {
 #if ADD_LINE_LOGIC
         //Force to valid rectangle
@@ -169,7 +168,7 @@ public class CRect
 #endif
     }
 
-    public void SetRectToCtrl(ref Window ctl, ref Window parent, ref Window superparent, ref Window masterparent)
+    public void SetRectToCtrl(Window ctl, Window parent, Window superparent, Window masterparent)
     {
 #if ADD_LINE_LOGIC
         //Reset swap flags
@@ -186,7 +185,7 @@ public class CRect
 #endif
     }
 
-    public void TwipsToScreen(ref dynamic ctl)
+    public void TwipsToScreen(dynamic ctl)
     {
         POINTAPI pt = null;
 
@@ -199,19 +198,19 @@ public class CRect
 
         pt.x = (int)((m_Rect.Left + offsetx) / Support.TwipsPerPixelX());
         pt.y = (int)((m_Rect.Top + offsety) / Support.TwipsPerPixelY());
-        ClientToScreen(ctl.parent.hWnd(), ref pt);
+        ClientToScreen(ctl.parent.hWnd(), pt);
         m_Rect.Left = pt.x;
         m_Rect.Top = pt.y;
         pt.x = (int)((m_Rect.Right + offsetx) / Support.TwipsPerPixelX());
         pt.y = (int)((m_Rect.Bottom + offsety) / Support.TwipsPerPixelY());
-        ClientToScreen(ctl.parent.hWnd(), ref pt);
+        ClientToScreen(ctl.parent.hWnd(), pt);
         m_Rect.Right = pt.x;
         m_Rect.Bottom = pt.y;
     }
 
-    [DllImport("user32.dll")] private static extern int ClientToScreen(int hwnd, ref POINTAPI lpPoint);
+    [DllImport("user32.dll")] private static extern int ClientToScreen(int hwnd, POINTAPI lpPoint);
 
-    [DllImport("user32.dll")] private static extern int ScreenToClient(int hwnd, ref POINTAPI lpPoint);
+    [DllImport("user32.dll")] private static extern int ScreenToClient(int hwnd, POINTAPI lpPoint);
 
     private class POINTAPI
     {

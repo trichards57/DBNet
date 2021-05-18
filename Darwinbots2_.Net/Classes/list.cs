@@ -25,7 +25,7 @@ public class list
         pcurr = head;
     }
 
-    public void addrobot(ref int ind, int xpos)
+    public void addrobot(int ind, int xpos)
     {
         node k = null;
 
@@ -86,7 +86,7 @@ public class list
         return firstorder;
     }
 
-    public node firstpos(ref int rsize, ref decimal xpos)
+    public node firstpos(int rsize, decimal xpos)
     {
         node firstpos = null;
         node n = null;
@@ -100,7 +100,7 @@ public class list
         return firstpos;
     }
 
-    public node firstprox(node n, ref int dist)
+    public node firstprox(node n, int dist)
     {
         node firstprox = null;
         int xcurr = 0;
@@ -125,28 +125,28 @@ public class list
         return firstrob;
     }
 
-    public node nextnode(ref node n)
+    public node nextnode(node n)
     {
         node nextnode = null;
         nextnode = n.pn;
         return nextnode;
     }
 
-    public node nextorder(ref node n)
+    public node nextorder(node n)
     {
         node nextorder = null;
         nextorder = n.orn;
         return nextorder;
     }
 
-    public node prevnode(ref node n)
+    public node prevnode(node n)
     {
         node prevnode = null;
         prevnode = n.pp;
         return prevnode;
     }
 
-    public node prevorder(ref node n)
+    public node prevorder(node n)
     {
         node prevorder = null;
         prevorder = n.orp;
@@ -177,7 +177,7 @@ public class list
         }
     }
 
-    public node searchrob(ref int ind)
+    public node searchrob(int ind)
     {
         node searchrob = null;
         node tmp = null;

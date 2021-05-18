@@ -118,7 +118,7 @@ public class TrayIcon
         _WithVar_1593.ucallbackMessage = WM_MOUSEMOVE;
         _WithVar_1593.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
         _WithVar_1593.uId = 1;
-        Shell_NotifyIcon(NIM_ADD, ref theTray);
+        Shell_NotifyIcon(NIM_ADD, theTray);
         mvarState = (int)theStates.TI_ADDED;
     }
 
@@ -133,19 +133,19 @@ public class TrayIcon
         _WithVar_2475.ucallbackMessage = WM_MOUSEMOVE;
         _WithVar_2475.uFlags = NIF_ICON | NIF_TIP | NIF_MESSAGE;
         _WithVar_2475.uId = 1;
-        Shell_NotifyIcon(NIM_MODIFY, ref theTray);
+        Shell_NotifyIcon(NIM_MODIFY, theTray);
         mvarState = (int)theStates.TI_MODIFIED;
     }
 
     public void Remove()
     {
-        Shell_NotifyIcon(NIM_DELETE, ref theTray);
+        Shell_NotifyIcon(NIM_DELETE, theTray);
         mvarState = (int)theStates.TI_REMOVED;
     }
 
-    [DllImport("shell32.dll", EntryPoint = "Shell_NotifyIconA")] private static extern bool Shell_NotifyIcon(int dwMessage, ref NOTIFYICONDATA pnid);
+    [DllImport("shell32.dll", EntryPoint = "Shell_NotifyIconA")] private static extern bool Shell_NotifyIcon(int dwMessage, NOTIFYICONDATA pnid);
 
-    private void OwnerForm_MouseMove(ref int Button, ref int Shift_UNUSED, ref decimal X_UNUSED, ref decimal Y_UNUSED)
+    private void OwnerForm_MouseMove(int Button, int Shift_UNUSED, decimal X_UNUSED, decimal Y_UNUSED)
     {
         switch (Button)
         {

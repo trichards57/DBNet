@@ -9,6 +9,6 @@ public class cevent
 
     public void fire(int a, string t)
     {
-        eventtextentered?.Invoke(ref a, ref t);
+        eventtextentered?.Invoke(a, t);
     }
 }

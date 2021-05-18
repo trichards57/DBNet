@@ -2616,7 +2616,7 @@ internal static class DNATokenizing
         };
     }
 
-    public static string SaveRobHeader(ref int n)
+    public static string SaveRobHeader(int n)
     {
         var totmut = rob[n].Mutations + rob[n].OldMutations;
         if (totmut > 2000000000)
@@ -2682,7 +2682,7 @@ internal static class DNATokenizing
             }
         }
         else
-            _ = int.TryParse(a, out SysvarTok);
+            _ = int.TryParse(a, SysvarTok);
 
         return SysvarTok;
     }

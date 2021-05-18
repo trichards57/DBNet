@@ -260,7 +260,7 @@ namespace DBNet.Forms
                         PrintMem(ind, rob[ind].console.text(2));
                     }
                     else
-                        rob[ind].console.textout("Value out of range.  Memory values must be between -32000 and 32000.");
+                        rob[ind].console.textout("Value of range.  Memory values must be between -32000 and 32000.");
 
                     break;
 

@@ -666,7 +666,6 @@ internal static class Buckets_Module
 
                 if (x < NumXBuckets - 1 && y < NumYBuckets - 1)
                     Buckets[x, y].adjBucket.Add(new vector(x + 1, y + 1));
-
             }
         }
 

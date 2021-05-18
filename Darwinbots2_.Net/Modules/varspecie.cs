@@ -105,55 +105,58 @@ using static DBNet.Forms.frmEYE;
 using static DBNet.Forms.frmFirstTimeInfo;
 
 
-static class varspecie {
-//should the mutation even be triggered?
-//probs of the different mutations
-//Extras
-public class mutationprobs {
- public bool Mutations = false;
- public double[] mutarray = new double[20];
- public double[] Mean = new double[20];
- public double[] StdDev = new double[20];
- public int PointWhatToChange = 0;
- public int CopyErrorWhatToChange = 0;
-}
-//Botsareus 3/28/2014 Prevents robots from evolving chloroplasts
-// Flag indicating eyes should be turned off for this species
-// Flag indicating DNA should not execute for this species
-// Flag indicating movement sysvars should be disabled for this species
-// Flag indicating whether reproduction has been disabled for this species.
-// Flag indicating whether members of this species are suceptable to viruses.
-// Number of this species in the sim.  Updated each cycle.
-// Using to increment the per-bot subspecies.
-// Indicates this species was first added locally to this sim and not teleported in from another
-public class datispecie {
- public int[] Skin = new int[13];
- public string path = "";
- public string Name = "";
- public int Stnrg = 0;
- public bool Veg = false;
- public bool NoChlr = false;
- public bool Fixed = false;
- public int color = 0;
- public int Colind = 0;
- public decimal Postp = 0;
- public decimal Poslf = 0;
- public decimal Posdn = 0;
- public decimal Posrg = 0;
- public int qty = 0;
- public string Comment = "";
- public string Leaguefilecomment = "";
- public mutationprobs Mutables = null;
- public bool CantSee = false;
- public bool DisableDNA = false;
- public bool DisableMovementSysvars = false;
- public bool CantReproduce = false;
- public bool VirusImmune = false;
- public int population = 0;
- public int SubSpeciesCounter = 0;
- public bool Native = false;
- public Image DisplayImage = null;
- public bool kill_mb = false;
- public bool dq_kill = false;
-}
+static class varspecie
+{
+    //should the mutation even be triggered?
+    //probs of the different mutations
+    //Extras
+    public class mutationprobs
+    {
+        public bool Mutations = false;
+        public double[] mutarray = new double[20];
+        public double[] Mean = new double[20];
+        public double[] StdDev = new double[20];
+        public int PointWhatToChange = 0;
+        public int CopyErrorWhatToChange = 0;
+    }
+    //Botsareus 3/28/2014 Prevents robots from evolving chloroplasts
+    // Flag indicating eyes should be turned off for this species
+    // Flag indicating DNA should not execute for this species
+    // Flag indicating movement sysvars should be disabled for this species
+    // Flag indicating whether reproduction has been disabled for this species.
+    // Flag indicating whether members of this species are suceptable to viruses.
+    // Number of this species in the sim.  Updated each cycle.
+    // Using to increment the per-bot subspecies.
+    // Indicates this species was first added locally to this sim and not teleported in from another
+    public class datispecie
+    {
+        public int[] Skin = new int[13];
+        public string path = "";
+        public string Name = "";
+        public int Stnrg = 0;
+        public bool Veg = false;
+        public bool NoChlr = false;
+        public bool Fixed = false;
+        public int color = 0;
+        public int Colind = 0;
+        public decimal Postp = 0;
+        public decimal Poslf = 0;
+        public decimal Posdn = 0;
+        public decimal Posrg = 0;
+        public int qty = 0;
+        public string Comment = "";
+        public string Leaguefilecomment = "";
+        public mutationprobs Mutables = null;
+        public bool CantSee = false;
+        public bool DisableDNA = false;
+        public bool DisableMovementSysvars = false;
+        public bool CantReproduce = false;
+        public bool VirusImmune = false;
+        public int population = 0;
+        public int SubSpeciesCounter = 0;
+        public bool Native = false;
+        public Image DisplayImage = null;
+        public bool kill_mb = false;
+        public bool dq_kill = false;
+    }
 }

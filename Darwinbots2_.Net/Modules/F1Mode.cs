@@ -1,6 +1,5 @@
 using DBNet.Forms;
 using Iersera.DataModel;
-using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -592,7 +591,6 @@ internal static class F1Mode
         x_filenumber++;
         await Iersera.DataModel.RestartMode.Save(3, x_filenumber);
 
-
         string file_name;
 
         //files in stepladder
@@ -617,7 +615,7 @@ internal static class F1Mode
         {
             x_restartmode = 0;
             File.Delete("restartmode.gset"); ;
-            MessageBox.Show($@"Go to {MDIForm1.instance.MainDir}\league\stepladder to view your results.", "League Complete!", MessageBoxButton.OK,MessageBoxImage.Exclamation);
+            MessageBox.Show($@"Go to {MDIForm1.instance.MainDir}\league\stepladder to view your results.", "League Complete!", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             return;
         }
         else

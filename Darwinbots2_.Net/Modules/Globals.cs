@@ -316,7 +316,7 @@ internal static class Globals
 
         if (SimOpts.Specie[r].Name != "" && SimOpts.Specie[r].path != "Invalid Path")
         {
-            var a = RobScriptLoad(respath(ref SimOpts.Specie[r].path) + "\\" + SimOpts.Specie[r].Name);
+            var a = RobScriptLoad(respath(SimOpts.Specie[r].path) + "\\" + SimOpts.Specie[r].Name);
             if (a < 0)
             {
                 SimOpts.Specie[r].Native = false;
