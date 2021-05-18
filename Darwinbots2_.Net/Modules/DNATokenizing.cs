@@ -48,7 +48,7 @@ internal static class DNATokenizing
         }
     }
 
-    public static string DetokenizeDNA(int n, int Position)
+    public static string DetokenizeDNA(int n, int Position = 0)
     {
         var DetokenizeDNA = "";
         var GeneEnd = false;

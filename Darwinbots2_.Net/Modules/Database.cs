@@ -11,7 +11,7 @@ internal static class Database
 
     public static async Task AddRecord(int rn)
     {
-        var folder = $"{MDIForm1.instance.MainDir}\\Autosave";
+        var folder = "Autosave";
 
         Directory.CreateDirectory(folder);
 
@@ -50,7 +50,7 @@ internal static class Database
         var dialog = new SaveFileDialog
         {
             FileName = "",
-            InitialDirectory = $"{MDIForm1.instance.MainDir}\\database",
+            InitialDirectory = "database",
             Title = "Select a name for your snapshot file.",
             Filter = "Snapshot Database (*.snp)|*.snp"
         };
