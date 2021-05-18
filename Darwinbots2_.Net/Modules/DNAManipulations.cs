@@ -1,7 +1,7 @@
 using DBNet.Forms;
 using Iersera.Model;
 using System.Collections.Generic;
-using static Buckets_Module;
+using static BucketManager;
 using static Common;
 using static DNAExecution;
 using static DNATokenizing;

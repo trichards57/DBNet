@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using static Buckets_Module;
+using static BucketManager;
 using static Common;
 using static DNAManipulations;
 using static DNATokenizing;

@@ -103,17 +103,15 @@ internal static class Physics
         return angle;
     }
 
-    public static decimal angnorm(decimal an)
+    public static double angnorm(double an)
     {
-        decimal angnorm = 0;
-        While(an < 0);
-        an = an + 2 * PI;
-        Wend();
-        While(an > 2 * PI);
-        an = an - 2 * PI;
-        Wend();
-        angnorm = an;
-        return angnorm;
+        while (an < 0)
+            an += 2 * PI;
+
+        while (an > 2 * PI)
+            an -= 2 * PI;
+
+        return an;
     }
 
     public static void bordercolls(int t)

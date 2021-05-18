@@ -1,5 +1,5 @@
 using DBNet.Forms;
-using static Buckets_Module;
+using static BucketManager;
 using static Robots;
 using static System.Math;
 

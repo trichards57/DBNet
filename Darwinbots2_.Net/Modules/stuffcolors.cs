@@ -66,7 +66,7 @@ using static Multibots;
 using static HDRoutines;
 using static Scripts;
 using static Database;
-using static Buckets_Module;
+using static BucketManager;
 using static NeoMutations;
 using static Master;
 using static DNAManipulations;

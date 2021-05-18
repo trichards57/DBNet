@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using static Buckets_Module;
+using static BucketManager;
 using static Common;
 using static DNAManipulations;
 using static F1Mode;
@@ -2881,7 +2881,7 @@ return;
                 backgcolor = 0x400000;
             }
 
-            Init_Buckets();
+            InitialiseBuckets();
 
             visiblew = SimOpts.FieldWidth;
             visibleh = SimOpts.FieldHeight;
@@ -3073,7 +3073,7 @@ return;
                 rob[t].virusshot = 0;
             }
             MaxRobs = 0;
-            Init_Buckets();
+            InitialiseBuckets();
             for (var i = 0; i < 50; i++) { Shots.Add(null); }
             maxshotarray = 50;
             shotpointer = 1;
