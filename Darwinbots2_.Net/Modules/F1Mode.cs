@@ -348,7 +348,7 @@ internal static class F1Mode
                                 }
                                 await Iersera.DataModel.RestartMode.Save(10, x_filenumber);
                                 await SafeMode.Save(false);
-                                restarter();
+                                Restarter();
                                 break;
 
                             case 6:
@@ -376,7 +376,7 @@ internal static class F1Mode
 
                                 await SafeMode.Save(false);
 
-                                restarter();
+                                Restarter();
                                 break;
 
                             case 3:
@@ -632,7 +632,7 @@ internal static class F1Mode
 
         await SafeMode.Save(false);
 
-        restarter();
+        Restarter();
     }
 
     //for eye fudging.  Search 'fudge' to see what I mean

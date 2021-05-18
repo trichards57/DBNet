@@ -266,7 +266,7 @@ internal static class Evo
         await SafeMode.Save(false);
         await AutoSaved.Save(false);
 
-        restarter();
+        Restarter();
     }
 
     public static void ZBpassedtest()
@@ -324,7 +324,7 @@ internal static class Evo
         await SafeMode.Save(false);
         await AutoSaved.Save(false);
 
-        restarter();
+        Restarter();
     }
 
     private static void Increase_Difficulty()
@@ -734,6 +734,6 @@ internal static class Evo
         await SafeMode.Save(false);
         await AutoSaved.Save(false);
 
-        restarter();
+        Restarter();
     }
 }

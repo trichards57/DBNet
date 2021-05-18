@@ -1,4 +1,5 @@
 using DBNet.Forms;
+using Iersera.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -4204,7 +4205,7 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public int BirthCycle = 0;
         public double body = 0;
         public decimal Bouyancy = 0;
-        public vector BucketPos = null;
+        public IntVector BucketPos = null;
         public bool CantReproduce = false;
         public bool CantSee = false;
         public double chloroplasts = 0;

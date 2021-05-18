@@ -608,7 +608,7 @@ internal static class Master
             {
                 File.Copy("league\\Test.txt", NamefileRecursive($"league\\seeded\\{totnvegsDisplayed}.txt"));
                 await Iersera.DataModel.RestartMode.Save(x_restartmode, x_filenumber);
-                restarter();
+                Restarter();
             }
         }
 
@@ -644,7 +644,7 @@ internal static class Master
                 await SafeMode.Save(false);
                 await AutoSaved.Save(false);
 
-                restarter();
+                Restarter();
             }
         }
 
