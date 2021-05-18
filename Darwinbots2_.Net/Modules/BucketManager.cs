@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static Common;
 using static Globals;
-using static Microsoft.VisualBasic.Conversion;
 using static Obstacles;
 using static Robots;
 using static SimOptModule;
@@ -30,7 +29,7 @@ internal static class BucketManager
         CheckBotBucketForCollision(n, rob[n].BucketPos);
 
         // Checks the abjacent buckets
-        foreach (var adjBucket in Buckets[(int)rob[n].BucketPos.X, (int)rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+        foreach (var adjBucket in Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
             CheckBotBucketForCollision(n, adjBucket);
     }
 
@@ -53,7 +52,7 @@ internal static class BucketManager
         CheckBotBucketForVision(n, rob[n].BucketPos);
 
         //Check all the adjacent buckets
-        foreach (var adjBucket in Buckets[(int)rob[n].BucketPos.X, (int)rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+        foreach (var adjBucket in Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
             CheckBotBucketForVision(n, adjBucket);
 
         if (SimOpts.shapesAreVisable && rob[n].exist)
@@ -70,8 +69,8 @@ internal static class BucketManager
     public static void InitialiseBuckets()
     {
         // Determine the nubmer of buckets.
-        NumXBuckets = Int(SimOpts.FieldWidth / BucketSize);
-        NumYBuckets = Int(SimOpts.FieldHeight / BucketSize);
+        NumXBuckets = SimOpts.FieldWidth / BucketSize;
+        NumYBuckets = SimOpts.FieldHeight / BucketSize;
 
         Buckets = new Bucket[NumXBuckets + 1, NumYBuckets + 1];
 
@@ -85,28 +84,28 @@ internal static class BucketManager
                 // Set the list of adjacent buckets for this bucket
                 // We take the time to do this here to save the time it would take to compute these every cycle.
                 if (x > 0)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x - 1, y));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x - 1, y));
 
                 if (x < NumXBuckets - 1)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x + 1, y));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x + 1, y));
 
                 if (y > 0)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x, y - 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x, y - 1));
 
                 if (y < NumYBuckets - 1)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x, y + 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x, y + 1));
 
                 if (x > 0 & y > 0)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x - 1, y - 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x - 1, y - 1));
 
                 if (x > 0 & y < NumYBuckets - 1)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x - 1, y + 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x - 1, y + 1));
 
                 if (x < NumXBuckets - 1 && y > 0)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x + 1, y - 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x + 1, y - 1));
 
                 if (x < NumXBuckets - 1 && y < NumYBuckets - 1)
-                    Buckets[x, y].AdjacentBuckets.Add(new vector(x + 1, y + 1));
+                    Buckets[x, y].AdjacentBuckets.Add(new IntVector(x + 1, y + 1));
             }
         }
 
@@ -125,48 +124,48 @@ internal static class BucketManager
     // also erases array elements to retrieve memory
     public static void UpdateBotBucket(int n)
     {
-        var changed = false;
-
         if (!rob[n].exist)
         {
             Buckets[(int)rob[n].BucketPos.X, (int)rob[n].BucketPos.Y].Robots.RemoveAll(i => i == n);
             return;
         }
 
-        var newbucket = new vector(rob[n].BucketPos.X, rob[n].BucketPos.Y);
+        var newBucket = new IntVector(rob[n].BucketPos.X, rob[n].BucketPos.Y);
 
-        var currbucket = (int)Math.Floor(rob[n].pos.X / BucketSize);
-        if (currbucket < 0)
-            currbucket = 0; // Possible bot is off the field
+        var currentX = (int)Math.Floor(rob[n].pos.X / BucketSize);
+        if (currentX < 0)
+            currentX = 0; // Possible bot is off the field
 
-        if (currbucket >= NumXBuckets)
-            currbucket = NumXBuckets - 1; // Possible bot is off the field
+        if (currentX >= NumXBuckets)
+            currentX = NumXBuckets - 1; // Possible bot is off the field
 
-        if (rob[n].BucketPos.X != currbucket)
+        var changed = false;
+
+        if (rob[n].BucketPos.X != currentX)
         {
             // we've moved off the bucket, update bucket
-            newbucket.X = currbucket;
+            newBucket.X = currentX;
             changed = true;
         }
 
-        currbucket = (int)Math.Floor(rob[n].pos.Y / BucketSize);
-        if (currbucket < 0)
-            currbucket = 0; // Possible bot is off the field
+        var currentY = (int)Math.Floor(rob[n].pos.Y / BucketSize);
+        if (currentY < 0)
+            currentY = 0; // Possible bot is off the field
 
-        if (currbucket >= NumYBuckets)
-            currbucket = NumYBuckets - 1; // Possible bot is off the field
+        if (currentY >= NumYBuckets)
+            currentY = NumYBuckets - 1; // Possible bot is off the field
 
-        if (rob[n].BucketPos.Y != currbucket)
+        if (rob[n].BucketPos.Y != currentY)
         {
-            newbucket.Y = currbucket;
+            newBucket.Y = currentY;
             changed = true;
         }
 
         if (changed)
         {
-            Buckets[(int)rob[n].BucketPos.X, (int)rob[n].BucketPos.Y].Robots.RemoveAll(i => i == n);
-            Buckets[(int)newbucket.X, (int)newbucket.Y].Robots.Add(n);
-            rob[n].BucketPos = newbucket;
+            Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].Robots.RemoveAll(i => i == n);
+            Buckets[newBucket.X, newBucket.Y].Robots.Add(n);
+            rob[n].BucketPos = newBucket;
         }
     }
 
@@ -188,9 +187,9 @@ internal static class BucketManager
         }
     }
 
-    private static void CheckBotBucketForCollision(int n, vector pos)
+    private static void CheckBotBucketForCollision(int n, IntVector pos)
     {
-        foreach (var robnumber in Buckets[(int)pos.X, (int)pos.Y].Robots.Where(i => i > n))
+        foreach (var robnumber in Buckets[pos.X, pos.Y].Robots.Where(i => i > n))
         {
             // only have to check bots higher than n otherwise we do it twice for each bot pair
             if (!(rob[robnumber].FName == "Base.txt" && hidepred))
@@ -203,9 +202,9 @@ internal static class BucketManager
         }
     }
 
-    private static void CheckBotBucketForVision(int n, vector pos)
+    private static void CheckBotBucketForVision(int n, IntVector pos)
     {
-        foreach (var robnumber in Buckets[(int)pos.X, (int)pos.Y].Robots.Where(i => i != n))
+        foreach (var robnumber in Buckets[pos.X, pos.Y].Robots.Where(i => i != n))
             CompareRobots(rob[n], rob[robnumber]);
     }
 
@@ -260,11 +259,9 @@ internal static class BucketManager
                 return;
         }
 
-        var invdist = 1.0 / ab.Magnitude();
-
         //ac and ad are to either end of the bots, while ab is to the center
 
-        var ac = ab * invdist;
+        var ac = ab.Unit();
         //ac is now unit vector
 
         var ad = new vector(ac.Y, -ac.X);
@@ -279,16 +276,10 @@ internal static class BucketManager
         ad.Y = -ad.Y;
         ac.Y = -ac.Y;
 
-        var theta = Math.Atan2(ad.Y, ad.X);
-        var beta = Math.Atan2(ac.Y, ac.X);
+        var theta = Physics.angnorm( Math.Atan2(ad.Y, ad.X));
+        var beta = Physics.angnorm(Math.Atan2(ac.Y, ac.X));
 
         //lets be sure to just deal with postive angles
-        if (theta < 0)
-            theta += 2 * Math.PI;
-
-        if (beta < 0)
-            beta += 2 * Math.PI;
-
         var botspanszero = beta > theta;
 
         //For each eye
