@@ -1,14 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Iersera.Model
 {
     public class SafeStack<T> : Stack<T>
     {
         public T DefaultValue { init; get; }
+
+        public void Over()
+        {
+            if (Count == 0)
+                return;
+
+            if (Count == 1)
+            {
+                Push(DefaultValue);
+                return;
+            }
+
+            var a = Pop();
+            var b = Pop();
+            Push(a);
+            Push(b);
+            Push(a);
+        }
+
+        public new T Peek()
+        {
+            if (Count == 0)
+                return DefaultValue;
+
+            return Peek();
+        }
 
         public new T Pop()
         {
@@ -18,12 +40,15 @@ namespace Iersera.Model
             return Pop();
         }
 
-        public new T Peek()
+        public void Swap()
         {
-            if (Count == 0)
-                return DefaultValue;
+            if (Count <= 1)
+                return;
 
-            return Peek();
+            var a = Pop();
+            var b = Pop();
+            Push(a);
+            Push(b);
         }
     }
 }

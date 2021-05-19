@@ -6,7 +6,7 @@ namespace Iersera.DataModel
     {
         public int Age { get; internal set; }
         public int Color { get; internal set; }
-        public DNAExecution.block[] Dna { get; internal set; }
+        public DNABlock[] Dna { get; internal set; }
         public decimal Energy { get; internal set; }
         public bool Exists { get; internal set; }
         public string FromSpecies { get; internal set; }
