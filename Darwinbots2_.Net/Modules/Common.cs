@@ -1,4 +1,5 @@
 using Iersera.Model;
+using Iersera.Support;
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -7,7 +8,6 @@ using System.Reflection;
 internal static class Common
 {
     public static string filemem = "";
-    private static readonly Random rand = new();
     private static bool called = false;
 
     public static double Cross(vector V1, vector V2)
@@ -23,7 +23,7 @@ internal static class Common
     [Obsolete("Use rand.Next instead")]
     public static int fRnd(int low, int up)
     {
-        return rand.Next(low, up);
+        return ThreadSafeRandom.Local.Next(low, up);
     }
 
     public static double Gauss(double stdDev, double mean = 0)
@@ -50,7 +50,7 @@ internal static class Common
     [Obsolete("Use rand.Next instead")]
     public static int Random(int low, int hi)
     {
-        return rand.Next(low, hi);
+        return ThreadSafeRandom.Local.Next(low, hi);
     }
 
     public static void Restarter()
@@ -68,7 +68,7 @@ internal static class Common
     [Obsolete("Use rand.NextDouble instead")]
     public static double rndy()
     {
-        return rand.NextDouble();
+        return ThreadSafeRandom.Local.NextDouble();
     }
 
     [Obsolete("Use + operator instead")]
@@ -144,8 +144,8 @@ internal static class Common
 
     private static double GaussianDistribution()
     {
-        var u1 = 1.0 - rand.NextDouble();
-        var u2 = 1.0 - rand.NextDouble();
+        var u1 = 1.0 - ThreadSafeRandom.Local.NextDouble();
+        var u2 = 1.0 - ThreadSafeRandom.Local.NextDouble();
         return Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
     }
 }
