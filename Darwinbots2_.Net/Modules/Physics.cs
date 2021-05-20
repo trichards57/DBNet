@@ -53,7 +53,7 @@ internal static class Physics
         }
     }
 
-    public static decimal AngDiff(decimal a1, decimal a2)
+    public static double AngDiff(double a1, double a2)
     {
         decimal AngDiff = 0;
         decimal r = 0;
@@ -71,7 +71,7 @@ internal static class Physics
         return AngDiff;
     }
 
-    public static decimal angle(decimal x1, decimal y1, decimal x2, decimal y2)
+    public static double angle(double x1, double y1, double x2, double y2)
     {
         decimal angle = 0;
         decimal an = 0;

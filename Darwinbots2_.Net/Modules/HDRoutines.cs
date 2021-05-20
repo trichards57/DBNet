@@ -1055,7 +1055,7 @@ internal static class HDRoutines
             if (rob[n].exist)
             {
                 GiveAbsNum(n);
-                insertsysvars(n);
+                InsertSysVars(n);
                 ScanUsedVars(n);
                 makeoccurrlist(n);
                 rob[n].DnaLen = DnaLen(rob[n].dna);

@@ -147,7 +147,7 @@ static class Shots_Module
         public string FromSpecie = "";
         public int memloc = 0;
         public int Memval = 0;
-        public block[] dna = new block[];
+        public DNABlock[] dna = new DNABlock[];
         public int DnaLen = 0;
         public int genenum = 0;
         public bool stored = false;

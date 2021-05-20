@@ -2,6 +2,7 @@ using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using static Globals;
 using static Robots;
@@ -9,10 +10,8 @@ using static SimOptModule;
 
 internal static class DNAExecution
 {
-    public static var_[] sysvar = new var_[1001];
-    public static var_[] sysvarIN = new var_[256];
-    public static var_[] sysvarOUT = new var_[256];
-    private const int MaxIntValue = 2000000000;
+    public const int MaxIntValue = 2000000000;
+    public static List<var_> sysvar = new();
     private const bool NextBody = true;
     private const bool NextElse = false;
     private static readonly SafeStack<bool> BoolStack = new() { DefaultValue = true };

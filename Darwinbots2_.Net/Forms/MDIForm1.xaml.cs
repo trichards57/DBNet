@@ -1516,7 +1516,7 @@ namespace DBNet.Forms
             List<> PB_keys_7056_tmp = new List<>();
             for (int redim_iter_5881 = 0; i < 0; redim_iter_5881++) { PB_keys.Add(null); }
 
-            calc_dnamatrix();
+            CalculateDnaMatrix();
             //Botsareus 5/8/2013 Safemode strings are declared here (sorry, no Italian version)
             string strMsgSendData = "";
 

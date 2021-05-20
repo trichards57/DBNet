@@ -461,9 +461,9 @@ internal static class NeoMutations
 
         string temp = "";
 
-        block bp = null;
+        DNABlock bp = null;
 
-        block tempbp = null;
+        DNABlock tempbp = null;
 
         string Name = "";
 
@@ -1290,7 +1290,7 @@ internal static class NeoMutations
 
         int templong = 0;
 
-        block tempblock = null;
+        DNABlock tempblock = null;
 
         int t = 0;
 
@@ -1373,7 +1373,7 @@ internal static class NeoMutations
             rob.Mutables.mutarray[TranslocationUP] = floor; //Botsareus 10/5/2015 Prevent freezing
         }
 
-        List<block> tempDNA = new List<block> { }; // TODO - Specified Minimum Array Boundary Not Supported:   Dim tempDNA() As block
+        List<DNABlock> tempDNA = new List<DNABlock> { }; // TODO - Specified Minimum Array Boundary Not Supported:   Dim tempDNA() As block
 
         int start = 0;
 
@@ -1405,7 +1405,7 @@ internal static class NeoMutations
 
                 if (Length > 0)
                 {
-                    var tempDNA_7031_tmp = new List<block>();
+                    var tempDNA_7031_tmp = new List<DNABlock>();
                     for (int redim_iter_9621 = 0; i < 0; redim_iter_9621++) { tempDNA.Add(null); }
 
                     second = 0;

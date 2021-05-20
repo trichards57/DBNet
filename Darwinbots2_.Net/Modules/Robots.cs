@@ -6,7 +6,6 @@ using System.Linq;
 using static BucketManager;
 using static Common;
 using static Database;
-using static DNAExecution;
 using static DNAManipulations;
 using static DNATokenizing;
 using static F1Mode;
@@ -1168,7 +1167,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
             {
                 goto getout; // female must be large enough to have sex
             }
-            if (!IsRobDNABounded(rob(female).spermDNA))
+            if ((rob[female].spermDNA.Any()))
             {
                 goto getout; // sperm dna must exist
             }
@@ -1351,9 +1350,9 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
 
                 //Step5 do crossover
 
-                List<block> Outdna = new List<block> { }; // TODO - Specified Minimum Array Boundary Not Supported:       Dim Outdna() As block
+                var Outdna = new List<DNAExecution.DNABlock> { }; // TODO - Specified Minimum Array Boundary Not Supported:       Dim Outdna() As block
 
-                List<block> Outdna_6626_tmp = new List<block>();
+                var Outdna_6626_tmp = new List<DNAExecution.DNABlock>();
                 for (int redim_iter_5024 = 0; i < 0; redim_iter_5024++) { Outdna.Add(null); }
                 crossover(dna1, dna2, Outdna);
 
@@ -1364,7 +1363,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
                     {
                         Outdna[t - 1] == Outdna[t];
                     }
-                    List<block> Outdna_9207_tmp = new List<block>();
+                    var Outdna_9207_tmp = new List<DNAExecution.DNABlock>();
                     for (int redim_iter_2132 = 0; i < 0; redim_iter_2132++) { Outdna.Add(redim_iter_2132 < Outdna.Count ? Outdna(redim_iter_2132) : null); }
                 }
 
@@ -4219,7 +4218,7 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public int DecayTimer = 0;
         public bool DisableDNA = false;
         public bool DisableMovementSysvars = false;
-        public List<block> dna = new();
+        public List<DNABlock> dna = new();
         public int DnaLen = 0;
         public int dq = 0;
         public int[] epimem = new int[14];
@@ -4250,7 +4249,6 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public int lastup = 0;
         public decimal ma = 0;
         public double mass = 0;
-        public int maxusedvars = 0;
         public int[] mem = new int[1000];
         public int monitor_b = 0;
         public int monitor_g = 0;
@@ -4296,15 +4294,14 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public int[] Skin = new int[13];
         public double Slime = 0;
         public int SonNumber = 0;
-        public block[] spermDNA = new block[];
+        public DNABlock[] spermDNA = new DNABlock[];
         public int spermDNAlen = 0;
         public int SubSpecies = 0;
         public string tag = "";
         public bool[] TieAngOverwrite = new bool[3];
         public bool[] TieLenOverwrite = new bool[3];
         public tie[] Ties = new tie[10];
-        public int[] usedvars = new int[1000];
-        public var_[] vars = new var_[1000];
+        public List<var_> vars = new();
         public decimal vbody = 0;
         public bool Veg = false;
         public vector vel = null;
@@ -4313,7 +4310,6 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public bool VirusImmune = false;
         public int virusshot = 0;
         public int Vloc = 0;
-        public int vnum = 0;
         public int Vtimer = 0;
         public int Vval = 0;
         public bool wall = false;

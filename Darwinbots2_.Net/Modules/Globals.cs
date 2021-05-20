@@ -480,7 +480,19 @@ internal static class Globals
     // var structure, to store the correspondance name<->value
     public class var_
     {
-        public string Name = "";
-        public int value = 0;
+        public var_(string name, int value, bool informational = false, bool functional = false, string synonym = null)
+        {
+            Name = name;
+            Value = value;
+            Informational = informational;
+            Functional = functional;
+            Synonym = synonym;
+        }
+
+        public bool Functional { get; }
+        public bool Informational { get; }
+        public string Name { get; }
+        public string Synonym { get; }
+        public int Value { get; }
     }
 }
