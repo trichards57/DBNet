@@ -369,11 +369,11 @@ internal static class Master
                 {
                     if (rob[t].LastMut > 0)
                     { //4/5/2016 Handycap freshly mutated robots more than other robots
-                        rob[t].nrg = rob[t].nrg + calc_handycap();
+                        rob[t].nrg = rob[t].nrg + CalculateHandycap();
                     }
                     else
                     {
-                        rob[t].nrg = rob[t].nrg + calc_handycap() / 2;
+                        rob[t].nrg = rob[t].nrg + CalculateHandycap() / 2;
                     }
                 }
             }
@@ -635,7 +635,7 @@ internal static class Master
             if (Mutate_count == 0)
             {
                 //Restart
-                await logevo("A restart is needed.");
+                await LogEvolution("A restart is needed.");
 
                 DisplayActivations = false;
                 Form1.instance.Active = false;
@@ -680,11 +680,11 @@ internal static class Master
                 }
                 if (totnvegsDisplayed > 10 & cmptotnrgnvegs > totnrgnvegs * 2)
                 { //did population and energy x2?
-                    ZBpassedtest();
+                    ZBPassedTest();
                 }
                 else
                 {
-                    await ZBfailedtest();
+                    await ZBFailedTest();
                 }
             }
         }

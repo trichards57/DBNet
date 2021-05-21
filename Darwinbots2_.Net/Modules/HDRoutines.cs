@@ -668,6 +668,62 @@ internal static class HDRoutines
         }
     }
 
+    /// <summary>
+    /// Saves a robot's dna.
+    /// </summary>
+    public static async Task salvarob(int n, string path)
+    {
+        var hold = new StringBuilder();
+
+        string hashed = "";
+
+        hold.AppendLine(SaveRobHeader(n));
+
+        //Botsareus 10/8/2015 New code to save epigenetic memory as gene
+
+        if (UseEpiGene)
+        {
+            var started = false;
+
+            for (var a = 971; a <= 990; a++)
+            {
+                if (rob[n].mem[a] != 0)
+                {
+                    if (!started)
+                        hold.AppendLine("start");
+
+                    started = true;
+
+                    hold.AppendLine($"{rob[n].mem[a]} {a} store");
+                }
+            }
+
+            if (started)
+                hold.AppendLine("stop");
+        }
+
+        savingtofile = true; //Botsareus 2/28/2014 when saving to file the def sysvars should not save
+        hold.AppendLine(DetokenizeDNA(n, 0));
+        savingtofile = false;
+
+        hashed = Hash(hold.ToString());
+
+        hold.AppendLine();
+        hold.AppendLine($"'#hash: {hashed}");
+
+        if (!string.IsNullOrWhiteSpace(rob[n].tag))
+            hold.AppendLine($"'#tag: {rob[n].tag.Substring(0, 45)}");
+
+        //Botsareus 12/11/2013 Save mrates file
+        await Save_mrates(rob[n].Mutables, System.IO.Path.Join(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path) + ".mrate"));
+
+        if (x_restartmode > 0)
+            return;
+
+        if (MessageBox.Show($"Do you want to change robot's name to {System.IO.Path.GetFileNameWithoutExtension(path)} ?", "Robot DNA saved", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            rob[n].FName = System.IO.Path.GetFileNameWithoutExtension(path);
+    }
+
     public static async Task Save_mrates(mutationprobs mut, string FName)
     {
         var data = new SavedMutationRates
@@ -1185,62 +1241,6 @@ internal static class HDRoutines
             k = t.k,
             NaturalLength = t.NaturalLength
         };
-    }
-
-    /// <summary>
-    /// Saves a robot's dna.
-    /// </summary>
-    private static async Task salvarob(int n, string path)
-    {
-        var hold = new StringBuilder();
-
-        string hashed = "";
-
-        hold.AppendLine(SaveRobHeader(n));
-
-        //Botsareus 10/8/2015 New code to save epigenetic memory as gene
-
-        if (UseEpiGene)
-        {
-            var started = false;
-
-            for (var a = 971; a <= 990; a++)
-            {
-                if (rob[n].mem[a] != 0)
-                {
-                    if (!started)
-                        hold.AppendLine("start");
-
-                    started = true;
-
-                    hold.AppendLine($"{rob[n].mem[a]} {a} store");
-                }
-            }
-
-            if (started)
-                hold.AppendLine("stop");
-        }
-
-        savingtofile = true; //Botsareus 2/28/2014 when saving to file the def sysvars should not save
-        hold.AppendLine(DetokenizeDNA(n, 0));
-        savingtofile = false;
-
-        hashed = Hash(hold.ToString());
-
-        hold.AppendLine();
-        hold.AppendLine($"'#hash: {hashed}");
-
-        if (!string.IsNullOrWhiteSpace(rob[n].tag))
-            hold.AppendLine($"'#tag: {rob[n].tag.Substring(0, 45)}");
-
-        //Botsareus 12/11/2013 Save mrates file
-        await Save_mrates(rob[n].Mutables, System.IO.Path.Join(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path) + ".mrate"));
-
-        if (x_restartmode > 0)
-            return;
-
-        if (MessageBox.Show($"Do you want to change robot's name to {System.IO.Path.GetFileNameWithoutExtension(path)} ?", "Robot DNA saved", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            rob[n].FName = System.IO.Path.GetFileNameWithoutExtension(path);
     }
 
     private static SavedGraph SaveGraphs(int i)

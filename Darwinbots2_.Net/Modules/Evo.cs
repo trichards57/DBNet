@@ -1,12 +1,12 @@
 using DBNet.Forms;
 using Iersera.DataModel;
+using Iersera.Support;
 using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using static Common;
-using static DNAExecution;
 using static DNAManipulations;
 using static DNATokenizing;
 using static Globals;
@@ -15,7 +15,6 @@ using static NeoMutations;
 using static Robots;
 using static SimOptModule;
 using static varspecie;
-using static VBExtension;
 
 internal static class Evo
 {
@@ -23,113 +22,105 @@ internal static class Evo
 
     private static double oldMx;
 
-    public static decimal calc_exact_handycap()
+    public static double CalculateExactHandycap()
     {
         return energydifXP - energydifXP2;
     }
 
-    public static decimal calc_handycap()
+    public static double CalculateHandycap()
     {
-        return SimOpts.TotRunCycle < (CLng(hidePredCycl) * CLng(8))
-            ? calc_exact_handycap() * SimOpts.TotRunCycle / (CLng(hidePredCycl) * CLng(8))
-            : calc_exact_handycap();
+        return SimOpts.TotRunCycle < (hidePredCycl * 8)
+            ? CalculateExactHandycap() * SimOpts.TotRunCycle / (hidePredCycl * 8)
+            : CalculateExactHandycap();
     }
 
-    public static async Task calculateZB(int robid, double Mx, int bestrob)
+    public static async Task CalculateZB(int robid, double Mx, robot bestrob)
     {
-        if (rob[bestrob].LastMut <= 0)
+        if (bestrob.LastMut <= 0)
         {
-            await logevo("'Reset' reason: No mutations", x_filenumber);
+            await LogEvolution("'Reset' reason: No mutations", x_filenumber);
             return;
         }
 
-        var MratesMax = NormMut ? rob[bestrob].DnaLen * valMaxNormMut : 2000000000;
+        var MratesMax = NormMut ? bestrob.DnaLen * valMaxNormMut : 2000000000;
 
-        var goodtest = false;//no duplicate message
+        var goodtest = false; // no duplicate message
 
         if (oldid != robid && oldid != 0)
         {
-            await logevo($"'GoodTest' reason: oldid({oldid}) comp. id({robid})", x_filenumber);
+            await LogEvolution($"'GoodTest' reason: oldid({oldid}) comp. id({robid})", x_filenumber);
 
-            rob[bestrob].Mutables.mutarray[PointUP] = Math.Min(rob[bestrob].Mutables.mutarray[PointUP] * 1.15, MratesMax);
-            rob[bestrob].Mutables.mutarray[P2UP] = Math.Min(rob[bestrob].Mutables.mutarray[P2UP] * 1.15, MratesMax);
+            bestrob.Mutables.mutarray[PointUP] = Math.Min(bestrob.Mutables.mutarray[PointUP] * 1.15, MratesMax);
+            bestrob.Mutables.mutarray[P2UP] = Math.Min(bestrob.Mutables.mutarray[P2UP] * 1.15, MratesMax);
 
             goodtest = true;
         }
 
         if (oldid == robid && Mx > oldMx)
         {
-            rob[bestrob].Mutables.mutarray[PointUP] = Math.Min(rob[bestrob].Mutables.mutarray[PointUP] * 1.75, MratesMax);
-            rob[bestrob].Mutables.mutarray[P2UP] = Math.Min(rob[bestrob].Mutables.mutarray[P2UP] * 1.75, MratesMax);
+            bestrob.Mutables.mutarray[PointUP] = Math.Min(bestrob.Mutables.mutarray[PointUP] * 1.75, MratesMax);
+            bestrob.Mutables.mutarray[P2UP] = Math.Min(bestrob.Mutables.mutarray[P2UP] * 1.75, MratesMax);
 
             await ZBreadyforTest(bestrob);
         }
         else if (!goodtest)
-            await logevo($"'Reset' reason: oldid({oldid}) comp. id({robid}) Mx({Mx}) comp. oldMx({oldMx})", x_filenumber);
+            await LogEvolution($"'Reset' reason: oldid({oldid}) comp. id({robid}) Mx({Mx}) comp. oldMx({oldMx})", x_filenumber);
 
         oldMx = Mx;
         oldid = robid;
     }
 
-    public static async Task logevo(string s, int idx = -1)
+    public static async Task LogEvolution(string s, int idx = -1)
     {
-        await File.AppendAllTextAsync($@"{MDIForm1.instance.MainDir}\evolution\log{(idx > -1 ? idx : "")}.txt", $"{s} {DateTime.Now.ToString()}\n");
+        await File.AppendAllTextAsync($@"evolution\log{(idx > -1 ? idx : "")}.txt", $"{s} {DateTime.Now}\n");
     }
 
     public static async Task UpdateLostEvo()
     {
-        await logevo("Evolving robot lost, decreasing difficulty.");
-        await Decrease_Difficulty(); //Robot simply lost, se we need to loosen up the difficulty
-        await exportdata();
+        await LogEvolution("Evolving robot lost, decreasing difficulty.");
+        await DecreaseDifficulty(); //Robot simply lost, so we need to loosen up the difficulty
+        await ExportData();
     }
 
     public static async Task UpdateLostF1()
     {
-        await logevo("Evolving robot lost the test, increasing difficulty.");
+        await LogEvolution("Evolving robot lost the test, increasing difficulty.");
 
         if (y_eco_im > 0)
         {
             for (var ecocount = 1; ecocount < 15; ecocount++)
-                Directory.Delete($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}", true);
+                Directory.Delete($@"evolution\testrob{ecocount}", true);
         }
         else
         {
-            File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Test.txt"); ;
-            File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Test.mrate"); ;
+            File.Delete($@"evolution\Test.txt"); ;
+            File.Delete($@"evolution\Test.mrate"); ;
             //reset base robot
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt", $@"{MDIForm1.instance.MainDir}\evolution\Base.txt");
+            File.Copy($@"evolution\stages\stage{x_filenumber}.txt", $@"evolution\Base.txt");
             y_Stgwins = 0;
         }
         x_restartmode = 4;
-        Increase_Difficulty(); //Robot lost, might as well have never mutated
-        await exportdata();
+        IncreaseDifficulty(); //Robot lost, might as well have never mutated
+        await ExportData();
     }
 
     public static async Task UpdateWonEvo(int bestrob)
     {
         if (rob[bestrob].Mutations > 0 & (totnvegsDisplayed >= 15 || y_eco_im == 0))
         {
-            await logevo("Evolving robot changed, testing robot.");
+            await LogEvolution("Evolving robot changed, testing robot.");
             //F1 mode init
             if (y_eco_im == 0)
             {
-                salvarob(bestrob, $@"{MDIForm1.instance.MainDir}\evolution\Test.txt");
+                await HDRoutines.salvarob(bestrob, @"evolution\Test.txt");
             }
             else
             {
                 //The Eco Calc
 
-                //Step1 disable simulation execution
-                DisplayActivations = false;
-                Form1.instance.Active = false;
-                Form1.instance.SecTimer.Enabled = false;
-
-                //Step2 calculate cumelative genetic distance
-                Form1.instance.GraphLab.Visibility = Visibility.Visible;
-
                 var maxgdi = new double[MaxRobs];
 
-                for (var t = 1; t < MaxRobs; t++)
+                for (var t = 1; t < rob.Count; t++)
                 {
                     if (rob[t].exist && !rob[t].Veg && rob[t].FName != "Corpse" && !(rob[t].FName == "Base.txt" && hidepred))
                     {
@@ -144,12 +135,8 @@ internal static class Evo
                                 }
                             }
                         }
-                        Form1.instance.GraphLab.Content = $"Calculating eco result: {t / MaxRobs * 100}%";
-                        DoEvents();
                     }
                 }
-
-                Form1.instance.GraphLab.Visibility = Visibility.Hidden;
 
                 //step3 calculate robots
 
@@ -180,9 +167,9 @@ internal static class Evo
                     }
 
                     //save and kill the robot
-                    Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}");
+                    Directory.CreateDirectory($@"evolution\testrob{ecocount}");
 
-                    salvarob(fit, $@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.txt");
+                    await HDRoutines.salvarob(fit, $@"evolution\testrob{ecocount}\Test.txt");
                     rob[fit].exist = false;
                 }
             }
@@ -190,13 +177,13 @@ internal static class Evo
         }
         else
         {
-            await logevo("Evolving robot never changed, increasing difficulty.");
+            await LogEvolution("Evolving robot never changed, increasing difficulty.");
             //Increase mutation rates
-            scale_mutations();
+            await ScaleMutations();
             //Robot never mutated so we need to tighten up the difficulty
-            Increase_Difficulty();
+            IncreaseDifficulty();
         }
-        await exportdata();
+        await ExportData();
     }
 
     public static async Task UpdateWonF1()
@@ -205,25 +192,26 @@ internal static class Evo
         y_Stgwins++;
         var currenttest = x_filenumber - y_Stgwins * (x_filenumber ^ (1 / 3));
         if (currenttest < 0 || x_filenumber == 0 || y_eco_im > 0)
-        { //check for x_filenumber is zero here to prevent endless loop
-            await logevo($"Evolving robot won all tests, setting up stage {x_filenumber + 1}");
-            await Next_Stage(); //Robot won, go to next stage
+        {
+            //check for x_filenumber is zero here to prevent endless loop
+            await LogEvolution($"Evolving robot won all tests, setting up stage {x_filenumber + 1}");
+            await NextStage(); //Robot won, go to next stage
             x_restartmode = 4;
         }
         else
         {
             //copy a robot for current test
-            await logevo($"Robot is currently under test against stage {currenttest}");
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{currenttest}.txt", $@"{MDIForm1.instance.MainDir}\evolution\Base.txt");
+            await LogEvolution($"Robot is currently under test against stage {currenttest}");
+            File.Copy($@"evolution\stages\stage{currenttest}.txt", $@"evolution\Base.txt");
         }
-        await exportdata();
+        await ExportData();
     }
 
-    public static async Task ZBfailedtest()
+    public static async Task ZBFailedTest()
     {
-        await logevo("Zerobot failed the test, evolving further.");
-        File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Test.txt");
-        File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Test.mrate");
+        await LogEvolution("Zerobot failed the test, evolving further.");
+        File.Delete(@"evolution\Test.txt");
+        File.Delete(@"evolution\Test.mrate");
         x_restartmode = 7;
 
         await RestartMode.Save(x_restartmode, x_filenumber);
@@ -232,36 +220,32 @@ internal static class Evo
         if (x_filenumber > 500)
         {
             //erase the folder
-            Directory.Delete($@"{MDIForm1.instance.MainDir}\evolution", true);
+            Directory.Delete(@"evolution", true);
 
             //make folder again
-            Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\stages");
+            Directory.CreateDirectory(@"evolution\stages");
 
             //populate folder init
             for (var ecocount = 1; ecocount < 8; ecocount++)
             {
                 //generate folders for multi
-                Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}");
-                Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}");
+                Directory.CreateDirectory($@"evolution\baserob{ecocount}");
+                Directory.CreateDirectory($@"evolution\mutaterob{ecocount}");
                 //generate the zb file (multi)
-                using (var fileWriter = new StreamWriter($@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}\Base.txt"))
+                using (var fileWriter = new StreamWriter($@"evolution\baserob{ecocount}\Base.txt"))
                 {
                     for (var zerocount = 1; zerocount < y_zblen; zerocount++)
                         await fileWriter.WriteLineAsync("0");
                 }
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}\Base.txt", $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.txt");
+                File.Copy($@"evolution\baserob{ecocount}\Base.txt", $@"evolution\mutaterob{ecocount}\Mutate.txt");
             }
 
-            //Botsareus 10/22/2015 the stages are singuler
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\baserob1\Base.txt", $@"{MDIForm1.instance.MainDir}\evolution\stages\stage0.txt");
+            File.Copy(@"evolution\baserob1\Base.txt", @"evolution\stages\stage0.txt");
 
             //restart
             await RestartMode.Save(7, 0);
         }
         //Restart
-        DisplayActivations = false;
-        Form1.instance.Active = false;
-        Form1.instance.SecTimer.Enabled = false;
 
         await SafeMode.Save(false);
         await AutoSaved.Save(false);
@@ -269,18 +253,14 @@ internal static class Evo
         Restarter();
     }
 
-    public static void ZBpassedtest()
+    public static void ZBPassedTest()
     {
         MessageBox.Show("Zerobot evolution complete.", "Zerobot evo", MessageBoxButton.OK, MessageBoxImage.Information);
-        DisplayActivations = false;
-        Form1.instance.Active = false;
-        Form1.instance.SecTimer.Enabled = false;
     }
 
-    private static async Task Decrease_Difficulty()
+    private static async Task DecreaseDifficulty()
     {
-        //Botsareus 12/11/2015 renormalize the mutation rates
-        await renormalize_mutations();
+        await RenormalizeMutations();
 
         if (!LFORdir)
         {
@@ -290,17 +270,17 @@ internal static class Evo
 
         LFOR = Math.Min(LFOR + LFORcorr / n10(LFOR), 150);
 
-        hidePredCycl = Math.Clamp((int)(Init_hidePredCycl + 300 * rndy() - 150), 150, 15000);
+        hidePredCycl = Math.Clamp(Init_hidePredCycl + ThreadSafeRandom.Local.Next(-150, 150), 150, 15000);
 
         //Botsareus 8/17/2016 Revert one stage, should not apply to eco evo
         if (LFORcorr < 0.00000005 && y_eco_im == 0 & x_filenumber > 0)
         {
-            await logevo("Reverting one stage.");
-            await revert();
+            await LogEvolution("Reverting one stage.");
+            await Revert();
         }
     }
 
-    private static async Task exportdata()
+    private static async Task ExportData()
     {
         var data = new EvoData
         {
@@ -314,9 +294,8 @@ internal static class Evo
             y_Stgwins = y_Stgwins
         };
 
-        await File.WriteAllTextAsync($@"{MDIForm1.instance.MainDir}\evolution\data.gset", JsonSerializer.Serialize(data));
+        await File.WriteAllTextAsync(@"evolution\data.gset", JsonSerializer.Serialize(data));
 
-        //save restart mode
         if (x_restartmode == 5)
             x_restartmode = 4;
 
@@ -327,21 +306,20 @@ internal static class Evo
         Restarter();
     }
 
-    private static void Increase_Difficulty()
+    private static void IncreaseDifficulty()
     {
         if (LFORdir)
         {
             LFORdir = false;
             LFORcorr /= 2;
         }
-        //Botsare us 7/01/2014 a little mod here, more sane floor on lfor
 
         var tmpLFOR = LFOR;
         LFOR -= LFORcorr / n10(LFOR);
         if (LFOR < 1 / n10(tmpLFOR))
             LFOR = Math.Max(1 / n10(tmpLFOR), 0.01);
 
-        hidePredCycl = Math.Clamp((int)(Init_hidePredCycl + 300 * rndy() - 150), 150, 15000);
+        hidePredCycl = Math.Clamp(Init_hidePredCycl + ThreadSafeRandom.Local.Next(-150, 150), 150, 15000);
 
         //In really rare cases start emping up difficulty using other means
         if (LFOR == 0.01)
@@ -353,10 +331,10 @@ internal static class Evo
 
     private static int n10(double a)
     {
-        return a <= 1 ? (int)Math.Pow(10, 1 - (Math.Log(a * 2) / Math.Log(10))) : 1;
+        return a <= 1 ? (int)Math.Pow(10, 1 - Math.Log10(a * 2)) : 1;
     }
 
-    private static async Task Next_Stage()
+    private static async Task NextStage()
     {
         //Reset F1 test
         y_Stgwins = 0;
@@ -371,8 +349,10 @@ internal static class Evo
         { //This stuff should only happen if y_normalize is enabled
             var gotdnalen = 0;
 
-            if (await LoadDNA(MDIForm1.instance.MainDir + "\\evolution\\Test.txt", 0))
-                gotdnalen = DnaLen(rob[0].dna);
+            var rob = new robot();
+
+            if (await LoadDNA(@"evolution\Test.txt", rob))
+                gotdnalen = DnaLen(rob.dna);
 
             var sizechangerate = Math.Max((5000 - target_dna_size) / 4750, 0);
 
@@ -399,14 +379,14 @@ internal static class Evo
         {
             for (var ecocount = 1; ecocount < 15; ecocount++)
             {
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\stages\stagerob{ecocount}\stage{x_filenumber}.txt");
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.mrate", $@"{MDIForm1.instance.MainDir}\evolution\stages\stagerob{ecocount}\stage{x_filenumber}.mrate");
+                File.Copy($@"evolution\testrob{ecocount}\Test.txt", $@"evolution\stages\stagerob{ecocount}\stage{x_filenumber}.txt");
+                File.Copy($@"evolution\testrob{ecocount}\Test.mrate", $@"evolution\stages\stagerob{ecocount}\stage{x_filenumber}.mrate");
             }
         }
         else
         {
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt");
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.mrate", $@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.mrate");
+            File.Copy(@"evolution\Test.txt", $@"evolution\stages\stage{x_filenumber}.txt");
+            File.Copy(@"evolution\Test.mrate", $@"evolution\stages\stage{x_filenumber}.mrate");
         }
 
         //kill main dir robots
@@ -414,17 +394,17 @@ internal static class Evo
         {
             for (var ecocount = 1; ecocount < 15; ecocount++)
             {
-                Directory.Delete($@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}", true);
-                Directory.Delete($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}", true);
+                Directory.Delete($@"evolution\baserob{ecocount}", true);
+                Directory.Delete($@"evolution\mutaterob{ecocount}", true);
             }
         }
         else
         {
-            File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Base.txt");
-            File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Mutate.txt");
+            File.Delete(@"evolution\Base.txt");
+            File.Delete(@"evolution\Mutate.txt");
 
-            if (File.Exists($@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate"))
-                File.Delete($@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate"); ;
+            if (File.Exists(@"evolution\Mutate.mrate"))
+                File.Delete(@"evolution\Mutate.mrate"); ;
         }
 
         //copy robots
@@ -432,34 +412,34 @@ internal static class Evo
         {
             for (var ecocount = 1; ecocount < 15; ecocount++)
             {
-                Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}");
-                Directory.CreateDirectory($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}");
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}\Base.txt");
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.txt");
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\testrob{ecocount}\Test.mrate", $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+                Directory.CreateDirectory($@"evolution\baserob{ecocount}");
+                Directory.CreateDirectory($@"evolution\mutaterob{ecocount}");
+                File.Copy($@"evolution\testrob{ecocount}\Test.txt", $@"evolution\baserob{ecocount}\Base.txt");
+                File.Copy($@"evolution\testrob{ecocount}\Test.txt", $@"evolution\mutaterob{ecocount}\Mutate.txt");
+                File.Copy($@"evolution\testrob{ecocount}\Test.mrate", $@"evolution\mutaterob{ecocount}\Mutate.mrate");
             }
         }
         else
         {
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\Base.txt");
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\Mutate.txt");
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.mrate", $@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+            File.Copy(@"evolution\Test.txt", @"evolution\Base.txt");
+            File.Copy(@"evolution\Test.txt", @"evolution\Mutate.txt");
+            File.Copy(@"evolution\Test.mrate", @"evolution\Mutate.mrate");
         }
 
         //kill test robot
         if (y_eco_im > 0)
         {
             for (var ecocount = 1; ecocount < 15; ecocount++)
-                Directory.Delete(MDIForm1.instance.MainDir + "\\evolution\\testrob" + ecocount, true);
+                Directory.Delete($@"evolution\testrob{ecocount}", true);
         }
         else
         {
-            File.Delete(MDIForm1.instance.MainDir + "\\evolution\\Test.txt"); ;
-            File.Delete(MDIForm1.instance.MainDir + "\\evolution\\Test.mrate"); ;
+            File.Delete(@"\evolution\Test.txt"); ;
+            File.Delete(@"\evolution\Test.mrate"); ;
         }
     }
 
-    private static async Task renormalize_mutations()
+    private static async Task RenormalizeMutations()
     {
         var val = 5 / LFORcorr;
         val *= 90;
@@ -474,9 +454,7 @@ internal static class Evo
         {
             //load mutations
 
-            // TODO (not supported):     On Error GoTo nofile
-
-            filem = Load_mrates($@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+            filem = await HDRoutines.Load_mrates(@"evolution\Mutate.mrate");
 
             //calculate normalized rate
 
@@ -492,10 +470,12 @@ internal static class Evo
             }
             rez = tot / i * 3;
 
-            if (await LoadDNA($@"{MDIForm1.instance.MainDir}\evolution\Mutate.txt", 0))
-                length = DnaLen(rob[0].dna);
+            var rob = new robot();
 
-            rez = Math.Min(rez, NormMut ? length * CLng(valMaxNormMut) : 2000000000.0);
+            if (await LoadDNA(@"evolution\Mutate.txt", rob))
+                length = DnaLen(rob.dna);
+
+            rez = Math.Min(rez, NormMut ? length * valMaxNormMut : 2000000000.0);
             //norm holds normalized mutation rates
 
             for (var a = 0; a < 10; a++)
@@ -524,7 +504,7 @@ internal static class Evo
 
             //save mutations
 
-            Save_mrates(filem, $@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+            await HDRoutines.Save_mrates(filem, @"evolution\Mutate.mrate");
         }
         else
         {
@@ -532,7 +512,7 @@ internal static class Evo
             {
                 //load mutations
 
-                filem = Load_mrates($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+                filem = await HDRoutines.Load_mrates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
 
                 //calculate normalized rate
 
@@ -548,10 +528,12 @@ internal static class Evo
                 }
                 rez = tot / i * 3;
 
-                if (await LoadDNA($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.txt", 0))
-                    length = DnaLen(rob[0].dna);
+                var rob = new robot();
 
-                rez = Math.Min(rez, NormMut ? length * CLng(valMaxNormMut) : 2000000000.0);
+                if (await LoadDNA($@"evolution\mutaterob{ecocount}\Mutate.txt", rob))
+                    length = DnaLen(rob.dna);
+
+                rez = Math.Min(rez, NormMut ? length * valMaxNormMut : DNAExecution.MaxIntValue);
                 //norm holds normalized mutation rates
 
                 for (var a = 0; a < 10; a++)
@@ -580,34 +562,35 @@ internal static class Evo
 
                 //save mutations
 
-                Save_mrates(filem, $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+                await HDRoutines.Save_mrates(filem, $@"evolution\mutaterob{ecocount}\Mutate.mrate");
             }
         }
     }
 
-    private static async Task revert()
+    private static async Task Revert()
     {
         //Kill a stage
-        File.Delete($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt"); ;
-        File.Delete($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.mrate"); ;
+        File.Delete($@"evolution\stages\stage{x_filenumber}.txt"); ;
+        File.Delete($@"evolution\stages\stage{x_filenumber}.mrate"); ;
         //Update file number
         x_filenumber--;
         //Move files
-        File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt", $@"{MDIForm1.instance.MainDir}\evolution\Base.txt");
-        File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt", $@"{MDIForm1.instance.MainDir}\evolution\Mutate.txt");
-        File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.mrate", $@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+        File.Copy($@"evolution\stages\stage{x_filenumber}.txt", @"evolution\Base.txt");
+        File.Copy($@"evolution\stages\stage{x_filenumber}.txt", @"evolution\Mutate.txt");
+        File.Copy($@"evolution\stages\stage{x_filenumber}.mrate", @"evolution\Mutate.mrate");
         //Reset data
         LFORcorr = 5;
         LFOR = (LFOR + 10) / 2; //normalize LFOR toward 10
         var fdnalen = 0;
 
-        if (await LoadDNA($@"{MDIForm1.instance.MainDir}\evolution\Mutate.txt", 0))
-            fdnalen = DnaLen(rob[0].dna);
+        var rob = new robot();
+        if (await LoadDNA(@"evolution\Mutate.txt", rob))
+            fdnalen = DnaLen(rob.dna);
 
         curr_dna_size = fdnalen + 5;
     }
 
-    private static void scale_mutations()
+    private static async Task ScaleMutations()
     {
         var val = 5 / LFORcorr;
         val *= 5;
@@ -619,7 +602,7 @@ internal static class Evo
         {
             //load mutations
 
-            filem = Load_mrates($@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+            filem = await HDRoutines.Load_mrates(@"evolution\Mutate.mrate");
 
             tot = 0;
             var i = 0;
@@ -651,7 +634,7 @@ internal static class Evo
 
             //save mutations
 
-            Save_mrates(filem, $@"{MDIForm1.instance.MainDir}\evolution\Mutate.mrate");
+            await HDRoutines.Save_mrates(filem, @"evolution\Mutate.mrate");
         }
         else
         {
@@ -659,7 +642,7 @@ internal static class Evo
             {
                 //load mutations
 
-                filem = Load_mrates($@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+                filem = await HDRoutines.Load_mrates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
 
                 tot = 0;
                 var i = 0;
@@ -691,33 +674,33 @@ internal static class Evo
 
                 //save mutations
 
-                Save_mrates(filem, $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+                await HDRoutines.Save_mrates(filem, $@"evolution\mutaterob{ecocount}\Mutate.mrate");
             }
         }
     }
 
-    private static async Task ZBreadyforTest(int bestrob)
+    private static async Task ZBreadyforTest(robot bestrob)
     {
-        salvarob(bestrob, $@"{MDIForm1.instance.MainDir}\evolution\Test.txt");
+        await HDRoutines.salvarob(rob.IndexOf(bestrob), @"evolution\Test.txt");
         //the robot did evolve, so lets update
         x_filenumber++;
-        File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.txt", $@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.txt");
-        File.Copy($@"{MDIForm1.instance.MainDir}\evolution\Test.mrate", $@"{MDIForm1.instance.MainDir}\evolution\stages\stage{x_filenumber}.mrate");
+        File.Copy(@"evolution\Test.txt", $@"evolution\stages\stage{x_filenumber}.txt");
+        File.Copy(@"evolution\Test.mrate", $@"evolution\stages\stage{x_filenumber}.mrate");
 
         //what is our lowest index?
         var lowestindex = Math.Max(x_filenumber - 7, 0);
 
-        await logevo("Progress.");
+        await LogEvolution("Progress.");
 
         for (var ecocount = 1; ecocount < 8; ecocount++)
         {
             //calculate index and copy robots
             var dbn = lowestindex + (ecocount - 1) % (x_filenumber + 1);
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{dbn}.txt", $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.txt");
-            if (File.Exists($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{dbn}.mrate"))
-                File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{dbn}.mrate", $@"{MDIForm1.instance.MainDir}\evolution\mutaterob{ecocount}\Mutate.mrate");
+            File.Copy($@"evolution\stages\stage{dbn}.txt", $@"evolution\mutaterob{ecocount}\Mutate.txt");
+            if (File.Exists($@"evolution\stages\stage{dbn}.mrate"))
+                File.Copy($@"evolution\stages\stage{dbn}.mrate", $@"evolution\mutaterob{ecocount}\Mutate.mrate");
 
-            File.Copy($@"{MDIForm1.instance.MainDir}\evolution\stages\stage{dbn}.txt", $@"{MDIForm1.instance.MainDir}\evolution\baserob{ecocount}\Base.txt");
+            File.Copy($@"evolution\stages\stage{dbn}.txt", $@"evolution\baserob{ecocount}\Base.txt");
         }
 
         x_restartmode = 9;
@@ -727,9 +710,6 @@ internal static class Evo
         await RestartMode.Save(x_restartmode, x_filenumber);
 
         //Restart
-        DisplayActivations = false;
-        Form1.instance.Active = false;
-        Form1.instance.SecTimer.Enabled = false;
 
         await SafeMode.Save(false);
         await AutoSaved.Save(false);

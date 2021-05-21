@@ -3281,7 +3281,7 @@ namespace DBNet.Forms
 
         private void y_info_Click()
         {
-            MsgBox("Target DNA size: " + IIf(y_normsize, curr_dna_size, "N/A") + vbCrLf + "Next DNA size change: " + IIf(y_normsize, target_dna_size, "N/A") + vbCrLf + "Reduction unit: " + LFOR + vbCrLf + "On/Off cycles: " + hidePredCycl + IIf(x_restartmode == 4 || x_restartmode == 5, vbCrLf + "Current Handicap: " + energydifXP + " - " + energydifXP2 + " = " + calc_exact_handycap(), ""), vbInformation, "Survival information");
+            MsgBox("Target DNA size: " + IIf(y_normsize, curr_dna_size, "N/A") + vbCrLf + "Next DNA size change: " + IIf(y_normsize, target_dna_size, "N/A") + vbCrLf + "Reduction unit: " + LFOR + vbCrLf + "On/Off cycles: " + hidePredCycl + IIf(x_restartmode == 4 || x_restartmode == 5, vbCrLf + "Current Handicap: " + energydifXP + " - " + energydifXP2 + " = " + CalculateExactHandycap(), ""), vbInformation, "Survival information");
         }
 
         private void ZoomInPremuto()
