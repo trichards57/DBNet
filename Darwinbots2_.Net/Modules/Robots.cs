@@ -23,7 +23,6 @@ using static SimOptModule;
 using static System.Math;
 using static Teleport;
 using static Ties;
-using static varspecie;
 using static VBConstants;
 using static VBExtension;
 using static Vegs;
@@ -517,12 +516,12 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         rob[n].LastOwner = "";
         rob[n].SonNumber = 0;
         rob[n].age = 0;
-        delallties(n);
+        DeleteAllTies(n);
         rob[n].exist = false; // do this after deleting the ties...
         UpdateBotBucket(n);
         if (!MDIForm1.nopoff)
         {
-            makepoff(n);
+            MakePoff(n);
         }
         if (!(rob[n].console == null))
         {
@@ -1034,7 +1033,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
                     {
                         if (rob[n].mem(mrepro) > 0)
                         {
-                            mutationprobs temp = null;
+                            varspecie.MutationProbabilities temp = null;
 
                             temp = rob(nuovo).Mutables;
 
@@ -1066,7 +1065,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
                     rob(nuovo).mem(DnaLenSys) = rob(nuovo).DnaLen;
                     rob(nuovo).mem(GenesSys) = rob(nuovo).genenum;
 
-                    maketie(n, nuovo, sondist, 100, 0); //birth ties last 100 cycles
+                    MakeTie(n, nuovo, sondist, 100, 0); //birth ties last 100 cycles
                     rob[n].onrg = rob[n].nrg; //saves parent from dying from shock after giving birth
                     rob(nuovo).mass = nbody / 1000 + rob(nuovo).shell / 200;
                     rob(nuovo).mem(timersys) = rob[n].mem(timersys); //epigenetic timer
@@ -2283,11 +2282,11 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
 
                 if (!rob(t).Corpse && !rob(t).DisableDNA)
                 {
-                    tieportcom(t); //transfer data through ties
+                    Ties.TiePortCommunication(t); //transfer data through ties
                 }
                 if (!rob(t).Corpse && !rob(t).DisableDNA)
                 {
-                    readtie(t); //reads all of the tref variables from a given tie number
+                    ReadTie(t); //reads all of the tref variables from a given tie number
                 }
             }
         }
@@ -2319,7 +2318,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
 
             if (rob(t).exist && !(rob(t).FName == "Base.txt" && hidepred))
             {
-                Update_Ties(t); // Carries all tie routines
+                UpdateTies(t); // Carries all tie routines
 
                 //EricL Transfer genetic meomory locations for newborns through the birth tie during their first 15 cycles
                 if (rob(t).age < 15)
@@ -4256,14 +4255,13 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public decimal mt = 0;
         public bool Multibot = false;
         public int multibot_time = 0;
-        public mutationprobs Mutables = null;
+        public MutationProbabilities Mutables = null;
         public int Mutations = 0;
         public double MutEpiReset = 0;
         public int newage = 0;
         public bool NewMove = false;
         public bool NoChlr = false;
         public double nrg = 0;
-        public decimal numties = 0;
         public decimal oaim = 0;
         public decimal obody = 0;
         public int[] occurr = new int[20];
@@ -4286,7 +4284,7 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public bool Poisoned = false;
         public vector pos = null;
         public int Pval = 0;
-        public decimal Pwaste = 0;
+        public double Pwaste = 0;
         public double radius = 0;
         public int reproTimer = 0;
         public double shell = 0;
@@ -4300,9 +4298,9 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public string tag = "";
         public bool[] TieAngOverwrite = new bool[3];
         public bool[] TieLenOverwrite = new bool[3];
-        public tie[] Ties = new tie[10];
-        public List<var_> vars = new();
-        public decimal vbody = 0;
+        public List<Tie> Ties = new();
+        public List<Variable> vars = new();
+        public double vbody = 0;
         public bool Veg = false;
         public vector vel = null;
         public double venom = 0;

@@ -1263,7 +1263,7 @@ namespace DBNet.Forms
             mfname = Replace(mfname, "&#", MDIForm1.instance.MainDir); //Botsareus 1/18/2014 Bugfix
             if (dir(mfname) != "")
             {
-                TmpOpts.Specie(k).Mutables = Load_mrates(mfname);
+                TmpOpts.Specie(k).Mutables = LoadMutationRates(mfname);
             }
 
             TmpOpts.Specie(k).Mutables.Mutations = true;
@@ -1503,7 +1503,7 @@ namespace DBNet.Forms
 
         public void SwapSpecies(int a, int b)
         {
-            datispecie c = null;
+            Species c = null;
 
 
             c = TmpOpts.Specie(a);

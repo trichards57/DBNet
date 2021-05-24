@@ -97,7 +97,7 @@ internal static class DNAManipulations
         var parts = a.Split(' ', 2);
         var cValid = int.TryParse(parts[1], out var cVal);
 
-        rob.vars.Add(new Globals.var_(parts[0], cValid ? cVal : 0));
+        rob.vars.Add(new Globals.Variable(parts[0], cValid ? cVal : 0));
     }
 
     public static async Task<int> RobScriptLoad(string path)

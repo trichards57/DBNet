@@ -11,7 +11,7 @@ using static SimOptModule;
 internal static class DNAExecution
 {
     public const int MaxIntValue = 2000000000;
-    public static List<var_> sysvar = new();
+    public static List<Variable> sysvar = new();
     private const bool NextBody = true;
     private const bool NextElse = false;
     private static readonly SafeStack<bool> BoolStack = new() { DefaultValue = true };

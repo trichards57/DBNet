@@ -1,243 +1,127 @@
-using VB6 = Microsoft.VisualBasic.Compatibility.VB6;
-using System.Runtime.InteropServices;
-using static VBExtension;
-using static VBConstants;
-using Microsoft.VisualBasic;
-using System;
-using System.Windows;
-using System.Windows.Controls;
-using static System.DateTime;
-using static System.Math;
-using static Microsoft.VisualBasic.Globals;
-using static Microsoft.VisualBasic.Collection;
-using static Microsoft.VisualBasic.Constants;
-using static Microsoft.VisualBasic.Conversion;
-using static Microsoft.VisualBasic.DateAndTime;
-using static Microsoft.VisualBasic.ErrObject;
-using static Microsoft.VisualBasic.FileSystem;
-using static Microsoft.VisualBasic.Financial;
-using static Microsoft.VisualBasic.Information;
-using static Microsoft.VisualBasic.Interaction;
-using static Microsoft.VisualBasic.Strings;
-using static Microsoft.VisualBasic.VBMath;
-using System.Collections.Generic;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.ColorConstants;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.DrawStyleConstants;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.FillStyleConstants;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.GlobalModule;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.Printer;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.PrinterCollection;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.PrinterObjectConstants;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.ScaleModeConstants;
-using static Microsoft.VisualBasic.PowerPacks.Printing.Compatibility.VB6.SystemColorConstants;
-using ADODB;
+using Iersera.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using DBNet.Forms;
-using static stringops;
-using static varspecie;
-using static stayontop;
-using static localizzazione;
-using static SimOptModule;
-using static Common;
-using static Flex;
-using static Robots;
-using static Ties;
-using static Shots_Module;
 using static Globals;
 using static Physics;
-using static F1Mode;
-using static DNAExecution;
-using static Vegs;
-using static Senses;
-using static Multibots;
-using static HDRoutines;
-using static Scripts;
-using static Database;
-using static BucketManager;
-using static NeoMutations;
-using static Master;
-using static DNAManipulations;
-using static DNATokenizing;
-using static Bitwise;
-using static Obstacles;
-using static Teleport;
-using static IntOpts;
-using static stuffcolors;
-using static Evo;
-using static DBNet.Forms.MDIForm1;
-using static DBNet.Forms.datirob;
-using static DBNet.Forms.InfoForm;
-using static DBNet.Forms.ColorForm;
-using static DBNet.Forms.parentele;
-using static DBNet.Forms.Consoleform;
-using static DBNet.Forms.frmAbout;
-using static DBNet.Forms.optionsform;
-using static DBNet.Forms.NetEvent;
-using static DBNet.Forms.grafico;
-using static DBNet.Forms.ActivForm;
-using static DBNet.Forms.Form1;
-using static DBNet.Forms.Contest_Form;
-using static DBNet.Forms.DNA_Help;
-using static DBNet.Forms.MutationsProbability;
-using static DBNet.Forms.PhysicsOptions;
-using static DBNet.Forms.CostsForm;
-using static DBNet.Forms.EnergyForm;
-using static DBNet.Forms.ObstacleForm;
-using static DBNet.Forms.TeleportForm;
-using static DBNet.Forms.frmGset;
-using static DBNet.Forms.frmMonitorSet;
-using static DBNet.Forms.frmPBMode;
-using static DBNet.Forms.frmRestriOps;
-using static DBNet.Forms.frmEYE;
-using static DBNet.Forms.frmFirstTimeInfo;
+using static Robots;
+using static SimOptModule;
 
-
-static class Vegs
+internal static class Vegs
 {
-    // Option Explicit
-    //  V E G E T A B L E S   M A N A G E M E N T
-    public static int totvegs = 0;// total vegs in sim
-    public static int totvegsDisplayed = 0;// Value to display so as to not get a half-updated value
     public static int cooldown = 0;
-    public static List<int> TotalSimEnergy = new List<int>(new int[101]);// Any array of the total amount of sim energy over the past 100 cycles.
-    public static int CurrentEnergyCycle = 0;// Index into he above array for calculating this cycle's sim energy.
-    public static int TotalSimEnergyDisplayed = 0;
-    public static decimal LightAval = 0;//Botsareus 8/14/2013 amount of avaialble light
-                                        //Botsareus 8/16/2014 Variable Sun
+    public static int CurrentEnergyCycle = 0;
+    public static double LightAval = 0;
+    public static double SunChange = 0;
     public static double SunPosition = 0;
-    public static decimal SunRange = 0;
-    public static double SunChange = 0;//0 1 2 position + 10 20 range
-                                       // adds vegetables in random positions
+    public static double SunRange = 0;
+    public static List<int> TotalSimEnergy = new List<int>(new int[101]);
+    public static int TotalSimEnergyDisplayed = 0;
+    public static int totvegs = 0;
+    public static int totvegsDisplayed = 0;
 
-
-    public static void VegsRepopulate()
+    public static void feedveg2(robot rob)
     {
-        int r = 0;
+        var Energy = rob.chloroplasts / 64000 * (1 - SimOpts.VegFeedingToBody);
+        var body = (rob.chloroplasts / 64000 * SimOpts.VegFeedingToBody) / 10;
 
-        int Rx = 0;
-
-        int Ry = 0;
-
-        int t = 0;
-
-        cooldown = cooldown + 1;
-        if (cooldown >= SimOpts.RepopCooldown)
+        if (ThreadSafeRandom.Local.Next(0, 2) == 0)
         {
-            for (t = 1; t < SimOpts.RepopAmount; t++)
+            if (rob.Waste > 0)
             {
-                //If Form1.Active Then 'Botsareus 3/20/2013 Bug fix to load vegs when cycle button pressed
-                aggiungirob(-1, Random(60, SimOpts.FieldWidth - 60), Random(60, SimOpts.FieldHeight - 60));
-                totvegs = totvegs + 1;
-                //End If
+                if (rob.nrg + Energy < 32000)
+                {
+                    rob.nrg += Energy;
+                    rob.Waste -= rob.chloroplasts / 32000 * (1 - SimOpts.VegFeedingToBody);
+                }
+
+                if (rob.Waste < 0)
+                    rob.Waste = 0;
             }
-            cooldown = cooldown - SimOpts.RepopCooldown;
+
+            if (rob.Waste > 0)
+            {
+                if (rob.body + body < 32000)
+                {
+                    rob.body += body;
+                    rob.Waste -= rob.chloroplasts / 32000 * SimOpts.VegFeedingToBody;
+                }
+
+                if (rob.Waste < 0)
+                    rob.Waste = 0;
+            }
+        }
+        else
+        {
+            if (rob.Waste > 0)
+            {
+                if (rob.body + body < 32000)
+                {
+                    rob.body += body;
+                    rob.Waste -= rob.chloroplasts / 32000 * SimOpts.VegFeedingToBody;
+                }
+
+                if (rob.Waste < 0)
+                    rob.Waste = 0;
+            }
+
+            if (rob.Waste > 0)
+            {
+                if (rob.nrg + Energy < 32000)
+                {
+                    rob.nrg += Energy;
+                    rob.Waste -= rob.chloroplasts / 32000 * (1 - SimOpts.VegFeedingToBody);
+                }
+
+                if (rob.Waste < 0)
+                    rob.Waste = 0;
+            }
         }
     }
 
-    /*
-    ' gives vegs their energy meal
-    */
     public static void feedvegs(int totnrg)
-    { //Panda 8/23/2013 Removed totv as it is no longer needed
-
-        //Sun position calculation
+    {
         if (SimOpts.SunOnRnd)
         {
-            byte Sposition = 0;
+            var Sposition = (int)(SunChange % 10);
+            var Srange = (int)SunChange / 10;
 
-            byte Srange = 0;
+            if (ThreadSafeRandom.Local.Next(0, 2000) == 0)
+                Srange = Srange == 0 ? 1 : 0;
 
-            //0 1 2 position + 10 20 range (calculated as one byte, being aware of memory at this pont)
-            Sposition = SunChange % 10;
-            Srange = SunChange / 10;
-
-            if (Int(Rndy() * 2000) == 0)
-            {
-                Srange = IIf(Srange == 0, 1, 0);
-            }
-            if (Int(Rndy() * 2000) == 0)
-            {
-                Sposition = Int(Rndy() * 3);
-            }
+            if (ThreadSafeRandom.Local.Next(0, 2000) == 0)
+                Sposition = ThreadSafeRandom.Local.Next(0, 3);
 
             if (Srange == 1)
-            {
-                SunRange = SunRange + 0.0005m;
-            }
+                SunRange += 0.0005;
+
             if (Srange == 0)
-            {
-                SunRange = SunRange - 0.0005m;
-            }
+                SunRange -= 0.0005;
+
             if (SunRange >= 1)
-            {
                 Srange = 0;
-            }
+
             if (SunRange <= 0)
-            {
                 Srange = 1;
-            }
 
             if (Sposition == 0)
-            {
-                SunPosition = SunPosition - 0.0005m;
-            }
+                SunPosition -= 0.0005;
+
             if (Sposition == 2)
-            {
-                SunPosition = SunPosition + 0.0005m;
-            }
+                SunPosition += 0.0005;
+
             if (SunPosition >= 1)
-            {
                 Sposition = 0;
-            }
+
             if (SunPosition <= 0)
-            {
                 Sposition = 2;
-            }
-            //0 1 2 position + 10 20 range
+
             SunChange = Sposition + Srange * 10;
         }
 
-        int t = 0;
-
-        decimal tok = 0;
-
-        int depth = 0;
-
-        bool FeedThisCycle = false;
-
-        bool OverrideDayNight = false;
-
-
-        decimal ScreenArea = 0;
-
-        decimal TotalRobotArea = 0;
-
-        decimal AreaCorrection = 0;
-
-        decimal ChloroplastCorrection = 0;
-
-        decimal AddEnergyRate = 0;
-
-        decimal SubtractEnergyRate = 0;
-
-        decimal acttok = 0;
-
-
-        FeedThisCycle = SimOpts.Daytime; //Default is to feed if it is daytime, not feed if night
-        OverrideDayNight = false;
+        var FeedThisCycle = SimOpts.Daytime;
+        var OverrideDayNight = false;
 
         if (TotalSimEnergyDisplayed < SimOpts.SunUpThreshold && SimOpts.SunUp)
         {
@@ -250,6 +134,7 @@ static class Vegs
                     FeedThisCycle = true;
                     OverrideDayNight = true;
                     break;
+
                 case ADVANCESUN:
                     //Speed up time until Dawn.  No need to override the day night cycles as we want them to take over.
                     //Note that the real dawn won't actually start until the nrg climbs above the threshold since
@@ -258,6 +143,7 @@ static class Vegs
                     SimOpts.Daytime = true;
                     FeedThisCycle = true;
                     break;
+
                 case PERMSUNSUSPEND:
                     //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
                     //We want to feed this cycle.
@@ -277,6 +163,7 @@ static class Vegs
                     FeedThisCycle = false;
                     OverrideDayNight = true;
                     break;
+
                 case ADVANCESUN:
                     //Speed up time until Dusk.  No need to override the day night cycles as we want them to take over.
                     //Note that the real night time won't actually start until the nrg falls below the threshold since
@@ -285,6 +172,7 @@ static class Vegs
                     SimOpts.Daytime = false;
                     FeedThisCycle = false;
                     break;
+
                 case PERMSUNSUSPEND:
                     //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
                     //We do not want to feed this cycle.
@@ -299,74 +187,35 @@ static class Vegs
         //feature enable checkbox, so we will just test to make sure the user is using both thresholds.  If not, we
         //don't override the cycles even if one of the thresholds is set.
         if (SimOpts.SunThresholdMode == PERMSUNSUSPEND && SimOpts.SunDown && SimOpts.SunUp)
-        {
             OverrideDayNight = true;
-        }
 
         if (SimOpts.DayNight && !OverrideDayNight)
         {
             //Well, we are neither above nor below the thresholds or we arn't using thresholds so lets see if it's time to rise and shine
-            SimOpts.DayNightCycleCounter = SimOpts.DayNightCycleCounter + 1;
+            SimOpts.DayNightCycleCounter++;
             if (SimOpts.DayNightCycleCounter > SimOpts.CycleLength)
             {
                 SimOpts.Daytime = !SimOpts.Daytime;
                 SimOpts.DayNightCycleCounter = 0;
             }
-            if (SimOpts.Daytime)
-            {
-                FeedThisCycle = true;
-            }
-            else
-            {
-                FeedThisCycle = false;
-            }
-        }
 
-        if (FeedThisCycle)
-        {
-            //    MDIForm1.daypic.Visible = True
-            //   MDIForm1.nightpic.Visible = False
-            MDIForm1.instance.SunButton.value = 0;
-        }
-        else
-        {
-            //   MDIForm1.daypic.Visible = False
-            //    MDIForm1.nightpic.Visible = True
-            MDIForm1.instance.SunButton.value = 1;
+            FeedThisCycle = SimOpts.Daytime;
         }
 
         //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
-        for (t = 1; t < MaxRobs; t++)
+        foreach (var rob in rob.Where(r => r.nrg > 0 && r.exist && !(r.FName == "Base.txt" && hidepred)))
         {
-            if (rob(t).nrg > 0 & rob(t).exist && !(rob(t).FName == "Base.txt" && hidepred))
-            {
-                rob(t).mem(218) = 0;
-            }
+            rob.mem[218] = 0;
         }
 
         if (!FeedThisCycle)
-        {
-            goto getout;
-        }
+            return;
 
-        ScreenArea = CDbl(SimOptModule.SimOpts.FieldWidth) * CDbl(SimOptModule.SimOpts.FieldHeight); //Botsareus 12/28/2013 Formula simplified, people are getting resonable frame rates with 3ghz cpus
+        double ScreenArea = SimOptModule.SimOpts.FieldWidth * SimOptModule.SimOpts.FieldHeight;
 
-        //Botsareus 12/28/2013 Subtract Obstacles
-        for (t = 1; t < numObstacles; t++)
-        {
-            if (Obstacles.Obstacles(t).exist)
-            {
-                ScreenArea = ScreenArea - Obstacles.Obstacles(t).Width * Obstacles.Obstacles(t).Height;
-            }
-        }
+        ScreenArea -= Obstacles.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 
-        for (t = 1; t < MaxRobs; t++)
-        { //Panda 8/14/2013 Figure total robot area
-            if (rob(t).exist && !(rob(t).FName == "Base.txt" && hidepred))
-            { //Botsareus 8/14/2013 We have to make sure the robot is alive first
-                TotalRobotArea = TotalRobotArea + rob(t).radius ^ 2 * PI;
-            }
-        }
+        var TotalRobotArea = rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
 
         if (ScreenArea < 1)
         {
@@ -375,28 +224,15 @@ static class Vegs
 
         LightAval = TotalRobotArea / ScreenArea; //Panda 8/14/2013 Figure AreaInverted a.k.a. available light
         if (LightAval > 1)
-        {
             LightAval = 1; //Botsareus make sure LighAval never goes negative
-        }
 
-        AreaCorrection = (1 - LightAval) ^ 2 * 4;
+        var AreaCorrection = Math.Pow((1 - LightAval), 2) * 4;
 
-        //Botsareus 8/16/2014 Sun calculation
-        int sunstart = 0;
+        var sunstart = (SunPosition - (0.25 + Math.Pow(SunRange, 3) * 0.75) / 2) * SimOpts.FieldWidth;
+        var sunstop = (SunPosition + (0.25 + Math.Pow(SunRange, 3) * 0.75) / 2) * SimOpts.FieldWidth;
 
-        int sunstop = 0;
-
-        int sunstart2 = 0;//wrap logic
-
-        int sunstop2 = 0;
-
-
-        //Botsareus 8/16/2014 calculate the sun
-        sunstart = (SunPosition - (0.25m + (SunRange ^ 3) * 0.75m) / 2) * SimOpts.FieldWidth;
-        sunstop = (SunPosition + (0.25m + (SunRange ^ 3) * 0.75m) / 2) * SimOpts.FieldWidth;
-
-        sunstop2 = sunstop;
-        sunstart2 = sunstart; //Do not delete, bug fix!
+        var sunstop2 = sunstop;
+        var sunstart2 = sunstart; //Do not delete, bug fix!
 
         if (sunstart < 0)
         {
@@ -409,163 +245,80 @@ static class Vegs
             sunstart2 = 0;
         }
 
-
-        for (t = 1; t < MaxRobs; t++)
+        foreach (var rob in Robots.rob.Where(r => r.nrg > 0 && r.exist && !(r.FName == "Base.txt" && hidepred)))
         {
-            dynamic _WithVar_7750;
-            _WithVar_7750 = rob(t);
-            if (_WithVar_7750.nrg > 0 & _WithVar_7750.exist && !(_WithVar_7750.FName == "Base.txt" && hidepred))
+            double acttok = 0;
+            //Botsareus 8/16/2014 Allow robots to share chloroplasts again
+            if (rob.chloroplasts > 0)
             {
-                //Botsareus 8/16/2014 Allow robots to share chloroplasts again
-                if (_WithVar_7750.chloroplasts > 0)
+                if (rob.Chlr_Share_Delay > 0)
+                    rob.Chlr_Share_Delay--;
+
+                if ((rob.pos.X < sunstart2 || rob.pos.X > sunstop2) && (rob.pos.X < sunstart || rob.pos.X > sunstop))
+                    continue;
+
+                double tok = 0;
+                if (SimOpts.Pondmode)
                 {
-                    if (_WithVar_7750.Chlr_Share_Delay > 0)
-                    {
-                        _WithVar_7750.Chlr_Share_Delay = _WithVar_7750.Chlr_Share_Delay - 1;
-                    }
+                    var depth = (rob.pos.Y / 2000) + 1;
+                    if (depth < 1)
+                        depth = 1;
 
-                    acttok = 0;
-
-                    if ((_WithVar_7750.pos.x < sunstart2 || _WithVar_7750.pos.x > sunstop2) && (_WithVar_7750.pos.x < sunstart || _WithVar_7750.pos.x > sunstop))
-                    {
-                        goto nextrob;
-                    }
-
-                    if (SimOpts.Pondmode)
-                    {
-                        depth = (_WithVar_7750.pos.y / 2000) + 1;
-                        if (depth < 1)
-                        {
-                            depth = 1;
-                        }
-                        tok = (SimOpts.LightIntensity / depth ^ SimOpts.Gradient); //Botsareus 3/26/2013 No longer add one, robots get fed more accuratly
-                    }
-                    else
-                    {
-                        tok = totnrg;
-                    }
-
-                    if (tok < 0)
-                    {
-                        tok = 0;
-                    }
-
-                    tok = tok / 3.5m; //Botsareus 2/25/2014 A little mod for PhinotPi
-
-                    //Panda 8/14/2013 New chloroplast codez
-                    ChloroplastCorrection = _WithVar_7750.chloroplasts / 16000;
-                    AddEnergyRate = (AreaCorrection * ChloroplastCorrection) * 1.25m;
-                    SubtractEnergyRate = (_WithVar_7750.chloroplasts / 32000) ^ 2;
-
-                    acttok = (AddEnergyRate - SubtractEnergyRate) * tok;
+                    tok = SimOpts.LightIntensity / Math.Pow(depth, SimOpts.Gradient); //Botsareus 3/26/2013 No longer add one, robots get fed more accuratly
                 }
-                _WithVar_7750.mem(218) = 1; //Botsareus 8/16/2014 Now it is time view the sun
+                else
+                    tok = totnrg;
 
-            nextrob:
-
-                if (_WithVar_7750.chloroplasts > 0)
+                if (tok < 0)
                 {
-                    acttok = acttok - CSng(_WithVar_7750.age) * CSng(_WithVar_7750.chloroplasts) / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
-
-                    if (TmpOpts.Tides > 0)
-                    {
-                        acttok = acttok * (1 - BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
-                    }
-
-                    _WithVar_7750.nrg = _WithVar_7750.nrg + acttok * (1 - SimOpts.VegFeedingToBody);
-                    _WithVar_7750.body = _WithVar_7750.body + (acttok * SimOpts.VegFeedingToBody) / 10;
-
-                    if (_WithVar_7750.nrg > 32000)
-                    {
-                        _WithVar_7750.nrg = 32000;
-                    }
-                    if (_WithVar_7750.body > 32000)
-                    {
-                        _WithVar_7750.body = 32000;
-                    }
-                    _WithVar_7750.radius = FindRadius(t);
+                    tok = 0;
                 }
 
+                tok /= 3.5; //Botsareus 2/25/2014 A little mod for PhinotPi
+
+                //Panda 8/14/2013 New chloroplast codez
+                var ChloroplastCorrection = rob.chloroplasts / 16000;
+                var AddEnergyRate = (AreaCorrection * ChloroplastCorrection) * 1.25;
+                var SubtractEnergyRate = Math.Pow(rob.chloroplasts / 32000, 2);
+
+                acttok = (AddEnergyRate - SubtractEnergyRate) * tok;
+            }
+            rob.mem[218] = 1; //Botsareus 8/16/2014 Now it is time view the sun
+
+            if (rob.chloroplasts > 0)
+            {
+                acttok -= rob.age * rob.chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
+
+                if (TmpOpts.Tides > 0)
+                {
+                    acttok *= (1 - BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
+                }
+
+                rob.nrg += acttok * (1 - SimOpts.VegFeedingToBody);
+                rob.body += acttok * SimOpts.VegFeedingToBody / 10;
+
+                if (rob.nrg > 32000)
+                    rob.nrg = 32000;
+
+                if (rob.body > 32000)
+                    rob.body = 32000;
+
+                rob.radius = FindRadius(Robots.rob.IndexOf(rob));
             }
         }
-    getout:
     }
 
-    public static void feedveg2(int t)
-    { //gives veg an additional meal based on waste 'Botsareus 8/25/2013 Fix for all robots based on chloroplasts
-      //Botsareus 9/21/2013 completely redesigned to be liner and spread body vs energy
-        decimal Energy = 0;
-
-        decimal body = 0;
-
-
-        dynamic _WithVar_4648;
-        _WithVar_4648 = rob(t);
-        Energy = _WithVar_4648.chloroplasts / 64000 * (1 - SimOpts.VegFeedingToBody);
-        body = (_WithVar_4648.chloroplasts / 64000 * SimOpts.VegFeedingToBody) / 10;
-
-        if (Int(Rndy() * 2) == 0)
+    public static async Task VegsRepopulate()
+    {
+        cooldown++;
+        if (cooldown >= SimOpts.RepopCooldown)
         {
-            //energy first
-
-            if (_WithVar_4648.Waste > 0)
+            for (var t = 1; t < SimOpts.RepopAmount; t++)
             {
-                if (_WithVar_4648.nrg + Energy < 32000)
-                {
-                    _WithVar_4648.nrg = _WithVar_4648.nrg + Energy;
-                    _WithVar_4648.Waste = _WithVar_4648.Waste - _WithVar_4648.chloroplasts / 32000 * (1 - SimOpts.VegFeedingToBody);
-                }
-                if (_WithVar_4648.Waste < 0)
-                {
-                    _WithVar_4648.Waste = 0;
-                }
+                await aggiungirob(-1, ThreadSafeRandom.Local.Next(60, SimOpts.FieldWidth - 60), ThreadSafeRandom.Local.Next(60, SimOpts.FieldHeight - 60));
+                totvegs++;
             }
-
-            if (_WithVar_4648.Waste > 0)
-            {
-                if (_WithVar_4648.body + body < 32000)
-                {
-                    _WithVar_4648.body = _WithVar_4648.body + body;
-                    _WithVar_4648.Waste = _WithVar_4648.Waste - _WithVar_4648.chloroplasts / 32000 * SimOpts.VegFeedingToBody;
-                }
-                if (_WithVar_4648.Waste < 0)
-                {
-                    _WithVar_4648.Waste = 0;
-                }
-            }
-
+            cooldown -= SimOpts.RepopCooldown;
         }
-        else
-        {
-            //body first
-
-            if (_WithVar_4648.Waste > 0)
-            {
-                if (_WithVar_4648.body + body < 32000)
-                {
-                    _WithVar_4648.body = _WithVar_4648.body + body;
-                    _WithVar_4648.Waste = _WithVar_4648.Waste - _WithVar_4648.chloroplasts / 32000 * SimOpts.VegFeedingToBody;
-                }
-                if (_WithVar_4648.Waste < 0)
-                {
-                    _WithVar_4648.Waste = 0;
-                }
-            }
-
-            if (_WithVar_4648.Waste > 0)
-            {
-                if (_WithVar_4648.nrg + Energy < 32000)
-                {
-                    _WithVar_4648.nrg = _WithVar_4648.nrg + Energy;
-                    _WithVar_4648.Waste = _WithVar_4648.Waste - _WithVar_4648.chloroplasts / 32000 * (1 - SimOpts.VegFeedingToBody);
-                }
-                if (_WithVar_4648.Waste < 0)
-                {
-                    _WithVar_4648.Waste = 0;
-                }
-            }
-
-        }
-
     }
 }

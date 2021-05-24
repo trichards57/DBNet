@@ -443,10 +443,10 @@ internal static class Evo
     {
         var val = 5 / LFORcorr;
         val *= 90;
-        mutationprobs norm = null;
+        MutationProbabilities norm = null;
         var length = 0;
 
-        mutationprobs filem;
+        MutationProbabilities filem;
         double tot;
         double rez;
 
@@ -454,7 +454,7 @@ internal static class Evo
         {
             //load mutations
 
-            filem = await HDRoutines.Load_mrates(@"evolution\Mutate.mrate");
+            filem = await HDRoutines.LoadMutationRates(@"evolution\Mutate.mrate");
 
             //calculate normalized rate
 
@@ -512,7 +512,7 @@ internal static class Evo
             {
                 //load mutations
 
-                filem = await HDRoutines.Load_mrates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
+                filem = await HDRoutines.LoadMutationRates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
 
                 //calculate normalized rate
 
@@ -594,7 +594,7 @@ internal static class Evo
     {
         var val = 5 / LFORcorr;
         val *= 5;
-        mutationprobs filem;
+        MutationProbabilities filem;
         double tot;
         double rez;
 
@@ -602,7 +602,7 @@ internal static class Evo
         {
             //load mutations
 
-            filem = await HDRoutines.Load_mrates(@"evolution\Mutate.mrate");
+            filem = await HDRoutines.LoadMutationRates(@"evolution\Mutate.mrate");
 
             tot = 0;
             var i = 0;
@@ -642,7 +642,7 @@ internal static class Evo
             {
                 //load mutations
 
-                filem = await HDRoutines.Load_mrates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
+                filem = await HDRoutines.LoadMutationRates($@"evolution\mutaterob{ecocount}\Mutate.mrate");
 
                 tot = 0;
                 var i = 0;

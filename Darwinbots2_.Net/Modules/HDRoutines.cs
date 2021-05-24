@@ -1,5 +1,6 @@
 using DBNet.Forms;
 using Iersera.DataModel;
+using Iersera.Support;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +9,6 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using static BucketManager;
-using static Common;
 using static DNAManipulations;
 using static DNATokenizing;
 using static Globals;
@@ -43,7 +43,7 @@ internal static class HDRoutines
         if (k < MAXNATIVESPECIES)
             SimOpts.SpeciesNum++;
 
-        var d = new datispecie
+        var d = new Species
         {
             Name = rob.FName,
             Veg = rob.Veg,
@@ -66,7 +66,7 @@ internal static class HDRoutines
             path = "robots",
         };
 
-        SetDefaultMutationRates(d.Mutables);
+        NeoMutations.SetDefaultMutationRates(d.Mutables);
         d.Mutables.Mutations = rob.Mutables.Mutations;
 
         SimOpts.Specie.Add(d);
@@ -77,20 +77,12 @@ internal static class HDRoutines
     /// </summary>
     public static async Task deseed(string s)
     {
-        var files = Directory.GetFiles(s);
-
-        for (var i = 1; i < files.Length; i++)
+        foreach (var file in Directory.GetFiles(s))
         {
-            var lastLine = (await File.ReadAllLinesAsync(files[i])).Last();
+            var lastLine = (await File.ReadAllLinesAsync(file)).Last();
             lastLine = lastLine.Replace("'#tag:", "");
-            File.Copy(files[i], $@"\league\Tournament_Results\{lastLine}");
+            File.Copy(file, $@"league\Tournament_Results\{lastLine}");
         }
-    }
-
-    public static string GetFilePath(string FileName)
-    {
-        var fi = new FileInfo(FileName);
-        return fi.Name;
     }
 
     /// <summary>
@@ -113,23 +105,9 @@ internal static class HDRoutines
     /// </remarks>
     public static void InsertOrganism(string path)
     {
-        var X = Random(60, SimOpts.FieldWidth - 60);
-        var Y = Random(60, SimOpts.FieldHeight - 60);
+        var X = ThreadSafeRandom.Local.Next(60, SimOpts.FieldWidth - 60);
+        var Y = ThreadSafeRandom.Local.Next(60, SimOpts.FieldHeight - 60);
         LoadOrganism(path, X, Y);
-    }
-
-    public static async Task<mutationprobs> Load_mrates(string FName)
-    {
-        var data = JsonSerializer.Deserialize<SavedMutationRates>(await File.ReadAllTextAsync(FName));
-
-        return new mutationprobs
-        {
-            PointWhatToChange = data.PointWhatToChange,
-            CopyErrorWhatToChange = data.CopyErrorWhatToChange,
-            mutarray = data.MutationProbabilities,
-            Mean = data.MutationMeans,
-            StdDev = data.MutationStdDevs
-        };
     }
 
     public static async Task LoadGlobalSettings()
@@ -296,6 +274,20 @@ internal static class HDRoutines
         //Botsareus 3/22/2014 Initial hidepred offset is normal
 
         hidePredOffset = hidePredCycl / 6;
+    }
+
+    public static async Task<MutationProbabilities> LoadMutationRates(string FName)
+    {
+        var data = JsonSerializer.Deserialize<SavedMutationRates>(await File.ReadAllTextAsync(FName));
+
+        return new MutationProbabilities
+        {
+            PointWhatToChange = data.PointWhatToChange,
+            CopyErrorWhatToChange = data.CopyErrorWhatToChange,
+            mutarray = data.MutationProbabilities,
+            Mean = data.MutationMeans,
+            StdDev = data.MutationStdDevs
+        };
     }
 
     /// <summary>
@@ -611,13 +603,13 @@ internal static class HDRoutines
         for (var i = 1; i < numOfBots; i++)
         {
             var j = 1;
-            while (rob[i].Ties[j].pnt > 0)
+            while (rob[i].Ties[j].OtherBot > 0)
             { // Loop through each tie
                 for (var k = 1; k < numOfBots; k++)
                 {
-                    if (rob[i].Ties[j].pnt == rob[k].oldBotNum)
+                    if (rob[i].Ties[j].OtherBot == rob[k].oldBotNum)
                     {
-                        rob[i].Ties[j].pnt = k;
+                        rob[i].Ties[j].OtherBot = k;
                         break;
                     }
                 }
@@ -638,10 +630,10 @@ internal static class HDRoutines
             for (var k = 0; k < cnum - 1; k++)
             { // Loop through each cell
                 var j = 1;
-                while (rob[clist[k]].Ties[j].pnt > 0)
+                while (rob[clist[k]].Ties[j].OtherBot > 0)
                 { // Loop through each tie
-                    if (rob[clist[k]].Ties[j].pnt == ind)
-                        rob[clist[k]].Ties[j].pnt = clist[t];
+                    if (rob[clist[k]].Ties[j].OtherBot == ind)
+                        rob[clist[k]].Ties[j].OtherBot = clist[t];
 
                     j++;
                 }
@@ -651,17 +643,17 @@ internal static class HDRoutines
         for (var k = 0; k < cnum - 1; k++)
         { // All cells
             var j = 1;
-            while (rob[clist[k]].Ties[j].pnt > 0)
+            while (rob[clist[k]].Ties[j].OtherBot > 0)
             { //All Ties
                 var TiePointsToNode = false;
                 for (var t = 0; t < cnum - 1; t++)
                 {
-                    if (rob[clist[k]].Ties[j].pnt == clist[t])
+                    if (rob[clist[k]].Ties[j].OtherBot == clist[t])
                         TiePointsToNode = true;
                 }
 
                 if (!TiePointsToNode)
-                    rob[clist[k]].Ties[j].pnt = 0;
+                    rob[clist[k]].Ties[j].OtherBot = 0;
 
                 j++;
             }
@@ -724,7 +716,7 @@ internal static class HDRoutines
             rob[n].FName = System.IO.Path.GetFileNameWithoutExtension(path);
     }
 
-    public static async Task Save_mrates(mutationprobs mut, string FName)
+    public static async Task Save_mrates(MutationProbabilities mut, string FName)
     {
         var data = new SavedMutationRates
         {
@@ -1049,7 +1041,7 @@ internal static class HDRoutines
             vnum = r.VariableNumber,
             mem = r.Memory,
             dna = r.Dna,
-            Mutables = new mutationprobs
+            Mutables = new MutationProbabilities
             {
                 mutarray = r.MutationArray,
                 Mutations = r.MutationsProbs,
@@ -1153,12 +1145,12 @@ internal static class HDRoutines
 
     private static void LoadSpecies(IEnumerable<SavedSpecies> species)
     {
-        SimOpts.Specie.AddRange(species.Select(s => new datispecie
+        SimOpts.Specie.AddRange(species.Select(s => new Species
         {
             Colind = s.Colind,
             color = s.Color,
             Fixed = s.Fixed,
-            Mutables = new mutationprobs
+            Mutables = new MutationProbabilities
             {
                 mutarray = s.MutArray,
                 Mutations = s.Mutations,
@@ -1373,7 +1365,7 @@ internal static class HDRoutines
         };
     }
 
-    private static SavedSpecies SaveSpecies(datispecie s)
+    private static SavedSpecies SaveSpecies(Species s)
     {
         return new SavedSpecies
         {

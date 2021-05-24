@@ -14,7 +14,7 @@ internal static class Physics
 {
     public const decimal smudgefactor = 50;
 
-    public static decimal BouyancyScaling = 0;
+    public static double BouyancyScaling = 0;
 
     //just to keep the bots more likely to stay visible
     public static bool boylabldisp = false;
@@ -861,7 +861,7 @@ internal static class Physics
             { // Stiffen the Tie, the bot is a multibot!
                 if (_WithVar_2796.Ties(k).last == -1)
                 {
-                    regang(n, k);
+                    Ties.Regang(n, k);
                 }
 
                 if (Length != 0)

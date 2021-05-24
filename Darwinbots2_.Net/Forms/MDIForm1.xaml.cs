@@ -457,7 +457,7 @@ namespace DBNet.Forms
             //''''''''''''''''''''''''''''''''''''''''''''''''''''''
             int t = 0;
 
-            datispecie Specie = null;
+            Species Specie = null;
 
             t = OptionsForm.instance.CurrSpec;
             Specie = TmpOpts.Specie(50);

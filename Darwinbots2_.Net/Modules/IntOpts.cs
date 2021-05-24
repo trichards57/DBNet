@@ -18,7 +18,7 @@ internal static class IntOpts
 
     public static string InboundPath = "";
     public static bool InternetMode = false;
-    public static datispecie[] InternetSpecies = new datispecie[(MAXINTERNETSPECIES + 1)];
+    public static Species[] InternetSpecies = new Species[(MAXINTERNETSPECIES + 1)];
     public static string[] namesOfInternetBots = new string[(MAXINTERNETSPECIES + 1)];
 
     // TODO: Confirm Array Size By Token// Used for graphing the number of species in the inter connected internet sim

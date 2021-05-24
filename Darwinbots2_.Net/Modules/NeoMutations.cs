@@ -2,7 +2,6 @@ using DBNet.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using static Common;
-using static DNAExecution;
 using static DNAManipulations;
 using static DNATokenizing;
 using static F1Mode;
@@ -296,7 +295,7 @@ internal static class NeoMutations
         return SimOpts.Specie[i].SubSpeciesCounter;
     }
 
-    public static void SetDefaultLengths(mutationprobs changeme)
+    public static void SetDefaultLengths(MutationProbabilities changeme)
     {
         dynamic _WithVar_538;
         _WithVar_538 = (changeme);
@@ -332,7 +331,7 @@ internal static class NeoMutations
         _WithVar_538.StdDev(TranslocationUP) = 75;
     }
 
-    public static void SetDefaultMutationRates(mutationprobs changeme, bool skipNorm)
+    public static void SetDefaultMutationRates(MutationProbabilities changeme, bool skipNorm = false)
     {
         //Botsareus 12/17/2013 Figure dna length
         int Length = 0;

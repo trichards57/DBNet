@@ -64,7 +64,7 @@ namespace Iersera.DataModel
         public IEnumerable<SavedTie> Ties { get; internal set; }
         public decimal Torque { get; internal set; }
         public int VariableNumber { get; internal set; }
-        public var_[] Variables { get; internal set; }
+        public Variable[] Variables { get; internal set; }
         public bool Veg { get; internal set; }
         public object Velocity { get; internal set; }
         public decimal Venom { get; internal set; }
