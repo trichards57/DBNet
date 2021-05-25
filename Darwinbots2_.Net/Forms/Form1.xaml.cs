@@ -1948,7 +1948,7 @@ namespace DBNet.Forms
             //Click on teleporter unless its the internet mode teleporter.
             if (n == 0)
             {
-                m = whichTeleporter(MouseClickX, MouseClickY);
+                m = WhichTeleporter(MouseClickX, MouseClickY);
                 if (m != 0 & Teleporters(m).Internet == false)
                 {
                     teleporterFocus = m;
@@ -2117,7 +2117,7 @@ namespace DBNet.Forms
 
             if (n == 0)
             {
-                teleporterFocus = whichTeleporter(x, y);
+                teleporterFocus = WhichTeleporter(x, y);
                 if (teleporterFocus != 0)
                 {
                     //MDIForm1.DeleteTeleporter.Enabled = True
