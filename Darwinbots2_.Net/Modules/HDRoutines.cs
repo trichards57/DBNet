@@ -413,7 +413,7 @@ internal static class HDRoutines
         SimOpts.Density = savedFile.Density;
         SimOpts.Costs = savedFile.Costs;
         SimOpts.BadWastelevel = savedFile.BadWastelevel;
-        SimOpts.chartingInterval = savedFile.ChartingInterval;
+        SimOpts.ChartingInterval = savedFile.ChartingInterval;
         SimOpts.CoefficientElasticity = savedFile.CoefficientElasticity;
         SimOpts.FluidSolidCustom = savedFile.FluidSolidCustom;
         SimOpts.CostRadioSetting = savedFile.CostRadioSetting;
@@ -429,20 +429,20 @@ internal static class HDRoutines
         SimOpts.SunThresholdMode = savedFile.SunThresholdMode;
         LoadTeleporters(savedFile.Teleporters.Where(t => !t.Internet));
         LoadObstacles(savedFile.Obstacles);
-        SimOpts.shapesAreVisable = savedFile.ShapesAreVisable;
-        SimOpts.allowVerticalShapeDrift = savedFile.AllowVerticalShapeDrift;
-        SimOpts.allowHorizontalShapeDrift = savedFile.AllowHorizontalShapeDrift;
-        SimOpts.shapesAreSeeThrough = savedFile.ShapesAreSeeThrough;
-        SimOpts.shapesAbsorbShots = savedFile.ShapesAbsorbShots;
-        SimOpts.shapeDriftRate = savedFile.ShapeDriftRate;
-        SimOpts.makeAllShapesTransparent = savedFile.MakeAllShapesTransparent;
-        SimOpts.makeAllShapesBlack = savedFile.MakeAllShapesBlack;
+        SimOpts.ShapesAreVisable = savedFile.ShapesAreVisable;
+        SimOpts.AllowVerticalShapeDrift = savedFile.AllowVerticalShapeDrift;
+        SimOpts.AllowHorizontalShapeDrift = savedFile.AllowHorizontalShapeDrift;
+        SimOpts.ShapesAreSeeThrough = savedFile.ShapesAreSeeThrough;
+        SimOpts.ShapesAbsorbShots = savedFile.ShapesAbsorbShots;
+        SimOpts.ShapeDriftRate = savedFile.ShapeDriftRate;
+        SimOpts.MakeAllShapesTransparent = savedFile.MakeAllShapesTransparent;
+        SimOpts.MakeAllShapesBlack = savedFile.MakeAllShapesBlack;
         LoadShots(savedFile.Shots);
         RemapAllShots(maxshotarray);
         SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
         SimOpts.EGridWidth = savedFile.EGridWidth;
         SimOpts.EGridEnabled = savedFile.EGridEnabled;
-        SimOpts.oldCostX = savedFile.OldCostX;
+        SimOpts.OldCostX = savedFile.OldCostX;
         SimOpts.DisableMutations = savedFile.DisableMutations;
         SimOpts.SimGUID = savedFile.SimGUID;
         SimOpts.SpeciationGenerationalDistance = savedFile.SpeciationGenerationalDistance;
@@ -785,11 +785,11 @@ internal static class HDRoutines
     {
         var sim = new SavedSimulation
         {
-            AllowHorizontalShapeDrift = SimOpts.allowHorizontalShapeDrift,
-            AllowVerticalShapeDrift = SimOpts.allowVerticalShapeDrift,
+            AllowHorizontalShapeDrift = SimOpts.AllowHorizontalShapeDrift,
+            AllowVerticalShapeDrift = SimOpts.AllowVerticalShapeDrift,
             BadWastelevel = SimOpts.BadWastelevel,
             BlockedVegs = SimOpts.BlockedVegs,
-            ChartingInterval = SimOpts.chartingInterval,
+            ChartingInterval = SimOpts.ChartingInterval,
             CoefficientElasticity = SimOpts.CoefficientElasticity,
             CoefficientKinetic = SimOpts.CoefficientKinetic,
             CoefficientStatic = SimOpts.CoefficientStatic,
@@ -835,8 +835,8 @@ internal static class HDRoutines
             HidePredOffset = hidePredOffset,
             KillDistVegs = SimOpts.KillDistVegs,
             LightIntensity = SimOpts.LightIntensity,
-            MakeAllShapesBlack = SimOpts.makeAllShapesBlack,
-            MakeAllShapesTransparent = SimOpts.makeAllShapesTransparent,
+            MakeAllShapesBlack = SimOpts.MakeAllShapesBlack,
+            MakeAllShapesTransparent = SimOpts.MakeAllShapesTransparent,
             MaxAbsNum = SimOpts.MaxAbsNum,
             MaxEnergy = SimOpts.MaxEnergy,
             MaxPopulation = SimOpts.MaxPopulation,
@@ -851,7 +851,7 @@ internal static class HDRoutines
             NoShotDecay = SimOpts.NoShotDecay,
             NoWShotDecay = SimOpts.NoWShotDecay,
             Obstacles = Obstacles.Obstacles.Select(SaveObstacles),
-            OldCostX = SimOpts.oldCostX,
+            OldCostX = SimOpts.OldCostX,
             PhysBrown = SimOpts.PhysBrown,
             PhysMoving = SimOpts.PhysMoving,
             PhysSwim = SimOpts.PhysSwim,
@@ -863,10 +863,10 @@ internal static class HDRoutines
             RepopCooldown = SimOpts.RepopCooldown,
             Restart = SimOpts.Restart,
             Robots = rob.Where(r => r.exist).Select(SaveRobots),
-            ShapeDriftRate = SimOpts.shapeDriftRate,
-            ShapesAbsorbShots = SimOpts.shapesAbsorbShots,
-            ShapesAreSeeThrough = SimOpts.shapesAreSeeThrough,
-            ShapesAreVisable = SimOpts.shapesAreVisable,
+            ShapeDriftRate = SimOpts.ShapeDriftRate,
+            ShapesAbsorbShots = SimOpts.ShapesAbsorbShots,
+            ShapesAreSeeThrough = SimOpts.ShapesAreSeeThrough,
+            ShapesAreVisable = SimOpts.ShapesAreVisable,
             Shots = Shots.Select(SaveShots),
             SimGUID = SimOpts.SimGUID,
             SimName = SimOpts.SimName,

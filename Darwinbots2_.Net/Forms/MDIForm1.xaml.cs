@@ -1590,12 +1590,12 @@ namespace DBNet.Forms
             displayShotImpactsToggle = true;
             displayResourceGuagesToggle = true;
             displayMovementVectorsToggle = true;
-            TmpOpts.allowHorizontalShapeDrift = false;
-            TmpOpts.allowVerticalShapeDrift = false;
+            TmpOpts.AllowHorizontalShapeDrift = false;
+            TmpOpts.AllowVerticalShapeDrift = false;
             DeleteShape.IsEnabled = false;
             mazeCorridorWidth = 500;
             mazeWallThickness = 50;
-            TmpOpts.shapesAreSeeThrough = false;
+            TmpOpts.ShapesAreSeeThrough = false;
             HighLightTeleportersMenu.Checked = true;
             HighLightAllTeleporters();
             DontDecayNrgShots.Checked = false;
@@ -1607,7 +1607,7 @@ namespace DBNet.Forms
             TmpOpts.DisableFixing = false;
             TmpOpts.NoShotDecay = false;
             TmpOpts.NoWShotDecay = false;
-            TmpOpts.chartingInterval = 200;
+            TmpOpts.ChartingInterval = 200;
             TmpOpts.FieldWidth = 16000;
             TmpOpts.FieldHeight = 12000;
             TmpOpts.MaxVelocity = 60;

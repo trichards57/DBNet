@@ -3099,7 +3099,7 @@ private void OKButton_Click()
     Canc = false;
 
     // EricL 4/2/2006 - moved these here from control change routine to fix init bugs
-    TmpOpts.chartingInterval = val(ChartInterval.text);
+    TmpOpts.ChartingInterval = val(ChartInterval.text);
     TmpOpts.Restart = RestartMode; // EricL 4/2/2006 Added this to pick up any changes to restart mode
 
     IntOpts.IName = Trim(IntName.text);
@@ -3267,7 +3267,7 @@ void StartNew_Click()
     TmpOpts.Restart = RestartMode; // EricL 4/2/2006 This was backwards.  Changed from RestartMode = TmpOpts.Restart
 
     // EricL 4/2/2006 - moved these here from control's change routine to fix init bugs
-    TmpOpts.chartingInterval = val(ChartInterval.text);
+    TmpOpts.ChartingInterval = val(ChartInterval.text);
 
     TmpOpts.SpeciesNum = SpecList.Items.Count;
     Canc = false;
@@ -3500,7 +3500,7 @@ private void DispSettings()
     BodyNrgDist.value = TmpOpts.VegFeedingToBody * 100;
 
     //EricL 4/1/2006 Added these to initialize values
-    ChartInterval.text = TmpOpts.chartingInterval;
+    ChartInterval.text = TmpOpts.ChartingInterval;
     CustomWaste.text = TmpOpts.BadWastelevel;
 
     Elasticity.value = TmpOpts.CoefficientElasticity * 10;
@@ -3796,7 +3796,7 @@ public void savesett(string path)
 
     Write(1, TmpOpts.MaxVelocity);
     Write(1, TmpOpts.BadWastelevel); //EricL 4/1/2006 Added this
-    Write(1, TmpOpts.chartingInterval); //EricL 4/1/2006 Added this
+    Write(1, TmpOpts.ChartingInterval); //EricL 4/1/2006 Added this
     Write(1, TmpOpts.FluidSolidCustom); //EricL 5/7/2006
     Write(1, TmpOpts.CostRadioSetting); // EricL 5/7/2006
     Write(1, TmpOpts.CoefficientElasticity); // EricL 5/7/2006
@@ -3827,14 +3827,14 @@ public void savesett(string path)
     Write(1, TmpOpts.NoWShotDecay); //Botsareus 9/28/2013
 
     //Botsareus 1/5/2014 Save obstacle data
-    Write(1, TmpOpts.makeAllShapesTransparent);
-    Write(1, TmpOpts.makeAllShapesBlack);
-    Write(1, TmpOpts.shapeDriftRate);
-    Write(1, TmpOpts.allowHorizontalShapeDrift);
-    Write(1, TmpOpts.allowVerticalShapeDrift);
-    Write(1, TmpOpts.shapesAreSeeThrough);
-    Write(1, TmpOpts.shapesAbsorbShots);
-    Write(1, TmpOpts.shapesAreVisable);
+    Write(1, TmpOpts.MakeAllShapesTransparent);
+    Write(1, TmpOpts.MakeAllShapesBlack);
+    Write(1, TmpOpts.ShapeDriftRate);
+    Write(1, TmpOpts.AllowHorizontalShapeDrift);
+    Write(1, TmpOpts.AllowVerticalShapeDrift);
+    Write(1, TmpOpts.ShapesAreSeeThrough);
+    Write(1, TmpOpts.ShapesAbsorbShots);
+    Write(1, TmpOpts.ShapesAreVisable);
 
     int o = 0;
 
@@ -4319,10 +4319,10 @@ if (!EOF(1))
     Input(1, TmpOpts.BadWastelevel); //EricL 4/1/2006 Added this
 }
 
-TmpOpts.chartingInterval = 200; // Default
+TmpOpts.ChartingInterval = 200; // Default
 if (!EOF(1))
 {
-    Input(1, TmpOpts.chartingInterval); //EricL 4/1/2006 Added this
+    Input(1, TmpOpts.ChartingInterval); //EricL 4/1/2006 Added this
 }
 
 TmpOpts.FluidSolidCustom = 2; // Default to custom for older settings files
@@ -4441,35 +4441,35 @@ if (!EOF(1))
 //Botsareus 1/5/2014 Obstecle settings
 if (!EOF(1))
 {
-    Input(1, TmpOpts.makeAllShapesTransparent);
+    Input(1, TmpOpts.MakeAllShapesTransparent);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.makeAllShapesBlack);
+    Input(1, TmpOpts.MakeAllShapesBlack);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.shapeDriftRate);
+    Input(1, TmpOpts.ShapeDriftRate);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.allowHorizontalShapeDrift);
+    Input(1, TmpOpts.AllowHorizontalShapeDrift);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.allowVerticalShapeDrift);
+    Input(1, TmpOpts.AllowVerticalShapeDrift);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.shapesAreSeeThrough);
+    Input(1, TmpOpts.ShapesAreSeeThrough);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.shapesAbsorbShots);
+    Input(1, TmpOpts.ShapesAbsorbShots);
 }
 if (!EOF(1))
 {
-    Input(1, TmpOpts.shapesAreVisable);
+    Input(1, TmpOpts.ShapesAreVisable);
 }
 
 int numXobs = 0;
@@ -4638,9 +4638,9 @@ if (TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) == 0)
 
 
 //EricL 4/13/2006 divide by zero protection for older settings files.
-if (TmpOpts.chartingInterval == 0)
+if (TmpOpts.ChartingInterval == 0)
 {
-    TmpOpts.chartingInterval = 200;
+    TmpOpts.ChartingInterval = 200;
 }
 
 TmpOpts.DayNightCycleCounter = 0; // When you load settings, you don't get the state from the last sim

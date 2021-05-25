@@ -2514,7 +2514,7 @@ namespace DBNet.Forms
                     }
 
                     // feeds graphs with data:
-                    if (SimOpts.TotRunCycle % SimOpts.chartingInterval == 0)
+                    if (SimOpts.TotRunCycle % SimOpts.ChartingInterval == 0)
                     {
                         for (i = 1; i < NUMGRAPHS; i++)
                         {

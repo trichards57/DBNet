@@ -330,7 +330,7 @@ internal static class Obstacles
             {
                 if (_WithVar_2632.pos.x >= Obstacles(i).pos.x && _WithVar_2632.pos.x <= Obstacles(i).pos.x + Obstacles(i).Width && _WithVar_2632.pos.y >= Obstacles(i).pos.y && _WithVar_2632.pos.y <= Obstacles(i).pos.y + Obstacles(i).Height)
                 {
-                    if (SimOpts.shapesAbsorbShots)
+                    if (SimOpts.ShapesAbsorbShots)
                     {
                         _WithVar_2632.exist = false;
                     }
@@ -429,7 +429,7 @@ internal static class Obstacles
         {
             if (Obstacles(i).exist)
             {
-                if (SimOpts.makeAllShapesTransparent)
+                if (SimOpts.MakeAllShapesTransparent)
                 {
                     //Form1.Line(Obstacles(i).pos.x, Obstacles(i).pos.y) - (Obstacles(i).pos.x + Obstacles(i).Width, Obstacles(i).pos.y + Obstacles(i).Height), Obstacles(i).color, B);
                 }
@@ -467,9 +467,9 @@ internal static class Obstacles
             k = NewObstacle(blockWidth / 2, blockHeight / 2, blockWidth, blockHeight);
         }
 
-        SimOpts.allowHorizontalShapeDrift = true;
-        SimOpts.allowVerticalShapeDrift = true;
-        SimOpts.shapeDriftRate = 20;
+        SimOpts.AllowHorizontalShapeDrift = true;
+        SimOpts.AllowVerticalShapeDrift = true;
+        SimOpts.ShapeDriftRate = 20;
 
         return DrawPolarIceMaze;
     }
@@ -537,13 +537,13 @@ internal static class Obstacles
         {
             if (Obstacles(i).exist && (i != leftCompactor && i != rightCompactor))
             {
-                if (SimOpts.allowHorizontalShapeDrift)
+                if (SimOpts.AllowHorizontalShapeDrift)
                 {
-                    Obstacles(i).vel.x = Obstacles(i).vel.x + Random(-SimOpts.shapeDriftRate, SimOpts.shapeDriftRate) * Rndy() * 0.01m;
+                    Obstacles(i).vel.x = Obstacles(i).vel.x + Random(-SimOpts.ShapeDriftRate, SimOpts.ShapeDriftRate) * Rndy() * 0.01m;
                 }
-                if (SimOpts.allowVerticalShapeDrift)
+                if (SimOpts.AllowVerticalShapeDrift)
                 {
-                    Obstacles(i).vel.y = Obstacles(i).vel.y + Random(-SimOpts.shapeDriftRate, SimOpts.shapeDriftRate) * Rndy() * 0.01m;
+                    Obstacles(i).vel.y = Obstacles(i).vel.y + Random(-SimOpts.ShapeDriftRate, SimOpts.ShapeDriftRate) * Rndy() * 0.01m;
                 }
                 if (VectorMagnitude(Obstacles(i).vel) > SimOpts.MaxVelocity)
                 {
@@ -584,8 +584,8 @@ internal static class Obstacles
         leftCompactor = NewObstacle(-blockWidth + 1, SimOpts.FieldHeight * -0.1m, blockWidth, blockHeight);
         rightCompactor = NewObstacle(SimOpts.FieldWidth - 1, SimOpts.FieldHeight * -0.1m, blockWidth, blockHeight);
         //SimOpts.shapeDriftRate = 100
-        Obstacles(leftCompactor).vel.x = SimOpts.shapeDriftRate * 0.1m;
-        Obstacles(rightCompactor).vel.x = -SimOpts.shapeDriftRate * 0.1m;
+        Obstacles(leftCompactor).vel.x = SimOpts.ShapeDriftRate * 0.1m;
+        Obstacles(rightCompactor).vel.x = -SimOpts.ShapeDriftRate * 0.1m;
 
         return InitTrashCompactorMaze;
     }
@@ -595,7 +595,7 @@ internal static class Obstacles
         dynamic MoveObstacles = null;
         int i = 0;
 
-        if (SimOpts.allowHorizontalShapeDrift || SimOpts.allowVerticalShapeDrift)
+        if (SimOpts.AllowHorizontalShapeDrift || SimOpts.AllowVerticalShapeDrift)
         {
             DriftObstacles();
         }
@@ -613,22 +613,22 @@ internal static class Obstacles
                 if (Obstacles(i).pos.x < -Obstacles(i).Width)
                 {
                     Obstacles(i).pos.x = -Obstacles(i).Width;
-                    Obstacles(i).vel.x = SimOpts.shapeDriftRate * 0.01m;
+                    Obstacles(i).vel.x = SimOpts.ShapeDriftRate * 0.01m;
                 }
                 if (Obstacles(i).pos.y < -Obstacles(i).Height)
                 {
                     Obstacles(i).pos.y = -Obstacles(i).Height;
-                    Obstacles(i).vel.y = SimOpts.shapeDriftRate * 0.01m;
+                    Obstacles(i).vel.y = SimOpts.ShapeDriftRate * 0.01m;
                 }
                 if (Obstacles(i).pos.x > SimOpts.FieldWidth)
                 {
                     Obstacles(i).pos.x = SimOpts.FieldWidth;
-                    Obstacles(i).vel.x = -SimOpts.shapeDriftRate * 0.01m;
+                    Obstacles(i).vel.x = -SimOpts.ShapeDriftRate * 0.01m;
                 }
                 if (Obstacles(i).pos.y > SimOpts.FieldHeight)
                 {
                     Obstacles(i).pos.y = SimOpts.FieldHeight;
-                    Obstacles(i).vel.y = -SimOpts.shapeDriftRate * 0.01m;
+                    Obstacles(i).vel.y = -SimOpts.ShapeDriftRate * 0.01m;
                 }
             }
         }
@@ -655,7 +655,7 @@ internal static class Obstacles
             Obstacles(numObstacles).Height = Height;
             Obstacles(numObstacles).vel.x = 0;
             Obstacles(numObstacles).vel.y = 0;
-            if (SimOpts.makeAllShapesBlack)
+            if (SimOpts.MakeAllShapesBlack)
             {
                 Obstacles(numObstacles).color = vbBlack;
             }
@@ -732,8 +732,8 @@ internal static class Obstacles
         }
         if (Obstacles(leftCompactor).pos.x <= -Obstacles(leftCompactor).Width)
         {
-            Obstacles(leftCompactor).vel.x = SimOpts.shapeDriftRate * 0.1m;
-            Obstacles(rightCompactor).vel.x = -SimOpts.shapeDriftRate * 0.1m;
+            Obstacles(leftCompactor).vel.x = SimOpts.ShapeDriftRate * 0.1m;
+            Obstacles(rightCompactor).vel.x = -SimOpts.ShapeDriftRate * 0.1m;
         }
         return TrashCompactorMove;
     }

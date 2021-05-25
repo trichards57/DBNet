@@ -351,13 +351,13 @@ internal static class Master
         if ((CurrentPopulation < SimOpts.Costs[BOTNOCOSTLEVEL]) && (SimOpts.Costs[COSTMULTIPLIER] != 0))
         {
             CostsWereZeroed = true;
-            SimOpts.oldCostX = SimOpts.Costs[COSTMULTIPLIER];
+            SimOpts.OldCostX = SimOpts.Costs[COSTMULTIPLIER];
             SimOpts.Costs[COSTMULTIPLIER] = 0; // The population has fallen below the threshold to 0 all costs
         }
         else if ((CurrentPopulation > SimOpts.Costs[COSTXREINSTATEMENTLEVEL]) && CostsWereZeroed)
         {
             CostsWereZeroed = false; // Set the flag so we don't do this again unless they get zeored again
-            SimOpts.Costs[COSTMULTIPLIER] = SimOpts.oldCostX;
+            SimOpts.Costs[COSTMULTIPLIER] = SimOpts.OldCostX;
         }
 
         //Store new energy handycap

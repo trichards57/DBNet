@@ -87,7 +87,7 @@ namespace DBNet.Forms
         {
             TmpOpts.Costs[COSTMULTIPLIER] = Val(CostX.Text);
             SimOpts.Costs[COSTMULTIPLIER] = Val(CostX.Text); // Have to do this here since DispSettings gets called again when the Options dialog repaints...
-            TmpOpts.oldCostX = Val(CostX.Text);
+            TmpOpts.OldCostX = Val(CostX.Text);
         }
 
         private void Default_Click(object sender, RoutedEventArgs e)

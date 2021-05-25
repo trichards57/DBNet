@@ -48,14 +48,14 @@ namespace DBNet.Forms
 
         public void InitShapesDialog()
         {
-            TransparentOption.value = SimOpts.makeAllShapesTransparent;
-            OpaqueOption.value = !SimOpts.makeAllShapesTransparent;
-            RandomColorOption.value = !SimOpts.makeAllShapesBlack;
-            BlackColorOption.value = SimOpts.makeAllShapesBlack;
+            TransparentOption.value = SimOpts.MakeAllShapesTransparent;
+            OpaqueOption.value = !SimOpts.MakeAllShapesTransparent;
+            RandomColorOption.value = !SimOpts.MakeAllShapesBlack;
+            BlackColorOption.value = SimOpts.MakeAllShapesBlack;
             WidthSlider.value = CInt(defaultWidth * 1000);
             HeightSlider.value = CInt(defaultHeight * 1000);
-            DriftRateSlider.value = SimOpts.shapeDriftRate;
-            if (SimOpts.allowHorizontalShapeDrift)
+            DriftRateSlider.value = SimOpts.ShapeDriftRate;
+            if (SimOpts.AllowHorizontalShapeDrift)
             {
                 HorizontalDriftCheck.value = 1;
             }
@@ -63,7 +63,7 @@ namespace DBNet.Forms
             {
                 HorizontalDriftCheck.value = 0;
             }
-            if (SimOpts.allowVerticalShapeDrift)
+            if (SimOpts.AllowVerticalShapeDrift)
             {
                 VerticalDriftCheck.value = 1;
             }
@@ -73,7 +73,7 @@ namespace DBNet.Forms
             }
             MazeWidthSlider.value = mazeCorridorWidth;
             WallThicknessSlider.value = mazeWallThickness;
-            if (SimOpts.shapesAreSeeThrough)
+            if (SimOpts.ShapesAreSeeThrough)
             {
                 ShapesSeeThroughCheck.value = 1;
             }
@@ -81,7 +81,7 @@ namespace DBNet.Forms
             {
                 ShapesSeeThroughCheck.value = 0;
             }
-            if (SimOpts.shapesAbsorbShots)
+            if (SimOpts.ShapesAbsorbShots)
             {
                 ShapesAbsorbShotsCheck.value = 1;
             }
@@ -89,7 +89,7 @@ namespace DBNet.Forms
             {
                 ShapesAbsorbShotsCheck.value = 0;
             }
-            if (SimOpts.shapesAreVisable)
+            if (SimOpts.ShapesAreVisable)
             {
                 ShapesVisableCheck.value = 1;
             }
@@ -106,21 +106,21 @@ namespace DBNet.Forms
 
         private void BlackColorOption_Click()
         {
-            SimOpts.makeAllShapesBlack = true;
+            SimOpts.MakeAllShapesBlack = true;
             ChangeAllObstacleColor(vbBlack);
             RandomColorOption.value = false;
         }
 
         private void CopyToTmpOpts()
         { //Botsareus 1/5/2014 Make sure the shape settings are saved
-            TmpOpts.makeAllShapesTransparent = SimOpts.makeAllShapesTransparent;
-            TmpOpts.makeAllShapesBlack = SimOpts.makeAllShapesBlack;
-            TmpOpts.shapeDriftRate = SimOpts.shapeDriftRate;
-            TmpOpts.allowHorizontalShapeDrift = SimOpts.allowHorizontalShapeDrift;
-            TmpOpts.allowVerticalShapeDrift = SimOpts.allowVerticalShapeDrift;
-            TmpOpts.shapesAreSeeThrough = SimOpts.shapesAreSeeThrough;
-            TmpOpts.shapesAbsorbShots = SimOpts.shapesAbsorbShots;
-            TmpOpts.shapesAreVisable = SimOpts.shapesAreVisable;
+            TmpOpts.MakeAllShapesTransparent = SimOpts.MakeAllShapesTransparent;
+            TmpOpts.MakeAllShapesBlack = SimOpts.MakeAllShapesBlack;
+            TmpOpts.ShapeDriftRate = SimOpts.ShapeDriftRate;
+            TmpOpts.AllowHorizontalShapeDrift = SimOpts.AllowHorizontalShapeDrift;
+            TmpOpts.AllowVerticalShapeDrift = SimOpts.AllowVerticalShapeDrift;
+            TmpOpts.ShapesAreSeeThrough = SimOpts.ShapesAreSeeThrough;
+            TmpOpts.ShapesAbsorbShots = SimOpts.ShapesAbsorbShots;
+            TmpOpts.ShapesAreVisable = SimOpts.ShapesAreVisable;
         }
 
         private void DriftRateSlider_Change(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -130,14 +130,14 @@ namespace DBNet.Forms
 
         private void DriftRateSlider_Change()
         {
-            SimOpts.shapeDriftRate = DriftRateSlider.value;
+            SimOpts.ShapeDriftRate = DriftRateSlider.value;
             if (leftCompactor > 0)
             {
-                Obstacles.Obstacles(leftCompactor).vel.x = (SimOpts.shapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(leftCompactor).vel.x);
+                Obstacles.Obstacles(leftCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(leftCompactor).vel.x);
             }
             if (rightCompactor > 0)
             {
-                Obstacles.Obstacles(rightCompactor).vel.x = (SimOpts.shapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(rightCompactor).vel.x);
+                Obstacles.Obstacles(rightCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(rightCompactor).vel.x);
             }
         }
 
@@ -158,8 +158,8 @@ namespace DBNet.Forms
 
         private void HorizontalDriftCheck_Click()
         {
-            SimOpts.allowHorizontalShapeDrift = HorizontalDriftCheck.value;
-            if (!SimOpts.allowHorizontalShapeDrift)
+            SimOpts.AllowHorizontalShapeDrift = HorizontalDriftCheck.value;
+            if (!SimOpts.AllowHorizontalShapeDrift)
             {
                 Obstacles.StopAllHorizontalObstacleMovement();
             }
@@ -209,7 +209,7 @@ namespace DBNet.Forms
 
         private void OpaqueOption_Click()
         {
-            SimOpts.makeAllShapesTransparent = false;
+            SimOpts.MakeAllShapesTransparent = false;
             TransparentOption.value = false;
         }
 
@@ -222,7 +222,7 @@ namespace DBNet.Forms
         {
             BlackColorOption.value = false;
             ChangeAllObstacleColor(-1);
-            SimOpts.makeAllShapesBlack = false;
+            SimOpts.MakeAllShapesBlack = false;
         }
 
         private void ShapesAbsorbShotsCheck_Click(object sender, RoutedEventArgs e)
@@ -232,7 +232,7 @@ namespace DBNet.Forms
 
         private void ShapesAbsorbShotsCheck_Click()
         {
-            SimOpts.shapesAbsorbShots = ShapesAbsorbShotsCheck.value;
+            SimOpts.ShapesAbsorbShots = ShapesAbsorbShotsCheck.value;
         }
 
         private void ShapesSeeThroughCheck_Click(object sender, RoutedEventArgs e)
@@ -242,16 +242,16 @@ namespace DBNet.Forms
 
         private void ShapesSeeThroughCheck_Click()
         {
-            SimOpts.shapesAreSeeThrough = ShapesSeeThroughCheck.value;
-            if (SimOpts.shapesAreSeeThrough)
+            SimOpts.ShapesAreSeeThrough = ShapesSeeThroughCheck.value;
+            if (SimOpts.ShapesAreSeeThrough)
             {
                 ShapesVisableCheck.IsEnabled = false;
-                SimOpts.shapesAreVisable = false;
+                SimOpts.ShapesAreVisable = false;
             }
             else
             {
                 ShapesVisableCheck.IsEnabled = true;
-                SimOpts.shapesAreVisable = ShapesVisableCheck.value;
+                SimOpts.ShapesAreVisable = ShapesVisableCheck.value;
             }
         }
 
@@ -262,16 +262,16 @@ namespace DBNet.Forms
 
         private void ShapesVisableCheck_Click()
         {
-            SimOpts.shapesAreVisable = ShapesVisableCheck.value;
-            if (SimOpts.shapesAreVisable)
+            SimOpts.ShapesAreVisable = ShapesVisableCheck.value;
+            if (SimOpts.ShapesAreVisable)
             {
                 ShapesSeeThroughCheck.IsEnabled = false;
-                SimOpts.shapesAreSeeThrough = false;
+                SimOpts.ShapesAreSeeThrough = false;
             }
             else
             {
                 ShapesSeeThroughCheck.IsEnabled = true;
-                SimOpts.shapesAreSeeThrough = ShapesSeeThroughCheck.value;
+                SimOpts.ShapesAreSeeThrough = ShapesSeeThroughCheck.value;
             }
         }
 
@@ -282,7 +282,7 @@ namespace DBNet.Forms
 
         private void TransparentOption_Click()
         {
-            SimOpts.makeAllShapesTransparent = true;
+            SimOpts.MakeAllShapesTransparent = true;
             OpaqueOption.value = false;
         }
 
@@ -293,8 +293,8 @@ namespace DBNet.Forms
 
         private void VerticalDriftCheck_Click()
         {
-            SimOpts.allowVerticalShapeDrift = VerticalDriftCheck.value;
-            if (!SimOpts.allowVerticalShapeDrift)
+            SimOpts.AllowVerticalShapeDrift = VerticalDriftCheck.value;
+            if (!SimOpts.AllowVerticalShapeDrift)
             {
                 Obstacles.StopAllVerticalObstacleMovement();
             }

@@ -55,7 +55,7 @@ internal static class BucketManager
         foreach (var adjBucket in Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
             CheckBotBucketForVision(n, adjBucket);
 
-        if (SimOpts.shapesAreVisable && rob[n].exist)
+        if (SimOpts.ShapesAreVisable && rob[n].exist)
             CompareShapes(rob[n]);
 
         return rob[n].lastopp;
@@ -253,7 +253,7 @@ internal static class BucketManager
             return; // Bot too far away to see
 
         //If Shapes are see through, then there is no reason to check if a shape blocks a bot
-        if (!SimOpts.shapesAreSeeThrough)
+        if (!SimOpts.ShapesAreSeeThrough)
         {
             if (Obstacles.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
                 return;

@@ -367,7 +367,7 @@ namespace DBNet.Forms
                 }
             }
 
-            XLabel.Content = Str(SimOpts.chartingInterval) + " cycles per data point. " + Str(k) + " data points.";
+            XLabel.Content = Str(SimOpts.ChartingInterval) + " cycles per data point. " + Str(k) + " data points.";
 
         bypass:
           }
@@ -637,7 +637,7 @@ namespace DBNet.Forms
             SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE);
             this
             this
-            XLabel.Content = Str(SimOpts.chartingInterval) + " cycles per data point";
+            XLabel.Content = Str(SimOpts.ChartingInterval) + " cycles per data point";
         }
 
         private void Form_QueryUnload(int Cancel, int UnloadMode_UNUSED)
