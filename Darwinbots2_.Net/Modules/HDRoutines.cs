@@ -23,8 +23,6 @@ using static Robots;
 using static Shots_Module;
 using static SimOptModule;
 using static Teleport;
-using static Ties;
-using static varspecie;
 using static VBExtension;
 using static Vegs;
 
@@ -733,7 +731,7 @@ internal static class HDRoutines
     /// <summary>
     /// Saves the organism file.
     /// </summary>
-    public static void SaveOrganism(string path, int r)
+    public static void SaveOrganism(string path, robot rob)
     {
         var clist = new int[51];
 
@@ -1118,7 +1116,7 @@ internal static class HDRoutines
     {
         foreach (var s in savedShots)
         {
-            Shots.Add(new shot
+            Shots.Add(new Shot
             {
                 exist = s.Exists,
                 pos = s.Position,
@@ -1340,7 +1338,7 @@ internal static class HDRoutines
         };
     }
 
-    private static SavedShot SaveShots(shot s)
+    private static SavedShot SaveShots(Shot s)
     {
         return new SavedShot
         {

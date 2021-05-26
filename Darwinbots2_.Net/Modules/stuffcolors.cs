@@ -2,9 +2,9 @@ using System.Windows.Media;
 
 internal static class stuffcolors
 {
-    public static int backgcolor = 0;
+    public static int backgcolor { get; set; }
 
-    public static int chartcolor = 0;
+    public static int chartcolor { get; set; }
 
     public static Color HslToColor(double h, double s, double l)
     {

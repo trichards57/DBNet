@@ -17,7 +17,6 @@ using static Senses;
 using static SimOptModule;
 using static System.DateTime;
 using static System.Math;
-using static varspecie;
 using static VBExtension;
 
 internal static class NeoMutations
@@ -76,6 +75,17 @@ internal static class NeoMutations
             }
         }
         return delgene;
+    }
+
+    public static void logmutation(robot rob, string strmut)
+    {
+        if (SimOpts.TotRunCycle == 0)
+            return;
+
+        if (rob[n].LastMutDetail.Length > 100000000 / TotalRobotsDisplayed)
+            rob[n].LastMutDetail = "";
+
+        rob[n].LastMutDetail = strmut + vbCrLf + rob[n].LastMutDetail;
     }
 
     public static void mutate(int robn, bool reproducing)
@@ -284,7 +294,7 @@ internal static class NeoMutations
         }
     }
 
-    public static int NewSubSpecies(int n)
+    public static int NewSubSpecies(robot rob)
     {
         var i = SpeciesFromBot(n); // Get the index into the species array for this bot
         SimOpts.Specie[i].SubSpeciesCounter = SimOpts.Specie[i].SubSpeciesCounter + 1; // increment the counter
@@ -891,17 +901,6 @@ internal static class NeoMutations
                 accum = Length + accum; //Botsareus 3/22/2016 Bugfix Since DNA expended move index down
             }
         }
-    }
-
-    private static void logmutation(int n, string strmut)
-    {
-        if (SimOpts.TotRunCycle == 0)
-            return;
-
-        if (rob[n].LastMutDetail.Length > 100000000 / TotalRobotsDisplayed)
-            rob[n].LastMutDetail = "";
-
-        rob[n].LastMutDetail = strmut + vbCrLf + rob[n].LastMutDetail;
     }
 
     private static void MajorDeletion(int robn)

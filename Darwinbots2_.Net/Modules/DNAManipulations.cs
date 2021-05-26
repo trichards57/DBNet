@@ -58,7 +58,7 @@ internal static class DNAManipulations
         return dna.TakeWhile(d => !(d.tipo == 10 & d.value == 1)).Count();
     }
 
-    public static int GeneEnd(DNABlock[] dna, int position)
+    public static int GeneEnd(IList<DNABlock> dna, int position)
     {
         var condgene = false;
         if (dna[position].tipo == 9 && dna[position].value == 1)
@@ -89,6 +89,57 @@ internal static class DNAManipulations
             }
         }
         return dna.Length - 1;
+    }
+
+    public static int genepos(IList<DNABlock> dna, int n)
+    {
+        var k = 1;
+        var genenum = 0;
+        var ingene = false;
+        var genepos = 0;
+
+        if (n == 0)
+            return 0;
+
+        while (k > 0 & genepos == 0 & k <= 32000)
+        {
+            //A start or else
+            if (dna[k].tipo == 9 && (dna[k].value == 2 || dna[k].value == 3))
+            {
+                if (!ingene)
+                { // Does not follow a cond.  Make it a new gene
+                    genenum++;
+                    if (genenum == n)
+                    {
+                        genepos = k;
+                        break;
+                    }
+                }
+                else
+                    ingene = false; // First Start or Else following a cond
+            }
+
+            // If a Cond
+            if (dna[k].tipo == 9 && (dna[k].value == 1))
+            {
+                ingene = true;
+                genenum++;
+                if (genenum == n)
+                {
+                    genepos = k;
+                    break;
+                }
+            }
+            // If a stop
+            if (dna[k].tipo == 9 && dna[k].value == 4)
+                ingene = false;
+
+            k++;
+            if (dna[k].tipo == 10 & dna[k].value == 1)
+                k = -1;
+        }
+
+        return genepos;
     }
 
     public static void InsertVar(robot rob, string a)

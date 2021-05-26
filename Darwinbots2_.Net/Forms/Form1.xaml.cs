@@ -464,6 +464,66 @@ namespace DBNet.Forms
             }
         }
 
+        public int fittest()
+        {
+            int fittest = 0;
+            //Botsareus 5/22/2013 Lets figure what we are searching for
+            double sPopulation = 0;
+
+            double sEnergy = 0;
+
+            sEnergy = (IIf(intFindBestV2 > 100, 100, intFindBestV2)) / 100;
+            sPopulation = (IIf(intFindBestV2 < 100, 100, 200 - intFindBestV2)) / 100;
+
+            int t = 0;
+
+            double s = 0;
+
+            double Mx = 0;
+
+            Mx = 0;
+            for (t = 1; t < MaxRobs; t++)
+            {
+                if (rob[t].exist && !rob[t].Veg && rob[t].FName != "Corpse" && !(rob[t].FName == "Base.txt" && hidepred))
+                {
+                    TotalOffspring = 1;
+                    Cancer = false;
+                    s = score(t, 1, 10, 0) + rob[t].nrg + rob[t].body * 10; //Botsareus 5/22/2013 Advanced fit test
+                    if (s < 0)
+                    {
+                        s = 0; //Botsareus 9/23/2016 Bug fix
+                    }
+                    s = Pow(TotalOffspring, sPopulation) * Pow(s, sEnergy);
+
+                    if (x_restartmode == 7 || x_restartmode == 8)
+                    {
+                        if (Cancer)
+                        {
+                            s = 0; //Botsareus 10/21/2016 For zerobot mode ignore cancer familys
+                        }
+                    }
+
+                    if (s >= Mx)
+                    {
+                        Mx = s;
+                        fittest = t;
+                    }
+                }
+            }
+
+            //Z E R O B O T
+            //Pass result of fittest back to evo
+            if (x_restartmode == 7 || x_restartmode == 8)
+            {
+                if (rob[fittest].FName == "Mutate.txt")
+                {
+                    calculateZB(rob[fittest].AbsNum, Mx, fittest);
+                    robfocus = fittest;
+                }
+            }
+            return fittest;
+        }
+
         public void NewGraph(int n, string YLab)
         {
             if ((Charts[n].graf == null))
@@ -553,6 +613,73 @@ namespace DBNet.Forms
                     }
                 }
             }
+        }
+
+        public double score(int r, int reclev, int maxrec, int tipo)
+        {
+            double score_v = 0;
+            int al = 0;
+
+            double dx = 0;
+
+            double dy = 0;
+
+            int cr = 0;
+
+            int ct = 0;
+
+            int t = 0;
+
+            if (tipo == 2)
+            {
+                plines((r));
+            }
+            score_v = 0;
+            for (t = 1; t < MaxRobs; t++)
+            {
+                if (rob[t].exist)
+                {
+                    if (rob[t].parent == rob[r].AbsNum)
+                    {
+                        if (reclev < maxrec)
+                        {
+                            score_v = score_v + score(t, reclev + 1, maxrec, tipo);
+                        }
+                        if (tipo == 0)
+                        {
+                            score_v = score_v + InvestedEnergy(t); //Botsareus 8/3/2012 generational distance code
+                        }
+                        if (tipo == 4 && reclev > p_reclev)
+                        {
+                            p_reclev = reclev;
+                        }
+                        if (tipo == 1)
+                        {
+                            rob[t].highlight = true;
+                        }
+                        if (tipo == 3)
+                        {
+                            dx = (rob[r].pos.X - rob[t].pos.X) / 2;
+                            dy = (rob[r].pos.Y - rob[t].pos.Y) / 2;
+                            cr = RGB(128, 128, 128);
+                            ct = vbWhite;
+                            if (rob[r].AbsNum > rob[t].AbsNum)
+                            {
+                                cr = vbWhite;
+                                ct = RGB(128, 128, 128);
+                            }
+                            //Line((rob[t].pos.x, rob[t].pos.y)-Step(dx, dy), ct);
+                            //Line(((rob[r].pos.x, rob[r].pos.y, cr);
+                        }
+                    }
+                }
+            }
+            if (tipo == 1)
+            {
+                //Form1.Cls();
+                DrawAllRobs();
+            }
+            return score_v;
         }
 
         public void t_MouseDown(int Button)
@@ -1551,7 +1678,7 @@ namespace DBNet.Forms
             //  }
         }
 
-        private void DrawRobDistPer( int n)
+        private void DrawRobDistPer(int n)
         {
             //int CentreX = 0;
             //int CentreY = 0;
@@ -1867,66 +1994,6 @@ namespace DBNet.Forms
             return FindGenerationalDistance;
         }
 
-        public int fittest()
-        {
-            int fittest = 0;
-            //Botsareus 5/22/2013 Lets figure what we are searching for
-            double sPopulation = 0;
-
-            double sEnergy = 0;
-
-            sEnergy = (IIf(intFindBestV2 > 100, 100, intFindBestV2)) / 100;
-            sPopulation = (IIf(intFindBestV2 < 100, 100, 200 - intFindBestV2)) / 100;
-
-            int t = 0;
-
-            double s = 0;
-
-            double Mx = 0;
-
-            Mx = 0;
-            for (t = 1; t < MaxRobs; t++)
-            {
-                if (rob[t].exist && !rob[t].Veg && rob[t].FName != "Corpse" && !(rob[t].FName == "Base.txt" && hidepred))
-                {
-                    TotalOffspring = 1;
-                    Cancer = false;
-                    s = score(t, 1, 10, 0) + rob[t].nrg + rob[t].body * 10; //Botsareus 5/22/2013 Advanced fit test
-                    if (s < 0)
-                    {
-                        s = 0; //Botsareus 9/23/2016 Bug fix
-                    }
-                    s = Pow(TotalOffspring, sPopulation) * Pow(s, sEnergy);
-
-                    if (x_restartmode == 7 || x_restartmode == 8)
-                    {
-                        if (Cancer)
-                        {
-                            s = 0; //Botsareus 10/21/2016 For zerobot mode ignore cancer familys
-                        }
-                    }
-
-                    if (s >= Mx)
-                    {
-                        Mx = s;
-                        fittest = t;
-                    }
-                }
-            }
-
-            //Z E R O B O T
-            //Pass result of fittest back to evo
-            if (x_restartmode == 7 || x_restartmode == 8)
-            {
-                if (rob[fittest].FName == "Mutate.txt")
-                {
-                    calculateZB(rob[fittest].AbsNum, Mx, fittest);
-                    robfocus = fittest;
-                }
-            }
-            return fittest;
-        }
-
         private void Form_Click(object sender, RoutedEventArgs e)
         {
             if (lblSafeMode.Visibility == Visibility.Visible)
@@ -2057,7 +2124,6 @@ namespace DBNet.Forms
             robfocus = 0;
             MDIForm1.instance.DisableRobotsMenu();
             maxshotarray = 50;
-            shotpointer = 1;
             for (var i = 0; i < maxshotarray; i++) { Shots.Add(null); }
             dispskin = true;
 
@@ -2770,73 +2836,6 @@ return;
             PushQStack(c);
         }
 
-        public double score(int r, int reclev, int maxrec, int tipo)
-        {
-            double score_v = 0;
-            int al = 0;
-
-            double dx = 0;
-
-            double dy = 0;
-
-            int cr = 0;
-
-            int ct = 0;
-
-            int t = 0;
-
-            if (tipo == 2)
-            {
-                plines((r));
-            }
-            score_v = 0;
-            for (t = 1; t < MaxRobs; t++)
-            {
-                if (rob[t].exist)
-                {
-                    if (rob[t].parent == rob[r].AbsNum)
-                    {
-                        if (reclev < maxrec)
-                        {
-                            score_v = score_v + score(t, reclev + 1, maxrec, tipo);
-                        }
-                        if (tipo == 0)
-                        {
-                            score_v = score_v + InvestedEnergy(t); //Botsareus 8/3/2012 generational distance code
-                        }
-                        if (tipo == 4 && reclev > p_reclev)
-                        {
-                            p_reclev = reclev;
-                        }
-                        if (tipo == 1)
-                        {
-                            rob[t].highlight = true;
-                        }
-                        if (tipo == 3)
-                        {
-                            dx = (rob[r].pos.X - rob[t].pos.X) / 2;
-                            dy = (rob[r].pos.Y - rob[t].pos.Y) / 2;
-                            cr = RGB(128, 128, 128);
-                            ct = vbWhite;
-                            if (rob[r].AbsNum > rob[t].AbsNum)
-                            {
-                                cr = vbWhite;
-                                ct = RGB(128, 128, 128);
-                            }
-                            //Line((rob[t].pos.x, rob[t].pos.y)-Step(dx, dy), ct);
-                            //Line(((rob[r].pos.x, rob[r].pos.y, cr);
-                        }
-                    }
-                }
-            }
-            if (tipo == 1)
-            {
-                //Form1.Cls();
-                DrawAllRobs();
-            }
-            return score_v;
-        }
-
         private void startloaded()
         {
             if (tmpseed != 0)
@@ -2916,8 +2915,6 @@ return;
             //side B is the sum of the maximum bot velocity and the maximum shot velocity, the latter of which can be robsize/3 + the bot
             //max velocity since bot velocity is added to shot velocity.
             MaxBotShotSeperation = Sqrt(Pow(FindRadius(0, -1), 2) + Pow(SimOpts.MaxVelocity * 2 + RobSize / 3, 2));
-
-            shotpointer = 1;
 
             defaultWidth = 0.2m;
             defaultHeight = 0.2m;
@@ -3076,7 +3073,6 @@ return;
             InitialiseBuckets();
             for (var i = 0; i < 50; i++) { Shots.Add(null); }
             maxshotarray = 50;
-            shotpointer = 1;
 
             for (var t = 1; t < maxshotarray; t++)
             {

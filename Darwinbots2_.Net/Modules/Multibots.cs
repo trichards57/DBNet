@@ -23,7 +23,7 @@ internal static class Multibots
         }
     }
 
-    public static void KillOrganism(int n)
+    public static void KillOrganism(robot rob)
     {
         var clist = new int[51];//changed from 20 to 50
         var t = 0;
@@ -88,7 +88,7 @@ internal static class Multibots
         }
     }
 
-    public static void ReSpawn(int n, double X, double Y)
+    public static void ReSpawn(robot rob, double X, double Y)
     {
         var clist = new int[51];//changed from 20 to 50
 

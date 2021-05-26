@@ -54,9 +54,8 @@ internal static class Ties
         }
     }
 
-    public static void EraseTRefVars(int t)
+    public static void EraseTRefVars(robot rob)
     {
-        var rob = Robots.rob[t];
         // Zero the trefvars as all ties have gone.  Perf -> Could set a flag to not do this everytime
         for (var counter = 456; counter < 465; counter++)
             rob.mem[counter] = 0;
@@ -344,7 +343,7 @@ internal static class Ties
                         shareslime(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
-                    if (rob.mem[sharechlr] > 0 & rob.Chlr_Share_Delay == 0 & !Robots.rob[t].NoChlr)
+                    if (rob.mem[sharechlr] > 0 & rob.Chlr_Share_Delay == 0 & !rob.NoChlr)
                     { //Panda 8/31/2013 code to share chloroplasts 'Botsareus 8/16/2014 chloroplast sharing disable
                         sharechloroplasts(rob, tie);
                         tie.Sharing = true; //yellow ties

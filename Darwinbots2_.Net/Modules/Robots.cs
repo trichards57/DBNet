@@ -3,6 +3,7 @@ using Iersera.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 using static BucketManager;
 using static Common;
 using static Database;
@@ -328,7 +329,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         return absx;
     }
 
-    public static double absy(decimal aim, int up, int dn, int sx, int dx)
+    public static double absy(double aim, int up, int dn, int sx, int dx)
     {
         decimal absy = 0;
         decimal upTotal = 0;
@@ -420,7 +421,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         }
     }
 
-    public static double FindRadius(int n, decimal mult = 1)
+    public static double FindRadius(robot rob, decimal mult = 1)
     {
         decimal FindRadius = 0;
 
@@ -1715,7 +1716,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         return SexReproduce;
     }
 
-    public static void sharechloroplasts(int t, int k)
+    public static void sharechloroplasts(robot rob, Tie tie)
     { //Panda 8/31/2013 code to share chloroplasts
         decimal totchlr = 0;
 
@@ -1757,7 +1758,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         }
     }
 
-    public static void sharenrg(int t, int k)
+    public static void sharenrg(robot rob, Tie tie)
     {
         decimal totnrg = 0;
 
@@ -1846,7 +1847,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
     getout:
 }
 
-    public static void shareshell(int t, int k)
+    public static void shareshell(robot rob, Tie tie)
     {
         decimal totshell = 0;
 
@@ -1882,7 +1883,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         rob(_WithVar_1662.Ties(k).pnt).mem(823) = rob(_WithVar_1662.Ties(k).pnt).shell;
     }
 
-    public static void shareslime(int t, int k)
+    public static void shareslime(robot rob, Tie tie)
     { //robot shares slime with others in the same multibot structure
         decimal totslime = 0;
 
@@ -1916,7 +1917,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         }
     }
 
-    public static void sharewaste(int t, int k)
+    public static void sharewaste(robot rob, Tie tie)
     {
         decimal totwaste = 0;
 
@@ -2604,7 +2605,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
         { //Botsareus 10/5/2015 Bugfix for negative values in vshoot
             if (_WithVar_5306.virusshot <= maxshotarray && _WithVar_5306.virusshot > 0)
             {
-                Vshoot(n, rob[n].virusshot);
+                ShootVirus(n, rob[n].virusshot);
             }
 
             _WithVar_5306.mem(VshootSys) = 0;
@@ -4208,7 +4209,7 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public bool CantSee = false;
         public double chloroplasts = 0;
         public byte Chlr_Share_Delay = 0;
-        public int color = 0;
+        public Color color;
         public int condnum = 0;
         public Consoleform console = null;
         public bool Corpse = false;
@@ -4272,15 +4273,15 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public vector opos = null;
         public int order = 0;
         public int[] OSkin = new int[13];
-        public decimal Paracount = 0;
+        public double Paracount = 0;
         public bool Paralyzed = false;
-        public int parent = 0;
+        public robot parent = 0;
         public int Ploc = 0;
         public int Point2MutCycle = 0;
         public int PointMutBP = 0;
         public int PointMutCycle = 0;
-        public decimal poison = 0;
-        public decimal Poisoncount = 0;
+        public double poison = 0;
+        public double Poisoncount = 0;
         public bool Poisoned = false;
         public vector pos = null;
         public int Pval = 0;
@@ -4292,7 +4293,7 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public int[] Skin = new int[13];
         public double Slime = 0;
         public int SonNumber = 0;
-        public DNABlock[] spermDNA = new DNABlock[];
+        public List<DNABlock> spermDNA = new();
         public int spermDNAlen = 0;
         public int SubSpecies = 0;
         public string tag = "";
@@ -4306,12 +4307,12 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public double venom = 0;
         public bool View = false;
         public bool VirusImmune = false;
-        public int virusshot = 0;
         public int Vloc = 0;
         public int Vtimer = 0;
         public int Vval = 0;
         public bool wall = false;
         public double Waste = 0;
+        public Shot virusshot { get; set; }
         //TODO: Fixed Length Strings Not Supported: * 50
     }
 

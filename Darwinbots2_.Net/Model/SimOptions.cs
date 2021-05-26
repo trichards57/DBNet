@@ -22,7 +22,7 @@ namespace Iersera.Model
         public int DayNightCycleCounter { get; set; }
         public bool Daytime { get; set; }
         public bool DeadRobotSnp { get; set; }
-        public decimal Decay { get; set; }
+        public double Decay { get; set; }
         public int Decaydelay { get; set; }
         public int DecayType { get; set; }
         public decimal Density { get; set; }
@@ -38,7 +38,7 @@ namespace Iersera.Model
         public bool EnableAutoSpeciation { get; set; }
         public bool EnergyExType { get; set; }
         public int EnergyFix { get; set; }
-        public decimal EnergyProp { get; set; }
+        public double EnergyProp { get; set; }
         public bool F1 { get; set; }
         public int FieldHeight { get; set; }
         public int FieldSize { get; set; }

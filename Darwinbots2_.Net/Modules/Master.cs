@@ -447,7 +447,7 @@ internal static class Master
             }
         }
 
-        updateshots();
+        UpdateShots();
 
         //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
         for (var t = 1; t < MaxRobs; t++)

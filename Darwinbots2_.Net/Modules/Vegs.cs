@@ -10,16 +10,16 @@ using static SimOptModule;
 
 internal static class Vegs
 {
-    public static int cooldown = 0;
-    public static int CurrentEnergyCycle = 0;
-    public static double LightAval = 0;
-    public static double SunChange = 0;
-    public static double SunPosition = 0;
-    public static double SunRange = 0;
-    public static List<int> TotalSimEnergy = new List<int>(new int[101]);
-    public static int TotalSimEnergyDisplayed = 0;
-    public static int totvegs = 0;
-    public static int totvegsDisplayed = 0;
+    public static int cooldown { get; set; }
+    public static int CurrentEnergyCycle { get; set; }
+    public static double LightAval { get; set; }
+    public static double SunChange { get; set; }
+    public static double SunPosition { get; set; }
+    public static double SunRange { get; set; }
+    public static List<int> TotalSimEnergy { get; set; } = new List<int>(new int[101]);
+    public static int TotalSimEnergyDisplayed { get; set; }
+    public static int totvegs { get; set; }
+    public static int totvegsDisplayed { get; set; }
 
     public static void feedveg2(robot rob)
     {
@@ -303,7 +303,7 @@ internal static class Vegs
                 if (rob.body > 32000)
                     rob.body = 32000;
 
-                rob.radius = FindRadius(Robots.rob.IndexOf(rob));
+                rob.radius = FindRadius(rob);
             }
         }
     }

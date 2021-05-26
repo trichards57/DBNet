@@ -15,9 +15,9 @@ using static SimOptModule;
 internal static class Teleport
 {
     public const int MAXTELEPORTERS = 10;
-    public static int teleporterDefaultWidth = 0;
-    public static int teleporterFocus = 0;
     public static List<Teleporter> Teleporters = new();
+    public static int teleporterDefaultWidth { get; set; }
+    public static int teleporterFocus { get; set; }
 
     public static void CheckTeleporters(robot rob)
     {

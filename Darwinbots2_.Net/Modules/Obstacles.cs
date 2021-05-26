@@ -1,4 +1,5 @@
 using DBNet.Forms;
+using Iersera.Model;
 using System.Collections.Generic;
 using static Common;
 using static Microsoft.VisualBasic.Conversion;
@@ -317,7 +318,7 @@ internal static class Obstacles
         return DoObstacleCollisions;
     }
 
-    public static dynamic DoShotObstacleCollisions(int n)
+    public static dynamic DoShotObstacleCollisions(Shot shot)
     {
         dynamic DoShotObstacleCollisions = null;
         int i = 0;

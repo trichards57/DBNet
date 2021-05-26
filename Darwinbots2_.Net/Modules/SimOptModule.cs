@@ -45,7 +45,8 @@ internal static class SimOptModule
     public const int TURNCOST = 21;
     public const int USEDYNAMICCOSTS = 56;
     public const int VENOMCOST = 26;
-    public static SimOptions SimOpts = null;
-    public static List<Species> Species = new();
-    public static SimOptions TmpOpts = null;
+
+    public static SimOptions SimOpts { get; set; }
+    public static List<Species> Species { get; set; } = new();
+    public static SimOptions TmpOpts { get; set; }
 }
