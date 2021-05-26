@@ -18,8 +18,8 @@ using static Microsoft.VisualBasic.VBMath;
 using static Obstacles;
 using static Physics;
 using static Robots;
-using static Shots_Module;
-using static SimOptModule;
+using static Shots;
+using static SimOpt;
 using static stuffcolors;
 using static System.Math;
 using static Teleport;
@@ -2124,7 +2124,7 @@ namespace DBNet.Forms
             robfocus = 0;
             MDIForm1.instance.DisableRobotsMenu();
             maxshotarray = 50;
-            for (var i = 0; i < maxshotarray; i++) { Shots.Add(null); }
+            for (var i = 0; i < maxshotarray; i++) { Shots.Shots.Add(null); }
             dispskin = true;
 
             FlashColor[1] = vbBlack; // Hit with memory shot
@@ -3071,14 +3071,14 @@ return;
             }
             MaxRobs = 0;
             InitialiseBuckets();
-            for (var i = 0; i < 50; i++) { Shots.Add(null); }
+            for (var i = 0; i < 50; i++) { Shots.Shots.Add(null); }
             maxshotarray = 50;
 
             for (var t = 1; t < maxshotarray; t++)
             {
-                Shots[t].exist = false;
-                Shots[t].flash = false;
-                Shots[t].stored = false;
+                Shots.Shots[t].exist = false;
+                Shots.Shots[t].flash = false;
+                Shots.Shots[t].stored = false;
             }
 
             for (var t = 1; t < MAXOBSTACLES; t++)

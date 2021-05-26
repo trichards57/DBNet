@@ -6,7 +6,7 @@ using static F1Mode;
 using static Globals;
 using static Physics;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class Ties
 {

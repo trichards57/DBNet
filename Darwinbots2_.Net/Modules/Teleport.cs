@@ -10,7 +10,7 @@ using static HDRoutines;
 using static IntOpts;
 using static Multibots;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class Teleport
 {

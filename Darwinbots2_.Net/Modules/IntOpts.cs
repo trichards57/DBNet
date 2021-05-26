@@ -1,6 +1,6 @@
 using System;
 using static Common;
-using static SimOptModule;
+using static SimOpt;
 using static varspecie;
 
 internal static class IntOpts

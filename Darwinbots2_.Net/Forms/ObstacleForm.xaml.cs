@@ -1,7 +1,7 @@
 using System.Windows;
 using static Common;
 using static Obstacles;
-using static SimOptModule;
+using static SimOpt;
 using static VBConstants;
 using static VBExtension;
 

@@ -5,7 +5,7 @@ using static Globals;
 using static Microsoft.VisualBasic.Conversion;
 using static Microsoft.VisualBasic.Information;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 using static System.Math;
 using static VBExtension;
 

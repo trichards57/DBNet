@@ -2,7 +2,7 @@ using System.Windows;
 using static Microsoft.VisualBasic.Constants;
 using static Microsoft.VisualBasic.Strings;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 using static VBExtension;
 
 namespace DBNet.Forms

@@ -1,6 +1,6 @@
 using System.Windows;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 namespace DBNet.Forms
 {

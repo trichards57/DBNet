@@ -8,8 +8,8 @@ using static BucketManager;
 using static DNAManipulations;
 using static Obstacles;
 using static Robots;
-using static Shots_Module;
-using static SimOptModule;
+using static Shots;
+using static SimOpt;
 
 internal static class Globals
 {

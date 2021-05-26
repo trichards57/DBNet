@@ -8,7 +8,7 @@ using static Microsoft.VisualBasic.Conversion;
 using static Microsoft.VisualBasic.Information;
 using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
-using static SimOptModule;
+using static SimOpt;
 using static stuffcolors;
 using static VBConstants;
 using static VBExtension;

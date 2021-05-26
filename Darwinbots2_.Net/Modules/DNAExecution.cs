@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static Globals;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class DNAExecution
 {

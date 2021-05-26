@@ -5,7 +5,7 @@ using static Microsoft.VisualBasic.Interaction;
 using static Multibots;
 using static Robots;
 using static Senses;
-using static SimOptModule;
+using static SimOpt;
 using static System.Math;
 using static Ties;
 using static VBExtension;

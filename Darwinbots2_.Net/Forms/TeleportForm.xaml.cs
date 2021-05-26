@@ -2,7 +2,7 @@ using System.Windows;
 using static Common;
 using static Microsoft.VisualBasic.Conversion;
 using static Microsoft.VisualBasic.Interaction;
-using static SimOptModule;
+using static SimOpt;
 using static Teleport;
 using static VBExtension;
 

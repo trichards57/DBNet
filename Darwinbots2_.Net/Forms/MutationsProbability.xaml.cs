@@ -5,7 +5,7 @@ using static Microsoft.VisualBasic.Constants;
 using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
 using static NeoMutations;
-using static SimOptModule;
+using static SimOpt;
 using static System.Math;
 using static VBExtension;
 

@@ -6,7 +6,7 @@ using static Common;
 using static Globals;
 using static Obstacles;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class BucketManager
 {

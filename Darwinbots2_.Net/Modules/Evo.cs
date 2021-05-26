@@ -13,7 +13,7 @@ using static Globals;
 using static Master;
 using static NeoMutations;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 using static varspecie;
 
 internal static class Evo

@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using static Microsoft.VisualBasic.Conversion;
-using static SimOptModule;
+using static SimOpt;
 
 namespace DBNet.Forms
 {

@@ -1,7 +1,7 @@
 using Iersera.Model;
 using System.Collections.Generic;
 
-internal static class SimOptModule
+internal static class SimOpt
 {
     public const int ADCMDCOST = 3;
     public const int ADVANCESUN = 2;

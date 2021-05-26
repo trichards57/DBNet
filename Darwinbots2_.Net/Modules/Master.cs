@@ -14,8 +14,8 @@ using static Multibots;
 using static Obstacles;
 using static Robots;
 using static Senses;
-using static Shots_Module;
-using static SimOptModule;
+using static Shots;
+using static SimOpt;
 using static System.Math;
 using static Teleport;
 using static VBExtension;
@@ -156,7 +156,7 @@ internal static class Master
                     //Erase offensive shots
                     for (var t = 1; t < maxshotarray; t++)
                     {
-                        var shot = Shots[t];
+                        var shot = Shots.Shots[t];
                         if (shot.shottype == -1 || shot.shottype == -6)
                         {
                             shot.exist = false;

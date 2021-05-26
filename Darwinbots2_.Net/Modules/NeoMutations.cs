@@ -14,7 +14,7 @@ using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
 using static Robots;
 using static Senses;
-using static SimOptModule;
+using static SimOpt;
 using static System.DateTime;
 using static System.Math;
 using static VBExtension;

@@ -3,7 +3,7 @@ using static Globals;
 using static Microsoft.VisualBasic.FileSystem;
 using static Microsoft.VisualBasic.Interaction;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 using static VBExtension;
 
 namespace DBNet.Forms

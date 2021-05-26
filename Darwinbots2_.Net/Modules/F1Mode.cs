@@ -12,7 +12,7 @@ using static Evo;
 using static Globals;
 using static HDRoutines;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class F1Mode
 {

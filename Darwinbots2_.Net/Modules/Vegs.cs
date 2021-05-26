@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using static Globals;
 using static Physics;
 using static Robots;
-using static SimOptModule;
+using static SimOpt;
 
 internal static class Vegs
 {
@@ -211,7 +211,7 @@ internal static class Vegs
         if (!FeedThisCycle)
             return;
 
-        double ScreenArea = SimOptModule.SimOpts.FieldWidth * SimOptModule.SimOpts.FieldHeight;
+        double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
         ScreenArea -= Obstacles.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 

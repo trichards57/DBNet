@@ -13,11 +13,10 @@ using static Obstacles;
 using static Physics;
 using static Robots;
 using static Senses;
-using static SimOptModule;
-using static System.Math;
+using static SimOpt;
 using static Vegs;
 
-internal static class Shots_Module
+internal static class Shots
 {
     private const double MinBotRadius = 0.2;
     private const int ShellEffectiveness = 20;
@@ -58,7 +57,7 @@ internal static class Shots_Module
             shot.shottype = loc;
         else
         {
-            shot.shottype = -(Abs(loc) % 8);
+            shot.shottype = -(Math.Abs(loc) % 8);
             if (shot.shottype == 0)
                 shot.shottype = -8; // want multiples of -8 to be -8
         }
@@ -91,10 +90,10 @@ internal static class Shots_Module
 
         rob.DecayTimer = 0;
 
-        rob.aim = ThreadSafeRandom.Local.NextDouble() * 2 * PI;
-        rob.aimvector = new vector(Cos(rob.aim), Sin(rob.aim));
+        rob.aim = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
+        rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
 
-        var va = Clamp(rob.body, 0, SimOpts.Decay / 10);
+        var va = Math.Clamp(rob.body, 0, SimOpts.Decay / 10);
 
         int SH;
 
@@ -169,7 +168,7 @@ internal static class Shots_Module
             shot.shottype = shottype;
         else
         {
-            shot.shottype = -(Abs(shottype) % 8);
+            shot.shottype = -(Math.Abs(shottype) % 8);
 
             if (shot.shottype == 0)
                 shot.shottype = -8; // want multiples of -8 to be -8
@@ -184,7 +183,7 @@ internal static class Shots_Module
             ShAngle = rob.aim; //forward shots
         else
         {
-            ShAngle = angnorm(rob.aim - PI); //backward shots
+            ShAngle = angnorm(rob.aim - Math.PI); //backward shots
             rob.mem[backshot] = 0;
         }
 
@@ -196,7 +195,7 @@ internal static class Shots_Module
 
         ShAngle += (ThreadSafeRandom.Local.NextDouble() - .5) * 0.2;
 
-        var angle = new vector(Cos(ShAngle), -Sin(ShAngle));
+        var angle = new vector(Math.Cos(ShAngle), -Math.Sin(ShAngle));
 
         shot.pos = rob.pos + (angle * rob.radius);
 
@@ -213,7 +212,7 @@ internal static class Shots_Module
 
         if (rob.vbody > 10)
         {
-            shot.nrg = Log(Abs(rob.vbody)) * 60 * rngmultiplier;
+            shot.nrg = Math.Log(Math.Abs(rob.vbody)) * 60 * rngmultiplier;
 
             shot.Range = (shot.nrg + 40 + 1) / 40;
             shot.nrg += 40 + 1;
@@ -267,7 +266,7 @@ internal static class Shots_Module
         if (rob.mem[VshootSys] < 0)
             rob.mem[VshootSys] = 1;
 
-        var tempa = Clamp(rob.mem[VshootSys] * 20, 0, 32000); //.vshoot * 20
+        var tempa = Math.Clamp(rob.mem[VshootSys] * 20, 0, 32000); //.vshoot * 20
 
         shot.nrg = tempa;
         rob.nrg -= (tempa / 20) - (SimOpts.Costs[SHOTCOST] * SimOpts.Costs[COSTMULTIPLIER]);
@@ -277,7 +276,7 @@ internal static class Shots_Module
 
         var ShAngle = (double)ThreadSafeRandom.Local.Next(1, 1256) / 200;
         shot.stored = false;
-        shot.pos += new vector(Cos(ShAngle) * rob.radius, -Sin(ShAngle) * rob.radius);
+        shot.pos += new vector(Math.Cos(ShAngle) * rob.radius, -Math.Sin(ShAngle) * rob.radius);
         shot.velocity = new vector(absx(ShAngle, RobSize / 3, 0, 0, 0), absy(ShAngle, RobSize / 3, 0, 0, 0)) + rob.actvel;
 
         shot.opos = shot.pos - shot.velocity;
@@ -325,7 +324,7 @@ internal static class Shots_Module
                     if (shot.shottype != -4 || !SimOpts.NoWShotDecay)
                     {
                         var x = shot.Range == 0 ? shot.age + 1 : shot.age / shot.Range;
-                        shot.nrg *= Atan(x * shotdecay - shotdecay) / Atan(-shotdecay);
+                        shot.nrg *= Math.Atan(x * shotdecay - shotdecay) / Math.Atan(-shotdecay);
                     }
                 }
 
@@ -503,12 +502,12 @@ internal static class Shots_Module
             if (shot.pos.Y > SimOpts.FieldHeight)
             {
                 shot.pos.Y = SimOpts.FieldHeight;
-                shot.velocity.Y = -1 * Abs(shot.velocity.Y);
+                shot.velocity.Y = -1 * Math.Abs(shot.velocity.Y);
             }
             else if (shot.pos.Y < 0)
             {
                 shot.pos.Y = 0;
-                shot.velocity.Y = Abs(shot.velocity.Y);
+                shot.velocity.Y = Math.Abs(shot.velocity.Y);
             }
         }
 
@@ -524,12 +523,12 @@ internal static class Shots_Module
             if (shot.pos.X > SimOpts.FieldWidth)
             {
                 shot.pos.X = SimOpts.FieldWidth;
-                shot.velocity.X = -1 * Abs(shot.velocity.X);
+                shot.velocity.X = -1 * Math.Abs(shot.velocity.X);
             }
             else if (shot.pos.X < 0)
             {
                 shot.pos.X = 0;
-                shot.velocity.X = Abs(shot.velocity.X);
+                shot.velocity.X = Math.Abs(shot.velocity.X);
             }
         }
 
@@ -539,7 +538,7 @@ internal static class Shots_Module
 
         foreach (var rob in rob)
         {
-            if (!rob.exist || shot.parent == rob || rob.FName == "Base.txt" && hidepred || Abs(shot.opos.X - rob.pos.X) >= MaxBotShotSeperation || Abs(shot.opos.Y - rob.pos.Y) >= MaxBotShotSeperation)
+            if (!rob.exist || shot.parent == rob || rob.FName == "Base.txt" && hidepred || Math.Abs(shot.opos.X - rob.pos.X) >= MaxBotShotSeperation || Math.Abs(shot.opos.Y - rob.pos.Y) >= MaxBotShotSeperation)
                 continue;
 
             var B0 = rob.pos - rob.vel + rob.actvel;
@@ -569,7 +568,7 @@ internal static class Shots_Module
             if (Y < 0)
                 continue; // No collision
 
-            Y = Sqrt(Y);
+            Y = Math.Sqrt(Y);
 
             //The time in the cycle at which the earliest collision with the shot occurred.
             var time0 = (X - Y) / D2;
@@ -582,7 +581,7 @@ internal static class Shots_Module
                 continue;
 
             if (usetime0 & usetime1)
-                hitTime = Min(time0, time1);
+                hitTime = Math.Min(time0, time1);
             else if (usetime0)
                 hitTime = time0;
             else
