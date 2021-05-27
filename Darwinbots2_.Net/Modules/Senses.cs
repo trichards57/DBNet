@@ -1,769 +1,434 @@
 using DBNet.Forms;
+using Iersera.Support;
+using System;
+using System.Linq;
 using static BucketManager;
-using static Common;
 using static Globals;
-using static Microsoft.VisualBasic.Conversion;
-using static Microsoft.VisualBasic.Information;
 using static Robots;
 using static SimOpt;
-using static System.Math;
-using static VBExtension;
 
 internal static class Senses
 {
-    //     S E N S E S
-    //This module is the most processor intensive.
-    // Option Explicit
-    // Sets .sun to 1 if robot.aim is within 0.18 radians of 1.57 (Basically up)
-    // new version with less clutter.
-
-    public static void EraseLookOccurr(int n)
+    public static void EraseSenses(robot rob)
     {
-        if (rob[n].Corpse)
-        {
-            goto getout;
-        }
-
-        byte t = 0;
-
-        rob[n].mem(REFTYPE) = 0;
-
-        for (t = 1; t < 10; t++)
-        {
-            rob[n].mem(occurrstart + t) == 0;
-        }
-
-        rob[n].mem(in1) = 0;
-        rob[n].mem(in2) = 0;
-        rob[n].mem(in3) = 0;
-        rob[n].mem(in4) = 0;
-        rob[n].mem(in5) = 0;
-        rob[n].mem(in6) = 0;
-        rob[n].mem(in7) = 0;
-        rob[n].mem(in8) = 0;
-        rob[n].mem(in9) = 0;
-        rob[n].mem(in10) = 0;
-
-        rob[n].mem(711) = 0; //refaim
-        rob[n].mem(712) = 0; //reftie
-        rob[n].mem(refshell) = 0;
-        rob[n].mem(refbody) = 0;
-        rob[n].mem(refypos) = 0;
-        rob[n].mem(refxpos) = 0;
-        rob[n].mem(refvelup) = 0;
-        rob[n].mem(refveldn) = 0;
-        rob[n].mem(refveldx) = 0;
-        rob[n].mem(refvelsx) = 0;
-        rob[n].mem(refvelscalar) = 0;
-        rob[n].mem(713) = 0; //refpoison. current value of poison. not poison commands
-        rob[n].mem(714) = 0; //refvenom (as with poison)
-        rob[n].mem(715) = 0; //refkills
-        rob[n].mem(refmulti) = 0;
-        rob[n].mem(473) = 0;
-        rob[n].mem(477) = 0;
-    getout:
-  }
-
-    public static void EraseSenses(int n)
-    {
-        int l = 0;
-
-        dynamic _WithVar_6504;
-        _WithVar_6504 = rob[n];
-        _WithVar_6504.lasttch = 0; //Botsareus 11/26/2013 Erase lasttch here
-        _WithVar_6504.mem(hitup) = 0;
-        _WithVar_6504.mem(hitdn) = 0;
-        _WithVar_6504.mem(hitdx) = 0;
-        _WithVar_6504.mem(hitsx) = 0;
-        _WithVar_6504.mem(hit) = 0;
-        _WithVar_6504.mem(shflav) = 0;
-        _WithVar_6504.mem(209) = 0; //.shang
-        _WithVar_6504.mem(shup) = 0;
-        _WithVar_6504.mem(shdn) = 0;
-        _WithVar_6504.mem(shdx) = 0;
-        _WithVar_6504.mem(shsx) = 0;
-        _WithVar_6504.mem(214) = 0; //edge collision detection
-        EraseLookOccurr((n));
-
-        //EricL - *trefvars now persist across cycles
-        // For l = 1 To 10 ' resets *trefvars
-        //   .mem(455 + l) = 0
-        // Next l
-        // For l = 0 To 10     'resets
-        //     .mem(trefxpos + l) = 0
-        // Next l
-        // .mem(472) = 0
+        rob.lasttch = 0; //Botsareus 11/26/2013 Erase lasttch here
+        rob.mem[hitup] = 0;
+        rob.mem[hitdn] = 0;
+        rob.mem[hitdx] = 0;
+        rob.mem[hitsx] = 0;
+        rob.mem[hit] = 0;
+        rob.mem[shflav] = 0;
+        rob.mem[209] = 0; //.shang
+        rob.mem[shup] = 0;
+        rob.mem[shdn] = 0;
+        rob.mem[shdx] = 0;
+        rob.mem[shsx] = 0;
+        rob.mem[214] = 0; //edge collision detection
+        EraseLookOccurr(rob);
     }
 
-    public static void LandMark(int iRobID)
+    public static void LookOccurr(robot rob1, robot rob2)
     {
-        rob(iRobID).mem(LandM) = 0;
-        if (rob(iRobID).aim > 1.39m && rob(iRobID).aim < 1.75m)
+        if (rob1.Corpse)
+            return;
+
+        rob1.mem[REFTYPE] = 0;
+
+        for (var t = 1; t < 8; t++)
+            rob1.mem[occurrstart + t] = rob2.occurr[t];
+
+        if (!rob2.Veg && rob2.FName != rob1.FName)
         {
-            rob(iRobID).mem(LandM) = 1;
-        }
-    }
-
-    /*
-    ' touch: tells a robot whether it has been hit by another one
-    ' and where: up, dn dx, sx
-    */
-
-    public static void lookoccurr(int n, int o)
-    {
-        if (rob[n].Corpse)
-        {
-            goto getout;
-        }
-        byte t = 0;
-
-        decimal X = 0;
-
-        decimal Y = 0;
-
-        rob[n].mem(REFTYPE) = 0;
-
-        for (t = 1; t < 8; t++)
-        {
-            rob[n].mem(occurrstart + t) == rob(o).occurr(t);
-        }
-
-        if (!rob(o).Veg)
-        { //Botsareus 6/23/2016 Bug fix - fudging does not apply to repopulating robots
-            if (rob(o).FName != rob[n].FName)
+            //Botsareus 2/5/2014 Eye Fudge
+            if (FudgeEyes || FudgeAll)
             {
-                //Botsareus 2/5/2014 Eye Fudge
-                if (FudgeEyes || FudgeAll)
-                {
-                    if (rob[n].mem(occurrstart + 8) < 2)
-                    {
-                        rob[n].mem(occurrstart + 8) == Int(rndy() * 2) + 1;
-                    }
-                    else
-                    {
-                        rob[n].mem(occurrstart + 8) == rob[n].mem(occurrstart + 8) + Int(rndy() * 2) * 2 - 1;
-                    }
-                }
-                //Fudge the rest of look occurr
-                if (FudgeAll)
-                {
-                    for (t = 1; t < 7; t++)
-                    {
-                        if (rob[n].mem(occurrstart + t) < 2)
-                        {
-                            rob[n].mem(occurrstart + t) == Int(rndy() * 2) + 1;
-                        }
-                        else
-                        {
-                            rob[n].mem(occurrstart + t) == rob[n].mem(occurrstart + t) + Int(rndy() * 2) * 2 - 1;
-                        }
-                    }
-                }
+                if (rob1.mem[occurrstart + 8] < 2)
+                    rob1.mem[occurrstart + 8] = ThreadSafeRandom.Local.Next(1, 3);
+                else
+                    rob1.mem[occurrstart + 8] = rob1.mem[occurrstart + 8] + ThreadSafeRandom.Local.Next(-1, 3);
             }
-        }
-
-        if (rob(o).nrg < 0)
-        {
-            rob[n].mem(occurrstart + 9) == 0;
-        }
-        else if (rob(o).nrg < 32001)
-        {
-            rob[n].mem(occurrstart + 9) == rob(o).nrg;
-        }
-        else
-        {
-            rob[n].mem(occurrstart + 9) == 32000;
-        }
-        //EricL 4/13/2006 Added If Then now that age can exceed 32000
-        if (rob(o).age < 32001)
-        {
-            rob[n].mem(occurrstart + 10) == rob(o).age; //.refage
-        }
-        else
-        {
-            rob[n].mem(occurrstart + 10) == 32000;
-        }
-
-        rob[n].mem(in1) = rob(o).mem(out1);
-        rob[n].mem(in2) = rob(o).mem(out2);
-        rob[n].mem(in3) = rob(o).mem(out3);
-        rob[n].mem(in4) = rob(o).mem(out4);
-        rob[n].mem(in5) = rob(o).mem(out5);
-        rob[n].mem(in6) = rob(o).mem(out6);
-        rob[n].mem(in7) = rob(o).mem(out7);
-        rob[n].mem(in8) = rob(o).mem(out8);
-        rob[n].mem(in9) = rob(o).mem(out9);
-        rob[n].mem(in10) = rob(o).mem(out10);
-
-        if (!rob(o).Veg)
-        {
-            //fudge in/out
+            //Fudge the rest of look occurr
             if (FudgeAll)
             {
-                if (rob(o).FName != rob[n].FName)
+                for (var t = 1; t < 7; t++)
                 {
-                    if (rob(o).mem(out1) != 0)
-                    {
-                        rob[n].mem(in1) = rob(o).mem(out1) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out2) != 0)
-                    {
-                        rob[n].mem(in2) = rob(o).mem(out2) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out3) != 0)
-                    {
-                        rob[n].mem(in3) = rob(o).mem(out3) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out4) != 0)
-                    {
-                        rob[n].mem(in4) = rob(o).mem(out4) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out5) != 0)
-                    {
-                        rob[n].mem(in5) = rob(o).mem(out5) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out6) != 0)
-                    {
-                        rob[n].mem(in6) = rob(o).mem(out6) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out7) != 0)
-                    {
-                        rob[n].mem(in7) = rob(o).mem(out7) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out8) != 0)
-                    {
-                        rob[n].mem(in8) = rob(o).mem(out8) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out9) != 0)
-                    {
-                        rob[n].mem(in9) = rob(o).mem(out9) + Int(rndy() * 2) * 2 - 1;
-                    }
-                    if (rob(o).mem(out10) != 0)
-                    {
-                        rob[n].mem(in10) = rob(o).mem(out10) + Int(rndy() * 2) * 2 - 1;
-                    }
-                }
-            }
-        }
-
-        rob[n].mem(711) = rob(o).mem(18); //refaim
-        rob[n].mem(712) = rob(o).occurr(9); //reftie
-
-        if (!rob(o).Veg)
-        {
-            //Fudge the ties
-            if (FudgeAll)
-            {
-                if (rob(o).FName != rob[n].FName)
-                {
-                    if (rob[n].mem(712) < 2)
-                    {
-                        rob[n].mem(712) = Int(rndy() * 2) + 1;
-                    }
+                    if (rob1.mem[occurrstart + t] < 2)
+                        rob1.mem[occurrstart + t] = ThreadSafeRandom.Local.Next(1, 3);
                     else
+                        rob1.mem[occurrstart + t] = rob1.mem[occurrstart + t] + ThreadSafeRandom.Local.Next(-1, 3);
+                }
+            }
+        }
+
+        rob1.mem[occurrstart + 9] = (int)Math.Clamp(rob2.nrg, 0, 32000);
+
+        if (rob2.age < 32001)
+            rob1.mem[occurrstart + 10] = rob2.age; //.refage
+        else
+            rob1.mem[occurrstart + 10] = 32000;
+
+        rob1.mem[in1] = rob2.mem[out1];
+        rob1.mem[in2] = rob2.mem[out2];
+        rob1.mem[in3] = rob2.mem[out3];
+        rob1.mem[in4] = rob2.mem[out4];
+        rob1.mem[in5] = rob2.mem[out5];
+        rob1.mem[in6] = rob2.mem[out6];
+        rob1.mem[in7] = rob2.mem[out7];
+        rob1.mem[in8] = rob2.mem[out8];
+        rob1.mem[in9] = rob2.mem[out9];
+        rob1.mem[in10] = rob2.mem[out10];
+
+        if (!rob2.Veg && FudgeAll && rob2.FName != rob1.FName)
+        {
+            if (rob2.mem[out1] != 0)
+                rob1.mem[in1] = rob2.mem[out1] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out2] != 0)
+                rob1.mem[in2] = rob2.mem[out2] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out3] != 0)
+                rob1.mem[in3] = rob2.mem[out3] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out4] != 0)
+                rob1.mem[in4] = rob2.mem[out4] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out5] != 0)
+                rob1.mem[in5] = rob2.mem[out5] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out6] != 0)
+                rob1.mem[in6] = rob2.mem[out6] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out7] != 0)
+                rob1.mem[in7] = rob2.mem[out7] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out8] != 0)
+                rob1.mem[in8] = rob2.mem[out8] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out9] != 0)
+                rob1.mem[in9] = rob2.mem[out9] + ThreadSafeRandom.Local.Next(-1, 3);
+
+            if (rob2.mem[out10] != 0)
+                rob1.mem[in10] = rob2.mem[out10] + ThreadSafeRandom.Local.Next(-1, 3);
+        }
+
+        rob1.mem[711] = rob2.mem[18]; //refaim
+        rob1.mem[712] = rob2.occurr[9]; //reftie
+
+        if (!rob2.Veg && FudgeAll && rob2.FName != rob1.FName)
+        {
+            if (rob1.mem[712] < 2)
+            {
+                rob1.mem[712] = ThreadSafeRandom.Local.Next(1, 3);
+            }
+            else
+            {
+                rob1.mem[712] = ThreadSafeRandom.Local.Next(-1, 3);
+            }
+        }
+
+        rob1.mem[refshell] = (int)rob2.shell;
+        rob1.mem[refbody] = (int)rob2.body;
+        rob1.mem[refypos] = rob2.mem[217];
+        rob1.mem[refxpos] = rob2.mem[219];
+        //give reference variables from the bots frame of reference
+        var x = Math.Clamp(rob2.vel.X * Math.Cos(rob1.aim) + rob2.vel.Y * Math.Sin(rob1.aim) * -1 - rob1.mem[velup], -32000, 32000);
+        var y = Math.Clamp(rob2.vel.Y * Math.Cos(rob1.aim) + rob2.vel.X * Math.Sin(rob1.aim) - rob1.mem[veldx], -32000, 32000);
+
+        rob1.mem[refvelup] = (int)x;
+        rob1.mem[refveldn] = rob1.mem[refvelup] * -1;
+        rob1.mem[refveldx] = (int)y;
+        rob1.mem[refvelsx] = rob1.mem[refvelsx] * -1;
+
+        var temp = Math.Sqrt(Math.Pow(rob1.mem[refvelup], 2) + Math.Pow(rob1.mem[refveldx], 2)); // how fast is this robot moving compared to me?
+        if (temp > 32000)
+            temp = 32000;
+
+        rob1.mem[refvelscalar] = (int)temp;
+        rob1.mem[713] = rob2.mem[827]; //refpoison. current value of poison. not poison commands
+        rob1.mem[714] = rob2.mem[825]; //refvenom (as with poison)
+        rob1.mem[715] = rob2.Kills; //refkills
+        rob1.mem[refmulti] = rob2.Multibot == true ? 1 : 0;
+
+        if (rob1.mem[474] > 0 & rob1.mem[474] <= 1000)
+        {
+            //readmem and memloc couple used to read a specified memory location of the target robot
+            rob1.mem[473] = rob2.mem[rob1.mem[474]];
+            if (rob1.mem[474] > EyeStart && rob1.mem[474] < EyeEnd)
+                rob2.View = true;
+        }
+
+        rob1.mem[477] = rob2.Fixed ? 1 : 0;
+    }
+
+    public static void MakeOccurrList(robot rob)
+    {
+        for (var t = 1; t < 12; t++)
+            rob.occurr[t] = 0;
+
+        for (var i = 0; i < rob.dna.Count; i++)
+        {
+            if (rob.dna[i].tipo == 10 && rob.dna[i].value == 1)
+                break;
+
+            switch (rob.dna[i].tipo)
+            {
+                case 0:
+                    //number
+                    if (rob.dna[i + 1].tipo == 7)
                     {
-                        rob[n].mem(712) = rob[n].mem(712) + Int(rndy() * 2) * 2 - 1;
+                        //DNA is going to store to this value, so it's probably a sysvar
+                        switch (rob.dna[i].value)
+                        {
+                            case > 0 and < 9:
+                                //if we are dealing with one of the first 8 sysvars
+                                rob.occurr[rob.dna[i].value]++; //then the occur listing for this fxn is incremented
+                                break;
+
+                            case 826:
+                                //referencing .strpoison
+                                rob.occurr[10]++;
+                                break;
+
+                            case 824:
+                                //refencing .strvenom
+                                rob.occurr[11]++;
+                                break;
+                        }
                     }
-                }
+                    else if (rob.dna[i].value == 330)
+                    {
+                        //the bot is referencing .tie 'Botsareus 11/29/2013 Moved to "." list
+                        rob.occurr[9]++; //ties
+                    }
+                    break;
+
+                case 1:
+                    //*number
+                    if (rob.dna[i].value > 500 & rob.dna[i].value < 510)
+                    {
+                        //the bot is referencing an eye
+                        rob.occurr[8]++; //eyes
+                    }
+                    break;
             }
         }
 
-        rob[n].mem(refshell) = rob(o).shell;
-        rob[n].mem(refbody) = rob(o).body;
-        rob[n].mem(refypos) = rob(o).mem(217);
-        rob[n].mem(refxpos) = rob(o).mem(219);
-        //give reference variables from the bots frame of reference
-        X = (rob(o).vel.X * Cos(rob[n].aim) + rob(o).vel.Y * Sin(rob[n].aim) * -1) - rob[n].mem(velup);
-        Y = (rob(o).vel.Y * Cos(rob[n].aim) + rob(o).vel.X * Sin(rob[n].aim)) - rob[n].mem(veldx);
-        if (X > 32000)
-        {
-            X = 32000;
-        }
-        if (X < -32000)
-        {
-            X = -32000;
-        }
-        if (Y > 32000)
-        {
-            Y = 32000;
-        }
-        if (Y < -32000)
-        {
-            Y = -32000;
-        }
+        for (var t = 1; t < 12; t++)
+            rob.mem[720 + t] = rob.occurr[t];
+    }
 
-        rob[n].mem(refvelup) = X;
-        rob[n].mem(refveldn) = rob[n].mem(refvelup) * -1;
-        rob[n].mem(refveldx) = Y;
-        rob[n].mem(refvelsx) = rob[n].mem(refvelsx) * -1;
-        decimal temp = 0;
+    public static Iersera.Model.Species SpeciesFromBot(robot rob)
+    {
+        return SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
+    }
 
-        temp = Sqr(CLng(rob[n].mem(refvelup) ^ 2) + CLng(rob[n].mem(refveldx) ^ 2)); // how fast is this robot moving compared to me?
-        if (temp > 32000)
+    public static void Taste(robot rob, double X, double Y, int value)
+    {
+        var aim = 6.28 - rob.aim;
+        var xc = rob.pos.X;
+        var yc = rob.pos.Y;
+        var dx = X - xc;
+        var dy = Y - yc;
+        var ang = Math.Atan2(dy, dx);
+        var dang = Physics.angnorm(ang - aim);
+        var addr = dang switch
         {
-            temp = 32000;
-        }
+            > 5.49 or <= 0.78 => shup,
+            > 0.78 and <= 2.36 => shdx,
+            > 2.36 and <= 3.92 => shdn,
+            _ => shsx,
+        };
 
-        rob[n].mem(refvelscalar) = temp;
-        rob[n].mem(713) = rob(o).mem(827); //refpoison. current value of poison. not poison commands
-        rob[n].mem(714) = rob(o).mem(825); //refvenom (as with poison)
-        rob[n].mem(715) = rob(o).Kills; //refkills
-        if (rob(o).Multibot == true)
+        rob.mem[addr] = value;
+        rob.mem[209] = (int)(dang * 200);
+        rob.mem[shflav] = value;
+    }
+
+    public static void Touch(robot rob, int X, int Y)
+    {
+        var aim = 6.28 - rob.aim;
+        var xc = rob.pos.X;
+        var yc = rob.pos.Y;
+        var dx = X - xc;
+        var dy = Y - yc;
+        var ang = Math.Atan2(dy, dx);
+        var dang = Physics.angnorm(ang - aim);
+        var addr = dang switch
         {
-            rob[n].mem(refmulti) = 1;
-        }
-        else
+            > 5.49 or <= 0.78 => hitup,
+            > 0.78 and <= 2.36 => hitdn,
+            > 2.36 and <= 3.92 => hitdx,
+            _ => hitsx,
+        };
+        rob.mem[addr] = 1;
+        rob.mem[hit] = 1;
+    }
+
+    public static void WriteSenses(robot rob)
+    {
+        LandMark(rob);
+
+        rob.mem[TotalBots] = TotalRobots;
+        rob.mem[TOTALMYSPECIES] = SpeciesFromBot(rob).population;
+
+        if (!rob.CantSee && !rob.Corpse)
         {
-            rob[n].mem(refmulti) = 0;
-        }
-        if (rob[n].mem(474) > 0 & rob[n].mem(474) <= 1000)
-        { //readmem and memloc couple used to read a specified memory location of the target robot
-            rob[n].mem(473) = rob(o[.mem(rob[n].mem(474 + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +]);
-            if (rob[n].mem(474) > EyeStart && rob[n].mem(474) < EyeEnd)
+            if (BucketsProximity(rob) > 0)
             {
-                rob(o).View = true;
-            }
-        }
-        if (rob(o).Fixed)
-        { //reffixed. Tells if a viewed robot is fixed by .fixpos.
-            rob[n].mem(477) = 1;
-        }
-        else
-        {
-            rob[n].mem(477) = 0;
-        }
-    // rob[n].mem(825) = Int(rob(o).venom)
-    //rob[n].mem(827) = Int(rob(o).poison)
-    getout:
-    }
-
-    public static void lookoccurrShape(int n, int o)
-    {
-        // bot n has shape o in it's focus eye
-
-        if (rob[n].Corpse)
-        {
-            goto getout;
-        }
-        byte t = 0;
-
-        rob[n].mem(REFTYPE) = 1;
-
-        for (t = 1; t < 8; t++)
-        {
-            rob[n].mem(occurrstart + t) == 0;
-        }
-
-        rob[n].mem(occurrstart + 9) == 0; // refnrg
-
-        rob[n].mem(occurrstart + 10) == 0; //refage
-
-        rob[n].mem(in1) = 0;
-        rob[n].mem(in2) = 0;
-        rob[n].mem(in3) = 0;
-        rob[n].mem(in4) = 0;
-        rob[n].mem(in5) = 0;
-        rob[n].mem(in6) = 0;
-        rob[n].mem(in7) = 0;
-        rob[n].mem(in8) = 0;
-        rob[n].mem(in9) = 0;
-        rob[n].mem(in10) = 0;
-
-        rob[n].mem(711) = 0; //refaim
-        rob[n].mem(712) = 0; //reftie
-        rob[n].mem(refshell) = 0;
-        rob[n].mem(refbody) = 0;
-
-        rob[n].mem(refxpos) = CInt((rob[n].lastopppos.X / Form1.xDivisor) % 32000);
-        rob[n].mem(refypos) = CInt((rob[n].lastopppos.Y / Form1.yDivisor) % 32000);
-
-        //give reference variables from the bots frame of reference
-        rob[n].mem(refvelup) = (Obstacles.Obstacles(o).vel.X * Cos(rob[n].aim) + Obstacles.Obstacles(o).vel.Y * Sin(rob[n].aim) * -1) - rob[n].mem(velup);
-        rob[n].mem(refveldn) = rob[n].mem(refvelup) * -1;
-        rob[n].mem(refveldx) = (Obstacles.Obstacles(o).vel.Y * Cos(rob[n].aim) + Obstacles.Obstacles(o).vel.X * Sin(rob[n].aim)) - rob[n].mem(veldx);
-        rob[n].mem(refvelsx) = rob[n].mem(refvelsx) * -1;
-
-        decimal temp = 0;
-
-        temp = Sqr(CLng(rob[n].mem(refvelup) ^ 2) + CLng(rob[n].mem(refveldx) ^ 2)); // how fast is this shape moving compared to me?
-        if (temp > 32000)
-        {
-            temp = 32000;
-        }
-
-        rob[n].mem(refvelscalar) = temp;
-        rob[n].mem(713) = 0; //refpoison. current value of poison. not poison commands
-        rob[n].mem(714) = 0; //refvenom (as with poison)
-        rob[n].mem(715) = 0; //refkills
-        rob[n].mem(refmulti) = 0;
-
-        //readmem and memloc couple used to read a specified memory location of the target robot
-        rob[n].mem(473) = 0;
-
-        if (Obstacles.Obstacles(o).vel.X == 0 & Obstacles.Obstacles(o).vel.Y == 0)
-        { //reffixed. Tells if a viewed robot is fixed by .fixpos.
-            rob[n].mem(477) = 1;
-        }
-        else
-        {
-            rob[n].mem(477) = 0;
-        }
-
-    //  rob[n].mem(825) = 0 ' venom
-    //  rob[n].mem(827) = 0 ' poison
-    getout:
-  }
-
-    public static void makeoccurrlist(robot rob)
-    {
-        int t = 0;
-
-        int k = 0;
-
-        dynamic _WithVar_7514;
-        _WithVar_7514 = rob[n];
-
-        for (t = 1; t < 12; t++)
-        {
-            _WithVar_7514.occurr(t) = 0;
-        }
-        t = 1;
-        k = 1;
-        While(!(_WithVar_7514.dna(t).tipo == 10 & _WithVar_7514.dna(t).value == 1) && t <= 32000 & t < UBound(_WithVar_7514.dna)); //Botsareus 6/16/2012 Added code to check upper bounds
-
-        if (_WithVar_7514.dna(t).tipo == 0)
-        { //number
-            if (_WithVar_7514.dna(t + 1).tipo == 7)
-            { //DNA is going to store to this value, so it's probably a sysvar
-                if (_WithVar_7514.dna(t).value < 8 && _WithVar_7514.dna(t).value > 0)
-                { //if we are dealing with one of the first 8 sysvars
-                    _WithVar_7514.occurr(_WithVar_7514.dna(t).value) = _WithVar_7514.occurr(_WithVar_7514.dna(t).value) + 1; //then the occur listing for this fxn is incremented
-                }
-
-                if (_WithVar_7514.dna(t).value == 826)
-                { //referencing .strpoison
-                    _WithVar_7514.occurr(10) = _WithVar_7514.occurr(10) + 1;
-                }
-
-                if (_WithVar_7514.dna(t).value == 824)
-                { //refencing .strvenom
-                    _WithVar_7514.occurr(11) = _WithVar_7514.occurr(11) + 1;
-                }
-            }
-
-            if (_WithVar_7514.dna(t).value == 330)
-            { //the bot is referencing .tie 'Botsareus 11/29/2013 Moved to "." list
-                _WithVar_7514.occurr(9) = _WithVar_7514.occurr(9) + 1; //ties
-            }
-        }
-
-        if (_WithVar_7514.dna(t).tipo == 1)
-        { //*number
-            if (_WithVar_7514.dna(t).value > 500 & _WithVar_7514.dna(t).value < 510)
-            { //the bot is referencing an eye
-                _WithVar_7514.occurr(8) = _WithVar_7514.occurr(8) + 1; //eyes
-            }
-        }
-
-        t = t + 1;
-        Wend();
-
-        //creates the "ownvars" our own readbacks as versions of the refvars seen by others
-        for (t = 1; t < 8; t++)
-        {
-            _WithVar_7514.mem(720 + t) == _WithVar_7514.occurr(t);
-        }
-        _WithVar_7514.mem(728) = _WithVar_7514.occurr(8);
-        _WithVar_7514.mem(729) = _WithVar_7514.occurr(9);
-        _WithVar_7514.mem(730) = _WithVar_7514.occurr(10);
-        _WithVar_7514.mem(731) = _WithVar_7514.occurr(11);
-    }
-
-    public static int SpeciesFromBot(int n)
-    {
-        int SpeciesFromBot = 0;
-        int i = 0;
-
-        i = 0;
-        While(SimOpts.Specie(i).Name != rob[n].FName && i < SimOpts.SpeciesNum);
-        i = i + 1;
-        Wend();
-        SpeciesFromBot = i;
-        return SpeciesFromBot;
-    }
-
-    public static void taste(robot rob, double X, double Y, int value)
-    {
-        decimal xc = 0;
-
-        decimal yc = 0;
-
-        decimal dx = 0;
-
-        decimal dy = 0;
-
-        decimal tn = 0;
-
-        decimal ang = 0;
-
-        decimal aim = 0;
-
-        decimal dang = 0;
-
-        aim = 6.28m - rob(a).aim;
-        xc = rob(a).pos.X;
-        yc = rob(a).pos.Y;
-        dx = X - xc;
-        dy = Y - yc;
-        if (dx != 0)
-        {
-            tn = dy / dx;
-            ang = Atn(tn);
-            if (dx < 0)
-            {
-                ang = ang - 3.14m;
-            }
-        }
-        else
-        {
-            ang = 1.57m * Sgn(dy);
-        }
-        dang = ang - aim;
-        While(dang < 0);
-        dang = dang + 6.28m;
-        Wend();
-        While(dang > 6.28m);
-        dang = dang - 6.28m;
-        Wend();
-        if (dang > 5.49m || dang < 0.78m)
-        {
-            rob(a).mem(shup) = value;
-        }
-        if (dang > 2.36m && dang < 3.92m)
-        {
-            rob(a).mem(shdn) = value;
-        }
-        if (dang > 0.78m && dang < 2.36m)
-        {
-            rob(a).mem(shdx) = value;
-        }
-        if (dang > 3.92m && dang < 5.49m)
-        {
-            rob(a).mem(shsx) = value;
-        }
-        rob(a).mem(209) = dang * 200; //sysvar = .shang just returns the angle of the shot without the flavor
-        rob(a).mem(shflav) = value; //sysvar = .shflav returns the flavor without the angle
-    }
-
-    public static void touch(int a, int X, int Y)
-    {
-        decimal xc = 0;
-
-        decimal yc = 0;
-
-        decimal dx = 0;
-
-        decimal dy = 0;
-
-        decimal tn = 0;
-
-        decimal ang = 0;
-
-        decimal aim = 0;
-
-        decimal dang = 0;
-
-        aim = 6.28m - rob(a).aim;
-        xc = rob(a).pos.X;
-        yc = rob(a).pos.Y;
-        dx = X - xc;
-        dy = Y - yc;
-
-        if (dx != 0)
-        {
-            tn = dy / dx;
-            ang = Atn(tn);
-            if (dx < 0)
-            {
-                ang = ang - 3.14m;
-            }
-        }
-        else
-        {
-            ang = 1.57m * Sgn(dy);
-        }
-
-        dang = ang - aim;
-        While(dang < 0);
-        dang = dang + 6.28m;
-        Wend();
-        While(dang > 6.28m);
-        dang = dang - 6.28m;
-        Wend();
-        if (dang > 5.49m || dang < 0.78m)
-        {
-            rob(a).mem(hitup) = 1;
-        }
-        if (dang > 2.36m && dang < 3.92m)
-        {
-            rob(a).mem(hitdn) = 1;
-        }
-        if (dang > 0.78m && dang < 2.36m)
-        {
-            rob(a).mem(hitdx) = 1;
-        }
-        if (dang > 3.92m && dang < 5.49m)
-        {
-            rob(a).mem(hitsx) = 1;
-        }
-        rob(a).mem(hit) = 1;
-    }
-
-    /*
-    ' taste: same as for touch, but for shots, and gives back
-    ' also the flavour of the shot, that is, its shottype
-    ' value
-    */
-    /*
-    ' erases some senses
-    */
-    /*
-    'Public Function BasicProximity(n As Integer, Optional force As Boolean = False) As Integer 'returns .lastopp
-    '  Dim counter As Integer
-    '  Dim u As vector
-    '  Dim dotty As Long, crossy As Long
-    '  Dim x As Integer
-
-    '  'until I get some better data structures, this will ahve to do
-
-    '  rob[n].lastopp = 0
-    '  rob[n].lastopptype = 0 ' set the default type of object seen to a bot.
-    '  rob[n].mem(EYEF) = 0
-    '  For x = EyeStart + 1 To EyeEnd - 1
-    '    rob[n].mem(x) = 0
-    '  Next x
-
-    '  'We have to populate eyes for every bot, even for those without .eye sysvars
-    '  'since they could evolve indirect addressing of the eye sysvars.
-    '  For counter = 1 To MaxRobs
-    '    If n <> counter And rob(counter).exist Then
-    '       CompareRobots3 n, counter
-    '    End If
-    '  Next counter
-
-    '  If SimOpts.shapesAreVisable And rob[n].exist Then CompareShapes n, 12
-
-    '  BasicProximity = rob[n].lastopp ' return the index of the last viewed object
-    'End Function
-
-    'Returns the index into the Specie array to which a given bot conforms
-    */
-    /*
-    ' writes some senses: view, .ref* vars, absvel
-    ' pain, pleas, nrg
-    */
-
-    public static void WriteSenses(int n)
-    {
-        int t = 0;
-
-        int i = 0;
-
-        decimal temp = 0;
-
-        LandMark(n);
-        dynamic _WithVar_7127;
-        _WithVar_7127 = rob[n];
-
-        _WithVar_7127.mem(TotalBots) = TotalRobots;
-        _WithVar_7127.mem(TOTALMYSPECIES) = SimOpts.Specie(SpeciesFromBot(n)).population;
-
-        if (!.CantSee && !.Corpse)
-        {
-            if (BucketsProximity(n) > 0)
-            {
-                //If BasicProximity(n) > 0 Then
-                //There is somethign visable in the focus eye
-                if (_WithVar_7127.lastopptype == 0)
+                switch (rob.lastopptype)
                 {
-                    lookoccurr(n, _WithVar_7127.lastopp); // It's a bot.  Populate the refvar sysvars
-                }
-                if (_WithVar_7127.lastopptype == 1)
-                {
-                    lookoccurrShape(n, _WithVar_7127.lastopp);
+                    case 0:
+                        LookOccurr(rob, Robots.rob[rob.lastopp]); // It's a bot.  Populate the refvar sysvars
+                        break;
+
+                    case 1:
+                        LookOccurrShape(rob, Obstacles.Obstacles[rob.lastopp]);
+                        break;
                 }
             }
         }
 
-        //If Abs(.vel.x) > 1000 Then .vel.x = 1000 * Sgn(.vel.x) '2 new lines added to stop weird crashes
-        //If Abs(.vel.y) > 1000 Then .vel.y = 1000 * Sgn(.vel.y)
+        if (rob.nrg > 32000)
+            rob.nrg = 32000;
 
-        if (_WithVar_7127.nrg > 32000)
-        {
-            _WithVar_7127.nrg = 32000;
-        }
-        if (_WithVar_7127.onrg < 0)
-        {
-            _WithVar_7127.onrg = 0;
-        }
-        if (_WithVar_7127.obody < 0)
-        {
-            _WithVar_7127.obody = 0;
-        }
-        if (_WithVar_7127.nrg < 0)
-        {
-            _WithVar_7127.nrg = 0;
-        }
+        if (rob.onrg < 0)
+            rob.onrg = 0;
 
-        _WithVar_7127.mem(pain) = CInt(_WithVar_7127.onrg - _WithVar_7127.nrg);
-        _WithVar_7127.mem(pleas) = CInt(_WithVar_7127.nrg - _WithVar_7127.onrg);
-        _WithVar_7127.mem(bodloss) = CInt(_WithVar_7127.obody - _WithVar_7127.body);
-        _WithVar_7127.mem(bodgain) = CInt(_WithVar_7127.body - _WithVar_7127.obody);
+        if (rob.obody < 0)
+            rob.obody = 0;
 
-        _WithVar_7127.onrg = _WithVar_7127.nrg;
-        _WithVar_7127.obody = _WithVar_7127.body;
-        _WithVar_7127.mem(Energy) = CInt(_WithVar_7127.nrg);
-        if (_WithVar_7127.age == 0 & _WithVar_7127.mem(body) == 0)
-        {
-            _WithVar_7127.mem(body) = _WithVar_7127.body; //to stop an odd bug in birth.  Don't ask
-        }
-        if (_WithVar_7127.Fixed)
-        {
-            _WithVar_7127.mem(215) = 1;
-        }
-        else
-        {
-            _WithVar_7127.mem(215) = 0;
-        }
-        if (_WithVar_7127.pos.Y < 0)
-        {
-            _WithVar_7127.pos.Y = 0;
-        }
-        temp = Int((_WithVar_7127.pos.Y / Form1.yDivisor) / 32000);
-        temp = (_WithVar_7127.pos.Y / Form1.yDivisor) - (temp * 32000);
-        _WithVar_7127.mem(217) = CInt(temp % 32000);
-        if (_WithVar_7127.pos.X < 0)
-        {
-            _WithVar_7127.pos.X = 0;
-        }
-        temp = Int((_WithVar_7127.pos.X / Form1.xDivisor) / 32000);
-        temp = (_WithVar_7127.pos.X / Form1.xDivisor) - (temp * 32000);
-        _WithVar_7127.mem(219) = CInt(temp % 32000);
+        if (rob.nrg < 0)
+            rob.nrg = 0;
+
+        rob.mem[pain] = (int)(rob.onrg - rob.nrg);
+        rob.mem[pleas] = -rob.mem[pain];
+        rob.mem[bodloss] = (int)(rob.obody - rob.body);
+        rob.mem[bodgain] = -rob.mem[bodloss];
+
+        rob.onrg = rob.nrg;
+        rob.obody = rob.body;
+        rob.mem[Energy] = (int)rob.nrg;
+
+        if (rob.age == 0 & rob.mem[body] == 0)
+            rob.mem[body] = (int)rob.body; //to stop an odd bug in birth.  Don't ask
+
+        rob.mem[215] = rob.Fixed ? 1 : 0;
+
+        if (rob.pos.Y < 0)
+            rob.pos.Y = 0;
+
+        var temp = Math.Floor(rob.pos.Y / Form1.instance.yDivisor / 32000) * 32000;
+        temp = (rob.pos.Y / Form1.instance.yDivisor) - temp;
+        rob.mem[217] = (int)(temp % 32000);
+
+        if (rob.pos.X < 0)
+            rob.pos.X = 0;
+
+        temp = Math.Floor(rob.pos.X / Form1.instance.xDivisor / 32000) * 32000;
+        temp = (rob.pos.X / Form1.instance.xDivisor) - temp;
+        rob.mem[219] = (int)(temp % 32000);
     }
 
-    /*
-    ' copies the occurr array of a viewed robot
-    ' in the ref* vars of the viewing one
-    */
-    /*
-    ' Erases the occurr array
-    */
-    /*
-    ' sets up the refvars for a viewed shape
-    ' in the ref* vars of the viewing one
-    */
-    /*
-    ' creates the array which is copied to the ref* variables
-    ' of any opponent looking at us
-    */
+    private static void EraseLookOccurr(robot rob)
+    {
+        if (rob.Corpse)
+            return;
+
+        rob.mem[REFTYPE] = 0;
+
+        for (var t = 1; t < 10; t++)
+        {
+            rob.mem[occurrstart + t] = 0;
+        }
+
+        rob.mem[in1] = 0;
+        rob.mem[in2] = 0;
+        rob.mem[in3] = 0;
+        rob.mem[in4] = 0;
+        rob.mem[in5] = 0;
+        rob.mem[in6] = 0;
+        rob.mem[in7] = 0;
+        rob.mem[in8] = 0;
+        rob.mem[in9] = 0;
+        rob.mem[in10] = 0;
+
+        rob.mem[711] = 0;
+        rob.mem[712] = 0;
+        rob.mem[refshell] = 0;
+        rob.mem[refbody] = 0;
+        rob.mem[refypos] = 0;
+        rob.mem[refxpos] = 0;
+        rob.mem[refvelup] = 0;
+        rob.mem[refveldn] = 0;
+        rob.mem[refveldx] = 0;
+        rob.mem[refvelsx] = 0;
+        rob.mem[refvelscalar] = 0;
+        rob.mem[713] = 0;
+        rob.mem[714] = 0;
+        rob.mem[715] = 0;
+        rob.mem[refmulti] = 0;
+        rob.mem[473] = 0;
+        rob.mem[477] = 0;
+    }
+
+    private static void LandMark(robot rob)
+    {
+        rob.mem[LandM] = 0;
+        if (rob.aim > 1.39 && rob.aim < 1.75)
+        {
+            rob.mem[LandM] = 1;
+        }
+    }
+
+    private static void LookOccurrShape(robot rob, Obstacles.Obstacle obstacle)
+    {
+        if (rob.Corpse)
+            return;
+
+        rob.mem[REFTYPE] = 1;
+
+        for (var t = 1; t < 8; t++)
+            rob.mem[occurrstart + t] = 0;
+
+        rob.mem[occurrstart + 9] = 0; // refnrg
+        rob.mem[occurrstart + 10] = 0; //refage
+
+        rob.mem[in1] = 0;
+        rob.mem[in2] = 0;
+        rob.mem[in3] = 0;
+        rob.mem[in4] = 0;
+        rob.mem[in5] = 0;
+        rob.mem[in6] = 0;
+        rob.mem[in7] = 0;
+        rob.mem[in8] = 0;
+        rob.mem[in9] = 0;
+        rob.mem[in10] = 0;
+
+        rob.mem[711] = 0; //refaim
+        rob.mem[712] = 0; //reftie
+        rob.mem[refshell] = 0;
+        rob.mem[refbody] = 0;
+
+        rob.mem[refxpos] = (int)(rob.lastopppos.X / Form1.instance.xDivisor) % 32000;
+        rob.mem[refypos] = (int)(rob.lastopppos.Y / Form1.instance.yDivisor) % 32000;
+
+        //give reference variables from the bots frame of reference
+        rob.mem[refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[velup];
+        rob.mem[refveldn] = rob.mem[refvelup] * -1;
+        rob.mem[refveldx] = (int)(obstacle.vel.Y * Math.Cos(rob.aim) + obstacle.vel.X * Math.Sin(rob.aim)) - rob.mem[veldx];
+        rob.mem[refvelsx] = rob.mem[refvelsx] * -1;
+
+        var temp = Math.Sqrt(Math.Pow(rob.mem[refvelup], 2) + Math.Pow(rob.mem[refveldx], 2)); // how fast is this shape moving compared to me?
+        if (temp > 32000)
+            temp = 32000;
+
+        rob.mem[refvelscalar] = (int)temp;
+        rob.mem[713] = 0; //refpoison. current value of poison. not poison commands
+        rob.mem[714] = 0; //refvenom (as with poison)
+        rob.mem[715] = 0; //refkills
+        rob.mem[refmulti] = 0;
+
+        rob.mem[473] = 0;
+        rob.mem[477] = obstacle.vel.X == 0 && obstacle.vel.Y == 0 ? 1 : 0;
+    }
 }

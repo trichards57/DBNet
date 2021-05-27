@@ -4264,12 +4264,12 @@ private Integer scanfromn(dynamic rob(_UNUSED) {
         public bool NoChlr = false;
         public double nrg = 0;
         public decimal oaim = 0;
-        public decimal obody = 0;
+        public double obody = 0;
         public int[] occurr = new int[20];
         public int oldBotNum = 0;
         public float OldGD = 0;
         public int OldMutations = 0;
-        public decimal onrg = 0;
+        public double onrg = 0;
         public vector opos = null;
         public int order = 0;
         public int[] OSkin = new int[13];

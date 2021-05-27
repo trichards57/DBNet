@@ -39,7 +39,7 @@ internal static class BucketManager
     /// <returns>
     /// The index of the last viewed object
     /// </returns>
-    public static int BucketsProximity(int n)
+    public static int BucketsProximity(robot rob)
     {
         rob[n].lastopp = 0;
         rob[n].lastopptype = 0; // set the default type of object seen to a bot.
@@ -276,7 +276,7 @@ internal static class BucketManager
         ad.Y = -ad.Y;
         ac.Y = -ac.Y;
 
-        var theta = Physics.angnorm( Math.Atan2(ad.Y, ad.X));
+        var theta = Physics.angnorm(Math.Atan2(ad.Y, ad.X));
         var beta = Physics.angnorm(Math.Atan2(ac.Y, ac.X));
 
         //lets be sure to just deal with postive angles

@@ -227,7 +227,7 @@ internal static class Obstacles
                             {
                                 _WithVar_5122.pos.x = Obstacles(i).pos.x - rob[n].radius;
                                 _WithVar_5122.ImpulseRes.x = _WithVar_5122.ImpulseRes.x + _WithVar_5122.vel.x * b;
-                                touch(n, _WithVar_5122.pos.x + _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, right side
+                                Touch(n, _WithVar_5122.pos.x + _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, right side
                             }
                             else
                             {
@@ -243,7 +243,7 @@ internal static class Obstacles
                             {
                                 _WithVar_5122.pos.x = Obstacles(i).pos.x + Obstacles(i).Width + rob[n].radius;
                                 _WithVar_5122.ImpulseRes.x = _WithVar_5122.ImpulseRes.x + _WithVar_5122.vel.x * b;
-                                touch(n, _WithVar_5122.pos.x - _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, left side
+                                Touch(n, _WithVar_5122.pos.x - _WithVar_5122.radius, _WithVar_5122.pos.y); // Update hit senses, left side
                             }
                             else
                             {
@@ -263,7 +263,7 @@ internal static class Obstacles
                             {
                                 _WithVar_5122.pos.y = Obstacles(i).pos.y - rob[n].radius;
                                 _WithVar_5122.ImpulseRes.y = _WithVar_5122.ImpulseRes.y + _WithVar_5122.vel.y * b;
-                                touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y + _WithVar_5122.radius); // Update hit senses, bottom
+                                Touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y + _WithVar_5122.radius); // Update hit senses, bottom
                             }
                             else
                             {
@@ -279,7 +279,7 @@ internal static class Obstacles
                             {
                                 _WithVar_5122.pos.y = Obstacles(i).pos.y + Obstacles(i).Height + rob[n].radius;
                                 _WithVar_5122.ImpulseRes.y = _WithVar_5122.ImpulseRes.y + _WithVar_5122.vel.y * b;
-                                touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y - _WithVar_5122.radius); // Update hit senses, bottom
+                                Touch(n, _WithVar_5122.pos.x, _WithVar_5122.pos.y - _WithVar_5122.radius); // Update hit senses, bottom
                             }
                             else
                             {

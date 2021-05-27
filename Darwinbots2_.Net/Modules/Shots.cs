@@ -389,7 +389,7 @@ internal static class Shots
                             break;
                     }
                 }
-                taste(rob, shot.opos.X, shot.opos.Y, shot.shottype);
+                Taste(rob, shot.opos.X, shot.opos.Y, shot.shottype);
                 shot.flash = true;
             }
 
@@ -456,7 +456,7 @@ internal static class Shots
 
         rob.dna.InsertRange(Insert, shot.dna);
 
-        makeoccurrlist(rob);
+        MakeOccurrList(rob);
         rob.DnaLen = DnaLen(rob.dna);
         rob.genenum = CountGenes(rob.dna);
         rob.mem[DnaLenSys] = rob.DnaLen;
