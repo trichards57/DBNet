@@ -8,7 +8,7 @@ using static BucketManager;
 using static DNAManipulations;
 using static Obstacles;
 using static Robots;
-using static Shots;
+using static ShotsManager;
 using static SimOpt;
 
 internal static class Globals

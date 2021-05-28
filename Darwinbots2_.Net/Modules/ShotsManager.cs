@@ -16,7 +16,7 @@ using static Senses;
 using static SimOpt;
 using static Vegs;
 
-internal static class Shots
+internal static class ShotsManager
 {
     private const double MinBotRadius = 0.2;
     private const int ShellEffectiveness = 20;

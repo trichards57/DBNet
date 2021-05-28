@@ -19,7 +19,7 @@ using static NeoMutations;
 using static Obstacles;
 using static Physics;
 using static Senses;
-using static Shots;
+using static ShotsManager;
 using static SimOpt;
 using static System.Math;
 using static Teleport;
@@ -536,7 +536,7 @@ private GeneticDistance(dynamic rob1(_UNUSED) {
 
         if (rob[n].virusshot > 0 & rob[n].virusshot <= maxshotarray)
         {
-            Shots(rob[n].virusshot).exist = false; // We have to kill any stored shots for this bot
+            ShotsManager(rob[n].virusshot).exist = false; // We have to kill any stored shots for this bot
             rob[n].virusshot = 0;
         }
 

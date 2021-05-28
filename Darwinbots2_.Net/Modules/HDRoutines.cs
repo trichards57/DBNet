@@ -20,7 +20,7 @@ using static Multibots;
 using static Obstacles;
 using static Physics;
 using static Robots;
-using static Shots;
+using static ShotsManager;
 using static SimOpt;
 using static Teleport;
 using static VBExtension;
@@ -574,16 +574,16 @@ internal static class HDRoutines
     {
         for (var i = 1; i < numOfShots; i++)
         {
-            if (Shots.Shots[i].exist)
+            if (ShotsManager.Shots[i].exist)
             {
                 for (var j = 1; j < MaxRobs; j++)
                 {
                     if (rob[j].exist)
                     {
-                        if (Shots.Shots[i].parent == rob[j].oldBotNum)
+                        if (ShotsManager.Shots[i].parent == rob[j].oldBotNum)
                         {
-                            Shots.Shots[i].parent = j;
-                            if (Shots.Shots[i].stored)
+                            ShotsManager.Shots[i].parent = j;
+                            if (ShotsManager.Shots[i].stored)
                             {
                                 rob[j].virusshot = i;
                             }
@@ -591,7 +591,7 @@ internal static class HDRoutines
                         }
                     }
                 }
-                Shots.Shots[i].stored = false; // Could not find parent.  Should probalby never happen but if it does, release the shot
+                ShotsManager.Shots[i].stored = false; // Could not find parent.  Should probalby never happen but if it does, release the shot
             }
         }
     }
@@ -865,7 +865,7 @@ internal static class HDRoutines
             ShapesAbsorbShots = SimOpts.ShapesAbsorbShots,
             ShapesAreSeeThrough = SimOpts.ShapesAreSeeThrough,
             ShapesAreVisable = SimOpts.ShapesAreVisable,
-            Shots = Shots.Shots.Select(SaveShots),
+            Shots = ShotsManager.Shots.Select(SaveShots),
             SimGUID = SimOpts.SimGUID,
             SimName = SimOpts.SimName,
             SnpExcludeVegs = SimOpts.SnpExcludeVegs,
@@ -1116,7 +1116,7 @@ internal static class HDRoutines
     {
         foreach (var s in savedShots)
         {
-            Shots.Shots.Add(new Shot
+            ShotsManager.Shots.Add(new Shot
             {
                 exist = s.Exists,
                 pos = s.Position,

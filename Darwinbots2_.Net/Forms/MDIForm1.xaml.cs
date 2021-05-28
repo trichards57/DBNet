@@ -1212,7 +1212,7 @@ namespace DBNet.Forms
             StatusBar1.Panels(8).text = "Mut " + Str$(SimOpts.MutCurrMult) + "x ";
             this
           StatusBar1.Panels(9).text = "Restarts " + Str$(ReStarts) + " ";
-            StatusBar1.Panels(10).text = "Shots " + Str$(Shots.ShotsThisCycle) + " ";
+            StatusBar1.Panels(10).text = "Shots " + Str$(ShotsManager.ShotsThisCycle) + " ";
 
             //AvgSimEnergyLastTenCycles = 0
             //This delibertly counts the 10 cycles *before* this one to avoid cases where the timer invokes

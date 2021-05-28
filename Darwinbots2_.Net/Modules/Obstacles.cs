@@ -324,7 +324,7 @@ internal static class Obstacles
         int i = 0;
 
         dynamic _WithVar_2632;
-        _WithVar_2632 = Shots(n);
+        _WithVar_2632 = ShotsManager(n);
         for (i = 1; i < numObstacles; i++)
         {
             if (Obstacles(i).exist)

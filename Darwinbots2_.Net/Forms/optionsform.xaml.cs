@@ -55,7 +55,7 @@ using static Common;
 using static Flex;
 using static Robots;
 using static Ties;
-using static Shots;
+using static ShotsManager;
 using static Globals;
 using static Physics;
 using static F1Mode;
