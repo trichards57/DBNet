@@ -276,8 +276,8 @@ internal static class BucketManager
         ad.Y = -ad.Y;
         ac.Y = -ac.Y;
 
-        var theta = Physics.angnorm(Math.Atan2(ad.Y, ad.X));
-        var beta = Physics.angnorm(Math.Atan2(ac.Y, ac.X));
+        var theta = Physics.NormaliseAngle(Math.Atan2(ad.Y, ad.X));
+        var beta = Physics.NormaliseAngle(Math.Atan2(ac.Y, ac.X));
 
         //lets be sure to just deal with postive angles
         var botspanszero = beta > theta;
@@ -479,7 +479,7 @@ internal static class BucketManager
                 //three for eye2, and so on.
                 var eyeaim = rob.mem[EYE1DIR + a] % 1256 / 200 - (Math.PI / 18 * a) + Math.PI / 18 * 4 + rob.aim;
 
-                eyeaim = Physics.angnorm(eyeaim);
+                eyeaim = Physics.NormaliseAngle(eyeaim);
 
                 //These are the left and right sides of the field of view for the eye
                 double halfeyewidth = (rob.mem[EYE1WIDTH + a] + 35) / 400;
@@ -565,7 +565,7 @@ internal static class BucketManager
                 //Coordinates are in the 4th quadrant, so make the y values negative so the math works
                 ab.Y = -ab.Y;
 
-                var theta = Physics.angnorm(Math.Atan2(ab.Y, ab.X));
+                var theta = Physics.NormaliseAngle(Math.Atan2(ab.Y, ab.X));
 
                 if ((eyeaimleft >= theta && theta >= eyeaimright && !eyespanszero) || (eyeaimleft >= theta && eyespanszero) || (eyeaimright <= theta && eyespanszero))
                 {

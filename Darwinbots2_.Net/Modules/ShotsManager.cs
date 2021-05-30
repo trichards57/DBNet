@@ -183,7 +183,7 @@ internal static class ShotsManager
             ShAngle = rob.aim; //forward shots
         else
         {
-            ShAngle = angnorm(rob.aim - Math.PI); //backward shots
+            ShAngle = NormaliseAngle(rob.aim - Math.PI); //backward shots
             rob.mem[backshot] = 0;
         }
 

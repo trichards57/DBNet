@@ -384,7 +384,7 @@ internal static class Robots
         nuovo.vel = rob.vel;
         nuovo.actvel = rob.actvel;
         nuovo.color = rob.color;
-        nuovo.aim = Physics.angnorm(rob.aim + Math.PI);
+        nuovo.aim = Physics.NormaliseAngle(rob.aim + Math.PI);
 
         nuovo.aimvector = new vector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
         nuovo.mem[SetAim] = (int)(nuovo.aim * 200);
@@ -719,7 +719,7 @@ internal static class Robots
         nuovo.vel = female.vel;
         nuovo.actvel = female.actvel; //Botsareus 7/1/2016 Bugfix
         nuovo.color = female.color;
-        nuovo.aim = Physics.angnorm(female.aim + Math.PI);
+        nuovo.aim = Physics.NormaliseAngle(female.aim + Math.PI);
         nuovo.aimvector = new vector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
         nuovo.mem[SetAim] = (int)(nuovo.aim * 200);
         nuovo.mem[468] = 32000;
@@ -1008,10 +1008,10 @@ internal static class Robots
         if (Obstacles.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
             return true;
 
-        if (SimOpts.Dxsxconnected == false && (X < rob.radius + smudgefactor || X + rob.radius + smudgefactor > SimOpts.FieldWidth))
+        if (SimOpts.Dxsxconnected == false && (X < rob.radius + SmudgeFactor || X + rob.radius + SmudgeFactor > SimOpts.FieldWidth))
             return true;
 
-        if (SimOpts.Updnconnected == false && (Y < rob.radius + smudgefactor || Y + rob.radius + smudgefactor > SimOpts.FieldHeight))
+        if (SimOpts.Updnconnected == false && (Y < rob.radius + SmudgeFactor || Y + rob.radius + SmudgeFactor > SimOpts.FieldHeight))
             return true;
 
         return false;
@@ -1108,7 +1108,7 @@ internal static class Robots
             if (numObstacles > 0)
                 DoObstacleCollisions(rob);
 
-            bordercolls(rob);
+            BorderCollision(rob);
 
             TieHooke(rob); // Handles tie lengths, tie hardening and compressive, elastic tie forces
 
@@ -1819,7 +1819,7 @@ internal static class Robots
         {
             // .setaim overrides .aimsx and .aimdx
             SetAimFunc = rob.mem[SetAim]; // this is where .aim needs to be
-            diff = -AngDiff(rob.aim, angnorm((double)rob.mem[SetAim] / 200)) * 200; // this is the diff to get there 'Botsareus 6/18/2016 Added angnorm
+            diff = -AngDiff(rob.aim, NormaliseAngle((double)rob.mem[SetAim] / 200)) * 200; // this is the diff to get there 'Botsareus 6/18/2016 Added angnorm
             diff2 = Math.Abs(Math.Round((rob.aim * 200 - rob.mem[SetAim]) / 1256, 0) * 1256) * Math.Sign(diff); // this is how much we add to momentum
         }
 

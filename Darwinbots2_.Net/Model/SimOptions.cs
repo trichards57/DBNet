@@ -9,9 +9,9 @@ namespace Iersera.Model
         public int BadWastelevel { get; set; }
         public bool BlockedVegs { get; set; }
         public int ChartingInterval { get; set; }
-        public decimal CoefficientElasticity { get; set; }
-        public decimal CoefficientKinetic { get; set; }
-        public decimal CoefficientStatic { get; set; }
+        public double CoefficientElasticity { get; set; }
+        public double CoefficientKinetic { get; set; }
+        public double CoefficientStatic { get; set; }
         public bool CorpseEnabled { get; set; }
         public double CostExecCond { get; set; }
         public int CostRadioSetting { get; set; }
@@ -25,7 +25,7 @@ namespace Iersera.Model
         public double Decay { get; set; }
         public int Decaydelay { get; set; }
         public int DecayType { get; set; }
-        public decimal Density { get; set; }
+        public double Density { get; set; }
         public decimal Diffuse { get; set; }
         public bool DisableFixing { get; set; }
         public bool DisableMutations { get; set; }
@@ -65,10 +65,10 @@ namespace Iersera.Model
         public bool NoWShotDecay { get; set; }
         public double OldCostX { get; set; }
         public double PhysBrown { get; set; }
-        public decimal PhysMoving { get; set; }
+        public double PhysMoving { get; set; }
         public decimal PhysSwim { get; set; }
         public bool PlanetEaters { get; set; }
-        public decimal PlanetEatersG { get; set; }
+        public double PlanetEatersG { get; set; }
         public bool Pondmode { get; set; }
         public int PopLimMethod { get; set; }
         public int RepopAmount { get; set; }
@@ -101,9 +101,9 @@ namespace Iersera.Model
         public bool Updnconnected { get; set; }
         public int UserSeedNumber { get; set; }
         public double VegFeedingToBody { get; set; }
-        public decimal Viscosity { get; set; }
+        public double Viscosity { get; set; }
         public double Ygravity { get; set; }
         public bool ZeroMomentum { get; set; }
-        public decimal Zgravity { get; set; }
+        public double Zgravity { get; set; }
     }
 }

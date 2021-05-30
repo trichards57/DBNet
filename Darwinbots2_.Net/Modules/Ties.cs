@@ -241,11 +241,11 @@ internal static class Ties
         tie.b = 0.1;
         tie.k = 0.05;
         tie.Type = TieType.AntiRope;
-        var angl = angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
+        var angl = Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
         var dist = (rob.pos - tie.OtherBot.pos).Magnitude();
         if (tie.BackTie == false)
         {
-            tie.Angle = angnorm(angl) - angnorm(rob.aim); // only fix the angle of the bot that created the tie
+            tie.Angle = NormaliseAngle(angl) - NormaliseAngle(rob.aim); // only fix the angle of the bot that created the tie
             tie.FixedAngle = true;
         }
         tie.NaturalLength = dist;
@@ -299,13 +299,13 @@ internal static class Ties
 
         if (tie != null)
         {
-            var tieAngle = angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
+            var tieAngle = Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
             var dist = (rob.pos - tie.OtherBot.pos).Magnitude();
             //Overflow prevention.  Very long ties can happen for one cycle when bots wrap in torridal fields
             if (dist > 32000)
                 dist = 32000;
 
-            rob.mem[TIEANG] = (int)-(AngDiff(angnorm(tieAngle), angnorm(rob.aim)) * 200);
+            rob.mem[TIEANG] = (int)-(AngDiff(NormaliseAngle(tieAngle), NormaliseAngle(rob.aim)) * 200);
             rob.mem[TIELEN] = (int)(dist - rob.radius - tie.OtherBot.radius);
         }
     }
@@ -474,7 +474,7 @@ internal static class Ties
                     }
                     if (rob.TieAngOverwrite[i - 1])
                     {
-                        rob.Ties[i].Angle = angnorm(rob.mem[479 + i] / 200);
+                        rob.Ties[i].Angle = NormaliseAngle(rob.mem[479 + i] / 200);
                         rob.Ties[i].FixedAngle = true; //EricL 4/24/2006
                     }
                     //clear input
@@ -482,13 +482,13 @@ internal static class Ties
                     rob.TieLenOverwrite[i - 1] = false;
                     //output
 
-                    var tieAngle = angle(rob.pos.X, rob.pos.Y, rob.Ties[i].OtherBot.pos.X, rob.Ties[i].OtherBot.pos.Y);
+                    var tieAngle = Angle(rob.pos.X, rob.pos.Y, rob.Ties[i].OtherBot.pos.X, rob.Ties[i].OtherBot.pos.Y);
                     var dist = (rob.pos - rob.Ties[i].OtherBot.pos).Magnitude();
                     if (dist > 32000)
                         dist = 32000; //Botsareus 1/24/2014 Bug fix here
 
                     rob.mem[483 + i] = (int)(dist - rob.radius - rob.Ties[i].OtherBot.radius);
-                    rob.mem[479 + i] = (int)angnorm(angnorm(tieAngle) - angnorm(rob.aim)) * 200;
+                    rob.mem[479 + i] = (int)NormaliseAngle(NormaliseAngle(tieAngle) - NormaliseAngle(rob.aim)) * 200;
                 }
             }
         }

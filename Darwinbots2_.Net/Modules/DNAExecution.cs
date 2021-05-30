@@ -73,7 +73,7 @@ internal static class DNAExecution
                 a = IntStack.Pop();
                 c = rob.pos.X / Form1.instance.xDivisor;
                 d = rob.pos.Y / Form1.instance.yDivisor;
-                e = (int)Physics.angnorm(Physics.angle(c, d, a, b)) * 200;
+                e = (int)Physics.NormaliseAngle(Physics.Angle(c, d, a, b)) * 200;
                 IntStack.Push(e);
                 break;
 

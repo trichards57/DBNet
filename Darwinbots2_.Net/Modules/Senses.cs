@@ -231,7 +231,7 @@ internal static class Senses
         var dx = X - xc;
         var dy = Y - yc;
         var ang = Math.Atan2(dy, dx);
-        var dang = Physics.angnorm(ang - aim);
+        var dang = Physics.NormaliseAngle(ang - aim);
         var addr = dang switch
         {
             > 5.49 or <= 0.78 => shup,
@@ -245,7 +245,7 @@ internal static class Senses
         rob.mem[shflav] = value;
     }
 
-    public static void Touch(robot rob, int X, int Y)
+    public static void Touch(robot rob, double X, double Y)
     {
         var aim = 6.28 - rob.aim;
         var xc = rob.pos.X;
@@ -253,7 +253,7 @@ internal static class Senses
         var dx = X - xc;
         var dy = Y - yc;
         var ang = Math.Atan2(dy, dx);
-        var dang = Physics.angnorm(ang - aim);
+        var dang = Physics.NormaliseAngle(ang - aim);
         var addr = dang switch
         {
             > 5.49 or <= 0.78 => hitup,
