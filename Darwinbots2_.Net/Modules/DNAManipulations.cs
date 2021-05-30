@@ -153,7 +153,7 @@ internal static class DNAManipulations
 
     public static async Task<int> RobScriptLoad(string path)
     {
-        var n = posto();
+        var n = GetNewBot();
         PrepareRob(n, path); // prepares structure
         if (await LoadDNA(path, rob[n]))
         {

@@ -1,4 +1,5 @@
 using DBNet.Forms;
+using Iersera.Model;
 using System.Collections.Generic;
 using System.Linq;
 using static Common;
@@ -48,7 +49,7 @@ internal static class NeoMutations
     //Botsareus 12/10/2013 new mutation rates
     private const double overtime = 30; //Time correction across all mutations
 
-    public static bool delgene(int n, int g)
+    public static bool delgene(robot rob, int g)
     {
         bool delgene = false;
         int k = 0;
@@ -88,7 +89,7 @@ internal static class NeoMutations
         rob[n].LastMutDetail = strmut + vbCrLf + rob[n].LastMutDetail;
     }
 
-    public static void mutate(int robn, bool reproducing)
+    public static void mutate(robot rob, bool reproducing = false)
     { //Botsareus 12/17/2013
         var rob = Robots.rob[robn];
         if (!rob.Mutables.Mutations || SimOpts.DisableMutations)

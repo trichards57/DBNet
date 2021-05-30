@@ -325,27 +325,27 @@ internal static class Ties
                 {
                     if (rob.mem[830] > 0)
                     {
-                        sharenrg(rob, tie);
+                        ShareEnergy(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
                     if (rob.mem[831] > 0)
                     {
-                        sharewaste(rob, tie);
+                        ShareWaste(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
                     if (rob.mem[832] > 0)
                     {
-                        shareshell(rob, tie);
+                        ShareShell(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
                     if (rob.mem[833] > 0)
                     {
-                        shareslime(rob, tie);
+                        ShareSlime(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
                     if (rob.mem[sharechlr] > 0 & rob.Chlr_Share_Delay == 0 & !rob.NoChlr)
                     { //Panda 8/31/2013 code to share chloroplasts 'Botsareus 8/16/2014 chloroplast sharing disable
-                        sharechloroplasts(rob, tie);
+                        ShareChloroplasts(rob, tie);
                         tie.Sharing = true; //yellow ties
                     }
                 }

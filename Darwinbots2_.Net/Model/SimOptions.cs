@@ -64,7 +64,7 @@ namespace Iersera.Model
         public bool NoShotDecay { get; set; }
         public bool NoWShotDecay { get; set; }
         public double OldCostX { get; set; }
-        public decimal PhysBrown { get; set; }
+        public double PhysBrown { get; set; }
         public decimal PhysMoving { get; set; }
         public decimal PhysSwim { get; set; }
         public bool PlanetEaters { get; set; }
@@ -86,7 +86,6 @@ namespace Iersera.Model
         public int SpeciationGeneticDistance { get; set; }
         public int SpeciationMinimumPopulation { get; set; }
         public List<Species> Specie { get; set; } = new List<Species>();
-        public int SpeciesNum { get; set; }
         public bool SunDown { get; set; }
         public int SunDownThreshold { get; set; }
         public bool SunOnRnd { get; set; }
@@ -103,7 +102,7 @@ namespace Iersera.Model
         public int UserSeedNumber { get; set; }
         public double VegFeedingToBody { get; set; }
         public decimal Viscosity { get; set; }
-        public decimal Ygravity { get; set; }
+        public double Ygravity { get; set; }
         public bool ZeroMomentum { get; set; }
         public decimal Zgravity { get; set; }
     }

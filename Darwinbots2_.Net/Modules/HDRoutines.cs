@@ -1,5 +1,6 @@
 using DBNet.Forms;
 using Iersera.DataModel;
+using Iersera.Model;
 using Iersera.Support;
 using System.Collections.Generic;
 using System.IO;
@@ -307,7 +308,7 @@ internal static class HDRoutines
         FileGet(402, cnum);
         for (var k = 0; k < cnum - 1; k++)
         {
-            var nuovo = posto();
+            var nuovo = GetNewBot();
             clist[k] = nuovo;
             LoadRobot(402, nuovo);
             LoadOrganism = nuovo;

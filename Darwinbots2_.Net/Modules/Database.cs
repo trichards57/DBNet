@@ -1,4 +1,5 @@
 using DBNet.Forms;
+using Iersera.Model;
 using Microsoft.Win32;
 using System;
 using System.IO;
@@ -9,7 +10,7 @@ internal static class Database
 {
     private static string SnapName = "";
 
-    public static async Task AddRecord(int rn)
+    public static async Task AddRecord(robot rob)
     {
         var folder = "Autosave";
 
@@ -30,12 +31,10 @@ internal static class Database
         if (!deadRobotsMutationExists)
             await deadRobotsMutationFile.WriteLineAsync("Rob id,Mutation History");
 
-        var rob = Robots.rob[rn];
-
         if (rob.DnaLen == 1)
             return;
 
-        var fitness = GetFitness(rn);
+        var fitness = GetFitness(rob);
 
         await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 

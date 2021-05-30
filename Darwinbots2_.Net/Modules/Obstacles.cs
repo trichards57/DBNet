@@ -169,7 +169,7 @@ internal static class Obstacles
         return DeleteTenRandomObstacles;
     }
 
-    public static dynamic DoObstacleCollisions(int n)
+    public static dynamic DoObstacleCollisions(robot rob)
     {
         dynamic DoObstacleCollisions = null;
         int i = 0;

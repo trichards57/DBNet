@@ -231,8 +231,8 @@ internal static class Globals
         {
             var an = 640 / 20 * t;
             var vs = ThreadSafeRandom.Local.Next(RobSize / 40, RobSize / 30);
-            var vx = (int)(rob.vel.X + absx(an / 100, vs, 0, 0, 0));
-            var vy = (int)(rob.vel.Y + absy(an / 100, vs, 0, 0, 0));
+            var vx = (int)(rob.vel.X + AbsX(an / 100, vs, 0, 0, 0));
+            var vy = (int)(rob.vel.Y + AbsY(an / 100, vs, 0, 0, 0));
             var x = ThreadSafeRandom.Local.Next((int)(rob.pos.X - rob.radius), (int)(rob.pos.X + rob.radius));
             var y = ThreadSafeRandom.Local.Next((int)(rob.pos.Y - rob.radius), (int)(rob.pos.Y + rob.radius));
             if (ThreadSafeRandom.Local.Next(1, 3) == 1)

@@ -1,10 +1,10 @@
 using DBNet.Forms;
+using Iersera.Model;
 using static Common;
 using static Microsoft.VisualBasic.Information;
 using static Microsoft.VisualBasic.Interaction;
 using static Multibots;
 using static Robots;
-using static Senses;
 using static SimOpt;
 using static System.Math;
 using static Ties;
@@ -12,7 +12,7 @@ using static VBExtension;
 
 internal static class Physics
 {
-    public const decimal smudgefactor = 50;
+    public const double smudgefactor = 50;
 
     public static double BouyancyScaling = 0;
 
@@ -31,7 +31,7 @@ internal static class Physics
     public static decimal nlink = 0;// links physics constants
     public static decimal plink = 0;
 
-    public static void AddedMass(int n)
+    public static void AddedMass(robot rob)
     {
         //added mass is a simple enough concept.
         //To move an object through a liquid, you must also move
@@ -114,7 +114,7 @@ internal static class Physics
         return an;
     }
 
-    public static void bordercolls(int t)
+    public static void bordercolls(robot rob)
     {
         //treat the borders as spongy ground
         //that makes you bounce off.
@@ -234,7 +234,7 @@ internal static class Physics
     getout:
 }
 
-    public static void CalcMass(int n)
+    public static void CalcMass(robot rob)
     {
         dynamic _WithVar_2428;
         _WithVar_2428 = rob[n];
@@ -407,7 +407,7 @@ internal static class Physics
         }
     }
 
-    public static dynamic NetForces(int n)
+    public static dynamic NetForces(robot rob)
     {
         dynamic NetForces = null;
         decimal mag = 0;
@@ -766,7 +766,7 @@ internal static class Physics
     getout:;
     }
 
-    public static void TieHooke(int n)
+    public static void TieHooke(robot rob)
     {
         //Handles Hooke forces of a tie.  That is, stretching and shrinking
         //Force = -kx - bv
@@ -891,7 +891,7 @@ internal static class Physics
         ;
     }
 
-    public static void TieTorque(int t)
+    public static void TieTorque(robot rob)
     {
         //Dim check As Single
         decimal anl = 0;

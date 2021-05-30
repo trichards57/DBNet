@@ -277,7 +277,7 @@ internal static class ShotsManager
         var ShAngle = (double)ThreadSafeRandom.Local.Next(1, 1256) / 200;
         shot.stored = false;
         shot.pos += new vector(Math.Cos(ShAngle) * rob.radius, -Math.Sin(ShAngle) * rob.radius);
-        shot.velocity = new vector(absx(ShAngle, RobSize / 3, 0, 0, 0), absy(ShAngle, RobSize / 3, 0, 0, 0)) + rob.actvel;
+        shot.velocity = new vector(AbsX(ShAngle, RobSize / 3, 0, 0, 0), AbsY(ShAngle, RobSize / 3, 0, 0, 0)) + rob.actvel;
 
         shot.opos = shot.pos - shot.velocity;
     }

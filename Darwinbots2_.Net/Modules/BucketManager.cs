@@ -23,7 +23,7 @@ internal static class BucketManager
     /// <summary>
     /// Checks all the bots in the same bucket and surrounding buckets for collisions.
     /// </summary>
-    public static void BucketsCollision(int n)
+    public static void BucketsCollision(robot rob)
     {
         // Check the bucket the bot is in
         CheckBotBucketForCollision(n, rob[n].BucketPos);
@@ -122,7 +122,7 @@ internal static class BucketManager
 
     // used for exact distances to viewed objects for displaying the eye viewer for the focus bot
     // also erases array elements to retrieve memory
-    public static void UpdateBotBucket(int n)
+    public static void UpdateBotBucket(robot rob)
     {
         if (!rob[n].exist)
         {
