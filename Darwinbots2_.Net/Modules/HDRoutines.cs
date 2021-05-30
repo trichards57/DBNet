@@ -18,7 +18,7 @@ using static Master;
 using static Microsoft.VisualBasic.FileSystem;
 using static Microsoft.VisualBasic.VBMath;
 using static Multibots;
-using static Obstacles;
+using static ObstaclesManager;
 using static Physics;
 using static Robots;
 using static ShotsManager;
@@ -849,7 +849,7 @@ internal static class HDRoutines
             MutOscillSine = SimOpts.MutOscillSine,
             NoShotDecay = SimOpts.NoShotDecay,
             NoWShotDecay = SimOpts.NoWShotDecay,
-            Obstacles = Obstacles.Obstacles.Select(SaveObstacles),
+            Obstacles = ObstaclesManager.Obstacles.Select(SaveObstacles),
             OldCostX = SimOpts.OldCostX,
             PhysBrown = SimOpts.PhysBrown,
             PhysMoving = SimOpts.PhysMoving,
@@ -1008,7 +1008,7 @@ internal static class HDRoutines
     {
         foreach (var o in obstacles)
         {
-            Obstacles.Obstacles.Add(new Obstacle
+            ObstaclesManager.Obstacles.Add(new Obstacle
             {
                 exist = o.Exist,
                 pos = o.Position,

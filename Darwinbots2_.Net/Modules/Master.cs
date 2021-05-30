@@ -11,7 +11,7 @@ using static HDRoutines;
 using static Microsoft.VisualBasic.Information;
 using static Microsoft.VisualBasic.Interaction;
 using static Multibots;
-using static Obstacles;
+using static ObstaclesManager;
 using static Robots;
 using static Senses;
 using static ShotsManager;

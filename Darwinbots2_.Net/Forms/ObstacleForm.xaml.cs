@@ -1,6 +1,6 @@
 using System.Windows;
 using static Common;
-using static Obstacles;
+using static ObstaclesManager;
 using static SimOpt;
 using static VBConstants;
 using static VBExtension;
@@ -133,11 +133,11 @@ namespace DBNet.Forms
             SimOpts.ShapeDriftRate = DriftRateSlider.value;
             if (leftCompactor > 0)
             {
-                Obstacles.Obstacles(leftCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(leftCompactor).vel.x);
+                ObstaclesManager.Obstacles(leftCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(ObstaclesManager.Obstacles(leftCompactor).vel.x);
             }
             if (rightCompactor > 0)
             {
-                Obstacles.Obstacles(rightCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(Obstacles.Obstacles(rightCompactor).vel.x);
+                ObstaclesManager.Obstacles(rightCompactor).vel.x = (SimOpts.ShapeDriftRate * 0.1m) * Sgn(ObstaclesManager.Obstacles(rightCompactor).vel.x);
             }
         }
 
@@ -161,7 +161,7 @@ namespace DBNet.Forms
             SimOpts.AllowHorizontalShapeDrift = HorizontalDriftCheck.value;
             if (!SimOpts.AllowHorizontalShapeDrift)
             {
-                Obstacles.StopAllHorizontalObstacleMovement();
+                ObstaclesManager.StopAllHorizontalObstacleMovement();
             }
         }
 
@@ -296,7 +296,7 @@ namespace DBNet.Forms
             SimOpts.AllowVerticalShapeDrift = VerticalDriftCheck.value;
             if (!SimOpts.AllowVerticalShapeDrift)
             {
-                Obstacles.StopAllVerticalObstacleMovement();
+                ObstaclesManager.StopAllVerticalObstacleMovement();
             }
         }
 

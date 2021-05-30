@@ -9,7 +9,7 @@ using static DNAManipulations;
 using static F1Mode;
 using static Globals;
 using static NeoMutations;
-using static Obstacles;
+using static ObstaclesManager;
 using static Physics;
 using static Robots;
 using static Senses;
@@ -393,7 +393,7 @@ internal static class ShotsManager
                 shot.flash = true;
             }
 
-            if (numObstacles > 0)
+            if (Obstacles.Count > 0)
                 DoShotObstacleCollisions(shot);
 
             shot.opos = shot.pos;
@@ -448,18 +448,17 @@ internal static class ShotsManager
         else
         {
             Insert = GeneEnd(rob.dna, genepos(rob.dna, Position));
-            if (Insert == rob.DnaLen)
+            if (Insert == rob.dna.Count)
             {
-                Insert = rob.DnaLen;
+                Insert = rob.dna.Count;
             }
         }
 
         rob.dna.InsertRange(Insert, shot.dna);
 
         MakeOccurrList(rob);
-        rob.DnaLen = DnaLen(rob.dna);
         rob.genenum = CountGenes(rob.dna);
-        rob.mem[DnaLenSys] = rob.DnaLen;
+        rob.mem[DnaLenSys] = rob.dna.Count;
         rob.mem[GenesSys] = rob.genenum;
 
         rob.SubSpecies = NewSubSpecies(rob); // Infection with a virus counts as a new subspecies

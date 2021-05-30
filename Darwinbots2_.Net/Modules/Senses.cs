@@ -12,7 +12,7 @@ internal static class Senses
 {
     public static void EraseSenses(robot rob)
     {
-        rob.lasttch = 0; //Botsareus 11/26/2013 Erase lasttch here
+        rob.lasttch = null; //Botsareus 11/26/2013 Erase lasttch here
         rob.mem[hitup] = 0;
         rob.mem[hitdn] = 0;
         rob.mem[hitdx] = 0;
@@ -279,11 +279,11 @@ internal static class Senses
                 switch (rob.lastopptype)
                 {
                     case 0:
-                        LookOccurr(rob, Robots.rob[rob.lastopp]); // It's a bot.  Populate the refvar sysvars
+                        LookOccurr(rob, rob.lastopp as robot); // It's a bot.  Populate the refvar sysvars
                         break;
 
                     case 1:
-                        LookOccurrShape(rob, Obstacles.Obstacles[rob.lastopp]);
+                        LookOccurrShape(rob, rob.lastopp as Obstacle);
                         break;
                 }
             }
@@ -381,7 +381,7 @@ internal static class Senses
         }
     }
 
-    private static void LookOccurrShape(robot rob, Obstacles.Obstacle obstacle)
+    private static void LookOccurrShape(robot rob, Obstacle obstacle)
     {
         if (rob.Corpse)
             return;

@@ -9,15 +9,14 @@ using System.Windows;
 using static HDRoutines;
 using static IntOpts;
 using static Multibots;
-using static Robots;
 using static SimOpt;
 
 internal static class Teleport
 {
     public const int MAXTELEPORTERS = 10;
-    public static List<Teleporter> Teleporters = new();
     public static int teleporterDefaultWidth { get; set; }
     public static int teleporterFocus { get; set; }
+    public static List<Teleporter> Teleporters { get; set; } = new();
 
     public static void CheckTeleporters(robot rob)
     {
@@ -281,7 +280,7 @@ internal static class Teleport
 
     public static void TeleportInBots()
     {
-        if (SimOpts.SpeciesNum > 45)
+        if (SimOpts.Specie.Count > 45)
             return;
 
         foreach (var tel in Teleporters)

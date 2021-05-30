@@ -214,7 +214,7 @@ internal static class Vegs
 
         double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
-        ScreenArea -= Obstacles.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
+        ScreenArea -= ObstaclesManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 
         var TotalRobotArea = rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
 

@@ -23,7 +23,7 @@ using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
 using static Microsoft.VisualBasic.VBMath;
 using static Multibots;
-using static Obstacles;
+using static ObstaclesManager;
 using static Physics;
 using static Robots;
 using static SimOpt;
@@ -740,7 +740,7 @@ namespace DBNet.Forms
 
         private void CheckerMaze_Click()
         {
-            Obstacles.DrawCheckerboardMaze();
+            ObstaclesManager.DrawCheckerboardMaze();
         }
 
         private void col_Click(object sender, RoutedEventArgs e)
@@ -973,7 +973,7 @@ namespace DBNet.Forms
 
         private void DrawSpiral_Click()
         {
-            Obstacles.DrawSpiral();
+            ObstaclesManager.DrawSpiral();
         }
 
         private void EditIntTeleporter_Click(object sender, RoutedEventArgs e)
@@ -1168,7 +1168,7 @@ namespace DBNet.Forms
 
         private void HorizontalMaze_Click()
         {
-            Obstacles.DrawHorizontalMaze();
+            ObstaclesManager.DrawHorizontalMaze();
         }
 
         private void infos(decimal cyc, int tot, int tnv, int tv, int brn, int totcyc, int tottim)
@@ -2467,7 +2467,7 @@ namespace DBNet.Forms
 
         private void PolarIce_Click()
         {
-            Obstacles.DrawPolarIceMaze();
+            ObstaclesManager.DrawPolarIceMaze();
         }
 
         private void quit_Click(object sender, RoutedEventArgs e)
@@ -3199,7 +3199,7 @@ namespace DBNet.Forms
 
         private void TrashCompactor_Click()
         {
-            Obstacles.InitTrashCompactorMaze();
+            ObstaclesManager.InitTrashCompactorMaze();
         }
 
         private void ucci_Click(object sender, RoutedEventArgs e)
@@ -3231,7 +3231,7 @@ namespace DBNet.Forms
 
         private void VerticaMaze_Click()
         {
-            Obstacles.DrawVerticalMaze();
+            ObstaclesManager.DrawVerticalMaze();
         }
 
         private void wait(byte n)

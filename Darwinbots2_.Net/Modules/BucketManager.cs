@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using static Common;
 using static Globals;
-using static Obstacles;
+using static ObstaclesManager;
 using static Robots;
 using static SimOpt;
 
@@ -255,7 +255,7 @@ internal static class BucketManager
         //If Shapes are see through, then there is no reason to check if a shape blocks a bot
         if (!SimOpts.ShapesAreSeeThrough)
         {
-            if (Obstacles.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
+            if (ObstaclesManager.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
                 return;
         }
 
@@ -375,7 +375,7 @@ internal static class BucketManager
         vector lastopppos = null;
         var sightdist = EyeSightDistance(NarrowestEye(rob), rob) + rob.radius;
 
-        foreach (var o in Obstacles.Obstacles.Where(o => o.exist))
+        foreach (var o in ObstaclesManager.Obstacles.Where(o => o.exist))
         {
             //Cheap weed out check - check to see if shape is too far away to be seen
             if ((o.pos.X > rob.pos.X + sightdist) || (o.pos.X + o.Width < rob.pos.X - sightdist) || (o.pos.Y > rob.pos.Y + sightdist) || (o.pos.Y + o.Height < rob.pos.Y - sightdist))
@@ -390,7 +390,7 @@ internal static class BucketManager
                 {
                     rob.mem[EyeStart + 1 + i] = 32000;
                 }
-                rob.lastopp = Obstacles.Obstacles.IndexOf(o);
+                rob.lastopp = ObstaclesManager.Obstacles.IndexOf(o);
                 rob.lastopptype = 1;
                 return;
             }
@@ -660,7 +660,7 @@ internal static class BucketManager
                             {
                                 //This eye does have the focus
                                 //Set the EYEF value and also lastopp so the lookoccur list will get populated later
-                                rob.lastopp = Obstacles.Obstacles.IndexOf(o);
+                                rob.lastopp = ObstaclesManager.Obstacles.IndexOf(o);
                                 rob.lastopptype = 1;
                                 rob.mem[EYEF] = eyevalue;
                                 rob.lastopppos = lastopppos;

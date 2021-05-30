@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using static BucketManager;
 using static DNAManipulations;
-using static Obstacles;
+using static ObstaclesManager;
 using static Robots;
 using static ShotsManager;
 using static SimOpt;

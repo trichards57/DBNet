@@ -15,7 +15,7 @@ using static F1Mode;
 using static Globals;
 using static HDRoutines;
 using static NeoMutations;
-using static Obstacles;
+using static ObstaclesManager;
 using static Physics;
 using static Senses;
 using static ShotsManager;
@@ -1005,7 +1005,7 @@ internal static class Robots
         if (Robots.rob.Any(r => r.exist && !(r.FName == "Base.txt" && hidepred) && r != rob && Math.Abs(r.pos.X - X) < r.radius + rob.radius && Math.Abs(r.pos.Y - Y) < r.radius + rob.radius))
             return true;
 
-        if (Obstacles.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
+        if (ObstaclesManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
             return true;
 
         if (SimOpts.Dxsxconnected == false && (X < rob.radius + SmudgeFactor || X + rob.radius + SmudgeFactor > SimOpts.FieldWidth))
@@ -1105,7 +1105,7 @@ internal static class Robots
 
             CalcMass(rob);
 
-            if (numObstacles > 0)
+            if (Obstacles.Count > 0)
                 DoObstacleCollisions(rob);
 
             BorderCollision(rob);
@@ -2150,7 +2150,7 @@ internal static class Robots
 
                 //start matching
 
-                int inc = 0;
+                var inc = 0;
                 var newmatch = false;
 
                 do
@@ -2166,8 +2166,6 @@ internal static class Robots
                     }
                     else
                     {
-                        newmatch = false;
-
                         laststartmatch1 = loopr1;
                         laststartmatch2 = loopr2;
                         loopr1--;

@@ -72,7 +72,7 @@ using static Master;
 using static DNAManipulations;
 using static DNATokenizing;
 using static Bitwise;
-using static Obstacles;
+using static ObstaclesManager;
 using static Teleport;
 using static IntOpts;
 using static stuffcolors;
@@ -2944,7 +2944,7 @@ namespace DBNet.Forms
 
         void ObsRepop()
         {
-            xObstacle = Obstacles.Obstacles;
+            xObstacle = ObstaclesManager.Obstacles;
             int o = 0;
 
             for (o = 1; o < UBound(xObstacle); o++)

@@ -72,7 +72,7 @@ using static Master;
 using static DNAManipulations;
 using static DNATokenizing;
 using static Bitwise;
-using static Obstacles;
+using static ObstaclesManager;
 using static Teleport;
 using static IntOpts;
 using static stuffcolors;

@@ -15,7 +15,7 @@ using static Microsoft.VisualBasic.Information;
 using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
 using static Microsoft.VisualBasic.VBMath;
-using static Obstacles;
+using static ObstaclesManager;
 using static Physics;
 using static Robots;
 using static ShotsManager;
@@ -571,7 +571,7 @@ namespace DBNet.Forms
 
             if (numObstacles > 0)
             {
-                Obstacles.DrawObstacles();
+                ObstaclesManager.DrawObstacles();
             }
 
             DrawArena();
@@ -2024,7 +2024,7 @@ namespace DBNet.Forms
 
             if (n == 0 & m == 0)
             {
-                m = whichobstacle(MouseClickX, MouseClickY);
+                m = WhichObstacle(MouseClickX, MouseClickY);
                 if (m != 0)
                 {
                     obstaclefocus = m;
@@ -2197,7 +2197,7 @@ namespace DBNet.Forms
 
             if (n == 0 & teleporterFocus == 0)
             {
-                obstaclefocus = whichobstacle(x, y);
+                obstaclefocus = WhichObstacle(x, y);
                 if (obstaclefocus != 0)
                 {
                     MDIForm1.instance.DeleteShape.IsEnabled = true;
@@ -2336,7 +2336,7 @@ namespace DBNet.Forms
 
             if (Button == 1 && obstaclefocus > 0)
             {
-                Obstacles.Obstacles[obstaclefocus].pos = VectorSet(x - (Obstacles.Obstacles[obstaclefocus].Width / 2), y - (Obstacles.Obstacles[obstaclefocus].Height / 2));
+                ObstaclesManager.Obstacles[obstaclefocus].pos = VectorSet(x - (ObstaclesManager.Obstacles[obstaclefocus].Width / 2), y - (ObstaclesManager.Obstacles[obstaclefocus].Height / 2));
                 if (!Active)
                 {
                     Redraw();
@@ -3083,7 +3083,7 @@ return;
 
             for (var t = 1; t < MAXOBSTACLES; t++)
             {
-                Obstacles.Obstacles[t].exist = false;
+                ObstaclesManager.Obstacles[t].exist = false;
             }
             numObstacles = 0;
 
@@ -3127,8 +3127,8 @@ return;
                 if (xObstacle[o].exist)
                 {
                     var oo = NewObstacle(xObstacle[o].pos.X * SimOpts.FieldWidth, xObstacle[o].pos.Y * SimOpts.FieldHeight, xObstacle[o].Width * SimOpts.FieldWidth, xObstacle[o].Height * SimOpts.FieldHeight);
-                    Obstacles.Obstacles[oo].color = xObstacle[o].color;
-                    Obstacles.Obstacles[oo].vel = xObstacle[o].vel;
+                    ObstaclesManager.Obstacles[oo].color = xObstacle[o].color;
+                    ObstaclesManager.Obstacles[oo].vel = xObstacle[o].vel;
                 }
             }
 
