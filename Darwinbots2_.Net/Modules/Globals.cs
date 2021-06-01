@@ -6,7 +6,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using static BucketManager;
 using static DNAManipulations;
-using static ObstaclesManager;
 using static Robots;
 using static ShotsManager;
 using static SimOpt;
@@ -134,13 +133,13 @@ internal static class Globals
     {
         if (r == -1)
         {
-            if (!Species.Any(s => CheckVegStatus(s)))
+            if (!SimOpts.Specie.Any(s => CheckVegStatus(s)))
                 return;
 
             do
             {
-                r = ThreadSafeRandom.Local.Next(0, SimOpts.SpeciesNum); // start randomly in the list of species
-            } while (!CheckVegStatus(Species[r]));
+                r = ThreadSafeRandom.Local.Next(0, SimOpts.Specie.Count); // start randomly in the list of species
+            } while (!CheckVegStatus(SimOpts.Specie[r]));
 
             x = ThreadSafeRandom.Local.Next((int)(SimOpts.Specie[r].Poslf * (SimOpts.FieldWidth - 60)), (int)(SimOpts.Specie[r].Posrg * (SimOpts.FieldWidth - 60)));
             y = ThreadSafeRandom.Local.Next((int)(SimOpts.Specie[r].Postp * (SimOpts.FieldHeight - 60)), (int)(SimOpts.Specie[r].Posdn * (SimOpts.FieldHeight - 60)));
@@ -150,7 +149,7 @@ internal static class Globals
         {
             var a = await RobScriptLoad(System.IO.Path.Join(SimOpts.Specie[r].path, SimOpts.Specie[r].Name));
 
-            if (a < 0)
+            if (a == null)
             {
                 SimOpts.Specie[r].Native = false;
                 return;
@@ -159,69 +158,68 @@ internal static class Globals
             //Check to see if we were able to load the bot.  If we can't, the path may be wrong, the sim may have
             //come from another machine with a different install path.  Set the species path to an empty string to
             //prevent endless looping of error dialogs.
-            if (!rob[a].exist)
+            if (!a.exist)
             {
                 SimOpts.Specie[r].path = "Invalid Path";
                 return;
             }
 
-            rob[a].Veg = SimOpts.Specie[r].Veg;
-            if (rob[a].Veg)
-                rob[a].chloroplasts = StartChlr;
+            a.Veg = SimOpts.Specie[r].Veg;
+            if (a.Veg)
+                a.chloroplasts = StartChlr;
 
-            rob[a].Fixed = SimOpts.Specie[r].Fixed;
-            rob[a].CantSee = SimOpts.Specie[r].CantSee;
-            rob[a].DisableDNA = SimOpts.Specie[r].DisableDNA;
-            rob[a].DisableMovementSysvars = SimOpts.Specie[r].DisableMovementSysvars;
-            rob[a].CantReproduce = SimOpts.Specie[r].CantReproduce;
-            rob[a].VirusImmune = SimOpts.Specie[r].VirusImmune;
-            rob[a].Corpse = false;
-            rob[a].Dead = false;
-            rob[a].body = 1000;
-            rob[a].radius = FindRadius(a);
-            rob[a].Mutations = 0;
-            rob[a].OldMutations = 0;
-            rob[a].LastMut = 0;
-            rob[a].generation = 0;
-            rob[a].SonNumber = 0;
-            rob[a].parent = 0;
-            Array.Clear(rob[a].mem, 0, rob[a].mem.Length);
+            a.Fixed = SimOpts.Specie[r].Fixed;
+            a.CantSee = SimOpts.Specie[r].CantSee;
+            a.DisableDNA = SimOpts.Specie[r].DisableDNA;
+            a.DisableMovementSysvars = SimOpts.Specie[r].DisableMovementSysvars;
+            a.CantReproduce = SimOpts.Specie[r].CantReproduce;
+            a.VirusImmune = SimOpts.Specie[r].VirusImmune;
+            a.Corpse = false;
+            a.Dead = false;
+            a.body = 1000;
+            a.radius = FindRadius(a);
+            a.Mutations = 0;
+            a.OldMutations = 0;
+            a.LastMut = 0;
+            a.generation = 0;
+            a.SonNumber = 0;
+            a.parent = null;
+            Array.Clear(a.mem, 0, a.mem.Length);
 
-            if (rob[a].Fixed)
-                rob[a].mem[216] = 1;
+            if (a.Fixed)
+                a.mem[216] = 1;
 
-            rob[a].pos.X = x;
-            rob[a].pos.Y = y;
+            a.pos.X = x;
+            a.pos.Y = y;
 
-            rob[a].aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
-            rob[a].mem[SetAim] = (int)rob[a].aim * 200;
+            a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
+            a.mem[SetAim] = (int)a.aim * 200;
 
             //Bot is already in a bucket due to the prepare routine
             UpdateBotBucket(a);
-            rob[a].nrg = SimOpts.Specie[r].Stnrg;
-            rob[a].Mutables = SimOpts.Specie[r].Mutables;
+            a.nrg = SimOpts.Specie[r].Stnrg;
+            a.Mutables = SimOpts.Specie[r].Mutables;
 
-            rob[a].Vtimer = 0;
-            rob[a].virusshot = 0;
-            rob[a].genenum = CountGenes(rob[a].dna);
+            a.Vtimer = 0;
+            a.virusshot = null;
+            a.genenum = CountGenes(a.dna);
 
-            rob[a].DnaLen = DnaLen(rob[a].dna);
-            rob[a].GenMut = rob[a].DnaLen / GeneticSensitivity;
+            a.GenMut = a.dna.Count / GeneticSensitivity;
 
-            rob[a].mem[DnaLenSys] = rob[a].DnaLen;
-            rob[a].mem[GenesSys] = rob[a].genenum;
+            a.mem[DnaLenSys] = a.dna.Count;
+            a.mem[GenesSys] = a.genenum;
 
-            rob[a].multibot_time = SimOpts.Specie[r].kill_mb ? 210 : 0;
-            rob[a].dq = SimOpts.Specie[r].dq_kill ? 1 : 0;
-            rob[a].NoChlr = SimOpts.Specie[r].NoChlr;
+            a.multibot_time = SimOpts.Specie[r].kill_mb ? 210 : 0;
+            a.dq = SimOpts.Specie[r].dq_kill ? 1 : 0;
+            a.NoChlr = SimOpts.Specie[r].NoChlr;
 
             for (var i = 0; i < 7; i++)
             {
-                rob[a].Skin[i] = SimOpts.Specie[r].Skin[i];
+                a.Skin[i] = SimOpts.Specie[r].Skin[i];
             }
 
-            rob[a].color = SimOpts.Specie[r].color;
-            Senses.makeoccurrlist(a);
+            a.color = SimOpts.Specie[r].color;
+            Senses.MakeOccurrList(a);
         }
     }
 
@@ -236,13 +234,13 @@ internal static class Globals
             var x = ThreadSafeRandom.Local.Next((int)(rob.pos.X - rob.radius), (int)(rob.pos.X + rob.radius));
             var y = ThreadSafeRandom.Local.Next((int)(rob.pos.Y - rob.radius), (int)(rob.pos.Y + rob.radius));
             if (ThreadSafeRandom.Local.Next(1, 3) == 1)
-                createshot(x, y, vx, vy, -100, 0, 0, RobSize * 2, rob.color);
+                CreateShot(x, y, vx, vy, -100, null, 0, RobSize * 2, rob.color);
             else
-                createshot(x, y, vx, vy, -100, 0, 0, RobSize * 2, DBrite(rob.color));
+                CreateShot(x, y, vx, vy, -100, null, 0, RobSize * 2, DBrite(rob.color));
         }
     }
 
-    private static bool CheckVegStatus(varspecie.Species species)
+    private static bool CheckVegStatus(Species species)
     {
         if (!species.Veg || !species.Native)
             return false;

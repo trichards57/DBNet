@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using static DNAExecution;
 using static DNAManipulations;
-using static Robots;
 
 internal static class DNATokenizing
 {
@@ -40,11 +39,11 @@ internal static class DNATokenizing
         }
     }
 
-    public static string DetokenizeDNA(int n, int Position = 0)
+    public static string DetokenizeDNA(robot rob, int Position = 0)
     {
         var result = new StringBuilder();
         var geneEnd = false;
-        var dna = rob[n].dna;
+        var dna = rob.dna;
         var inGene = false;
         var coding = false;
         var t = 1;
@@ -102,7 +101,7 @@ internal static class DNATokenizing
             }
 
             var converttosysvar = dna[t + 1].tipo == 7;
-            var temp = Parse(dna[t], n, converttosysvar);
+            var temp = Parse(dna[t], rob, converttosysvar);
             if (temp == "")
                 temp = "VOID"; //alert user that there is an invalid DNA entry.
 
@@ -499,13 +498,13 @@ internal static class DNATokenizing
         return bp;
     }
 
-    public static string Parse(DNABlock bp, int n = 0, bool converttosysvar = true)
+    public static string Parse(DNABlock bp, robot rob = null, bool converttosysvar = true)
     {
         return bp.tipo switch
         {
             //number
-            0 => converttosysvar ? SysvarDetok(bp.value, rob[n]) : bp.value.ToString(),
-            1 => "*" + SysvarDetok(bp.value, rob[n]),
+            0 => converttosysvar ? SysvarDetok(bp.value, rob) : bp.value.ToString(),
+            1 => "*" + SysvarDetok(bp.value, rob),
             2 => BasicCommandDetok(bp.value),
             3 => AdvancedCommandDetok(bp.value),
             4 => BitwiseCommandDetok(bp.value),

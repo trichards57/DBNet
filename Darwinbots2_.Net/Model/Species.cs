@@ -7,7 +7,6 @@ namespace Iersera.Model
         public bool CantReproduce = false;
         public bool CantSee = false;
         public int Colind = 0;
-        public int color = 0;
         public string Comment = "";
         public bool DisableDNA = false;
         public bool DisableMovementSysvars = false;
@@ -32,5 +31,6 @@ namespace Iersera.Model
         public int SubSpeciesCounter = 0;
         public bool Veg = false;
         public bool VirusImmune = false;
+        public System.Windows.Media.Color color { get; set; }
     }
 }

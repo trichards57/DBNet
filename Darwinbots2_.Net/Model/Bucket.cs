@@ -2,9 +2,9 @@
 
 namespace Iersera.Model
 {
-    public class Bucket
+    internal class Bucket
     {
         public List<IntVector> AdjacentBuckets = new();
-        public List<int> Robots = new();
+        public List<robot> Robots = new();
     }
 }

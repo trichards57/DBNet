@@ -18,7 +18,6 @@ using static Master;
 using static Microsoft.VisualBasic.FileSystem;
 using static Microsoft.VisualBasic.VBMath;
 using static Multibots;
-using static ObstaclesManager;
 using static Physics;
 using static Robots;
 using static ShotsManager;
@@ -662,7 +661,7 @@ internal static class HDRoutines
     /// <summary>
     /// Saves a robot's dna.
     /// </summary>
-    public static async Task salvarob(int n, string path)
+    public static async Task salvarob(robot rob, string path)
     {
         var hold = new StringBuilder();
 

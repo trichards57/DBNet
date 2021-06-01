@@ -7,8 +7,8 @@ using System.Reflection;
 
 internal static class Common
 {
-    public static string filemem = "";
     private static bool called = false;
+    public static string filemem { get; set; } = string.Empty;
 
     public static double Cross(vector V1, vector V2)
     {
@@ -20,12 +20,6 @@ internal static class Common
         return V1.X * V2.X + V1.Y * V2.Y;
     }
 
-    [Obsolete("Use rand.Next instead")]
-    public static int fRnd(int low, int up)
-    {
-        return ThreadSafeRandom.Local.Next(low, up);
-    }
-
     public static double Gauss(double stdDev, double mean = 0)
     {
         mean = Math.Clamp(mean, -32000, 32000);
@@ -34,12 +28,6 @@ internal static class Common
             stdDev = 1;
 
         return Math.Clamp(GaussianDistribution() * stdDev + mean, -32000, 32000);
-    }
-
-    [Obsolete("Use rand.NextDouble instead")]
-    public static double ThreadSafeRandom.Local.NextDouble()
-    {
-        return ThreadSafeRandom.Local.NextDouble();
     }
 
     public static int NextLowestMultOfTwo(int value)
@@ -71,29 +59,10 @@ internal static class Common
         Process.Start(Path.GetDirectoryName(appPath) + "\\Restarter.exe", appPath);
     }
 
-    [Obsolete("Use + operator instead")]
-    public static vector VectorAdd(vector V1, vector V2)
-    {
-        return V1 + V2;
-    }
-
-    [Obsolete("Use .Magnitude instead")]
-    public static double VectorInvMagnitude(vector V1)
-    {
-        var mag = V1.Magnitude();
-        return mag == 0 ? -1 : 1 / mag;
-    }
-
     [Obsolete("Use .Magnitude instead")]
     public static double VectorMagnitude(vector V1)
     {
         return V1.Magnitude();
-    }
-
-    [Obsolete("Use .MagnitudeSquare instead")]
-    public static double VectorMagnitudeSquare(vector V1)
-    {
-        return V1.MagnitudeSquare();
     }
 
     public static vector VectorMax(vector x, vector y)
@@ -114,12 +83,6 @@ internal static class Common
         };
     }
 
-    [Obsolete("Use * instead")]
-    public static vector VectorScalar(vector V1, double k)
-    {
-        return V1 * k;
-    }
-
     [Obsolete("Use new vector(x,y) instead")]
     public static vector VectorSet(double x, double y)
     {
@@ -134,12 +97,6 @@ internal static class Common
     public static vector VectorSub(vector V1, vector V2)
     {
         return V1 - V2;
-    }
-
-    [Obsolete("Use .Unit instead")]
-    public static vector VectorUnit(vector V1)
-    {
-        return V1.Unit();
     }
 
     private static double GaussianDistribution()

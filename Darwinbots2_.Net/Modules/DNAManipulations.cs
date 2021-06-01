@@ -1,14 +1,14 @@
 using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using static BucketManager;
 using static DNATokenizing;
-using static Microsoft.VisualBasic.Strings;
 using static Robots;
-using static System.Math;
 
 internal static class DNAManipulations
 {
@@ -64,7 +64,7 @@ internal static class DNAManipulations
         if (dna[position].tipo == 9 && dna[position].value == 1)
             condgene = true;
 
-        for (var i = position + 1; i < dna.Length; i++)
+        for (var i = position + 1; i < dna.Count; i++)
         {
             if (dna[i].tipo == 10)
                 break; // end of genome
@@ -88,7 +88,7 @@ internal static class DNAManipulations
                 }
             }
         }
-        return dna.Length - 1;
+        return dna.Count - 1;
     }
 
     public static int genepos(IList<DNABlock> dna, int n)
@@ -148,51 +148,44 @@ internal static class DNAManipulations
         var parts = a.Split(' ', 2);
         var cValid = int.TryParse(parts[1], out var cVal);
 
-        rob.vars.Add(new Globals.Variable(parts[0], cValid ? cVal : 0));
+        rob.vars.Add(new Variable(parts[0], cValid ? cVal : 0));
     }
 
-    public static async Task<int> RobScriptLoad(string path)
+    public static async Task<robot> RobScriptLoad(string path)
     {
-        var n = GetNewBot();
-        PrepareRob(n, path); // prepares structure
-        if (await LoadDNA(path, rob[n]))
+        var rob = GetNewBot();
+        PrepareRob(rob, path); // prepares structure
+        if (await LoadDNA(path, rob))
         {
             // loads and parses dna
-            Senses.makeoccurrlist(n); // creates the ref* array
-            rob[n].DnaLen = DnaLen(rob[n].dna); // measures dna length
-            rob[n].genenum = CountGenes(rob[n].dna);
-            rob[n].mem[DnaLenSys] = rob[n].DnaLen;
-            rob[n].mem[GenesSys] = rob[n].genenum;
-            return n; // returns the index of the created rob
+            Senses.MakeOccurrList(rob); // creates the ref* array
+            rob.genenum = CountGenes(rob.dna);
+            rob.mem[DnaLenSys] = rob.dna.Count;
+            rob.mem[GenesSys] = rob.genenum;
+            return rob; // returns the index of the created rob
         }
 
-        rob[n].exist = false;
-        UpdateBotBucket(n);
-        return -1;
+        rob.exist = false;
+        Robots.rob.Remove(rob);
+        UpdateBotBucket(rob);
+        return null;
     }
 
-    private static void PrepareRob(int t, string path)
+    private static void PrepareRob(robot rob, string path)
     {
-        rob[t].pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
-        rob[t].pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
-        rob[t].aim = ThreadSafeRandom.Local.Next(0, 628) / 100;
-        rob[t].aimvector = new vector(Cos(rob[t].aim), Sin(rob[t].aim));
-        rob[t].exist = true;
-        rob[t].BucketPos.X = -2;
-        rob[t].BucketPos.Y = -2;
-        UpdateBotBucket(t);
+        rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
+        rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
+        rob.aim = ThreadSafeRandom.Local.Next(0, 628) / 100;
+        rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
+        rob.exist = true;
+        rob.BucketPos.X = -2;
+        rob.BucketPos.Y = -2;
+        UpdateBotBucket(rob);
 
-        var col1 = ThreadSafeRandom.Local.Next(50, 255);
-        var col2 = ThreadSafeRandom.Local.Next(50, 255);
-        var col3 = ThreadSafeRandom.Local.Next(50, 255);
-        rob[t].color = col1 * 65536 + col2 * 256 + col3;
-        rob[t].vars.Clear();
-        rob[t].nrg = 20000;
-        rob[t].Veg = false;
-        var k = 1;
-        while (InStr(k, path, "\\") > 0)
-            k++;
-
-        rob[t].FName = Right(path, Len(path) - k + 1);
+        rob.color = Color.FromRgb((byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255));
+        rob.vars.Clear();
+        rob.nrg = 20000;
+        rob.Veg = false;
+        rob.FName = System.IO.Path.GetFileName(path);
     }
 }

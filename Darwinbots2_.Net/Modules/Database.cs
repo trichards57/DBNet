@@ -3,6 +3,7 @@ using Iersera.Model;
 using Microsoft.Win32;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -31,17 +32,15 @@ internal static class Database
         if (!deadRobotsMutationExists)
             await deadRobotsMutationFile.WriteLineAsync("Rob id,Mutation History");
 
-        if (rob.DnaLen == 1)
+        if (rob.dna.Count == 1)
             return;
 
         var fitness = GetFitness(rob);
 
         await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 
-        DNATokenizing.savingtofile = true;
-        await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.DnaLen},{rob.SonNumber},{rob.Kills},{fitness},{Robots.rob[rn].nrg + Robots.rob[rn].body * 10},{rob.chloroplasts}");
-        await deadRobotsFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rn).Trim());
-        DNATokenizing.savingtofile = false;
+        await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{fitness},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+        await deadRobotsFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
     }
 
     public static async Task Snapshot()
@@ -79,22 +78,14 @@ internal static class Database
 
             //records a snapshot of all living robots in a snapshot database
             Form1.instance.GraphLab.Visibility = Visibility.Visible;
-            for (var rn = 1; rn < Robots.MaxRobs; rn++)
+            foreach (var rob in Robots.rob.Where(r => r.exist && r.dna.Count > 1))
             {
-                var rob = Robots.rob[rn];
-
-                if (!rob.exist || rob.DnaLen <= 1)
-                    continue;
-
                 await mutationsFiles?.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
-                var fitness = GetFitness(rn);
-                DNATokenizing.savingtofile = true;
-                await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.DnaLen},{rob.SonNumber},{rob.Kills},{fitness},{Robots.rob[rn].nrg + Robots.rob[rn].body * 10},{rob.chloroplasts}");
-                await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rn).Trim());
-                DNATokenizing.savingtofile = false;
+                var fitness = GetFitness(rob);
 
-                Form1.instance.GraphLab.Content = "Calculating a snapshot: " + (100 * rn / Robots.MaxRobs) + "%";
+                await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{fitness},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+                await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
             }
 
             Form1.instance.GraphLab.Visibility = Visibility.Hidden;
@@ -109,12 +100,12 @@ internal static class Database
         }
     }
 
-    private static double GetFitness(int rn)
+    private static double GetFitness(robot rob)
     {
         var sEnergy = (Globals.intFindBestV2 > 100 ? 100 : Globals.intFindBestV2) / 100;
         var sPopulation = (Globals.intFindBestV2 < 100 ? 100 : 200 - Globals.intFindBestV2) / 100;
         Form1.instance.TotalOffspring = 1;
-        var fitness = Form1.instance.score(rn, 1, 10, 0) + Robots.rob[rn].nrg + Robots.rob[rn].body * 10; //Botsareus 5/22/2013 Advanced fit test
+        var fitness = Form1.instance.score(rob, 1, 10, 0) + rob.nrg + rob.body * 10; //Botsareus 5/22/2013 Advanced fit test
         if (fitness < 0)
             fitness = 0; //Botsareus 9/23/2016 Bug fix
 

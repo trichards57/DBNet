@@ -1,8 +1,11 @@
 using DBNet.Forms;
 using Iersera.DataModel;
+using Iersera.Model;
 using Iersera.Support;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,7 +17,6 @@ using static Master;
 using static NeoMutations;
 using static Robots;
 using static SimOpt;
-using static varspecie;
 
 internal static class Evo
 {
@@ -42,7 +44,7 @@ internal static class Evo
             return;
         }
 
-        var MratesMax = NormMut ? bestrob.DnaLen * valMaxNormMut : 2000000000;
+        var MratesMax = NormMut ? bestrob.dna.Count * valMaxNormMut : 2000000000;
 
         var goodtest = false; // no duplicate message
 
@@ -104,9 +106,9 @@ internal static class Evo
         await ExportData();
     }
 
-    public static async Task UpdateWonEvo(int bestrob)
+    public static async Task UpdateWonEvo(robot bestrob)
     {
-        if (rob[bestrob].Mutations > 0 & (totnvegsDisplayed >= 15 || y_eco_im == 0))
+        if (bestrob.Mutations > 0 & (totnvegsDisplayed >= 15 || y_eco_im == 0))
         {
             await LogEvolution("Evolving robot changed, testing robot.");
             //F1 mode init
@@ -118,24 +120,12 @@ internal static class Evo
             {
                 //The Eco Calc
 
-                var maxgdi = new double[MaxRobs];
+                var maxgdi = new Dictionary<robot, double>();
 
-                for (var t = 1; t < rob.Count; t++)
+                foreach (var robT in rob.Where(r => r.exist && !r.Veg && r.FName != "Corpse" && !(r.FName == "Base.txt" && hidepred)))
                 {
-                    if (rob[t].exist && !rob[t].Veg && rob[t].FName != "Corpse" && !(rob[t].FName == "Base.txt" && hidepred))
-                    {
-                        //calculate cumelative genetic distance
-                        for (var t2 = 1; t2 < MaxRobs; t2++)
-                        {
-                            if (t != t2)
-                            {
-                                if (rob[t2].exist && !rob[t2].Corpse && rob[t2].FName == rob[t].FName)
-                                { // Must exist, and be of same species
-                                    maxgdi[t] = maxgdi[t] + DoGeneticDistance(t, t2);
-                                }
-                            }
-                        }
-                    }
+                    foreach (var robT2 in rob.Where(r => r != robT && r.exist && !r.Corpse && r.FName == robT.FName))
+                        maxgdi[robT] += DoGeneticDistance(robT, robT2);
                 }
 
                 //step3 calculate robots
@@ -146,23 +136,20 @@ internal static class Evo
                     var sPopulation = (intFindBestV2 < 100 ? 100 : 200 - intFindBestV2) / 100;
 
                     double Mx = 0;
-                    var fit = 0;
-                    for (var t = 1; t < MaxRobs; t++)
+                    robot fit = null;
+                    foreach (var robT in rob.Where(r => r.exist && !r.Veg && r.FName != "Corpse" && !(r.FName == "Base.txt" && hidepred)))
                     {
-                        if (rob[t].exist && !rob[t].Veg && rob[t].FName != "Corpse" && !(rob[t].FName == "Base.txt" && hidepred))
-                        {
-                            Form1.instance.TotalOffspring = 1;
-                            var s = Form1.instance.score(t, 1, 10, 0) + rob[t].nrg + rob[t].body * 10; //Botsareus 5/22/2013 Advanced fit test
-                            if (s < 0)
-                                s = 0; //Botsareus 9/23/2016 Bug fix
+                        Form1.instance.TotalOffspring = 1;
+                        var s = Form1.instance.score(robT, 1, 10, 0) + robT.nrg + robT.body * 10; //Botsareus 5/22/2013 Advanced fit test
+                        if (s < 0)
+                            s = 0; //Botsareus 9/23/2016 Bug fix
 
-                            s = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(s, sEnergy);
-                            s *= maxgdi[t];
-                            if (s >= Mx)
-                            {
-                                Mx = s;
-                                fit = t;
-                            }
+                        s = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(s, sEnergy);
+                        s *= maxgdi[robT];
+                        if (s >= Mx)
+                        {
+                            Mx = s;
+                            fit = robT;
                         }
                     }
 
@@ -170,7 +157,7 @@ internal static class Evo
                     Directory.CreateDirectory($@"evolution\testrob{ecocount}");
 
                     await HDRoutines.salvarob(fit, $@"evolution\testrob{ecocount}\Test.txt");
-                    rob[fit].exist = false;
+                    fit.exist = false;
                 }
             }
             x_restartmode = 6;
@@ -681,7 +668,7 @@ internal static class Evo
 
     private static async Task ZBreadyforTest(robot bestrob)
     {
-        await HDRoutines.salvarob(rob.IndexOf(bestrob), @"evolution\Test.txt");
+        await HDRoutines.salvarob(bestrob, @"evolution\Test.txt");
         //the robot did evolve, so lets update
         x_filenumber++;
         File.Copy(@"evolution\Test.txt", $@"evolution\stages\stage{x_filenumber}.txt");

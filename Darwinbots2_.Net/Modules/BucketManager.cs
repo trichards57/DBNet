@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static Common;
 using static Globals;
-using static ObstaclesManager;
 using static Robots;
 using static SimOpt;
 
@@ -26,11 +25,11 @@ internal static class BucketManager
     public static void BucketsCollision(robot rob)
     {
         // Check the bucket the bot is in
-        CheckBotBucketForCollision(n, rob[n].BucketPos);
+        CheckBotBucketForCollision(rob, rob.BucketPos);
 
         // Checks the abjacent buckets
-        foreach (var adjBucket in Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
-            CheckBotBucketForCollision(n, adjBucket);
+        foreach (var adjBucket in Buckets[rob.BucketPos.X, rob.BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+            CheckBotBucketForCollision(rob, adjBucket);
     }
 
     /// <summary>
@@ -39,26 +38,26 @@ internal static class BucketManager
     /// <returns>
     /// The index of the last viewed object
     /// </returns>
-    public static int BucketsProximity(robot rob)
+    public static object BucketsProximity(robot rob)
     {
-        rob[n].lastopp = 0;
-        rob[n].lastopptype = 0; // set the default type of object seen to a bot.
-        rob[n].mem[EYEF] = 0;
+        rob.lastopp = 0;
+        rob.lastopptype = 0; // set the default type of object seen to a bot.
+        rob.mem[EYEF] = 0;
 
         for (var x = EyeStart + 1; x < EyeEnd; x++)
-            rob[n].mem[x] = 0;
+            rob.mem[x] = 0;
 
         //Check the bucket the bot is in
-        CheckBotBucketForVision(n, rob[n].BucketPos);
+        CheckBotBucketForVision(rob, rob.BucketPos);
 
         //Check all the adjacent buckets
-        foreach (var adjBucket in Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
-            CheckBotBucketForVision(n, adjBucket);
+        foreach (var adjBucket in Buckets[rob.BucketPos.X, rob.BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+            CheckBotBucketForVision(rob, adjBucket);
 
-        if (SimOpts.ShapesAreVisable && rob[n].exist)
-            CompareShapes(rob[n]);
+        if (SimOpts.ShapesAreVisable && rob.exist)
+            CompareShapes(rob);
 
-        return rob[n].lastopp;
+        return rob.lastopp;
     }
 
     public static double EyeSightDistance(int width, robot rob)
@@ -79,7 +78,7 @@ internal static class BucketManager
         {
             for (var x = 0; x < NumXBuckets - 1; x++)
             {
-                Buckets[x, y].Robots = new List<int>();
+                Buckets[x, y].Robots = new List<robot>();
 
                 // Set the list of adjacent buckets for this bucket
                 // We take the time to do this here to save the time it would take to compute these every cycle.
@@ -109,14 +108,11 @@ internal static class BucketManager
             }
         }
 
-        for (var x = 1; x < MaxRobs; x++)
+        foreach (var rob in rob.Where(r => r.exist))
         {
-            if (rob[x].exist)
-            {
-                rob[x].BucketPos.X = -2;
-                rob[x].BucketPos.Y = -2;
-                UpdateBotBucket(x);
-            }
+            rob.BucketPos.X = -2;
+            rob.BucketPos.Y = -2;
+            UpdateBotBucket(rob);
         }
     }
 
@@ -124,15 +120,15 @@ internal static class BucketManager
     // also erases array elements to retrieve memory
     public static void UpdateBotBucket(robot rob)
     {
-        if (!rob[n].exist)
+        if (!rob.exist)
         {
-            Buckets[(int)rob[n].BucketPos.X, (int)rob[n].BucketPos.Y].Robots.RemoveAll(i => i == n);
+            Buckets[rob.BucketPos.X, rob.BucketPos.Y].Robots.Remove(rob);
             return;
         }
 
-        var newBucket = new IntVector(rob[n].BucketPos.X, rob[n].BucketPos.Y);
+        var newBucket = new IntVector(rob.BucketPos.X, rob.BucketPos.Y);
 
-        var currentX = (int)Math.Floor(rob[n].pos.X / BucketSize);
+        var currentX = (int)Math.Floor(rob.pos.X / BucketSize);
         if (currentX < 0)
             currentX = 0; // Possible bot is off the field
 
@@ -141,21 +137,21 @@ internal static class BucketManager
 
         var changed = false;
 
-        if (rob[n].BucketPos.X != currentX)
+        if (rob.BucketPos.X != currentX)
         {
             // we've moved off the bucket, update bucket
             newBucket.X = currentX;
             changed = true;
         }
 
-        var currentY = (int)Math.Floor(rob[n].pos.Y / BucketSize);
+        var currentY = (int)Math.Floor(rob.pos.Y / BucketSize);
         if (currentY < 0)
             currentY = 0; // Possible bot is off the field
 
         if (currentY >= NumYBuckets)
             currentY = NumYBuckets - 1; // Possible bot is off the field
 
-        if (rob[n].BucketPos.Y != currentY)
+        if (rob.BucketPos.Y != currentY)
         {
             newBucket.Y = currentY;
             changed = true;
@@ -163,9 +159,9 @@ internal static class BucketManager
 
         if (changed)
         {
-            Buckets[rob[n].BucketPos.X, rob[n].BucketPos.Y].Robots.RemoveAll(i => i == n);
-            Buckets[newBucket.X, newBucket.Y].Robots.Add(n);
-            rob[n].BucketPos = newBucket;
+            Buckets[rob.BucketPos.X, rob.BucketPos.Y].Robots.Remove(rob);
+            Buckets[newBucket.X, newBucket.Y].Robots.Add(rob);
+            rob.BucketPos = newBucket;
         }
     }
 
@@ -187,25 +183,21 @@ internal static class BucketManager
         }
     }
 
-    private static void CheckBotBucketForCollision(int n, IntVector pos)
+    private static void CheckBotBucketForCollision(robot rob, IntVector pos)
     {
-        foreach (var robnumber in Buckets[pos.X, pos.Y].Robots.Where(i => i > n))
+        foreach (var r in Buckets[pos.X, pos.Y].Robots.Where(i => i != rob && !(i.FName == "Base.txt" && hidepred) && i.AbsNum > rob.AbsNum))
         {
-            // only have to check bots higher than n otherwise we do it twice for each bot pair
-            if (!(rob[robnumber].FName == "Base.txt" && hidepred))
-            {
-                var distvector = (rob[n].pos - rob[robnumber].pos);
-                var dist = rob[n].radius + rob[robnumber].radius;
-                if (distvector.MagnitudeSquare() < (dist * dist))
-                    Physics.Repel3(n, robnumber);
-            }
+            var distvector = rob.pos - r.pos;
+            var dist = rob.radius + r.radius;
+            if (distvector.MagnitudeSquare() < (dist * dist))
+                Physics.Repel3(rob, r);
         }
     }
 
-    private static void CheckBotBucketForVision(int n, IntVector pos)
+    private static void CheckBotBucketForVision(robot rob, IntVector pos)
     {
-        foreach (var robnumber in Buckets[pos.X, pos.Y].Robots.Where(i => i != n))
-            CompareRobots(rob[n], rob[robnumber]);
+        foreach (var r in Buckets[pos.X, pos.Y].Robots.Where(i => i != rob))
+            CompareRobots(rob, r);
     }
 
     private static double CheckDistance(vector botPosition, vector obstacleCorner, vector obstacleSide, vector eyeaimleftvector, vector eyeaimrightvector, out double distright, out double distleft)

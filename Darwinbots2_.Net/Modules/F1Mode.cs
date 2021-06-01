@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using static Common;
 using static Evo;
 using static Globals;
@@ -84,38 +85,11 @@ internal static class F1Mode
                 erase1 = erase2 * (PopArray[0].population / PopArray[1].population);
             }
 
-            var selectrobot = 0;
-            double calcminenergy;
+            for (var l = 0; l < erase1; l++)
+                await KillRobot(rob.Where(r => r.exist && Path.GetFileNameWithoutExtension(r.FName) == PopArray[1].SpName).OrderByDescending(r => r.nrg + r.body * 10).FirstOrDefault());
 
-            for (var l = 0; l < -erase1; l++)
-            {
-                //only erase robots with lowest energy
-                calcminenergy = 320000;
-                for (var t = 1; t < MaxRobs; t++)
-                {
-                    if (rob[t].exist && Path.GetFileNameWithoutExtension(rob[t].FName) == PopArray[1].SpName && (rob[t].nrg + rob[t].body * 10) < calcminenergy)
-                    {
-                        calcminenergy = (rob[t].nrg + rob[t].body * 10);
-                        selectrobot = t;
-                    }
-                }
-                KillRobot(selectrobot);
-            }
-
-            for (var l = 0; l < -erase2; l++)
-            {
-                //only erase robots with lowest energy
-                calcminenergy = 320000;
-                for (var t = 1; t < MaxRobs; t++)
-                {
-                    if (rob[t].exist && Path.GetFileNameWithoutExtension(rob[t].FName) == PopArray[2].SpName && (rob[t].nrg + rob[t].body * 10) < calcminenergy)
-                    {
-                        calcminenergy = (rob[t].nrg + rob[t].body * 10);
-                        selectrobot = t;
-                    }
-                }
-                KillRobot(selectrobot);
-            }
+            for (var l = 0; l < erase2; l++)
+                await KillRobot(rob.Where(r => r.exist && Path.GetFileNameWithoutExtension(r.FName) == PopArray[1].SpName).OrderByDescending(r => r.nrg + r.body * 10).FirstOrDefault());
         }
 
         if (optMaxCycles > 0)
@@ -141,26 +115,16 @@ internal static class F1Mode
                 ModeChangeCycles = 0;
             }
             if (SimOpts.TotRunCycle > optMaxCycles)
-            { //Botsareus 2/14/2014 kill losing species
+            {
                 if (PopArray[1].population > PopArray[2].population)
                 {
-                    for (var t = 1; t < MaxRobs; t++)
-                    {
-                        if (rob[t].exist && Path.GetFileNameWithoutExtension(rob[t].FName) == PopArray[2].SpName)
-                        {
-                            KillRobot(t);
-                        }
-                    }
+                    foreach (var rob in rob.Where(r => r.exist && Path.GetFileNameWithoutExtension(r.FName) == PopArray[2].SpName).ToArray())
+                        await KillRobot(rob);
                 }
                 if (PopArray[2].population > PopArray[1].population)
                 {
-                    for (var t = 1; t < MaxRobs; t++)
-                    {
-                        if (rob[t].exist && Path.GetFileNameWithoutExtension(rob[t].FName) == PopArray[1].SpName)
-                        {
-                            KillRobot(t);
-                        }
-                    }
+                    foreach (var rob in rob.Where(r => r.exist && Path.GetFileNameWithoutExtension(r.FName) == PopArray[1].SpName).ToArray())
+                        await KillRobot(rob);
                 }
             }
         }
@@ -285,7 +249,7 @@ internal static class F1Mode
         }
     }
 
-    public static void dreason(string Name, string tag, string reason)
+    public static async Task dreason(string Name, string tag, string reason)
     {
         //format the tag
         if (tag[..45].Trim() == string.Empty)
@@ -296,16 +260,13 @@ internal static class F1Mode
         File.AppendAllText("Disqualifications.txt", $"Robot \"{Name}\"{tag} has been disqualified for {reason}.");
 
         //kill species
-        for (var t = 1; t < MaxRobs; t++)
-        {
-            if (!rob[t].Veg && !rob[t].Corpse && rob[t].exist && rob[t].FName == Name)
-                KillRobot(t);
-        }
+        foreach (var rob in rob.Where(r => r.exist && !r.Veg && !r.Corpse && r.FName == Name).ToArray())
+            await KillRobot(rob);
     }
 
     public static void FindSpecies()
     {
-        var robcol = new int[11];
+        var robcol = new Color[11];
 
         TotSpecies = 0;
 
@@ -318,27 +279,23 @@ internal static class F1Mode
             PopArray[t].population = 0;
         }
 
-        for (var t = 0; t < MaxRobs; t++)
+        foreach (var rob in rob.Where(r => r.exist && !r.Veg && !r.Corpse).ToArray())
         {
-            if (!rob[t].Veg && !rob[t].Corpse && rob[t].exist)
+            for (var SpeciePointer = 1; SpeciePointer < 20; SpeciePointer++)
             {
-                //counts species of robots at beginning of simulation
-                for (var SpeciePointer = 1; SpeciePointer < 20; SpeciePointer++)
+                var realname = Path.GetFileNameWithoutExtension(rob.FName);
+                if (realname == PopArray[SpeciePointer].SpName)
                 {
-                    var realname = Path.GetFileNameWithoutExtension(rob[t].FName);
-                    if (realname == PopArray[SpeciePointer].SpName)
-                    {
-                        PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
-                        break;
-                    }
-                    if (PopArray[SpeciePointer].SpName == "")
-                    {
-                        TotSpecies++;
-                        PopArray[SpeciePointer].SpName = realname;
-                        PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
-                        robcol[SpeciePointer] = rob[t].color;
-                        break;
-                    }
+                    PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
+                    break;
+                }
+                if (PopArray[SpeciePointer].SpName == "")
+                {
+                    TotSpecies++;
+                    PopArray[SpeciePointer].SpName = realname;
+                    PopArray[SpeciePointer].population = PopArray[SpeciePointer].population + 1;
+                    robcol[SpeciePointer] = rob.color;
+                    break;
                 }
             }
         }
