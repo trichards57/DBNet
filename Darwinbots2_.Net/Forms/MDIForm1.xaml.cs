@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using static Common;
 using static Database;
-using static DNAExecution;
 using static DNATokenizing;
 using static Evo;
 using static F1Mode;
@@ -24,13 +23,11 @@ using static Microsoft.VisualBasic.Strings;
 using static Microsoft.VisualBasic.VBMath;
 using static Multibots;
 using static ObstaclesManager;
-using static Physics;
 using static Robots;
 using static SimOpt;
 using static stuffcolors;
 using static System.Math;
 using static Teleport;
-using static varspecie;
 using static VBConstants;
 using static VBExtension;
 using static Vegs;
@@ -342,19 +339,19 @@ namespace DBNet.Forms
             {
                 //if no more bin files generate some more and attempt to grab file again
 
-                //new data is memory intensive so while it is running redim rndylist to 0
-                List<> rndylist_1869_tmp = new List<>();
-                for (int redim_iter_1802 = 0; i < 0; redim_iter_1802++) { rndylist.Add(null); }
+                //new data is memory intensive so while it is running redim ThreadSafeRandom.Local.NextDoublelist to 0
+                List<> ThreadSafeRandom.Local.NextDoublelist_1869_tmp = new List<>();
+                for (int redim_iter_1802 = 0; i < 0; redim_iter_1802++) { ThreadSafeRandom.Local.NextDoublelist.Add(null); }
                 newdata();
-                List<> rndylist_2001_tmp = new List<>();
-                for (int redim_iter_2027 = 0; i < 3999; redim_iter_2027++) { rndylist.Add(null); }
+                List<> ThreadSafeRandom.Local.NextDoublelist_2001_tmp = new List<>();
+                for (int redim_iter_2027 = 0; i < 3999; redim_iter_2027++) { ThreadSafeRandom.Local.NextDoublelist.Add(null); }
 
                 grabfile(); //try again
             }
             else
             {
                 filemem = fl;
-                //compute file to rndylist
+                //compute file to ThreadSafeRandom.Local.NextDoublelist
                 int l = 0;
 
                 byte bt = 0;
@@ -366,8 +363,8 @@ namespace DBNet.Forms
                 for (l = 0; l < 3999; l++)
                 {
                     Get(477); //we have 1 byte
-                    rndylist(l) = Rnd(-Abs(angle(0, 0, h - 0.5m, Rnd(-bt - 1) - 0.5m))); //seed optimize
-                    h = rndylist(l);
+                    ThreadSafeRandom.Local.NextDoublelist(l) = Rnd(-Abs(angle(0, 0, h - 0.5m, Rnd(-bt - 1) - 0.5m))); //seed optimize
+                    h = ThreadSafeRandom.Local.NextDoublelist(l);
                 }
                 VBCloseFile(477); ();
             }

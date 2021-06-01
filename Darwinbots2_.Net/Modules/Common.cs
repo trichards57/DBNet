@@ -36,6 +36,12 @@ internal static class Common
         return Math.Clamp(GaussianDistribution() * stdDev + mean, -32000, 32000);
     }
 
+    [Obsolete("Use rand.NextDouble instead")]
+    public static double ThreadSafeRandom.Local.NextDouble()
+    {
+        return ThreadSafeRandom.Local.NextDouble();
+    }
+
     public static int NextLowestMultOfTwo(int value)
     {
         var a = 1;
@@ -63,12 +69,6 @@ internal static class Common
         var appPath = Assembly.GetEntryAssembly().Location;
 
         Process.Start(Path.GetDirectoryName(appPath) + "\\Restarter.exe", appPath);
-    }
-
-    [Obsolete("Use rand.NextDouble instead")]
-    public static double rndy()
-    {
-        return ThreadSafeRandom.Local.NextDouble();
     }
 
     [Obsolete("Use + operator instead")]

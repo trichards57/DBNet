@@ -246,7 +246,7 @@ internal static class Master
                 }
                 //change hide pred
                 hidepred = !hidepred;
-                hidePredOffset = (int)(hidePredCycl / 3 * rndy());
+                hidePredOffset = (int)(hidePredCycl / 3 * ThreadSafeRandom.Local.NextDouble());
                 ModeChangeCycles = 0;
             }
         }

@@ -463,7 +463,7 @@ internal static class ShotsManager
 
         rob.SubSpecies = NewSubSpecies(rob); // Infection with a virus counts as a new subspecies
         var vlen = 0;//length of the DNA code of the virus
-        logmutation(rob, $"Infected with virus of length {vlen} during cycle {SimOpts.TotRunCycle} at pos {Insert}");
+        LogMutation(rob, $"Infected with virus of length {vlen} during cycle {SimOpts.TotRunCycle} at pos {Insert}");
         rob.Mutations++;
         rob.LastMut++;
     }

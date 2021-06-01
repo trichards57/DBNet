@@ -530,7 +530,7 @@ internal static class Robots
                 }
                 nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC);
                 nuovo.Mutables.CopyErrorWhatToChange = Math.Clamp(nuovo.Mutables.CopyErrorWhatToChange, 0, 100);
-                mutate(nuovo, true);
+                Mutate(nuovo, true);
             }
         }
         else
@@ -548,12 +548,12 @@ internal static class Robots
                         nuovo.Mutables.mutarray[t] = 1000;
                 }
 
-                mutate(nuovo, true);
+                Mutate(nuovo, true);
 
                 nuovo.Mutables = temp;
             }
             else
-                mutate(nuovo, true);
+                Mutate(nuovo, true);
         }
 
         MakeOccurrList(nuovo);
@@ -801,7 +801,7 @@ internal static class Robots
         for (var i = 0; i < 14; i++)
             female.epimem[i] = 0;
 
-        logmutation(nuovo, $"Female DNA len {female.dna.Count} and male DNA len {female.spermDNA.Count} had offspring DNA len {nuovo.dna.Count} during cycle {SimOpts.TotRunCycle}");
+        LogMutation(nuovo, $"Female DNA len {female.dna.Count} and male DNA len {female.spermDNA.Count} had offspring DNA len {nuovo.dna.Count} during cycle {SimOpts.TotRunCycle}");
 
         if (Delta2)
         {
@@ -876,11 +876,11 @@ internal static class Robots
             if (nuovo.Mutables.CopyErrorWhatToChange > 100)
                 nuovo.Mutables.CopyErrorWhatToChange = 100;
 
-            mutate(nuovo, true);
+            Mutate(nuovo, true);
         }
         else
         {
-            mutate(nuovo, true);
+            Mutate(nuovo, true);
         }
 
         MakeOccurrList(nuovo);
@@ -1179,7 +1179,7 @@ internal static class Robots
 
             if (!rob.Corpse && !rob.DisableDNA && rob.exist && !(rob.FName == "Base.txt" & hidepred))
             {
-                mutate(rob);
+                Mutate(rob);
                 MakeStuff(rob);
                 HandleWaste(rob);
                 Shooting(rob);
@@ -1351,7 +1351,7 @@ internal static class Robots
 
         if (rob.mem[DelgeneSys] > 0)
         {
-            delgene(rob, rob.mem[DelgeneSys]);
+            DeleteGene(rob, rob.mem[DelgeneSys]);
             rob.mem[DelgeneSys] = 0;
         }
 
