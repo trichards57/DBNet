@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Iersera.Model;
+using System.Collections.Generic;
 
 namespace Iersera.DataModel
 {
@@ -9,9 +10,9 @@ namespace Iersera.DataModel
         public int BadWastelevel { get; internal set; }
         public bool BlockedVegs { get; internal set; }
         public int ChartingInterval { get; internal set; }
-        public decimal CoefficientElasticity { get; internal set; }
-        public decimal CoefficientKinetic { get; internal set; }
-        public decimal CoefficientStatic { get; internal set; }
+        public double CoefficientElasticity { get; internal set; }
+        public double CoefficientKinetic { get; internal set; }
+        public double CoefficientStatic { get; internal set; }
         public bool CorpseEnabled { get; internal set; }
         public double CostExecCond { get; internal set; }
         public int CostRadioSetting { get; internal set; }
@@ -21,10 +22,10 @@ namespace Iersera.DataModel
         public int DayNightCycleCounter { get; internal set; }
         public bool Daytime { get; internal set; }
         public bool DeadRobotSnp { get; internal set; }
-        public decimal Decay { get; internal set; }
+        public double Decay { get; internal set; }
         public int DecayDelay { get; internal set; }
         public int DecayType { get; internal set; }
-        public decimal Density { get; internal set; }
+        public double Density { get; internal set; }
         public bool DisableFixing { get; internal set; }
         public bool DisableMutations { get; internal set; }
         public bool DisableTies { get; internal set; }
@@ -33,15 +34,15 @@ namespace Iersera.DataModel
         public bool EGridEnabled { get; internal set; }
         public int EGridWidth { get; internal set; }
         public bool EnableAutoSpeciation { get; internal set; }
-        public decimal EnergyDif { get; internal set; }
-        public decimal EnergyDif2 { get; internal set; }
-        public decimal EnergyDifX { get; internal set; }
-        public decimal EnergyDifX2 { get; internal set; }
-        public decimal EnergyDifXP { get; internal set; }
-        public decimal EnergyDifXP2 { get; internal set; }
+        public double EnergyDif { get; internal set; }
+        public double EnergyDif2 { get; internal set; }
+        public double EnergyDifX { get; internal set; }
+        public double EnergyDifX2 { get; internal set; }
+        public double EnergyDifXP { get; internal set; }
+        public double EnergyDifXP2 { get; internal set; }
         public bool EnergyExType { get; internal set; }
         public int EnergyFix { get; internal set; }
-        public decimal EnergyProp { get; internal set; }
+        public double EnergyProp { get; internal set; }
         public bool F1 { get; internal set; }
         public int FieldHeight { get; internal set; }
         public int FieldSize { get; internal set; }
@@ -62,31 +63,31 @@ namespace Iersera.DataModel
         public double MaxVelocity { get; internal set; }
         public int MinVegs { get; internal set; }
         public int ModeChangeCycles { get; internal set; }
-        public decimal MutCurrMult { get; internal set; }
+        public double MutCurrMult { get; internal set; }
         public int MutCycMax { get; internal set; }
         public int MutCycMin { get; internal set; }
         public bool MutOscill { get; internal set; }
         public bool MutOscillSine { get; internal set; }
         public bool NoShotDecay { get; internal set; }
         public bool NoWShotDecay { get; internal set; }
-        public IEnumerable<SavedObstacle> Obstacles { get; internal set; }
+        public IEnumerable<Obstacle> Obstacles { get; internal set; }
         public double OldCostX { get; internal set; }
-        public decimal PhysBrown { get; internal set; }
-        public decimal PhysMoving { get; internal set; }
-        public decimal PhysSwim { get; internal set; }
+        public double PhysBrown { get; internal set; }
+        public double PhysMoving { get; internal set; }
+        public double PhysSwim { get; internal set; }
         public bool PlanetEaters { get; internal set; }
-        public decimal PlanetEatersG { get; internal set; }
+        public double PlanetEatersG { get; internal set; }
         public bool Pondmode { get; internal set; }
         public int PopLimMethod { get; internal set; }
         public int RepopAmount { get; internal set; }
         public int RepopCooldown { get; internal set; }
         public bool Restart { get; internal set; }
-        public IEnumerable<SavedRobot> Robots { get; internal set; }
+        public IEnumerable<robot> Robots { get; set; }
         public int ShapeDriftRate { get; internal set; }
         public bool ShapesAbsorbShots { get; internal set; }
         public bool ShapesAreSeeThrough { get; internal set; }
         public bool ShapesAreVisable { get; internal set; }
-        public IEnumerable<SavedShot> Shots { get; internal set; }
+        public IEnumerable<Shot> Shots { get; set; }
         public int SimGUID { get; internal set; }
         public string SimName { get; internal set; }
         public bool SnpExcludeVegs { get; internal set; }
@@ -94,8 +95,7 @@ namespace Iersera.DataModel
         public int SpeciationGenerationalDistance { get; internal set; }
         public int SpeciationGeneticDistance { get; internal set; }
         public int SpeciationMinimumPopulation { get; internal set; }
-        public IEnumerable<SavedSpecies> Species { get; internal set; }
-        public int SpeciesNum { get; internal set; }
+        public IEnumerable<Species> Species { get; internal set; }
         public bool Stagnent { get; internal set; }
         public string StrGraphQuery1 { get; internal set; }
         public string StrGraphQuery2 { get; internal set; }
@@ -106,11 +106,11 @@ namespace Iersera.DataModel
         public int SunDownThreshold { get; internal set; }
         public bool SunOnRnd { get; internal set; }
         public double SunPosition { get; internal set; }
-        public decimal SunRange { get; internal set; }
+        public double SunRange { get; internal set; }
         public int SunThresholdMode { get; internal set; }
         public bool SunUp { get; internal set; }
         public int SunUpThreshold { get; internal set; }
-        public IEnumerable<SavedTeleporter> Teleporters { get; internal set; }
+        public IEnumerable<Teleporter> Teleporters { get; internal set; }
         public int Tides { get; internal set; }
         public int TidesOf { get; internal set; }
         public bool Toroidal { get; internal set; }
@@ -119,10 +119,10 @@ namespace Iersera.DataModel
         public int TotRunTime { get; internal set; }
         public bool UpDnConnected { get; internal set; }
         public int UserSeedNumber { get; internal set; }
-        public decimal VegFeedingToBody { get; internal set; }
-        public decimal Viscosity { get; internal set; }
-        public decimal Ygravity { get; internal set; }
+        public double VegFeedingToBody { get; internal set; }
+        public double Viscosity { get; internal set; }
+        public double Ygravity { get; internal set; }
         public bool ZeroMomentum { get; internal set; }
-        public decimal Zgravity { get; internal set; }
+        public double Zgravity { get; internal set; }
     }
 }

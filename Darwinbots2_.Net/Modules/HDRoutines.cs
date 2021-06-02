@@ -2,6 +2,7 @@ using DBNet.Forms;
 using Iersera.DataModel;
 using Iersera.Model;
 using Iersera.Support;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,21 +10,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using static BucketManager;
-using static DNAManipulations;
 using static DNATokenizing;
 using static Globals;
 using static IntOpts;
 using static Master;
-using static Microsoft.VisualBasic.FileSystem;
-using static Microsoft.VisualBasic.VBMath;
-using static Multibots;
 using static Physics;
 using static Robots;
 using static ShotsManager;
 using static SimOpt;
 using static Teleport;
-using static VBExtension;
 using static Vegs;
 
 internal static class HDRoutines
@@ -31,15 +26,13 @@ internal static class HDRoutines
     /// <summary>
     /// Adds a record to the species array when a bot with a new species is loaded or teleported in.
     /// </summary>
-    public static void AddSpecie(robot rob, bool IsNative)
+    public static async Task AddSpecie(robot rob, bool IsNative)
     {
         if (rob.Corpse || rob.FName == "Corpse" || rob.exist == false)
             return;
 
-        var k = SimOpts.SpeciesNum;
-
-        if (k < MAXNATIVESPECIES)
-            SimOpts.SpeciesNum++;
+        if (SimOpts.Specie.Count >= MAXNATIVESPECIES)
+            return;
 
         var d = new Species
         {
@@ -64,7 +57,7 @@ internal static class HDRoutines
             path = "robots",
         };
 
-        NeoMutations.SetDefaultMutationRates(d.Mutables);
+        await NeoMutations.SetDefaultMutationRates(d.Mutables);
         d.Mutables.Mutations = rob.Mutables.Mutations;
 
         SimOpts.Specie.Add(d);
@@ -244,7 +237,7 @@ internal static class HDRoutines
         if (autosaved && x_restartmode == 7)
         {
             x_restartmode = 8; //Botsareus 4/14/2014 same deal for zb evo
-            intFindBestV2 = 20 + (int)Rnd(-(x_filenumber + 1)) * 40; //Botsareus 10/26/2015 Value more interesting
+            intFindBestV2 = 20 + (int)ThreadSafeRandom.Local.Next(0, 40); //Botsareus 10/26/2015 Value more interesting
         }
 
         //Botsareus 3/19/2014 Load data for evo mode
@@ -265,11 +258,7 @@ internal static class HDRoutines
             }
         }
         else
-        {
             y_eco_im = 0;
-        }
-
-        //Botsareus 3/22/2014 Initial hidepred offset is normal
 
         hidePredOffset = hidePredCycl / 6;
     }
@@ -293,47 +282,48 @@ internal static class HDRoutines
     /// </summary>
     public static int LoadOrganism(string path, double X, double Y)
     {
-        var LoadOrganism = 0;
-        var clist = new int[51];
+        throw new NotImplementedException();
+        //var LoadOrganism = 0;
+        //var clist = new int[51];
 
-        var OList = new int[51];
+        //var OList = new int[51];
 
-        var cnum = 0;
+        //var cnum = 0;
 
-        var foundSpecies = false;
+        //var foundSpecies = false;
 
-        VBCloseFile(402);
-        VBOpenFile(402, path);
-        FileGet(402, cnum);
-        for (var k = 0; k < cnum - 1; k++)
-        {
-            var nuovo = GetNewBot();
-            clist[k] = nuovo;
-            LoadRobot(402, nuovo);
-            LoadOrganism = nuovo;
-            var i = SimOpts.SpeciesNum;
-            foundSpecies = false;
-            while (i > 0)
-            {
-                i--;
-                if (rob[nuovo].FName == SimOpts.Specie[i].Name)
-                {
-                    foundSpecies = true;
-                    i = 0;
-                }
-            }
+        //VBCloseFile(402);
+        //VBOpenFile(402, path);
+        //FileGet(402, cnum);
+        //for (var k = 0; k < cnum - 1; k++)
+        //{
+        //    var nuovo = GetNewBot();
+        //    clist[k] = nuovo;
+        //    LoadRobot(402, nuovo);
+        //    LoadOrganism = nuovo;
+        //    var i = SimOpts.SpeciesNum;
+        //    foundSpecies = false;
+        //    while (i > 0)
+        //    {
+        //        i--;
+        //        if (rob[nuovo].FName == SimOpts.Specie[i].Name)
+        //        {
+        //            foundSpecies = true;
+        //            i = 0;
+        //        }
+        //    }
 
-            if (!foundSpecies)
-                AddSpecie(rob[nuovo], false);
-        }
-        VBCloseFile(402);
+        //    if (!foundSpecies)
+        //        AddSpecie(rob[nuovo], false);
+        //}
+        //VBCloseFile(402);
 
-        if (X > -1 && Y > -1)
-            PlaceOrganism(clist, X, Y);
+        //if (X > -1 && Y > -1)
+        //    PlaceOrganism(clist, X, Y);
 
-        RemapTies(clist, OList, cnum);
+        //RemapTies(clist, OList, cnum);
 
-        return LoadOrganism;
+        //return LoadOrganism;
     }
 
     public static async Task LoadSimulation(string path)
@@ -345,11 +335,17 @@ internal static class HDRoutines
 
         MaxRobs = savedFile.Robots.Count();
 
-        LoadRobots(savedFile.Robots);
-
-        // As of 2.42.8, the sim file is packed.  Every bot stored is guarenteed to exist, yet their bot numbers, when loaded, may be
-        // different from the sim they came from.  Thus, we remap all the ties from all the loaded bots.
-        RemapAllTies(MaxRobs);
+        rob.Clear();
+        rob.AddRange(savedFile.Robots);
+        SimOpt.Species.Clear();
+        SimOpt.Species.AddRange(savedFile.Species);
+        Teleporters.Clear();
+        Teleporters.AddRange(savedFile.Teleporters);
+        ObstaclesManager.Obstacles.Clear();
+        ObstaclesManager.Obstacles.AddRange(savedFile.Obstacles);
+        Shots.Clear();
+        Shots.AddRange(savedFile.Shots);
+        LoadGraphs(savedFile.Graphs);
 
         SimOpts.BlockedVegs = savedFile.BlockedVegs;
         SimOpts.Costs = savedFile.Costs;
@@ -378,7 +374,6 @@ internal static class HDRoutines
         SimOpts.PhysSwim = savedFile.PhysSwim;
         SimOpts.PopLimMethod = savedFile.PopLimMethod;
         SimOpts.SimName = savedFile.SimName;
-        SimOpts.SpeciesNum = savedFile.SpeciesNum;
         SimOpts.Toroidal = savedFile.Toroidal;
         SimOpts.TotBorn = savedFile.TotBorn;
         SimOpts.TotRunCycle = savedFile.TotRunCycle;
@@ -400,8 +395,6 @@ internal static class HDRoutines
         SimOpts.RepopCooldown = savedFile.RepopCooldown;
         SimOpts.ZeroMomentum = savedFile.ZeroMomentum;
         SimOpts.UserSeedNumber = savedFile.UserSeedNumber;
-        SimOpts.SpeciesNum = savedFile.SpeciesNum;
-        LoadSpecies(savedFile.Species);
         SimOpts.VegFeedingToBody = savedFile.VegFeedingToBody;
         SimOpts.CoefficientStatic = savedFile.CoefficientStatic;
         SimOpts.CoefficientKinetic = savedFile.CoefficientKinetic;
@@ -425,8 +418,6 @@ internal static class HDRoutines
         SimOpts.DayNightCycleCounter = savedFile.DayNightCycleCounter;
         SimOpts.Daytime = savedFile.Daytime;
         SimOpts.SunThresholdMode = savedFile.SunThresholdMode;
-        LoadTeleporters(savedFile.Teleporters.Where(t => !t.Internet));
-        LoadObstacles(savedFile.Obstacles);
         SimOpts.ShapesAreVisable = savedFile.ShapesAreVisable;
         SimOpts.AllowVerticalShapeDrift = savedFile.AllowVerticalShapeDrift;
         SimOpts.AllowHorizontalShapeDrift = savedFile.AllowHorizontalShapeDrift;
@@ -435,8 +426,6 @@ internal static class HDRoutines
         SimOpts.ShapeDriftRate = savedFile.ShapeDriftRate;
         SimOpts.MakeAllShapesTransparent = savedFile.MakeAllShapesTransparent;
         SimOpts.MakeAllShapesBlack = savedFile.MakeAllShapesBlack;
-        LoadShots(savedFile.Shots);
-        RemapAllShots(maxshotarray);
         SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
         SimOpts.EGridWidth = savedFile.EGridWidth;
         SimOpts.EGridEnabled = savedFile.EGridEnabled;
@@ -453,9 +442,7 @@ internal static class HDRoutines
         strGraphQuery2 = savedFile.StrGraphQuery2;
         strGraphQuery3 = savedFile.StrGraphQuery3;
         strSimStart = savedFile.StrSimStart;
-        LoadGraphs(savedFile.Graphs);
         SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
-
         energydif = savedFile.EnergyDif;
         energydifX = savedFile.EnergyDifX;
         energydifXP = savedFile.EnergyDifXP;
@@ -465,24 +452,18 @@ internal static class HDRoutines
         energydif2 = savedFile.EnergyDif2;
         energydifX2 = savedFile.EnergyDifX2;
         energydifXP2 = savedFile.EnergyDifXP2;
-
         SimOpts.SunOnRnd = savedFile.SunOnRnd;
         SimOpts.DisableFixing = savedFile.DisableFixing;
-
         SunPosition = savedFile.SunPosition;
         SunRange = savedFile.SunRange;
         SunChange = savedFile.SunChange;
-
         SimOpts.Tides = savedFile.Tides;
         SimOpts.TidesOf = savedFile.TidesOf;
-
         SimOpts.MutOscillSine = savedFile.MutOscillSine;
-
         stagnent = savedFile.Stagnent;
 
         Form1.instance.lblSaving.Visibility = Visibility.Hidden; //Botsareus 1/14/2014
 
-        //EricL 3/28/2006 This line insures that all the simulation dialog options get set to match the loaded sim
         TmpOpts = SimOpts;
     }
 
@@ -553,68 +534,68 @@ internal static class HDRoutines
     /// <summary>
     /// Places an organism (made of robots listed in clist()) in the specified x,y position.
     /// </summary>
-    public static void PlaceOrganism(int[] clist, double x, double y)
+    public static void PlaceOrganism(List<robot> clist, double x, double y)
     {
-        var k = 0;
-        var dx = x - rob[clist[0]].pos.X;
-        var dy = y - rob[clist[0]].pos.Y;
+        throw new NotImplementedException();
+        //var dx = x - clist[0].pos.X;
+        //var dy = y - clist[0].pos.Y;
 
-        while (clist[k] > 0)
-        {
-            rob[clist[k]].pos.X = rob[clist[k]].pos.X + dx;
-            rob[clist[k]].pos.Y = rob[clist[k]].pos.Y + dy;
-            rob[clist[k]].BucketPos.X = -2;
-            rob[clist[k]].BucketPos.Y = -2;
-            UpdateBotBucket(clist[k]);
-            k++;
-        }
+        //for (var k = 1; k < clist.Count; k++)
+        //{
+        //    clist[k].pos.X = clist[k].pos.X + dx;
+        //    clist[k].pos.Y = clist[k].pos.Y + dy;
+        //    clist[k].BucketPos.X = -2;
+        //    clist[k].BucketPos.Y = -2;
+        //    UpdateBotBucket(clist[k]);
+        //    k++;
+        //}
     }
 
     public static void RemapAllShots(int numOfShots)
     {
-        for (var i = 1; i < numOfShots; i++)
-        {
-            if (ShotsManager.Shots[i].exist)
-            {
-                for (var j = 1; j < MaxRobs; j++)
-                {
-                    if (rob[j].exist)
-                    {
-                        if (ShotsManager.Shots[i].parent == rob[j].oldBotNum)
-                        {
-                            ShotsManager.Shots[i].parent = j;
-                            if (ShotsManager.Shots[i].stored)
-                            {
-                                rob[j].virusshot = i;
-                            }
-                            break;
-                        }
-                    }
-                }
-                ShotsManager.Shots[i].stored = false; // Could not find parent.  Should probalby never happen but if it does, release the shot
-            }
-        }
+        throw new NotImplementedException();
+        //foreach (var shot in Shots.Where(s => s.exist))
+        //{
+        //    for (var j = 1; j < MaxRobs; j++)
+        //    {
+        //        if (rob[j].exist)
+        //        {
+        //            if (ShotsManager.Shots[i].parent == rob[j].oldBotNum)
+        //            {
+        //                ShotsManager.Shots[i].parent = j;
+        //                if (ShotsManager.Shots[i].stored)
+        //                {
+        //                    rob[j].virusshot = i;
+        //                }
+        //                break;
+        //            }
+        //        }
+        //    }
+        //    ShotsManager.Shots[i].stored = false; // Could not find parent.  Should probalby never happen but if it does, release the shot
+        //}
     }
 
     public static void RemapAllTies(int numOfBots)
     {
-        for (var i = 1; i < numOfBots; i++)
-        {
-            var j = 1;
-            while (rob[i].Ties[j].OtherBot > 0)
-            { // Loop through each tie
-                for (var k = 1; k < numOfBots; k++)
-                {
-                    if (rob[i].Ties[j].OtherBot == rob[k].oldBotNum)
-                    {
-                        rob[i].Ties[j].OtherBot = k;
-                        break;
-                    }
-                }
+        throw new NotImplementedException();
 
-                j++;
-            }
-        }
+        //for (var i = 1; i < numOfBots; i++)
+        //{
+        //    var j = 1;
+        //    while (rob[i].Ties[j].OtherBot > 0)
+        //    { // Loop through each tie
+        //        for (var k = 1; k < numOfBots; k++)
+        //        {
+        //            if (rob[i].Ties[j].OtherBot == rob[k].oldBotNum)
+        //            {
+        //                rob[i].Ties[j].OtherBot = k;
+        //                break;
+        //            }
+        //        }
+
+        //        j++;
+        //    }
+        //}
     }
 
     /// <summary>
@@ -622,40 +603,42 @@ internal static class HDRoutines
     /// </summary>
     public static void RemapTies(int[] clist, int[] olist, int cnum)
     {
-        for (var t = 0; t < cnum - 1; t++)
-        { // Loop through each cell
-            var ind = rob[clist[t]].oldBotNum;
-            for (var k = 0; k < cnum - 1; k++)
-            { // Loop through each cell
-                var j = 1;
-                while (rob[clist[k]].Ties[j].OtherBot > 0)
-                { // Loop through each tie
-                    if (rob[clist[k]].Ties[j].OtherBot == ind)
-                        rob[clist[k]].Ties[j].OtherBot = clist[t];
+        throw new NotImplementedException();
 
-                    j++;
-                }
-            }
-        }
+        //for (var t = 0; t < cnum - 1; t++)
+        //{ // Loop through each cell
+        //    var ind = rob[clist[t]].oldBotNum;
+        //    for (var k = 0; k < cnum - 1; k++)
+        //    { // Loop through each cell
+        //        var j = 1;
+        //        while (rob[clist[k]].Ties[j].OtherBot > 0)
+        //        { // Loop through each tie
+        //            if (rob[clist[k]].Ties[j].OtherBot == ind)
+        //                rob[clist[k]].Ties[j].OtherBot = clist[t];
 
-        for (var k = 0; k < cnum - 1; k++)
-        { // All cells
-            var j = 1;
-            while (rob[clist[k]].Ties[j].OtherBot > 0)
-            { //All Ties
-                var TiePointsToNode = false;
-                for (var t = 0; t < cnum - 1; t++)
-                {
-                    if (rob[clist[k]].Ties[j].OtherBot == clist[t])
-                        TiePointsToNode = true;
-                }
+        //            j++;
+        //        }
+        //    }
+        //}
 
-                if (!TiePointsToNode)
-                    rob[clist[k]].Ties[j].OtherBot = 0;
+        //for (var k = 0; k < cnum - 1; k++)
+        //{ // All cells
+        //    var j = 1;
+        //    while (rob[clist[k]].Ties[j].OtherBot > 0)
+        //    { //All Ties
+        //        var TiePointsToNode = false;
+        //        for (var t = 0; t < cnum - 1; t++)
+        //        {
+        //            if (rob[clist[k]].Ties[j].OtherBot == clist[t])
+        //                TiePointsToNode = true;
+        //        }
 
-                j++;
-            }
-        }
+        //        if (!TiePointsToNode)
+        //            rob[clist[k]].Ties[j].OtherBot = 0;
+
+        //        j++;
+        //    }
+        //}
     }
 
     /// <summary>
@@ -665,9 +648,7 @@ internal static class HDRoutines
     {
         var hold = new StringBuilder();
 
-        string hashed = "";
-
-        hold.AppendLine(SaveRobHeader(n));
+        hold.AppendLine(SaveRobHeader(rob));
 
         //Botsareus 10/8/2015 New code to save epigenetic memory as gene
 
@@ -677,14 +658,14 @@ internal static class HDRoutines
 
             for (var a = 971; a <= 990; a++)
             {
-                if (rob[n].mem[a] != 0)
+                if (rob.mem[a] != 0)
                 {
                     if (!started)
                         hold.AppendLine("start");
 
                     started = true;
 
-                    hold.AppendLine($"{rob[n].mem[a]} {a} store");
+                    hold.AppendLine($"{rob.mem[a]} {a} store");
                 }
             }
 
@@ -692,26 +673,24 @@ internal static class HDRoutines
                 hold.AppendLine("stop");
         }
 
-        savingtofile = true; //Botsareus 2/28/2014 when saving to file the def sysvars should not save
-        hold.AppendLine(DetokenizeDNA(n, 0));
-        savingtofile = false;
+        hold.AppendLine(DetokenizeDNA(rob, 0));
 
-        hashed = Hash(hold.ToString());
+        var hashed = Hash(hold.ToString());
 
         hold.AppendLine();
         hold.AppendLine($"'#hash: {hashed}");
 
-        if (!string.IsNullOrWhiteSpace(rob[n].tag))
-            hold.AppendLine($"'#tag: {rob[n].tag.Substring(0, 45)}");
+        if (!string.IsNullOrWhiteSpace(rob.tag))
+            hold.AppendLine($"'#tag: {rob.tag.Substring(0, 45)}");
 
         //Botsareus 12/11/2013 Save mrates file
-        await Save_mrates(rob[n].Mutables, System.IO.Path.Join(System.IO.Path.GetDirectoryName(path), System.IO.Path.GetFileNameWithoutExtension(path) + ".mrate"));
+        await Save_mrates(rob.Mutables, Path.Join(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".mrate"));
 
         if (x_restartmode > 0)
             return;
 
-        if (MessageBox.Show($"Do you want to change robot's name to {System.IO.Path.GetFileNameWithoutExtension(path)} ?", "Robot DNA saved", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
-            rob[n].FName = System.IO.Path.GetFileNameWithoutExtension(path);
+        if (MessageBox.Show($"Do you want to change robot's name to {Path.GetFileNameWithoutExtension(path)} ?", "Robot DNA saved", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            rob.FName = Path.GetFileNameWithoutExtension(path);
     }
 
     public static async Task Save_mrates(MutationProbabilities mut, string FName)
@@ -733,27 +712,28 @@ internal static class HDRoutines
     /// </summary>
     public static void SaveOrganism(string path, robot rob)
     {
-        var clist = new int[51];
+        throw new NotImplementedException();
+        //var clist = new int[51];
 
-        var k = 0;
-        var cnum = 0;
+        //var k = 0;
+        //var cnum = 0;
 
-        clist[0] = r;
-        ListCells(clist);
+        //clist[0] = r;
+        //ListCells(clist);
 
-        while (clist[cnum] > 0)
-            cnum++;
+        //while (clist[cnum] > 0)
+        //    cnum++;
 
-        VBCloseFile(401);
-        VBOpenFile(401, path); ;
-        FilePut(401, cnum);
-        for (k = 0; k < cnum - 1; k++)
-        {
-            rob[clist[k]].LastOwner = IntOpts.IName;
-            SaveRobotBody(401, clist[k]);
-        }
-        VBCloseFile(401);
-        return;
+        //VBCloseFile(401);
+        //VBOpenFile(401, path); ;
+        //FilePut(401, cnum);
+        //for (k = 0; k < cnum - 1; k++)
+        //{
+        //    rob[clist[k]].LastOwner = IntOpts.IName;
+        //    SaveRobotBody(401, clist[k]);
+        //}
+        //VBCloseFile(401);
+        //return;
     }
 
     /// <summary>
@@ -848,7 +828,7 @@ internal static class HDRoutines
             MutOscillSine = SimOpts.MutOscillSine,
             NoShotDecay = SimOpts.NoShotDecay,
             NoWShotDecay = SimOpts.NoWShotDecay,
-            Obstacles = ObstaclesManager.Obstacles.Select(SaveObstacles),
+            Obstacles = ObstaclesManager.Obstacles,
             OldCostX = SimOpts.OldCostX,
             PhysBrown = SimOpts.PhysBrown,
             PhysMoving = SimOpts.PhysMoving,
@@ -860,12 +840,12 @@ internal static class HDRoutines
             RepopAmount = SimOpts.RepopAmount,
             RepopCooldown = SimOpts.RepopCooldown,
             Restart = SimOpts.Restart,
-            Robots = rob.Where(r => r.exist).Select(SaveRobots),
+            Robots = rob.Where(r => r.exist),
             ShapeDriftRate = SimOpts.ShapeDriftRate,
             ShapesAbsorbShots = SimOpts.ShapesAbsorbShots,
             ShapesAreSeeThrough = SimOpts.ShapesAreSeeThrough,
             ShapesAreVisable = SimOpts.ShapesAreVisable,
-            Shots = ShotsManager.Shots.Select(SaveShots),
+            Shots = Shots,
             SimGUID = SimOpts.SimGUID,
             SimName = SimOpts.SimName,
             SnpExcludeVegs = SimOpts.SnpExcludeVegs,
@@ -873,8 +853,7 @@ internal static class HDRoutines
             SpeciationGenerationalDistance = SimOpts.SpeciationGenerationalDistance,
             SpeciationGeneticDistance = SimOpts.SpeciationGeneticDistance,
             SpeciationMinimumPopulation = SimOpts.SpeciationMinimumPopulation,
-            Species = SimOpts.Specie.Select(SaveSpecies),
-            SpeciesNum = SimOpts.SpeciesNum,
+            Species = SimOpts.Specie,
             Stagnent = stagnent,
             StrGraphQuery1 = strGraphQuery1,
             StrGraphQuery2 = strGraphQuery2,
@@ -889,7 +868,7 @@ internal static class HDRoutines
             SunThresholdMode = SimOpts.SunThresholdMode,
             SunUp = SimOpts.SunUp,
             SunUpThreshold = SimOpts.SunUpThreshold,
-            Teleporters = Teleporters.Select(SaveTeleporters),
+            Teleporters = Teleporters,
             Tides = SimOpts.Tides,
             TidesOf = SimOpts.TidesOf,
             Toroidal = SimOpts.Toroidal,
@@ -1003,236 +982,6 @@ internal static class HDRoutines
         }
     }
 
-    private static void LoadObstacles(IEnumerable<SavedObstacle> obstacles)
-    {
-        foreach (var o in obstacles)
-        {
-            ObstaclesManager.Obstacles.Add(new Obstacle
-            {
-                exist = o.Exist,
-                pos = o.Position,
-                Width = o.Width,
-                Height = o.Height,
-                color = o.Color,
-                vel = o.Velocity
-            });
-        }
-    }
-
-    private static void LoadRobots(IEnumerable<SavedRobot> robots)
-    {
-        sunbelt = robots.First().SunBelt;
-
-        rob.AddRange(robots.Select(r => new robot
-        {
-            Veg = r.Veg,
-            wall = r.Wall,
-            Fixed = r.Fixed,
-            pos = r.Position,
-            vel = r.Velocity,
-            aim = r.Aim,
-            ma = r.AngularMomentum,
-            mt = r.Torque,
-            Ties = r.Ties.Select(LoadTies).ToArray(),
-            nrg = r.Energy,
-            vars = r.Variables,
-            vnum = r.VariableNumber,
-            mem = r.Memory,
-            dna = r.Dna,
-            Mutables = new MutationProbabilities
-            {
-                mutarray = r.MutationArray,
-                Mutations = r.MutationsProbs,
-                Mean = r.MutationsMeans,
-                StdDev = r.MutationsStdDevs,
-                CopyErrorWhatToChange = r.CopyErrorWhatToChange,
-                PointWhatToChange = r.PointWhatToChange
-            },
-            SonNumber = r.SonNumber,
-            Mutations = r.Mutations,
-            LastMut = r.LastMutation,
-            parent = r.Parent,
-            age = r.Age,
-            BirthCycle = r.BirthCycle,
-            genenum = r.GeneNumber,
-            generation = r.Generation,
-            Skin = r.Skin,
-            body = r.Body,
-            Bouyancy = r.Bouyancy,
-            Corpse = r.Corpse,
-            Pwaste = r.PermanentWaste,
-            Waste = r.Waste,
-            poison = r.Poison,
-            venom = r.Venom,
-            oldBotNum = r.OldBotNumber,
-            exist = r.Exist,
-            Dead = r.Dead,
-            FName = r.SpeciesName,
-            LastOwner = r.LastOwner,
-            LastMutDetail = r.LastMutationDetail,
-            View = r.View,
-            NewMove = r.NewMove,
-            CantSee = r.CantSee,
-            DisableDNA = r.DisableDna,
-            DisableMovementSysvars = r.DisableMovementSysvars,
-            CantReproduce = r.CantReproduce,
-            shell = r.Shell,
-            Slime = r.Slime,
-            VirusImmune = r.VirusImmune,
-            SubSpecies = r.SubSpecies,
-            spermDNA = r.SpermDNA,
-            spermDNAlen = r.SpermDNA.Length,
-            fertilized = r.Fertilized,
-            sim = r.Sim,
-            AbsNum = r.AbsoluteNumber,
-            OldGD = r.OldGeneticDistance,
-            epimem = r.EpigeneticMemory,
-            tag = r.Tag,
-            NoChlr = r.NoChloroplasts,
-            multibot_time = r.MultiBotTime,
-            Chlr_Share_Delay = r.ChloroplastShareDelay,
-            dq = r.Dq,
-            OldMutations = r.OldMutations,
-            actvel = r.ActualVelocity,
-        }));
-
-        for (var n = 0; n < rob.Count; n++)
-        {
-            if (rob[n].exist)
-            {
-                GiveAbsNum(n);
-                InsertSysVars(n);
-                ScanUsedVars(n);
-                makeoccurrlist(n);
-                rob[n].DnaLen = DnaLen(rob[n].dna);
-                rob[n].genenum = CountGenes(rob[n].dna);
-                rob[n].mem[DnaLenSys] = rob[n].DnaLen;
-                rob[n].mem[GenesSys] = rob[n].genenum;
-            }
-        }
-    }
-
-    private static void LoadShots(IEnumerable<SavedShot> savedShots)
-    {
-        foreach (var s in savedShots)
-        {
-            ShotsManager.Shots.Add(new Shot
-            {
-                exist = s.Exists,
-                pos = s.Position,
-                opos = s.OPosition,
-                velocity = s.Velocity,
-                parent = s.Parent,
-                age = s.Age,
-                nrg = s.Energy,
-                Range = s.Range,
-                value = s.Value,
-                color = s.Color,
-                shottype = s.ShotType,
-                fromveg = s.FromVeg,
-                FromSpecie = s.FromSpecies,
-                memloc = s.MemoryLocation,
-                Memval = s.MemoryValue,
-                dna = s.Dna,
-                DnaLen = s.Dna.Length,
-                genenum = s.GeneNumber,
-                stored = s.Stored,
-            });
-        }
-    }
-
-    private static void LoadSpecies(IEnumerable<SavedSpecies> species)
-    {
-        SimOpts.Specie.AddRange(species.Select(s => new Species
-        {
-            Colind = s.Colind,
-            color = s.Color,
-            Fixed = s.Fixed,
-            Mutables = new MutationProbabilities
-            {
-                mutarray = s.MutArray,
-                Mutations = s.Mutations,
-                CopyErrorWhatToChange = s.CopyErrorWhatToChange,
-                PointWhatToChange = s.PointWhatToChange,
-                Mean = s.MutationsMeans,
-                StdDev = s.MutationsStdDevs
-            },
-            Name = s.Name,
-            path = s.Path,
-            Posdn = s.Posdn,
-            Posrg = s.Posrg,
-            Poslf = s.Poslf,
-            Postp = s.Postp,
-            qty = s.Qty,
-            Skin = s.Skin,
-            Stnrg = s.Stnrg,
-            Veg = s.Veg,
-            CantSee = s.CantSee,
-            DisableDNA = s.DisableDNA,
-            DisableMovementSysvars = s.DisableMovementSysvars,
-            VirusImmune = s.VirusImmune,
-            population = s.Population,
-            SubSpeciesCounter = s.SubSpeciesCounter,
-            Native = s.Native
-        }));
-    }
-
-    private static void LoadTeleporters(IEnumerable<SavedTeleporter> teleporters)
-    {
-        foreach (var t in teleporters)
-        {
-            Teleporters.Add(new Teleporter
-            {
-                pos = t.Position,
-                Width = t.Width,
-                Height = t.Height,
-                color = t.Color,
-                vel = t.Velocity,
-                path = t.Path,
-                In = t.In,
-                = t.Out,
-                local = t.Local,
-                driftHorizontal = t.DriftHorizontal,
-                driftVertical = t.DriftVertical,
-                highlight = t.Highlight,
-                teleportVeggies = t.TeleportVeggies,
-                teleportCorpses = t.TeleportCorpses,
-                RespectShapes = t.RespectShapes,
-                teleportHeterotrophs = t.TeleportHeterotrophs,
-                InboundPollCycles = t.InboundPollCycles,
-                BotsPerPoll = t.BotsPerPoll,
-                PollCountDown = t.PollCountDown,
-                Internet = t.Internet
-            });
-        }
-    }
-
-    private static tie LoadTies(SavedTie t)
-    {
-        return new tie
-        {
-            Port = t.Port,
-            pnt = t.TargetBot,
-            ptt = t.BackTie,
-            ang = t.Angle,
-            bend = t.Bend,
-            angreg = t.FixedAngle,
-            ln = t.Length,
-            shrink = t.Shrink,
-            stat = t.Stat,
-            last = t.Last,
-            mem = t.Mem,
-            back = t.Back,
-            nrgused = t.EnergyUsed,
-            infused = t.InfoUsed,
-            sharing = t.Sharing,
-            type = t.Type,
-            b = t.b,
-            k = t.k,
-            NaturalLength = t.NaturalLength
-        };
-    }
-
     private static SavedGraph SaveGraphs(int i)
     {
         return new SavedGraph
@@ -1244,210 +993,4 @@ internal static class HDRoutines
             Save = graphsave[i]
         };
     }
-
-    private static SavedObstacle SaveObstacles(Obstacle o)
-    {
-        return new SavedObstacle
-        {
-            Exist = o.exist,
-            Position = o.pos,
-            Width = o.Width,
-            Height = o.Height,
-            Color = o.color,
-            Velocity = o.vel
-        };
-    }
-
-    private static SavedRobot SaveRobots(robot r, int index)
-    {
-        if (!r.Veg && y_eco_im > 0 && r.dq < 2)
-        {
-            if (string.IsNullOrWhiteSpace(r.tag))
-                r.tag = r.FName;
-            r.tag += (r.nrg.ToString() + r.nrg.ToString()).Substring(0, 5);
-        }
-
-        return new SavedRobot
-        {
-            Veg = r.Veg,
-            Wall = r.wall,
-            Fixed = r.Fixed,
-            Position = r.pos,
-            Velocity = r.vel,
-            Aim = r.aim,
-            AngularMomentum = r.ma,
-            Torque = r.mt,
-            Ties = r.Ties.Select(SaveTies),
-            Energy = r.nrg,
-            Variables = r.vars,
-            VariableNumber = r.vnum,
-            Memory = r.mem,
-            Dna = r.dna,
-            MutationArray = r.Mutables.mutarray,
-            SonNumber = r.SonNumber,
-            Mutations = r.Mutations,
-            LastMutation = r.LastMut,
-            Parent = r.parent,
-            Age = r.age,
-            BirthCycle = r.BirthCycle,
-            GeneNumber = r.genenum,
-            Generation = r.generation,
-            Skin = r.Skin,
-            Body = r.body,
-            Bouyancy = r.Bouyancy,
-            Corpse = r.Corpse,
-            PermanentWaste = r.Pwaste,
-            Waste = r.Waste,
-            Poison = r.poison,
-            Venom = r.venom,
-            OldBotNumber = index,
-            Exist = r.exist,
-            Dead = r.Dead,
-            SpeciesName = r.FName,
-            LastOwner = r.LastOwner,
-            LastMutationDetail = r.LastMutDetail,
-            MutationsProbs = r.Mutables.Mutations,
-            MutationsMeans = r.Mutables.Mean,
-            MutationsStdDevs = r.Mutables.StdDev,
-            CopyErrorWhatToChange = r.Mutables.CopyErrorWhatToChange,
-            PointWhatToChange = r.Mutables.PointWhatToChange,
-            View = r.View,
-            NewMove = r.NewMove,
-            CantSee = r.CantSee,
-            DisableDna = r.DisableDNA,
-            DisableMovementSysvars = r.DisableMovementSysvars,
-            CantReproduce = r.CantReproduce,
-            Shell = r.shell,
-            Slime = r.Slime,
-            VirusImmune = r.VirusImmune,
-            SubSpecies = r.SubSpecies,
-            SpermDNA = r.spermDNA,
-            Fertilized = r.fertilized,
-            Sim = r.sim,
-            AbsoluteNumber = r.AbsNum,
-            OldGeneticDistance = r.OldGD,
-            EpigeneticMemory = r.epimem,
-            Tag = r.tag,
-            SunBelt = sunbelt,
-            NoChloroplasts = r.NoChlr,
-            MultiBotTime = r.multibot_time,
-            ChloroplastShareDelay = r.Chlr_Share_Delay,
-            Dq = r.dq,
-            OldMutations = r.OldMutations,
-            ActualVelocity = r.actvel,
-        };
-    }
-
-    private static SavedShot SaveShots(Shot s)
-    {
-        return new SavedShot
-        {
-            Exists = s.exist,
-            Position = s.pos,
-            OPosition = s.opos,
-            Velocity = s.velocity,
-            Parent = s.parent,
-            Age = s.age,
-            Energy = s.nrg,
-            Range = s.Range,
-            Value = s.value,
-            Color = s.color,
-            ShotType = s.shottype,
-            FromVeg = s.fromveg,
-            FromSpecies = s.FromSpecie,
-            MemoryLocation = s.memloc,
-            MemoryValue = s.Memval,
-            Dna = s.dna,
-            GeneNumber = s.genenum,
-            Stored = s.stored,
-        };
-    }
-
-    private static SavedSpecies SaveSpecies(Species s)
-    {
-        return new SavedSpecies
-        {
-            Colind = s.Colind,
-            Color = s.color,
-            Fixed = s.Fixed,
-            MutArray = s.Mutables.mutarray,
-            Mutations = s.Mutables.Mutations,
-            Name = s.Name,
-            Path = s.path,
-            Qty = s.qty,
-            Skin = s.Skin,
-            Stnrg = s.Stnrg,
-            Veg = s.Veg,
-            CopyErrorWhatToChange = s.Mutables.CopyErrorWhatToChange,
-            PointWhatToChange = s.Mutables.PointWhatToChange,
-            MutationsMeans = s.Mutables.Mean,
-            MutationsStdDevs = s.Mutables.StdDev,
-            Poslf = s.Poslf,
-            Posrg = s.Posrg,
-            Postp = s.Postp,
-            Posdn = s.Posdn,
-            CantSee = s.CantSee,
-            DisableDNA = s.DisableDNA,
-            DisableMovementSysvars = s.DisableMovementSysvars,
-            CantReproduce = s.CantReproduce,
-            VirusImmune = s.VirusImmune,
-            Population = s.population,
-            SubSpeciesCounter = s.SubSpeciesCounter,
-            Native = s.Native
-        };
-    }
-
-    private static SavedTeleporter SaveTeleporters(Teleporter t)
-    {
-        return new SavedTeleporter
-        {
-            Position = t.pos,
-            Width = t.Width,
-            Height = t.Height,
-            Color = t.color,
-            Velocity = t.vel,
-            Path = t.path,
-            In = t.In,
-            = t.Out,
-            Local = t.local,
-            DriftHorizontal = t.driftHorizontal,
-            DriftVertical = t.driftVertical,
-            Highlight = t.highlight,
-            TeleportVeggies = t.teleportVeggies,
-            TeleportCorpses = t.teleportCorpses,
-            RespectShapes = t.RespectShapes,
-            TeleportHeterotrophs = t.teleportHeterotrophs,
-            InboundPollCycles = t.InboundPollCycles,
-            BotsPerPoll = t.BotsPerPoll,
-            PollCountDown = t.PollCountDown,
-            Internet = t.Internet
-        };
-    }
-
-    private static SavedTie SaveTies(tie t)
-    {
-        return new SavedTie
-        {
-            Port = t.Port,
-            TargetBot = t.pnt,
-            BackTie = t.ptt,
-            Angle = t.ang,
-            Bend = t.bend,
-            FixedAngle = t.angreg,
-            Length = t.ln,
-            Shrink = t.shrink,
-            Stat = t.stat,
-            Last = t.last,
-            Mem = t.mem,
-            Back = t.back,
-            EnergyUsed = t.nrgused,
-            InfoUsed = t.infused,
-            Sharing = t.sharing,
-            Type = t.type,
-            b = t.b,
-            k = t.k,
-            NaturalLength = t.NaturalLength
-        };
-    }
 }
-                                                                                                                                    }

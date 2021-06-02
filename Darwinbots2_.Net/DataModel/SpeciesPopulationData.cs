@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Media;
 
 namespace Iersera.DataModel
 {
-    class SpeciesPopulationData
+    internal class SpeciesPopulationData
     {
+        public Color Color { get; internal set; }
         public string Name { get; internal set; }
-        public int Color { get; internal set; }
-        public bool Veg { get; internal set; }
         public int Population { get; internal set; }
+        public bool Veg { get; internal set; }
     }
 }

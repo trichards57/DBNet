@@ -17,7 +17,7 @@ namespace Iersera.Model
         public int CostRadioSetting { get; set; }
         public double[] Costs { get; set; } = new double[70];
         public int CycleLength { get; set; }
-        public decimal CycSec { get; set; }
+        public double CycSec { get; set; }
         public bool DayNight { get; set; }
         public int DayNightCycleCounter { get; set; }
         public bool Daytime { get; set; }
@@ -26,7 +26,7 @@ namespace Iersera.Model
         public int Decaydelay { get; set; }
         public int DecayType { get; set; }
         public double Density { get; set; }
-        public decimal Diffuse { get; set; }
+        public double Diffuse { get; set; }
         public bool DisableFixing { get; set; }
         public bool DisableMutations { get; set; }
         public bool DisableTies { get; set; }
@@ -66,7 +66,7 @@ namespace Iersera.Model
         public double OldCostX { get; set; }
         public double PhysBrown { get; set; }
         public double PhysMoving { get; set; }
-        public decimal PhysSwim { get; set; }
+        public double PhysSwim { get; set; }
         public bool PlanetEaters { get; set; }
         public double PlanetEatersG { get; set; }
         public bool Pondmode { get; set; }
