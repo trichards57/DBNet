@@ -2,8 +2,8 @@
 {
     internal class block2
     {
-        public int match = 0;
-        public int tipo = 0;
-        public int value = 0;
+        public int match { get; set; }
+        public int tipo { get; set; }
+        public int value { get; set; }
     }
 }

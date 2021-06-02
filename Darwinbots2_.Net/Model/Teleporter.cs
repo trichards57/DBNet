@@ -14,7 +14,6 @@ namespace Iersera.Model
         public bool Highlight { get; set; }
         public bool In { get; set; }
         public int InboundPollCycles { get; set; }
-        public bool Internet { get; set; }
         public string IntInPath { get; set; }
         public string IntOutPath { get; set; }
         public bool Local { get; set; }

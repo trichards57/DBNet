@@ -2,7 +2,7 @@
 {
     public class DNABlock
     {
-        public int tipo = 0;
-        public int value = 0;
+        public int tipo { get; set; } = 0;
+        public int value { get; set; } = 0;
     }
 }

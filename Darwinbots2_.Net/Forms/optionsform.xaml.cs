@@ -2931,7 +2931,7 @@ namespace DBNet.Forms
 
             //Botsareus 12/12/2012 Hide always on top forms for easy readability
             datirob.Visible = false;
-            ActivForm.instance.Visible = false;
+            ActivForm.Instance.Visible = false;
             Shape2.FillColor = IIf(UseOldColor, 0x511206, vbBlack);
 
             //Botsareus 1/5/2014 Repopulate obstacle array

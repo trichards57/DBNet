@@ -1,13 +1,9 @@
 using Iersera.Model;
 using Iersera.Support;
 using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
 
 internal static class Common
 {
-    private static bool called = false;
     public static string filemem { get; set; } = string.Empty;
 
     public static double Cross(vector V1, vector V2)
@@ -45,18 +41,6 @@ internal static class Common
     public static int Random(int low, int hi)
     {
         return ThreadSafeRandom.Local.Next(low, hi);
-    }
-
-    public static void Restarter()
-    {
-        if (called)
-            return;
-
-        called = true;
-
-        var appPath = Assembly.GetEntryAssembly().Location;
-
-        Process.Start(Path.GetDirectoryName(appPath) + "\\Restarter.exe", appPath);
     }
 
     [Obsolete("Use .Magnitude instead")]

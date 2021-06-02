@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Media;
 using static Common;
 using static DNAManipulations;
-using static F1Mode;
 using static Globals;
 using static NeoMutations;
 using static ObstaclesManager;
@@ -232,12 +231,6 @@ internal static class ShotsManager
             {
                 return null;
             }
-
-            if ((SimOpts.F1 || x_restartmode == 1) && (Disqualify == 1 || Disqualify == 2))
-                dreason(rob.FName, rob.tag, "using a virus");
-
-            if (!SimOpts.F1 && rob.dq == 1 && (Disqualify == 1 || Disqualify == 2))
-                rob.Dead = true;
         }
         else
             shot.stored = false;

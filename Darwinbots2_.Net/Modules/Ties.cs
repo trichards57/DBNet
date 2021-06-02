@@ -2,7 +2,6 @@ using Iersera.Model;
 using Iersera.Support;
 using System;
 using System.Linq;
-using static F1Mode;
 using static Globals;
 using static Physics;
 using static Robots;
@@ -540,12 +539,6 @@ internal static class Ties
                         tie.OtherBot.radius = FindRadius(tie.OtherBot);
 
                         rob.nrg -= l; //tying robot gives up energy
-
-                        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            dreason(rob.FName, rob.tag, "giving energy to opponent");
-
-                        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            rob.Dead = true; //safe kill robot
                     }
 
                     //Taking nrg
@@ -613,12 +606,6 @@ internal static class Ties
 
                             rob.mem[220] = rob.Kills;
                         }
-
-                        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            dreason(rob.FName, rob.tag, "taking energy from opponent");
-
-                        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            rob.Dead = true; //safe kill robot
                     }
 
                     if (!tie.BackTie)
@@ -773,12 +760,6 @@ internal static class Ties
                         tie.OtherBot.radius = FindRadius(tie.OtherBot);
 
                         rob.body -= l; //tying robot gives up energy
-
-                        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            dreason(rob.FName, rob.tag, "giving body to opponent");
-
-                        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            rob.Dead = true; //safe kill robot
                     }
 
                     //Taking body
@@ -847,12 +828,6 @@ internal static class Ties
 
                             rob.mem[220] = rob.Kills;
                         }
-
-                        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            dreason(rob.FName, rob.tag, "taking body from opponent");
-
-                        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 1 && rob.FName != tie.OtherBot.FName)
-                            rob.Dead = true; //safe kill robot
                     }
 
                     if (!tie.BackTie)

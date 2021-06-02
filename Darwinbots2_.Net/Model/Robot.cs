@@ -5,120 +5,113 @@ namespace Iersera.Model
 {
     internal class robot
     {
-        public int AbsNum = 0;
-        public vector actvel = null;
-        public double AddedMass = 0;
-        public int age = 0;
-        public double aim = 0;
-        public vector aimvector = null;
-        public int BirthCycle = 0;
-        public double body = 0;
-        public double Bouyancy = 0;
-        public IntVector BucketPos = null;
-        public bool CantReproduce = false;
-        public bool CantSee = false;
-        public double chloroplasts = 0;
-        public byte Chlr_Share_Delay = 0;
-        public Color color;
-        public int condnum = 0;
-        public bool Corpse = false;
-        public string dbgstring = "";
-        public bool Dead = false;
-        public int DecayTimer = 0;
-        public bool DisableDNA = false;
-        public bool DisableMovementSysvars = false;
-        public List<DNABlock> dna = new();
-        public int dq = 0;
-        public int[] epimem = new int[14];
-        public bool exist = false;
-        public int fertilized = 0;
-        public bool Fixed = false;
-        public int flash = 0;
-        public string FName = "";
-        public bool[] ga = new bool[];
-        public int genenum = 0;
-        public int generation = 0;
-        public decimal GenMut = 0;
-        public bool highlight = false;
-        public vector ImpulseInd = null;
-        public vector ImpulseRes = null;
-        public double ImpulseStatic = 0;
-        public int Kills = 0;
-        public int lastdown = 0;
-        public int lastleft = 0;
-        public int LastMut = 0;
-        public string LastMutDetail = "";
-        public object lastopp = 0;
-        public vector lastopppos = null;
-        public int lastopptype = 0;
-        public string LastOwner = "";
-        public int lastright = 0;
-        public robot lasttch = 0;
-        public int lastup = 0;
-        public double ma = 0;
-        public double mass = 0;
-        public int[] mem = new int[1000];
-        public int monitor_b = 0;
-        public int monitor_g = 0;
-        public int monitor_r = 0;
-        public decimal mt = 0;
-        public bool Multibot = false;
-        public int multibot_time = 0;
-        public MutationProbabilities Mutables = null;
-        public int Mutations = 0;
-        public double MutEpiReset = 0;
-        public int newage = 0;
-        public bool NewMove = false;
-        public bool NoChlr = false;
-        public double nrg = 0;
-        public decimal oaim = 0;
-        public double obody = 0;
-        public int[] occurr = new int[20];
-        public int oldBotNum = 0;
-        public float OldGD = 0;
-        public int OldMutations = 0;
-        public double onrg = 0;
-        public vector opos = null;
-        public int order = 0;
-        public int[] OSkin = new int[13];
-        public double Paracount = 0;
-        public bool Paralyzed = false;
-        public robot parent = 0;
-        public int Ploc = 0;
-        public int Point2MutCycle = 0;
-        public int PointMutBP = 0;
-        public int PointMutCycle = 0;
-        public double poison = 0;
-        public double Poisoncount = 0;
-        public bool Poisoned = false;
-        public vector pos = null;
-        public int Pval = 0;
-        public double Pwaste = 0;
-        public double radius = 0;
-        public int reproTimer = 0;
-        public double shell = 0;
-        public int sim = 0;
-        public int[] Skin = new int[13];
-        public double Slime = 0;
-        public int SonNumber = 0;
-        public List<DNABlock> spermDNA = new();
-        public int SubSpecies = 0;
-        public string tag = "";
-        public bool[] TieAngOverwrite = new bool[3];
-        public bool[] TieLenOverwrite = new bool[3];
-        public List<Tie> Ties = new();
-        public List<Variable> vars = new();
-        public double vbody = 0;
-        public bool Veg = false;
-        public vector vel = null;
-        public double venom = 0;
-        public bool View = false;
-        public bool VirusImmune = false;
-        public int Vloc = 0;
-        public int Vtimer = 0;
-        public int Vval = 0;
-        public bool wall = false;
-        public double Waste = 0;
+        public int AbsNum { get; set; }
+        public vector actvel { get; set; }
+        public double AddedMass { get; set; }
+        public int age { get; set; }
+        public double aim { get; set; }
+        public vector aimvector { get; set; }
+        public int BirthCycle { get; set; }
+        public double body { get; set; }
+        public double Bouyancy { get; set; }
+        public IntVector BucketPos { get; set; }
+        public bool CantReproduce { get; set; }
+        public bool CantSee { get; set; }
+        public double chloroplasts { get; set; }
+        public byte Chlr_Share_Delay { get; set; }
+        public Color color { get; set; }
+        public int condnum { get; set; }
+        public bool Corpse { get; set; }
+        public bool Dead { get; set; }
+        public int DecayTimer { get; set; }
+        public bool DisableDNA { get; set; }
+        public bool DisableMovementSysvars { get; set; }
+        public List<DNABlock> dna { get; set; } = new();
+        public int[] epimem { get; set; } = new int[14];
+        public bool exist { get; set; }
+        public int fertilized { get; set; }
+        public bool Fixed { get; set; }
+        public string FName { get; set; }
+        public int genenum { get; set; }
+        public int generation { get; set; }
+        public decimal GenMut { get; set; }
+        public bool highlight { get; set; }
+        public vector ImpulseInd { get; set; }
+        public vector ImpulseRes { get; set; }
+        public double ImpulseStatic { get; set; }
+        public int Kills { get; set; }
+        public int lastdown { get; set; }
+        public int lastleft { get; set; }
+        public int LastMut { get; set; }
+        public string LastMutDetail { get; set; }
+        public object lastopp { get; set; }
+        public vector lastopppos { get; set; }
+        public int lastopptype { get; set; }
+        public string LastOwner { get; set; }
+        public int lastright { get; set; }
+        public robot lasttch { get; set; }
+        public int lastup { get; set; }
+        public double ma { get; set; }
+        public double mass { get; set; }
+        public int[] mem { get; set; } = new int[1000];
+        public decimal mt { get; set; }
+        public bool Multibot { get; set; }
+        public int multibot_time { get; set; }
+        public MutationProbabilities Mutables { get; set; }
+        public int Mutations { get; set; }
+        public double MutEpiReset { get; set; }
+        public int newage { get; set; }
+        public bool NewMove { get; set; }
+        public bool NoChlr { get; set; }
+        public double nrg { get; set; }
+        public decimal oaim { get; set; }
+        public double obody { get; set; }
+        public int[] occurr { get; set; } = new int[20];
+        public int oldBotNum { get; set; }
+        public float OldGD { get; set; }
+        public int OldMutations { get; set; }
+        public double onrg { get; set; }
+        public vector opos { get; set; }
+        public int order { get; set; }
+        public int[] OSkin { get; set; } = new int[13];
+        public double Paracount { get; set; }
+        public bool Paralyzed { get; set; }
+        public robot parent { get; set; }
+        public int Ploc { get; set; }
+        public int Point2MutCycle { get; set; }
+        public int PointMutBP { get; set; }
+        public int PointMutCycle { get; set; }
+        public double poison { get; set; }
+        public double Poisoncount { get; set; }
+        public bool Poisoned { get; set; }
+        public vector pos { get; set; }
+        public int Pval { get; set; }
+        public double Pwaste { get; set; }
+        public double radius { get; set; }
+        public int reproTimer { get; set; }
+        public double shell { get; set; }
+        public int sim { get; set; }
+        public int[] Skin { get; set; } = new int[13];
+        public double Slime { get; set; }
+        public int SonNumber { get; set; }
+        public List<DNABlock> spermDNA { get; set; } = new();
+        public int SubSpecies { get; set; }
+        public string tag { get; set; }
+        public bool[] TieAngOverwrite { get; set; } = new bool[3];
+        public bool[] TieLenOverwrite { get; set; } = new bool[3];
+        public List<Tie> Ties { get; set; } = new();
+        public List<Variable> vars { get; set; } = new();
+        public double vbody { get; set; }
+        public bool Veg { get; set; }
+        public vector vel { get; set; }
+        public double venom { get; set; }
+        public bool View { get; set; }
+        public bool VirusImmune { get; set; }
         public Shot virusshot { get; set; }
+        public int Vloc { get; set; }
+        public int Vtimer { get; set; }
+        public int Vval { get; set; }
+        public bool wall { get; set; }
+        public double Waste { get; set; }
     }
 }

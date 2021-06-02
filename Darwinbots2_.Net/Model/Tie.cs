@@ -1,6 +1,4 @@
-﻿using static Robots;
-
-namespace Iersera.Model
+﻿namespace Iersera.Model
 {
     internal enum TieType
     {

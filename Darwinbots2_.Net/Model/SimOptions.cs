@@ -85,7 +85,7 @@ namespace Iersera.Model
         public int SpeciationGenerationalDistance { get; set; }
         public int SpeciationGeneticDistance { get; set; }
         public int SpeciationMinimumPopulation { get; set; }
-        public List<Species> Specie { get; set; } = new List<Species>();
+        public List<Species> Specie { get; set; } = new();
         public bool SunDown { get; set; }
         public int SunDownThreshold { get; set; }
         public bool SunOnRnd { get; set; }

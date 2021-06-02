@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using static HDRoutines;
-using static IntOpts;
 using static Multibots;
 using static SimOpt;
 
@@ -18,25 +18,21 @@ internal static class Teleport
     public static int teleporterFocus { get; set; }
     public static List<Teleporter> Teleporters { get; set; } = new();
 
-    public static void CheckTeleporters(robot rob)
+    public static async Task CheckTeleporters(robot rob)
     {
         vector randomV = null;
 
-        foreach (var tel in Teleporters.Where(t => t.Out || t.Local || (t.Internet && t.PollCountDown <= 0)).Where(t => rob.exist && (TeleportCollision(rob, t) || rob.dq > 1)))
+        foreach (var tel in Teleporters.Where(t => t.Out || t.Local).Where(t => rob.exist && (TeleportCollision(rob, t))))
         {
-            if (tel.Out || tel.Internet)
+            if (tel.Out)
             {
-                if (rob.dq > 1 || (!(rob.Veg && !tel.TeleportVeggies) && !(rob.Corpse && !tel.TeleportCorpses) && !(!rob.Veg && tel.TeleportHeterotrophs)))
+                if (!(rob.Veg && !tel.TeleportVeggies) && !(rob.Corpse && !tel.TeleportCorpses) && !(!rob.Veg && tel.TeleportHeterotrophs))
                 {
                     tel.NumTeleported++;
                     var name = $@"\{DateTime.Today}{rob.FName}{Teleporters.IndexOf(tel)}{tel.NumTeleported}.dbo";
-                    if (tel.Out)
-                        SaveOrganism(Path.Join(tel.path, name), rob);
+                    SaveOrganism(Path.Join(tel.path, name), rob);
 
-                    if (tel.Internet)
-                        SaveOrganism(Path.Join(tel.IntOutPath + name), rob);
-
-                    KillOrganism(rob);
+                    await KillOrganism(rob);
                 }
             }
             else if (tel.Local)
@@ -215,7 +211,7 @@ internal static class Teleport
         }
     }
 
-    public static Teleporter NewTeleporter(bool PortIn, bool PortOut, double Height, bool Internet)
+    public static Teleporter NewTeleporter(bool PortIn, bool PortOut, double Height)
     {
         if (Teleporters.Count >= MAXTELEPORTERS)
         {
@@ -237,30 +233,14 @@ internal static class Teleport
                 Color = Color.White,
                 In = PortIn,
                 Out = PortOut,
-                Internet = Internet,
                 DriftHorizontal = true,
                 DriftVertical = true,
                 NumTeleported = 0,
                 NumTeleportedIn = 0,
             };
 
-            if (Internet)
-            {
-                teleporter.IntInPath = IntOpts.InboundPath != "" ? IntOpts.InboundPath : "IM\\inbound";
-                teleporter.IntOutPath = IntOpts.OutboundPath != "" ? IntOpts.OutboundPath : "IM\\outbound";
-            }
-
             return teleporter;
         }
-    }
-
-    public static void ResizeInternetTeleporter(double height)
-    {
-        if (!InternetMode)
-            return;
-
-        foreach (var tel in Teleporters.Where(t => t.Exist && t.Internet))
-            ResizeTeleporter(tel, height);
     }
 
     public static void ResizeTeleporter(Teleporter tel, double height)
@@ -314,40 +294,6 @@ internal static class Teleport
 
                         if (maxBotsPerCyclePerTeleporter <= 0)
                             break;
-                    }
-                }
-                else
-                {
-                    tel.PollCountDown--;
-                }
-            }
-            if (tel.Internet)
-            {
-                if (tel.PollCountDown <= 0)
-                {
-                    tel.PollCountDown = tel.InboundPollCycles;
-                    var maxBotsPerCyclePerTeleporter = tel.BotsPerPoll;
-
-                    foreach (var file in Directory.EnumerateFiles(tel.path))
-                    {
-                        switch (Path.GetExtension(file))
-                        {
-                            case "dbo":
-                                LoadOrganism(file, ThreadSafeRandom.Local.Next(0, SimOpts.FieldWidth), ThreadSafeRandom.Local.Next(0, SimOpts.FieldHeight));
-                                tel.NumTeleportedIn++;
-                                File.Delete(file);
-                                maxBotsPerCyclePerTeleporter--;
-                                break;
-
-                            case "temp":
-                                break;
-
-                            default:
-                                MessageBox.Show($"Non dbo file {Path.GetFileName(file)} found in {tel.path}.  Inbound Teleporter Deleted.", "Non DBO File Found", MessageBoxButton.OK, MessageBoxImage.Information);
-                                tel.Exist = false;
-                                Teleporters.Remove(tel);
-                                break;
-                        }
                     }
                 }
                 else

@@ -272,20 +272,17 @@ internal static class Senses
         rob.mem[TotalBots] = TotalRobots;
         rob.mem[TOTALMYSPECIES] = SpeciesFromBot(rob).population;
 
-        if (!rob.CantSee && !rob.Corpse)
+        if (!rob.CantSee && !rob.Corpse && BucketsProximity(rob) != null)
         {
-            if (BucketsProximity(rob) > 0)
+            switch (rob.lastopptype)
             {
-                switch (rob.lastopptype)
-                {
-                    case 0:
-                        LookOccurr(rob, rob.lastopp as robot); // It's a bot.  Populate the refvar sysvars
-                        break;
+                case 0:
+                    LookOccurr(rob, rob.lastopp as robot); // It's a bot.  Populate the refvar sysvars
+                    break;
 
-                    case 1:
-                        LookOccurrShape(rob, rob.lastopp as Obstacle);
-                        break;
-                }
+                case 1:
+                    LookOccurrShape(rob, rob.lastopp as Obstacle);
+                    break;
             }
         }
 

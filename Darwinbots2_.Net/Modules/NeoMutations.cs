@@ -10,7 +10,6 @@ using System.Windows.Media;
 using static Common;
 using static DNAManipulations;
 using static DNATokenizing;
-using static F1Mode;
 using static Globals;
 using static HDRoutines;
 using static Robots;
@@ -43,12 +42,6 @@ internal static class NeoMutations
         rob.mem[GenesSys] = rob.genenum;
         MakeOccurrList(rob);
 
-        //Botsareus 3/14/2014 Disqualify
-        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-            dreason(rob.FName, rob.tag, "deleting a gene");
-
-        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-            rob.Dead = true; //safe kill robot
         return true;
     }
 
@@ -63,7 +56,7 @@ internal static class NeoMutations
         rob.LastMutDetail = $"{strmut}\n{rob.LastMutDetail}";
     }
 
-    public static void Mutate(robot rob, bool reproducing = false)
+    public static async Task Mutate(robot rob, bool reproducing = false)
     {
         if (!rob.Mutables.Mutations || SimOpts.DisableMutations)
             return;
@@ -189,7 +182,7 @@ internal static class NeoMutations
                 {
                     rob.FName = robname;
                     rob.Mutations = 0;
-                    AddSpecie(rob, false);
+                    await AddSpecie(rob, false);
                 }
                 else
                     SimOpts.SpeciationForkInterval--;

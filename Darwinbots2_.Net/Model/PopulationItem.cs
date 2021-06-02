@@ -2,9 +2,9 @@
 {
     public class PopulationItem
     {
-        public int exist = 0;
-        public int population = 0;
-        public string SpName = "";
-        public int Wins = 0;
+        public int exist { get; set; }
+        public int population { get; set; }
+        public string SpName { get; set; }
+        public int Wins { get; set; }
     }
 }

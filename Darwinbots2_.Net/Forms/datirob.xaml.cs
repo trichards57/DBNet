@@ -127,7 +127,7 @@ namespace DBNet.Forms
 
         private void Command2_Click(object sender, RoutedEventArgs e)
         {
-            ActivForm.instance.Show();
+            ActivForm.Instance.Show();
         }
 
         private void Command3_Click(object sender, RoutedEventArgs e)

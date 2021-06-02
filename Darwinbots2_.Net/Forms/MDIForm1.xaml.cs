@@ -1137,7 +1137,7 @@ namespace DBNet.Forms
 
         private void genact_Click()
         {
-            ActivForm.instance.Show();
+            ActivForm.Instance.Show();
         }
 
         private void HighLightTeleportersMenu_Click(object sender, RoutedEventArgs e)

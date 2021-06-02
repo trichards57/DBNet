@@ -11,7 +11,6 @@ using static Common;
 using static Database;
 using static DNAManipulations;
 using static DNATokenizing;
-using static F1Mode;
 using static Globals;
 using static HDRoutines;
 using static NeoMutations;
@@ -310,7 +309,7 @@ internal static class Robots
         Robots.rob.Remove(rob);
     }
 
-    public static void Reproduce(robot rob, int per)
+    public static async Task Reproduce(robot rob, int per)
     {
         if (rob.body < 5)
             return;
@@ -530,7 +529,7 @@ internal static class Robots
                 }
                 nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC);
                 nuovo.Mutables.CopyErrorWhatToChange = Math.Clamp(nuovo.Mutables.CopyErrorWhatToChange, 0, 100);
-                Mutate(nuovo, true);
+                await Mutate(nuovo, true);
             }
         }
         else
@@ -548,12 +547,12 @@ internal static class Robots
                         nuovo.Mutables.mutarray[t] = 1000;
                 }
 
-                Mutate(nuovo, true);
+                await Mutate(nuovo, true);
 
                 nuovo.Mutables = temp;
             }
             else
-                Mutate(nuovo, true);
+                await Mutate(nuovo, true);
         }
 
         MakeOccurrList(nuovo);
@@ -593,7 +592,7 @@ internal static class Robots
             rob.nrg = 0;
     }
 
-    public static void SexReproduce(robot female)
+    public static async Task SexReproduce(robot female)
     {
         if (female.body < 5 || !female.exist || female.Corpse || female.CantReproduce || female.body <= 2 || !female.spermDNA.Any())
             return;
@@ -639,16 +638,6 @@ internal static class Robots
 
         if (SimpleCollision((int)nx, (int)ny, female) || !female.exist)
             return;
-
-        //Botsareus 3/14/2014 Disqualify
-        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-            dreason(female.FName, female.tag, "attempting to reproduce sexually");
-
-        if (!SimOpts.F1 && female.dq == 1 && Disqualify == 2)
-        {
-            female.Dead = true; //safe kill robot
-            return;
-        }
 
         //Step1 Copy both dnas into block2
 
@@ -817,19 +806,6 @@ internal static class Robots
                     dmoc = 0.01; //Botsareus 1/16/2016 Bug fix
             }
 
-            //zerobot stabilization
-            if ((x_restartmode == 7 || x_restartmode == 8) && nuovo.FName == "Mutate.txt")
-            {
-                //normalize child
-                nuovo.Mutables.mutarray[PointUP] *= 1.75;
-                if (nuovo.Mutables.mutarray[PointUP] > MratesMax)
-                    nuovo.Mutables.mutarray[PointUP] = MratesMax;
-
-                nuovo.Mutables.mutarray[P2UP] *= 1.75;
-                if (nuovo.Mutables.mutarray[P2UP] > MratesMax)
-                    nuovo.Mutables.mutarray[P2UP] = MratesMax;
-            }
-
             for (var t = 1; t < 10; t++)
             {
                 if (t == 9 || nuovo.Mutables.mutarray[t] < 1)
@@ -876,11 +852,11 @@ internal static class Robots
             if (nuovo.Mutables.CopyErrorWhatToChange > 100)
                 nuovo.Mutables.CopyErrorWhatToChange = 100;
 
-            Mutate(nuovo, true);
+            await Mutate(nuovo, true);
         }
         else
         {
-            Mutate(nuovo, true);
+            await Mutate(nuovo, true);
         }
 
         MakeOccurrList(nuovo);
@@ -1022,12 +998,6 @@ internal static class Robots
         const double poisonNrgConvRate = 0.25; // Make 4 poison for 1 nrg
 
         StoreResource(rob, 826, 827, poisonNrgConvRate, POISONCOST, r => r.poison, (r, s) => r.poison = s);
-
-        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-            dreason(rob.FName, rob.tag, "making poison");
-
-        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-            rob.Dead = true; //safe kill robot
     }
 
     public static void StoreVenom(robot rob)
@@ -1035,12 +1005,6 @@ internal static class Robots
         const double venomNrgConvRate = 1.0; // Make 1 venom for 1 nrg
 
         StoreResource(rob, 824, 825, venomNrgConvRate, VENOMCOST, r => r.venom, (r, s) => r.venom = s);
-
-        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-            dreason(rob.FName, rob.tag, "making venom");
-
-        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-            rob.Dead = true; //safe kill robot
     }
 
     public static async Task UpdateBots()
@@ -1057,13 +1021,6 @@ internal static class Robots
         totnvegs = 0;
         totvegsDisplayed = totvegs;
         totvegs = 0;
-
-        if (ContestMode)
-        {
-            F1count++;
-            if (F1count == SampFreq)
-                await Countpop();
-        }
 
         if (Teleporters.Any())
         {
@@ -1179,7 +1136,7 @@ internal static class Robots
 
             if (!rob.Corpse && !rob.DisableDNA && rob.exist && !(rob.FName == "Base.txt" & hidepred))
             {
-                Mutate(rob);
+                await Mutate(rob);
                 MakeStuff(rob);
                 HandleWaste(rob);
                 Shooting(rob);
@@ -1207,12 +1164,6 @@ internal static class Robots
 
         await ReproduceAndKill();
         RemoveExtinctSpecies();
-
-        if (totnvegs == 0 & SimOpts.Restart && !SimOpts.F1)
-        {
-            ReStarts++;
-            StartAnotherRound = true;
-        }
     }
 
     public static void UpdatePosition(robot rob)
@@ -1504,12 +1455,6 @@ internal static class Robots
             if (length <= maxLength)
             {
                 MakeTie(rob, lastOpp, (int)(rob.radius + lastOpp.radius + RobSize * 2), -20, rob.mem[mtie]);
-
-                if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-                    dreason(rob.FName, rob.tag, "making a tie");
-
-                if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-                    rob.Dead = true; //safe kill robot
             }
             rob.mem[mtie] = 0;
         }
@@ -1558,12 +1503,6 @@ internal static class Robots
         const double shellNrgConvRate = 0.1; // Make 10 shell for 1 nrg
 
         StoreResource(rob, 822, 823, shellNrgConvRate, SHELLCOST, r => r.shell, (r, s) => r.shell = s, true);
-
-        if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-            dreason(rob.FName, rob.tag, "making shell");
-
-        if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-            rob.Dead = true; //safe kill robot
     }
 
     private static void MakeSlime(robot rob)
@@ -1571,15 +1510,6 @@ internal static class Robots
         const double slimeNrgConvRate = 0.1; // Make 10 slime for 1 nrg
 
         StoreResource(rob, 820, 821, slimeNrgConvRate, SLIMECOST, r => r.Slime, (r, s) => r.Slime = s, true);
-
-        if (!rob.Veg)
-        {
-            if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-                dreason(rob.FName, rob.tag, "making slime");
-
-            if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-                rob.Dead = true; //safe kill robot
-        }
     }
 
     private static void MakeStuff(robot rob)
@@ -1780,12 +1710,12 @@ internal static class Robots
                 }
             }
 
-            Reproduce(r, per);
+            await Reproduce(r, per);
         }
 
         foreach (var r in BotsToReproduceSexually)
         {
-            SexReproduce(r);
+            await SexReproduce(r);
         }
 
         foreach (var r in BotsToKill)
@@ -1985,12 +1915,6 @@ internal static class Robots
 
                 rob.nrg -= cost; // EricL - postive shots should cost the shotcost
                 NewShot(rob, shtype, value, 1, true);
-
-                if ((SimOpts.F1 || x_restartmode == 1) && Disqualify == 2)
-                    dreason(rob.FName, rob.tag, "firing an info shot");
-
-                if (!SimOpts.F1 && rob.dq == 1 && Disqualify == 2)
-                    rob.Dead = true; //safe kill robot
 
                 break;// Nrg request Feeding Shot
             case -1:
@@ -2241,7 +2165,7 @@ internal static class Robots
         if (!rob.Corpse)
         {
             if (species == null)
-                AddSpecie(rob, false);
+                await AddSpecie(rob, false);
             else
             {
                 species.population++;

@@ -2036,9 +2036,9 @@ namespace DBNet.Forms
             {
                 robfocus = 0;
                 MDIForm1.instance.DisableRobotsMenu();
-                if (ActivForm.instance.Visible)
+                if (ActivForm.Instance.Visible)
                 {
-                    ActivForm.instance.NoFocus();
+                    ActivForm.Instance.NoFocus();
                 }
             }
         }
@@ -2077,9 +2077,9 @@ namespace DBNet.Forms
                 datirob.instance.Form_Unload(0);
                 robfocus = 0;
                 MDIForm1.instance.DisableRobotsMenu();
-                if (ActivForm.instance.Visible)
+                if (ActivForm.Instance.Visible)
                 {
-                    ActivForm.instance.NoFocus();
+                    ActivForm.Instance.NoFocus();
                 }
             }
         }

@@ -4,33 +4,32 @@ namespace Iersera.Model
 {
     public class Species
     {
-        public bool CantReproduce = false;
-        public bool CantSee = false;
-        public int Colind = 0;
-        public string Comment = "";
-        public bool DisableDNA = false;
-        public bool DisableMovementSysvars = false;
-        public Image DisplayImage = null;
-        public bool dq_kill = false;
-        public bool Fixed = false;
-        public bool kill_mb = false;
-        public string Leaguefilecomment = "";
-        public MutationProbabilities Mutables = null;
-        public string Name = "";
-        public bool Native = false;
-        public bool NoChlr = false;
-        public string path = "";
-        public int population = 0;
-        public decimal Posdn = 0;
-        public decimal Poslf = 0;
-        public decimal Posrg = 0;
-        public decimal Postp = 0;
-        public int qty = 0;
-        public int[] Skin = new int[13];
-        public int Stnrg = 0;
-        public int SubSpeciesCounter = 0;
-        public bool Veg = false;
-        public bool VirusImmune = false;
+        public bool CantReproduce { get; set; }
+        public bool CantSee { get; set; }
+        public int Colind { get; set; }
         public System.Windows.Media.Color color { get; set; }
+        public string Comment { get; set; }
+        public bool DisableDNA { get; set; }
+        public bool DisableMovementSysvars { get; set; }
+        public Image DisplayImage { get; set; }
+        public bool dq_kill { get; set; }
+        public bool Fixed { get; set; }
+        public bool kill_mb { get; set; }
+        public string Leaguefilecomment { get; set; }
+        public MutationProbabilities Mutables { get; set; }
+        public string Name { get; set; }
+        public bool Native { get; set; }
+        public bool NoChlr { get; set; }
+        public string path { get; set; }
+        public int population { get; set; }
+        public decimal Posdn { get; set; }
+        public decimal Poslf { get; set; }
+        public decimal Posrg { get; set; }
+        public int qty { get; set; }
+        public int[] Skin { get; set; } = new int[13];
+        public int Stnrg { get; set; }
+        public int SubSpeciesCounter { get; set; }
+        public bool Veg { get; set; }
+        public bool VirusImmune { get; set; }
     }
 }
