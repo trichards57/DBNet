@@ -1,12 +1,11 @@
+using Iersera.Model;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using static BucketManager;
 using static Common;
 using static DNAManipulations;
-using static F1Mode;
 using static Globals;
-using static IntOpts;
 using static Master;
 using static Microsoft.VisualBasic.Constants;
 using static Microsoft.VisualBasic.Conversion;
@@ -16,7 +15,6 @@ using static Microsoft.VisualBasic.Interaction;
 using static Microsoft.VisualBasic.Strings;
 using static Microsoft.VisualBasic.VBMath;
 using static ObstaclesManager;
-using static Physics;
 using static Robots;
 using static ShotsManager;
 using static SimOpt;
@@ -615,73 +613,6 @@ namespace DBNet.Forms
             }
         }
 
-        public double score(int r, int reclev, int maxrec, int tipo)
-        {
-            double score_v = 0;
-            int al = 0;
-
-            double dx = 0;
-
-            double dy = 0;
-
-            int cr = 0;
-
-            int ct = 0;
-
-            int t = 0;
-
-            if (tipo == 2)
-            {
-                plines((r));
-            }
-            score_v = 0;
-            for (t = 1; t < MaxRobs; t++)
-            {
-                if (rob[t].exist)
-                {
-                    if (rob[t].parent == rob[r].AbsNum)
-                    {
-                        if (reclev < maxrec)
-                        {
-                            score_v = score_v + score(t, reclev + 1, maxrec, tipo);
-                        }
-                        if (tipo == 0)
-                        {
-                            score_v = score_v + InvestedEnergy(t); //Botsareus 8/3/2012 generational distance code
-                        }
-                        if (tipo == 4 && reclev > p_reclev)
-                        {
-                            p_reclev = reclev;
-                        }
-                        if (tipo == 1)
-                        {
-                            rob[t].highlight = true;
-                        }
-                        if (tipo == 3)
-                        {
-                            dx = (rob[r].pos.X - rob[t].pos.X) / 2;
-                            dy = (rob[r].pos.Y - rob[t].pos.Y) / 2;
-                            cr = RGB(128, 128, 128);
-                            ct = vbWhite;
-                            if (rob[r].AbsNum > rob[t].AbsNum)
-                            {
-                                cr = vbWhite;
-                                ct = RGB(128, 128, 128);
-                            }
-                            //Line((rob[t].pos.x, rob[t].pos.y)-Step(dx, dy), ct);
-                            //Line(((rob[r].pos.x, rob[r].pos.y, cr);
-                        }
-                    }
-                }
-            }
-            if (tipo == 1)
-            {
-                //Form1.Cls();
-                DrawAllRobs();
-            }
-            return score_v;
-        }
-
         public void t_MouseDown(int Button)
         {
             if (MDIForm1.instance.stealthmode && Button == 1)
@@ -704,6 +635,73 @@ namespace DBNet.Forms
             {
                 rob[t].highlight = false;
             }
+        }
+
+        internal double score(robot rob, int reclev, int maxrec, int tipo)
+        {
+            double score_v = 0;
+            //int al = 0;
+
+            //double dx = 0;
+
+            //double dy = 0;
+
+            //int cr = 0;
+
+            //int ct = 0;
+
+            //int t = 0;
+
+            //if (tipo == 2)
+            //{
+            //    plines((r));
+            //}
+            //score_v = 0;
+            //for (t = 1; t < MaxRobs; t++)
+            //{
+            //    if (rob[t].exist)
+            //    {
+            //        if (rob[t].parent == rob[r].AbsNum)
+            //        {
+            //            if (reclev < maxrec)
+            //            {
+            //                score_v = score_v + score(t, reclev + 1, maxrec, tipo);
+            //            }
+            //            if (tipo == 0)
+            //            {
+            //                score_v = score_v + InvestedEnergy(t); //Botsareus 8/3/2012 generational distance code
+            //            }
+            //            if (tipo == 4 && reclev > p_reclev)
+            //            {
+            //                p_reclev = reclev;
+            //            }
+            //            if (tipo == 1)
+            //            {
+            //                rob[t].highlight = true;
+            //            }
+            //            if (tipo == 3)
+            //            {
+            //                dx = (rob[r].pos.X - rob[t].pos.X) / 2;
+            //                dy = (rob[r].pos.Y - rob[t].pos.Y) / 2;
+            //                cr = RGB(128, 128, 128);
+            //                ct = vbWhite;
+            //                if (rob[r].AbsNum > rob[t].AbsNum)
+            //                {
+            //                    cr = vbWhite;
+            //                    ct = RGB(128, 128, 128);
+            //                }
+            //                //Line((rob[t].pos.x, rob[t].pos.y)-Step(dx, dy), ct);
+            //                //Line(((rob[r].pos.x, rob[r].pos.y, cr);
+            //            }
+            //        }
+            //    }
+            //}
+            //if (tipo == 1)
+            //{
+            //    //Form1.Cls();
+            //    DrawAllRobs();
+            //}
+            return score_v;
         }
 
         private void BoyLabl_Click(object sender, RoutedEventArgs e)

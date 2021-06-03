@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Microsoft.VisualBasic;
 using System;
 using System.Collections.Generic;
@@ -260,13 +259,6 @@ public static class VBExtension
     {
         if (A is String) try { return System.DateTime.Parse((string)A); } catch { return DateTime.MinValue; }
         return CDate(A);
-    }
-
-    public static bool DoEvents(Window Frm = null)
-    {
-        if (Frm == null) Frm = MDIForm1.instance;
-        Frm.Dispatcher.Invoke(new Action(delegate () { }), DispatcherPriority.ContextIdle);
-        return true;
     }
 
     public static bool End()
@@ -1188,8 +1180,6 @@ public static class VBExtension
     {
         return false;
     }
-
-  
 
     public class ComboboxItem
     {

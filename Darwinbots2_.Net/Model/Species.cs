@@ -25,6 +25,7 @@ namespace Iersera.Model
         public decimal Posdn { get; set; }
         public decimal Poslf { get; set; }
         public decimal Posrg { get; set; }
+        public decimal Postp { get; set; }
         public int qty { get; set; }
         public int[] Skin { get; set; } = new int[13];
         public int Stnrg { get; set; }

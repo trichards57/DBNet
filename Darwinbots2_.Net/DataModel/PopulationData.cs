@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Iersera.DataModel
 {
-    class PopulationData
+    internal class PopulationData
     {
-        public string IName { get; internal set; }
         public IEnumerable<SpeciesPopulationData> Species { get; internal set; }
     }
 }

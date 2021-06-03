@@ -17,7 +17,7 @@ namespace Iersera.Model
         public int Memval { get; set; }
         public double nrg { get; set; }
         public vector opos { get; set; }
-        public Robots.robot parent { get; set; }
+        public robot parent { get; set; }
         public vector pos { get; set; }
         public double Range { get; set; }
         public int shottype { get; set; }

@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
@@ -69,21 +68,21 @@ internal static class DNAExecution
         switch (n)
         {
             case 1: // findang
-                b = IntStack.Pop();
-                a = IntStack.Pop();
-                c = rob.pos.X / Form1.instance.xDivisor;
-                d = rob.pos.Y / Form1.instance.yDivisor;
-                e = (int)Physics.NormaliseAngle(Physics.Angle(c, d, a, b)) * 200;
-                IntStack.Push(e);
+                //b = IntStack.Pop();
+                //a = IntStack.Pop();
+                //c = rob.pos.X / Form1.instance.xDivisor;
+                //d = rob.pos.Y / Form1.instance.yDivisor;
+                //e = (int)Physics.NormaliseAngle(Physics.Angle(c, d, a, b)) * 200;
+                //IntStack.Push(e);
                 break;
 
             case 2: // finddist
-                b = IntStack.Pop();
-                a = IntStack.Pop();
-                c = rob.pos.X;
-                d = rob.pos.Y;
-                e = Clamp((int)Math.Sqrt(Math.Pow(c - a * Form1.instance.xDivisor, 2) + Math.Pow(d - b * Form1.instance.yDivisor, 2)));
-                IntStack.Push(e);
+                //b = IntStack.Pop();
+                //a = IntStack.Pop();
+                //c = rob.pos.X;
+                //d = rob.pos.Y;
+                //e = Clamp((int)Math.Sqrt(Math.Pow(c - a * Form1.instance.xDivisor, 2) + Math.Pow(d - b * Form1.instance.yDivisor, 2)));
+                //IntStack.Push(e);
                 break;
 
             case 3: // ceil

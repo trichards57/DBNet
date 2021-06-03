@@ -1,7 +1,5 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Microsoft.Win32;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -77,7 +75,7 @@ internal static class Database
             }
 
             //records a snapshot of all living robots in a snapshot database
-            Form1.instance.GraphLab.Visibility = Visibility.Visible;
+            //Form1.instance.GraphLab.Visibility = Visibility.Visible;
             foreach (var rob in Robots.rob.Where(r => r.exist && r.dna.Count > 1))
             {
                 await mutationsFiles?.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
@@ -88,7 +86,7 @@ internal static class Database
                 await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
             }
 
-            Form1.instance.GraphLab.Visibility = Visibility.Hidden;
+            //Form1.instance.GraphLab.Visibility = Visibility.Hidden;
 
             MessageBox.Show("Saved snapshot successfully.");
         }
@@ -102,14 +100,15 @@ internal static class Database
 
     private static double GetFitness(robot rob)
     {
-        var sEnergy = (Globals.intFindBestV2 > 100 ? 100 : Globals.intFindBestV2) / 100;
-        var sPopulation = (Globals.intFindBestV2 < 100 ? 100 : 200 - Globals.intFindBestV2) / 100;
-        Form1.instance.TotalOffspring = 1;
-        var fitness = Form1.instance.score(rob, 1, 10, 0) + rob.nrg + rob.body * 10; //Botsareus 5/22/2013 Advanced fit test
-        if (fitness < 0)
-            fitness = 0; //Botsareus 9/23/2016 Bug fix
+        //var sEnergy = (Globals.intFindBestV2 > 100 ? 100 : Globals.intFindBestV2) / 100;
+        //var sPopulation = (Globals.intFindBestV2 < 100 ? 100 : 200 - Globals.intFindBestV2) / 100;
+        ////Form1.instance.TotalOffspring = 1;
+        ////var fitness = Form1.instance.score(rob, 1, 10, 0) + rob.nrg + rob.body * 10; //Botsareus 5/22/2013 Advanced fit test
+        //if (fitness < 0)
+        //    fitness = 0; //Botsareus 9/23/2016 Bug fix
 
-        fitness = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(fitness, sEnergy);
-        return fitness;
+        ////fitness = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(fitness, sEnergy);
+        //return fitness;
+        return 0;
     }
 }

@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
@@ -173,8 +172,8 @@ internal static class DNAManipulations
 
     private static void PrepareRob(robot rob, string path)
     {
-        rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
-        rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
+        //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
+        //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
         rob.aim = ThreadSafeRandom.Local.Next(0, 628) / 100;
         rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
         rob.exist = true;

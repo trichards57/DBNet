@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
@@ -315,16 +314,16 @@ internal static class Senses
         if (rob.pos.Y < 0)
             rob.pos.Y = 0;
 
-        var temp = Math.Floor(rob.pos.Y / Form1.instance.yDivisor / 32000) * 32000;
-        temp = (rob.pos.Y / Form1.instance.yDivisor) - temp;
-        rob.mem[217] = (int)(temp % 32000);
+        //var temp = Math.Floor(rob.pos.Y / Form1.instance.yDivisor / 32000) * 32000;
+        //temp = (rob.pos.Y / Form1.instance.yDivisor) - temp;
+        //rob.mem[217] = (int)(temp % 32000);
 
-        if (rob.pos.X < 0)
-            rob.pos.X = 0;
+        //if (rob.pos.X < 0)
+        //    rob.pos.X = 0;
 
-        temp = Math.Floor(rob.pos.X / Form1.instance.xDivisor / 32000) * 32000;
-        temp = (rob.pos.X / Form1.instance.xDivisor) - temp;
-        rob.mem[219] = (int)(temp % 32000);
+        //temp = Math.Floor(rob.pos.X / Form1.instance.xDivisor / 32000) * 32000;
+        //temp = (rob.pos.X / Form1.instance.xDivisor) - temp;
+        //rob.mem[219] = (int)(temp % 32000);
     }
 
     private static void EraseLookOccurr(robot rob)
@@ -407,8 +406,8 @@ internal static class Senses
         rob.mem[refshell] = 0;
         rob.mem[refbody] = 0;
 
-        rob.mem[refxpos] = (int)(rob.lastopppos.X / Form1.instance.xDivisor) % 32000;
-        rob.mem[refypos] = (int)(rob.lastopppos.Y / Form1.instance.yDivisor) % 32000;
+        //rob.mem[refxpos] = (int)(rob.lastopppos.X / Form1.instance.xDivisor) % 32000;
+        //rob.mem[refypos] = (int)(rob.lastopppos.Y / Form1.instance.yDivisor) % 32000;
 
         //give reference variables from the bots frame of reference
         rob.mem[refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[velup];

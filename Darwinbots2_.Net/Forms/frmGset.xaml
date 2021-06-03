@@ -1,119 +1,141 @@
 <Window x:Class="DBNet.Forms.frmGset"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:local="clr-namespace:DBNet.Forms"
-    xmlns:usercontrols="clr-namespace:DBNet.UserControls"
-    mc:Ignorable="d"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
     Title="Global Settings"    Height="438"    Width="800" Loaded="Form_Load">
- <Grid>
-  <Button x:Name="btnOK" Margin="583,377,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="OK" Click="btnOK_Click" />
-  <Button x:Name="btnCancel" Margin="677,377,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Cancel" Click="btnCancel_Click" />
-  <TabControl x:Name="tb" Margin="0,0,0,0" Padding="2,2,2,2" Width="768" Height="370" VerticalAlignment="Top" HorizontalAlignment="Left">
-    <CheckBox x:Name="chkIntRnd" Margin="-4851,137,0,0" Padding="2,2,2,2" Width="241" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use Internet Pictures to seed Randomizer" Click="chkIntRnd_Click" />
-    <CheckBox x:Name="chkEpiGene" Margin="-4963,326,0,0" Padding="2,2,2,2" Width="344" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Save epigenetic memory as a temporary gene when saving robot DNA to file.        Warning: This uses delgene." />
-    <CheckBox x:Name="chkFilter" Margin="-5143,163,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Filter by specific robot" Click="chkFilter_Click" />
-    <Button x:Name="Command1" Margin="-4920,291,0,0" Padding="2,2,2,2" Width="155" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="League Restrictions" Click="Command1_Click" />
-    <Button x:Name="btnEvoRES" Margin="17,249,0,0" Padding="2,2,2,2" Width="155" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Evolution Restrictions" Click="btnEvoRES_Click" />
-    <CheckBox x:Name="chkAddarob" Margin="-5014,137,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Add a single robot to existing league" Click="chkAddarob_Click" />
-    <CheckBox x:Name="chkSurvivalEco" Margin="283,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Eco Survival Mode" Click="chkSurvivalEco_Click" />
-    <CheckBox x:Name="chkZBmode" Margin="171,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Zerobot Mode" Click="chkZBmode_Click" />
-    <GroupBox x:Name="ffmZeroBot" Margin="523,43,0,0" Width="155" Height="78" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Zerobot settings"> <Grid Margin="0,-15,0,0">
-      <TextBox x:Name="txtZlength" Margin="51,34,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="128" LostFocus="txtZlength_LostFocus" />
-      <Label x:Name="lblZlength" Margin="9,26,0,0" Padding="2,2,2,2" Width="44" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial length:" />
-    </Grid> </GroupBox>
-    <CheckBox x:Name="chkSurvivalSimple" Margin="26,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Simple Survival Mode" Click="chkSurvivalSimple_Click" />
-    <GroupBox x:Name="ffmSurvival" Margin="17,43,0,0" Width="490" Height="198" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Survival Mode Settings"> <Grid Margin="0,-15,0,0">
-      <CheckBox x:Name="chkNormSize" Margin="9,171,0,0" Padding="2,2,2,2" Width="190" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Dynamically normalize DNA size" />
-      <CheckBox x:Name="chkIM" Margin="214,171,0,0" Padding="2,2,2,2" Width="138" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Start with IM on" />
-      <TextBox x:Name="txtCycSM" Margin="180,77,0,0" Padding="2,2,2,2" Width="61" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1500" LostFocus="txtCycSM_LostFocus" />
-      <CheckBox x:Name="chkShowGraphs" Margin="9,146,0,0" Padding="2,2,2,2" Width="421" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Auto run Population, Mutation, Total energy graphs with saving enabled" />
-      <TextBox x:Name="txtRob" Margin="9,34,0,0" Padding="2,2,2,2" Width="387" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" />
-      <Button x:Name="btnBrowseRob" Margin="403,34,0,0" Padding="2,2,2,2" Width="78" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Browse..." Click="btnBrowseRob_Click" />
-      <TextBox x:Name="txtLFOR" Margin="197,111,0,0" Padding="2,2,2,2" Width="68" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="2" LostFocus="txtLFOR_LostFocus" />
-      <Button x:Name="btnHelp" Margin="309,118,0,0" Padding="2,2,2,2" Width="18" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="?" Click="btnHelp_Click" />
-      <Label x:Name="lblCycSM" Margin="9,82,0,0" Padding="2,2,2,2" Width="301" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial reintroduction on/off length  XXXXXXXX cycles" />
-      <Label x:Name="lblRob" Margin="9,17,0,0" Padding="2,2,2,2" Width="138" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Source Robot" />
-      <Label x:Name="lblLFOR" Margin="9,117,0,0" Padding="2,2,2,2" Width="395" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial population oscillation reduction   XXXXXXXX units" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmDisqualification" Margin="-5151,266,0,0" Width="215" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Disqualification Rules on Contest"> <Grid Margin="0,-15,0,0">
-      <RadioButton x:Name="optDisqua_2" Margin="137,34,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="F3" />
-      <RadioButton x:Name="optDisqua_1" Margin="86,34,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="F2" />
-      <RadioButton x:Name="optDisqua_0" Margin="17,34,0,0" Padding="2,2,2,2" Width="61" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="None" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmInitChlr" Margin="-5006,249,0,0" Width="404" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Advanced Chloroplast Options"> <Grid Margin="0,-15,0,0">
-      <TextBox x:Name="txtStartChlr" Margin="171,26,0,0" Padding="2,2,2,2" Width="104" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" LostFocus="txtStartChlr_LostFocus" />
-      <Label x:Name="lblStartChlr" Margin="9,31,0,0" Padding="2,2,2,2" Width="378" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Start Repopulating Robots with  XXXXXXXXXXXXX  Chloroplasts" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmFudge" Margin="-5151,189,0,0" Width="395" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Fudging on F1 Contest"> <Grid Margin="0,-15,0,0">
-      <RadioButton x:Name="optFudging_2" Margin="197,34,0,0" Padding="2,2,2,2" Width="190" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="All possible recognition methods" />
-      <RadioButton x:Name="optFudging_1" Margin="103,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Eyes only" />
-      <RadioButton x:Name="optFudging_0" Margin="17,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="None" />
-    </Grid> </GroupBox>
-    <CheckBox x:Name="chkStepladder" Margin="-5143,137,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Stepladder league     (click for more options)" Click="chkStepladder_Click" />
-    <TextBox x:Name="txtSourceDir" Margin="-5143,69,0,0" Padding="2,2,2,2" Width="387" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="C:\" />
-    <CheckBox x:Name="chkTournament" Margin="-5143,111,0,0" Padding="2,2,2,2" Width="130" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Tournament league" Click="chkTournament_Click" />
-    <GroupBox x:Name="ffmSunMut" Margin="-5297,91,0,0" Width="652" Height="270" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Sunline Mutations"> <Grid Margin="0,-15,0,0">
-      <Slider x:Name="sldMain" Margin="506,69,0,0" Padding="2,2,2,2" Width="138" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
-      <TextBox x:Name="txtWTC" Margin="497,137,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" TextChanged="txtWTC_Change" />
-      <TextBox x:Name="txtMxDnalen" Margin="446,197,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMxDnalen_LostFocus" />
-      <TextBox x:Name="txtDnalen" Margin="257,197,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDnalen_LostFocus" />
-      <CheckBox x:Name="chkNorm" Margin="9,171,0,0" Padding="2,2,2,2" Width="430" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Normalize default mutation rates and slowest possible rate based on DNA length" Click="chkNorm_Click" />
-      <TextBox x:Name="txtPMinter" Margin="309,137,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtPMinter_LostFocus" />
-      <TextBox x:Name="txtDevLn" Margin="463,103,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDevLn_LostFocus" />
-      <TextBox x:Name="txtDevExp" Margin="377,103,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDevExp_LostFocus" />
-      <TextBox x:Name="txtMainLn" Margin="446,69,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMainLn_LostFocus" />
-      <TextBox x:Name="txtMainExp" Margin="357,69,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMainExp_LostFocus" />
-      <CheckBox x:Name="chkDelta2" Margin="9,43,0,0" Padding="2,2,2,2" Width="147" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enable Delta2 Mutations" Click="chkDelta2_Click" />
-      <Image x:Name="picIcon" Margin="9,223,0,0" Width="39" Height="39" VerticalAlignment="Top" HorizontalAlignment="Left" />
-      <CheckBox x:Name="chkSunbelt" Margin="9,21,0,0" Padding="2,2,2,2" Width="378" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enable Point2, CopyError2, Amplification, and Translocation Mutations" />
-      <Slider x:Name="sldDev" Margin="506,103,0,0" Padding="2,2,2,2" Width="138" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
-      <Label x:Name="lblD2" Margin="189,86,0,0" Padding="2,2,2,2" Width="438" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Click here for some really advanced delta2 settings."  />
-      <Label x:Name="lblChance" Margin="514,51,0,0" Padding="2,2,2,2" Width="112" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Chance of mutation %" />
-      <Label x:Name="lblWTC" Margin="377,129,0,0" Padding="2,2,2,2" Width="112" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Delta2 for value(s) of what to change:     ±" />
-      <Label x:Name="lblDnalen" Margin="180,197,0,0" Padding="2,2,2,2" Width="318" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="DNA length *    XXXX     Slowest rate DNA length * " />
-      <Label x:Name="lblPMDelta2" Margin="180,129,0,0" Padding="2,2,2,2" Width="121" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Delta2 cycle interval for Point mutations:" />
-      <Label x:Name="lblMmean" Margin="180,103,0,0" Padding="2,2,2,2" Width="310" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Mean/Stddev:    Multiply by (10 ^ ± 1/   XXXX   ) ± Liner" />
-      <Label x:Name="lblMmain" Margin="180,69,0,0" Padding="2,2,2,2" Width="284" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Probablity:    Multiply by (10 ^ ± 1/   XXXX   ) ± Liner" />
-      <Label x:Name="lblExplMut" Margin="51,221,0,0" Padding="2,2,2,2" Width="584" Height="43" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="$&quot;frmGset.frx&quot;:0CB2" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmEpiReset" Margin="-5246,33,0,0" Width="541" Height="52" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Epigenetic Reset"> <Grid Margin="0,-15,0,0">
-      <TextBox x:Name="txtOP" Margin="489,17,0,0" Padding="2,2,2,2" Width="44" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="17" LostFocus="txtOP_LostFocus" />
-      <TextBox x:Name="txtMEmp" Margin="351,17,0,0" Padding="2,2,2,2" Width="44" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1.3" LostFocus="txtMEmp_LostFocus" />
-      <CheckBox x:Name="chkEpiReset" Margin="9,21,0,0" Padding="2,2,2,2" Width="207" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Periodically reset Epigenetic memory" Click="chkEpiReset_Click" />
-      <Label x:Name="lblOP" Margin="403,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="overload point:" />
-      <Label x:Name="lblMEmp" Margin="231,17,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="mutation amplification:" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmFBSBO" Margin="-5006,163,0,0" Width="404" Height="65" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Find Best Settings base on:"> <Grid Margin="0,-15,0,0">
-      <Slider x:Name="sldFindBest" Margin="94,17,0,0" Padding="2,2,2,2" Width="211" Height="41" VerticalAlignment="Top" HorizontalAlignment="Left" />
-      <Label x:Name="lblTP" Margin="9,30,0,0" Padding="2,2,2,2" Width="87" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Total Population" />
-      <Label x:Name="lblIE" Margin="307,30,0,0" Padding="2,2,2,2" Width="86" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Invested Energy" />
-    </Grid> </GroupBox>
-    <CheckBox x:Name="chkSafeMode" Margin="-4989,137,0,0" Padding="2,2,2,2" Width="112" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use Safe Mode" />
-    <GroupBox x:Name="ffmMainDir" Margin="-5006,34,0,0" Width="404" Height="87" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Main Directory"> <Grid Margin="0,-15,0,0">
-      <TextBox x:Name="txtCD" Margin="9,51,0,0" Padding="2,2,2,2" Width="387" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
-      <CheckBox x:Name="chkUseCD" Margin="9,26,0,0" Padding="2,2,2,2" Width="112" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Change Directory" Click="chkUseCD_Click" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="Frame1" Margin="-5349,283,0,0" Width="335" Height="78" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Randomization"> <Grid Margin="0,-15,0,0">
-      <CheckBox x:Name="chkchseedloadsim" Margin="17,43,0,0" Padding="2,2,2,2" Width="305" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Generate new seed when you click" />
-      <CheckBox x:Name="chkchseedstartnew" Margin="17,17,0,0" Padding="2,2,2,2" Width="305" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Generate new seed when you click" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmCheatin" Margin="-5349,170,0,0" Width="335" Height="112" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Cheating Prevention"> <Grid Margin="0,-15,0,0">
-      <CheckBox x:Name="chkGreedy" Margin="17,69,0,0" Padding="2,2,2,2" Width="258" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Kill robots that are excessively greedy to there kids, using them to dump there energy." />
-      <TextBox x:Name="txtBodyFix" Margin="86,34,0,0" Padding="2,2,2,2" Width="104" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32100" LostFocus="txtBodyFix_LostFocus" />
-      <Label x:Name="CheatinLab" Margin="9,17,0,0" Padding="2,2,2,2" Width="318" Height="44" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Kill robots that have more then this amound of body to prevent BigBerthas:" />
-    </Grid> </GroupBox>
-    <GroupBox x:Name="ffmUI" Margin="-5349,26,0,0" Width="335" Height="143" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="UI Settings"> <Grid Margin="0,-15,0,0">
-      <CheckBox x:Name="chkHide" Margin="17,118,0,0" Padding="2,2,2,2" Width="284" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Hide Darwinbots on restart mode in system tray" />
-      <CheckBox x:Name="chkScreenRatio" Margin="17,19,0,0" Padding="2,2,2,2" Width="220" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Fix Screen Ratio when simulation starts" />
-      <CheckBox x:Name="chkGraphUp" Margin="17,98,0,0" Padding="2,2,2,2" Width="284" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Automatically assume to keep updating graphs" />
-      <CheckBox x:Name="chkNoVid" Margin="17,77,0,0" Padding="2,2,2,2" Width="250" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Turn off Video when simulation starts" />
-      <CheckBox x:Name="chkNoBoyMsg" Margin="17,58,0,0" Padding="2,2,2,2" Width="198" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Don" />
-      <CheckBox x:Name="chkOldColor" Margin="17,34,0,0" Padding="2,2,2,2" Width="220" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use old simulation colors" />
-    </Grid> </GroupBox>
-    <Label x:Name="lblSource" Margin="-5143,51,0,0" Padding="2,2,2,2" Width="138" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Source Directory" />
-  </TabControl>
-  <Label x:Name="lbl" Margin="9,386,0,0" Padding="2,2,2,2" Width="532" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Note: To reset all values delete global.gset file from your main directory." />
- </Grid>
+    <Grid>
+        <Button x:Name="btnOK" Margin="583,377,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="OK" Click="btnOK_Click" />
+        <Button x:Name="btnCancel" Margin="677,377,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Cancel" Click="btnCancel_Click" />
+        <TabControl x:Name="tb" Margin="0,0,0,0" Padding="2,2,2,2" Width="768" Height="370" VerticalAlignment="Top" HorizontalAlignment="Left">
+            <CheckBox x:Name="chkIntRnd" Margin="-4851,137,0,0" Padding="2,2,2,2" Width="241" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use Internet Pictures to seed Randomizer" Click="chkIntRnd_Click" />
+            <CheckBox x:Name="chkEpiGene" Margin="-4963,326,0,0" Padding="2,2,2,2" Width="344" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Save epigenetic memory as a temporary gene when saving robot DNA to file.        Warning: This uses delgene." />
+            <CheckBox x:Name="chkFilter" Margin="-5143,163,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Filter by specific robot" Click="chkFilter_Click" />
+            <Button x:Name="Command1" Margin="-4920,291,0,0" Padding="2,2,2,2" Width="155" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="League Restrictions" Click="Command1_Click" />
+            <Button x:Name="btnEvoRES" Margin="17,249,0,0" Padding="2,2,2,2" Width="155" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Evolution Restrictions" Click="btnEvoRES_Click" />
+            <CheckBox x:Name="chkAddarob" Margin="-5014,137,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Add a single robot to existing league" Click="chkAddarob_Click" />
+            <CheckBox x:Name="chkSurvivalEco" Margin="283,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Eco Survival Mode" Click="chkSurvivalEco_Click" />
+            <CheckBox x:Name="chkZBmode" Margin="171,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Zerobot Mode" Click="chkZBmode_Click" />
+            <GroupBox x:Name="ffmZeroBot" Margin="523,43,0,0" Width="155" Height="78" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Zerobot settings">
+                <Grid Margin="0,-15,0,0">
+                    <TextBox x:Name="txtZlength" Margin="51,34,0,0" Padding="2,2,2,2" Width="87" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="128" LostFocus="txtZlength_LostFocus" />
+                    <Label x:Name="lblZlength" Margin="9,26,0,0" Padding="2,2,2,2" Width="44" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial length:" />
+                </Grid>
+            </GroupBox>
+            <CheckBox x:Name="chkSurvivalSimple" Margin="26,291,0,0" Padding="2,2,2,2" Width="164" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Simple Survival Mode" Click="chkSurvivalSimple_Click" />
+            <GroupBox x:Name="ffmSurvival" Margin="17,43,0,0" Width="490" Height="198" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Survival Mode Settings">
+                <Grid Margin="0,-15,0,0">
+                    <CheckBox x:Name="chkNormSize" Margin="9,171,0,0" Padding="2,2,2,2" Width="190" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Dynamically normalize DNA size" />
+                    <CheckBox x:Name="chkIM" Margin="214,171,0,0" Padding="2,2,2,2" Width="138" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Start with IM on" />
+                    <TextBox x:Name="txtCycSM" Margin="180,77,0,0" Padding="2,2,2,2" Width="61" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1500" LostFocus="txtCycSM_LostFocus" />
+                    <CheckBox x:Name="chkShowGraphs" Margin="9,146,0,0" Padding="2,2,2,2" Width="421" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Auto run Population, Mutation, Total energy graphs with saving enabled" />
+                    <TextBox x:Name="txtRob" Margin="9,34,0,0" Padding="2,2,2,2" Width="387" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" />
+                    <Button x:Name="btnBrowseRob" Margin="403,34,0,0" Padding="2,2,2,2" Width="78" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Browse..." Click="btnBrowseRob_Click" />
+                    <TextBox x:Name="txtLFOR" Margin="197,111,0,0" Padding="2,2,2,2" Width="68" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="2" LostFocus="txtLFOR_LostFocus" />
+                    <Button x:Name="btnHelp" Margin="309,118,0,0" Padding="2,2,2,2" Width="18" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="?" Click="btnHelp_Click" />
+                    <Label x:Name="lblCycSM" Margin="9,82,0,0" Padding="2,2,2,2" Width="301" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial reintroduction on/off length  XXXXXXXX cycles" />
+                    <Label x:Name="lblRob" Margin="9,17,0,0" Padding="2,2,2,2" Width="138" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Source Robot" />
+                    <Label x:Name="lblLFOR" Margin="9,117,0,0" Padding="2,2,2,2" Width="395" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Initial population oscillation reduction   XXXXXXXX units" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmDisqualification" Margin="-5151,266,0,0" Width="215" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Disqualification Rules on Contest">
+                <Grid Margin="0,-15,0,0">
+                    <RadioButton x:Name="optDisqua_2" Margin="137,34,0,0" Padding="2,2,2,2" Width="52" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="F3" />
+                    <RadioButton x:Name="optDisqua_1" Margin="86,34,0,0" Padding="2,2,2,2" Width="44" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="F2" />
+                    <RadioButton x:Name="optDisqua_0" Margin="17,34,0,0" Padding="2,2,2,2" Width="61" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="None" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmInitChlr" Margin="-5006,249,0,0" Width="404" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Advanced Chloroplast Options">
+                <Grid Margin="0,-15,0,0">
+                    <TextBox x:Name="txtStartChlr" Margin="171,26,0,0" Padding="2,2,2,2" Width="104" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="0" LostFocus="txtStartChlr_LostFocus" />
+                    <Label x:Name="lblStartChlr" Margin="9,31,0,0" Padding="2,2,2,2" Width="378" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Start Repopulating Robots with  XXXXXXXXXXXXX  Chloroplasts" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmFudge" Margin="-5151,189,0,0" Width="395" Height="70" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Fudging on F1 Contest">
+                <Grid Margin="0,-15,0,0">
+                    <RadioButton x:Name="optFudging_2" Margin="197,34,0,0" Padding="2,2,2,2" Width="190" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="All possible recognition methods" />
+                    <RadioButton x:Name="optFudging_1" Margin="103,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Eyes only" />
+                    <RadioButton x:Name="optFudging_0" Margin="17,34,0,0" Padding="2,2,2,2" Width="78" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="None" />
+                </Grid>
+            </GroupBox>
+            <CheckBox x:Name="chkStepladder" Margin="-5143,137,0,0" Padding="2,2,2,2" Width="387" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Stepladder league     (click for more options)" Click="chkStepladder_Click" />
+            <TextBox x:Name="txtSourceDir" Margin="-5143,69,0,0" Padding="2,2,2,2" Width="387" Height="29" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="C:\" />
+            <CheckBox x:Name="chkTournament" Margin="-5143,111,0,0" Padding="2,2,2,2" Width="130" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Tournament league" Click="chkTournament_Click" />
+            <GroupBox x:Name="ffmSunMut" Margin="-5297,91,0,0" Width="652" Height="270" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Sunline Mutations">
+                <Grid Margin="0,-15,0,0">
+                    <Slider x:Name="sldMain" Margin="506,69,0,0" Padding="2,2,2,2" Width="138" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <TextBox x:Name="txtWTC" Margin="497,137,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" TextChanged="txtWTC_Change" />
+                    <TextBox x:Name="txtMxDnalen" Margin="446,197,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMxDnalen_LostFocus" />
+                    <TextBox x:Name="txtDnalen" Margin="257,197,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDnalen_LostFocus" />
+                    <CheckBox x:Name="chkNorm" Margin="9,171,0,0" Padding="2,2,2,2" Width="430" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Normalize default mutation rates and slowest possible rate based on DNA length" Click="chkNorm_Click" />
+                    <TextBox x:Name="txtPMinter" Margin="309,137,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtPMinter_LostFocus" />
+                    <TextBox x:Name="txtDevLn" Margin="463,103,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDevLn_LostFocus" />
+                    <TextBox x:Name="txtDevExp" Margin="377,103,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtDevExp_LostFocus" />
+                    <TextBox x:Name="txtMainLn" Margin="446,69,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMainLn_LostFocus" />
+                    <TextBox x:Name="txtMainExp" Margin="357,69,0,0" Padding="2,2,2,2" Width="44" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" LostFocus="txtMainExp_LostFocus" />
+                    <CheckBox x:Name="chkDelta2" Margin="9,43,0,0" Padding="2,2,2,2" Width="147" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enable Delta2 Mutations" Click="chkDelta2_Click" />
+                    <Image x:Name="picIcon" Margin="9,223,0,0" Width="39" Height="39" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <CheckBox x:Name="chkSunbelt" Margin="9,21,0,0" Padding="2,2,2,2" Width="378" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Enable Point2, CopyError2, Amplification, and Translocation Mutations" />
+                    <Slider x:Name="sldDev" Margin="506,103,0,0" Padding="2,2,2,2" Width="138" Height="20" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <Label x:Name="lblD2" Margin="189,86,0,0" Padding="2,2,2,2" Width="438" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Click here for some really advanced delta2 settings." />
+                    <Label x:Name="lblChance" Margin="514,51,0,0" Padding="2,2,2,2" Width="112" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Chance of mutation %" />
+                    <Label x:Name="lblWTC" Margin="377,129,0,0" Padding="2,2,2,2" Width="112" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Delta2 for value(s) of what to change:" />
+                    <Label x:Name="lblDnalen" Margin="180,197,0,0" Padding="2,2,2,2" Width="318" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="DNA length *    XXXX     Slowest rate DNA length * " />
+                    <Label x:Name="lblPMDelta2" Margin="180,129,0,0" Padding="2,2,2,2" Width="121" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Delta2 cycle interval for Point mutations:" />
+                    <Label x:Name="lblMmean" Margin="180,103,0,0" Padding="2,2,2,2" Width="310" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Mean/Stddev:    Multiply by (10 ^ ± 1/   XXXX   ) ± Liner" />
+                    <Label x:Name="lblMmain" Margin="180,69,0,0" Padding="2,2,2,2" Width="284" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Probablity:    Multiply by (10 ^ ± 1/   XXXX   ) ± Liner" />
+                    <Label x:Name="lblExplMut" Margin="51,221,0,0" Padding="2,2,2,2" Width="584" Height="43" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="$&quot;frmGset.frx&quot;:0CB2" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmEpiReset" Margin="-5246,33,0,0" Width="541" Height="52" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Epigenetic Reset">
+                <Grid Margin="0,-15,0,0">
+                    <TextBox x:Name="txtOP" Margin="489,17,0,0" Padding="2,2,2,2" Width="44" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="17" LostFocus="txtOP_LostFocus" />
+                    <TextBox x:Name="txtMEmp" Margin="351,17,0,0" Padding="2,2,2,2" Width="44" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="1.3" LostFocus="txtMEmp_LostFocus" />
+                    <CheckBox x:Name="chkEpiReset" Margin="9,21,0,0" Padding="2,2,2,2" Width="207" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Periodically reset Epigenetic memory" Click="chkEpiReset_Click" />
+                    <Label x:Name="lblOP" Margin="403,17,0,0" Padding="2,2,2,2" Width="87" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="overload point:" />
+                    <Label x:Name="lblMEmp" Margin="231,17,0,0" Padding="2,2,2,2" Width="121" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="mutation amplification:" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmFBSBO" Margin="-5006,163,0,0" Width="404" Height="65" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Find Best Settings base on:">
+                <Grid Margin="0,-15,0,0">
+                    <Slider x:Name="sldFindBest" Margin="94,17,0,0" Padding="2,2,2,2" Width="211" Height="41" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                    <Label x:Name="lblTP" Margin="9,30,0,0" Padding="2,2,2,2" Width="87" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Total Population" />
+                    <Label x:Name="lblIE" Margin="307,30,0,0" Padding="2,2,2,2" Width="86" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Invested Energy" />
+                </Grid>
+            </GroupBox>
+            <CheckBox x:Name="chkSafeMode" Margin="-4989,137,0,0" Padding="2,2,2,2" Width="112" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use Safe Mode" />
+            <GroupBox x:Name="ffmMainDir" Margin="-5006,34,0,0" Width="404" Height="87" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Main Directory">
+                <Grid Margin="0,-15,0,0">
+                    <TextBox x:Name="txtCD" Margin="9,51,0,0" Padding="2,2,2,2" Width="387" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="Text1" />
+                    <CheckBox x:Name="chkUseCD" Margin="9,26,0,0" Padding="2,2,2,2" Width="112" Height="14" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Change Directory" Click="chkUseCD_Click" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="Frame1" Margin="-5349,283,0,0" Width="335" Height="78" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Randomization">
+                <Grid Margin="0,-15,0,0">
+                    <CheckBox x:Name="chkchseedloadsim" Margin="17,43,0,0" Padding="2,2,2,2" Width="305" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Generate new seed when you click" />
+                    <CheckBox x:Name="chkchseedstartnew" Margin="17,17,0,0" Padding="2,2,2,2" Width="305" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Generate new seed when you click" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmCheatin" Margin="-5349,170,0,0" Width="335" Height="112" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="Cheating Prevention">
+                <Grid Margin="0,-15,0,0">
+                    <CheckBox x:Name="chkGreedy" Margin="17,69,0,0" Padding="2,2,2,2" Width="258" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Kill robots that are excessively greedy to there kids, using them to dump there energy." />
+                    <TextBox x:Name="txtBodyFix" Margin="86,34,0,0" Padding="2,2,2,2" Width="104" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Text="32100" LostFocus="txtBodyFix_LostFocus" />
+                    <Label x:Name="CheatinLab" Margin="9,17,0,0" Padding="2,2,2,2" Width="318" Height="44" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Kill robots that have more then this amound of body to prevent BigBerthas:" />
+                </Grid>
+            </GroupBox>
+            <GroupBox x:Name="ffmUI" Margin="-5349,26,0,0" Width="335" Height="143" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Header="UI Settings">
+                <Grid Margin="0,-15,0,0">
+                    <CheckBox x:Name="chkHide" Margin="17,118,0,0" Padding="2,2,2,2" Width="284" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Hide Darwinbots on restart mode in system tray" />
+                    <CheckBox x:Name="chkScreenRatio" Margin="17,19,0,0" Padding="2,2,2,2" Width="220" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Fix Screen Ratio when simulation starts" />
+                    <CheckBox x:Name="chkGraphUp" Margin="17,98,0,0" Padding="2,2,2,2" Width="284" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Automatically assume to keep updating graphs" />
+                    <CheckBox x:Name="chkNoVid" Margin="17,77,0,0" Padding="2,2,2,2" Width="250" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Turn off Video when simulation starts" />
+                    <CheckBox x:Name="chkNoBoyMsg" Margin="17,58,0,0" Padding="2,2,2,2" Width="198" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Don" />
+                    <CheckBox x:Name="chkOldColor" Margin="17,34,0,0" Padding="2,2,2,2" Width="220" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Use old simulation colors" />
+                </Grid>
+            </GroupBox>
+            <Label x:Name="lblSource" Margin="-5143,51,0,0" Padding="2,2,2,2" Width="138" Height="27" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Source Directory" />
+        </TabControl>
+        <Label x:Name="lbl" Margin="9,386,0,0" Padding="2,2,2,2" Width="532" Height="18" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Calibri" FontSize="10" Content="Note: To reset all values delete global.gset file from your main directory." />
+    </Grid>
 </Window>

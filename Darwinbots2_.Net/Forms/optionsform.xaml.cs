@@ -841,7 +841,7 @@ namespace DBNet.Forms
         private void ToCosts_Click()
         {
             CostsForm.Show(vbModal);
-            Unload(CostsForm.instance);
+            Unload(CostsForm.Instance);
         }
 
         private void CostRadio_Click(object sender, RoutedEventArgs e) { CostRadio_Click(); }

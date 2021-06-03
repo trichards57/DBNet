@@ -210,7 +210,6 @@ internal static class Globals
             a.mem[GenesSys] = a.genenum;
 
             a.multibot_time = SimOpts.Specie[r].kill_mb ? 210 : 0;
-            a.dq = SimOpts.Specie[r].dq_kill ? 1 : 0;
             a.NoChlr = SimOpts.Specie[r].NoChlr;
 
             for (var i = 0; i < 7; i++)

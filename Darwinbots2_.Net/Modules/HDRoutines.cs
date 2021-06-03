@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Iersera.DataModel;
 using Iersera.Model;
 using Iersera.Support;
@@ -12,7 +11,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using static DNATokenizing;
 using static Globals;
-using static IntOpts;
 using static Master;
 using static Physics;
 using static Robots;
@@ -232,7 +230,7 @@ internal static class HDRoutines
         if (autosaved && x_restartmode == 4)
         {
             x_restartmode = 5;
-            MDIForm1.instance.y_info.setVisible(true);
+            //MDIForm1.instance.y_info.setVisible(true);
         }
         if (autosaved && x_restartmode == 7)
         {
@@ -328,7 +326,7 @@ internal static class HDRoutines
 
     public static async Task LoadSimulation(string path)
     {
-        Form1.instance.camfix = false; //Botsareus 2/23/2013 When simulation starts the screen is normailized
+        //Form1.instance.camfix = false; //Botsareus 2/23/2013 When simulation starts the screen is normailized
 
         var input = await File.ReadAllTextAsync(path);
         var savedFile = JsonSerializer.Deserialize<SavedSimulation>(input);
@@ -462,7 +460,7 @@ internal static class HDRoutines
         SimOpts.MutOscillSine = savedFile.MutOscillSine;
         stagnent = savedFile.Stagnent;
 
-        Form1.instance.lblSaving.Visibility = Visibility.Hidden; //Botsareus 1/14/2014
+        //Form1.instance.lblSaving.Visibility = Visibility.Hidden; //Botsareus 1/14/2014
 
         TmpOpts = SimOpts;
     }
@@ -743,7 +741,6 @@ internal static class HDRoutines
     {
         var data = new PopulationData
         {
-            IName = IName,
             Species = SimOpts.Specie.Select(s => new SpeciesPopulationData
             {
                 Name = s.Name,
@@ -890,96 +887,96 @@ internal static class HDRoutines
 
     private static void LoadGraphs(IEnumerable<SavedGraph> graphs)
     {
-        var graphsArray = graphs.ToArray();
+        //var graphsArray = graphs.ToArray();
 
-        for (var i = 0; i < graphsArray.Length; i++)
-        {
-            var g = graphsArray[i];
+        //for (var i = 0; i < graphsArray.Length; i++)
+        //{
+        //    var g = graphsArray[i];
 
-            graphfilecounter[i] = g.FileCounter;
-            graphvisible[i] = g.Visible;
-            graphleft[i] = g.Left;
-            graphtop[i] = g.Top;
-            graphsave[i] = g.Save;
+        //    graphfilecounter[i] = g.FileCounter;
+        //    graphvisible[i] = g.Visible;
+        //    graphleft[i] = g.Left;
+        //    graphtop[i] = g.Top;
+        //    graphsave[i] = g.Save;
 
-            if (g.Visible)
-            {
-                switch (i)
-                {
-                    case 1:
-                        Form1.instance.NewGraph(POPULATION_GRAPH, "Populations");
-                        break;
+        //    if (g.Visible)
+        //    {
+        //        switch (i)
+        //        {
+        //            case 1:
+        //                Form1.instance.NewGraph(POPULATION_GRAPH, "Populations");
+        //                break;
 
-                    case 2:
-                        Form1.instance.NewGraph(MUTATIONS_GRAPH, "Average_Mutations");
-                        break;
+        //            case 2:
+        //                Form1.instance.NewGraph(MUTATIONS_GRAPH, "Average_Mutations");
+        //                break;
 
-                    case 3:
-                        Form1.instance.NewGraph(AVGAGE_GRAPH, "Average_Age");
-                        break;
+        //            case 3:
+        //                Form1.instance.NewGraph(AVGAGE_GRAPH, "Average_Age");
+        //                break;
 
-                    case 4:
-                        Form1.instance.NewGraph(OFFSPRING_GRAPH, "Average_Offspring");
-                        break;
+        //            case 4:
+        //                Form1.instance.NewGraph(OFFSPRING_GRAPH, "Average_Offspring");
+        //                break;
 
-                    case 5:
-                        Form1.instance.NewGraph(ENERGY_GRAPH, "Average_Energy");
-                        break;
+        //            case 5:
+        //                Form1.instance.NewGraph(ENERGY_GRAPH, "Average_Energy");
+        //                break;
 
-                    case 6:
-                        Form1.instance.NewGraph(DNALENGTH_GRAPH, "Average_DNA_length");
-                        break;
+        //            case 6:
+        //                Form1.instance.NewGraph(DNALENGTH_GRAPH, "Average_DNA_length");
+        //                break;
 
-                    case 7:
-                        Form1.instance.NewGraph(DNACOND_GRAPH, "Average_DNA_Cond_statements");
-                        break;
+        //            case 7:
+        //                Form1.instance.NewGraph(DNACOND_GRAPH, "Average_DNA_Cond_statements");
+        //                break;
 
-                    case 8:
-                        Form1.instance.NewGraph(MUT_DNALENGTH_GRAPH, "Average_Mutations_per_DNA_length_x1000-");
-                        break;
+        //            case 8:
+        //                Form1.instance.NewGraph(MUT_DNALENGTH_GRAPH, "Average_Mutations_per_DNA_length_x1000-");
+        //                break;
 
-                    case 9:
-                        Form1.instance.NewGraph(ENERGY_SPECIES_GRAPH, "Total_Energy_per_Species_x1000-");
-                        break;
+        //            case 9:
+        //                Form1.instance.NewGraph(ENERGY_SPECIES_GRAPH, "Total_Energy_per_Species_x1000-");
+        //                break;
 
-                    case 10:
-                        Form1.instance.NewGraph(DYNAMICCOSTS_GRAPH, "Dynamic_Costs");
-                        break;
+        //            case 10:
+        //                Form1.instance.NewGraph(DYNAMICCOSTS_GRAPH, "Dynamic_Costs");
+        //                break;
 
-                    case 11:
-                        Form1.instance.NewGraph(SPECIESDIVERSITY_GRAPH, "Species_Diversity");
-                        break;
+        //            case 11:
+        //                Form1.instance.NewGraph(SPECIESDIVERSITY_GRAPH, "Species_Diversity");
+        //                break;
 
-                    case 12:
-                        Form1.instance.NewGraph(AVGCHLR_GRAPH, "Average_Chloroplasts");
-                        break;
+        //            case 12:
+        //                Form1.instance.NewGraph(AVGCHLR_GRAPH, "Average_Chloroplasts");
+        //                break;
 
-                    case 13:
-                        Form1.instance.NewGraph(GENETIC_DIST_GRAPH, "Genetic_Distance_x1000-");
-                        break;
+        //            case 13:
+        //                Form1.instance.NewGraph(GENETIC_DIST_GRAPH, "Genetic_Distance_x1000-");
+        //                break;
 
-                    case 14:
-                        Form1.instance.NewGraph(GENERATION_DIST_GRAPH, "Max_Generational_Distance");
-                        break;
+        //            case 14:
+        //                Form1.instance.NewGraph(GENERATION_DIST_GRAPH, "Max_Generational_Distance");
+        //                break;
 
-                    case 15:
-                        Form1.instance.NewGraph(GENETIC_SIMPLE_GRAPH, "Simple_Genetic_Distance_x1000-");
-                        break;
+        //            case 15:
+        //                Form1.instance.NewGraph(GENETIC_SIMPLE_GRAPH, "Simple_Genetic_Distance_x1000-");
+        //                break;
 
-                    case 16:
-                        Form1.instance.NewGraph(CUSTOM_1_GRAPH, "Customizable_Graph_1-");
-                        break;
+        //            case 16:
+        //                Form1.instance.NewGraph(CUSTOM_1_GRAPH, "Customizable_Graph_1-");
+        //                break;
 
-                    case 17:
-                        Form1.instance.NewGraph(CUSTOM_2_GRAPH, "Customizable_Graph_2-");
-                        break;
+        //            case 17:
+        //                Form1.instance.NewGraph(CUSTOM_2_GRAPH, "Customizable_Graph_2-");
+        //                break;
 
-                    case 18:
-                        Form1.instance.NewGraph(CUSTOM_3_GRAPH, "Customizable_Graph_3-");
-                        break;
-                }
-            }
-        }
+        //            case 18:
+        //                Form1.instance.NewGraph(CUSTOM_3_GRAPH, "Customizable_Graph_3-");
+        //                break;
+        //        }
+        //    }
+        //}
     }
 
     private static SavedGraph SaveGraphs(int i)

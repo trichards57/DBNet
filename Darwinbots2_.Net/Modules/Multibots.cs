@@ -1,10 +1,8 @@
-using DBNet.Forms;
 using Iersera.Model;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static BucketManager;
-using static Robots;
 
 internal static class Multibots
 {
@@ -16,13 +14,13 @@ internal static class Multibots
 
     public static async Task KillOrganism(robot rob)
     {
-        var temp = MDIForm1.instance.nopoff;
-        MDIForm1.instance.nopoff = true;
+        //var temp = MDIForm1.instance.nopoff;
+        //MDIForm1.instance.nopoff = true;
 
-        foreach (var c in ListCells(rob))
-            await KillRobot(c);
+        //foreach (var c in ListCells(rob))
+        //    await KillRobot(c);
 
-        MDIForm1.instance.nopoff = temp;
+        //MDIForm1.instance.nopoff = temp;
     }
 
     public static IEnumerable<robot> ListCells(robot rob, HashSet<robot> checkedBots = null)

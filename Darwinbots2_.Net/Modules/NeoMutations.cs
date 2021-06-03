@@ -1,9 +1,7 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
@@ -258,23 +256,23 @@ internal static class NeoMutations
         //Botsareus 12/17/2013 Figure dna length
         var len = 0;
 
-        if (NormMut && !skipNorm)
-        {
-            if (optionsform.instance.CurrSpec == 50 || optionsform.instance.CurrSpec == -1)
-                len = robfocus.dna.Count;
-            else
-            {
-                var robot = new robot();
+        //if (NormMut && !skipNorm)
+        //{
+        //    if (optionsform.instance.CurrSpec == 50 || optionsform.instance.CurrSpec == -1)
+        //        len = robfocus.dna.Count;
+        //    else
+        //    {
+        //        var robot = new robot();
 
-                var path = Path.Combine(TmpOpts.Specie[optionsform.instance.CurrSpec].path, TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
+        //        var path = Path.Combine(TmpOpts.Specie[optionsform.instance.CurrSpec].path, TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
 
-                if (!File.Exists(path))
-                    path = Path.Combine("Robots", TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
+        //        if (!File.Exists(path))
+        //            path = Path.Combine("Robots", TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
 
-                if (await LoadDNA(path, robot))
-                    len = DnaLen(robot.dna);
-            }
-        }
+        //        if (await LoadDNA(path, robot))
+        //            len = DnaLen(robot.dna);
+        //    }
+        //}
 
         for (var a = 0; a < 20; a++)
         {

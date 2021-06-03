@@ -6,11 +6,61 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Forms\datirob.xaml.cs" />
+    <Compile Remove="Forms\DNA_Help.xaml.cs" />
+    <Compile Remove="Forms\EnergyForm.xaml.cs" />
+    <Compile Remove="Forms\Form1.xaml.cs" />
+    <Compile Remove="Forms\frmAbout.xaml.cs" />
+    <Compile Remove="Forms\frmEYE.xaml.cs" />
+    <Compile Remove="Forms\frmFirstTimeInfo.xaml.cs" />
+    <Compile Remove="Forms\frmGset.xaml.cs" />
+    <Compile Remove="Forms\frmMonitorSet.xaml.cs" />
+    <Compile Remove="Forms\frmPBMode.xaml.cs" />
+    <Compile Remove="Forms\frmRestriOps.xaml.cs" />
+    <Compile Remove="Forms\grafico.xaml.cs" />
+    <Compile Remove="Forms\InfoForm.xaml.cs" />
+    <Compile Remove="Forms\MDIForm1.xaml.cs" />
+    <Compile Remove="Forms\MutationsProbability.xaml.cs" />
+    <Compile Remove="Forms\NetEvent.xaml.cs" />
+    <Compile Remove="Forms\ObstacleForm.xaml.cs" />
+    <Compile Remove="Forms\optionsform.xaml.cs" />
+    <Compile Remove="Forms\parentele.xaml.cs" />
+    <Compile Remove="Forms\PhysicsOptions.xaml.cs" />
+    <Compile Remove="Forms\TeleportForm.xaml.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Forms\datirob.xaml" />
+    <Page Remove="Forms\DNA_Help.xaml" />
+    <Page Remove="Forms\EnergyForm.xaml" />
+    <Page Remove="Forms\Form1.xaml" />
+    <Page Remove="Forms\frmAbout.xaml" />
+    <Page Remove="Forms\frmEYE.xaml" />
+    <Page Remove="Forms\frmFirstTimeInfo.xaml" />
+    <Page Remove="Forms\frmGset.xaml" />
+    <Page Remove="Forms\frmMonitorSet.xaml" />
+    <Page Remove="Forms\frmPBMode.xaml" />
+    <Page Remove="Forms\frmRestriOps.xaml" />
+    <Page Remove="Forms\grafico.xaml" />
+    <Page Remove="Forms\InfoForm.xaml" />
+    <Page Remove="Forms\MDIForm1.xaml" />
+    <Page Remove="Forms\MutationsProbability.xaml" />
+    <Page Remove="Forms\NetEvent.xaml" />
+    <Page Remove="Forms\ObstacleForm.xaml" />
+    <Page Remove="Forms\optionsform.xaml" />
+    <Page Remove="Forms\parentele.xaml" />
+    <Page Remove="Forms\PhysicsOptions.xaml" />
+    <Page Remove="Forms\TeleportForm.xaml" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.211942">
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.227701">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+    <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
     <PackageReference Include="stdole" Version="16.9.31023.347" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="App.xaml" />
   </ItemGroup>
 </Project>

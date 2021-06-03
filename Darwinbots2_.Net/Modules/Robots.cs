@@ -1,4 +1,3 @@
-using DBNet.Forms;
 using Iersera.Model;
 using Iersera.Support;
 using System;
@@ -292,8 +291,8 @@ internal static class Robots
         rob.exist = false; // do this after deleting the ties...
         UpdateBotBucket(rob);
 
-        if (!MDIForm1.instance.nopoff)
-            MakePoff(rob);
+        //if (!MDIForm1.instance.nopoff)
+        //    MakePoff(rob);
 
         if (rob.virusshot != null)
         {
@@ -449,7 +448,6 @@ internal static class Robots
         if (rob.multibot_time > 0)
             nuovo.multibot_time = rob.multibot_time / 2 + 2;
 
-        nuovo.dq = rob.dq;
         nuovo.Vtimer = 0;
         nuovo.virusshot = null;
 
@@ -774,7 +772,6 @@ internal static class Robots
         if (female.multibot_time > 0)
             nuovo.multibot_time = female.multibot_time / 2 + 2;
 
-        nuovo.dq = female.dq;
         nuovo.Vtimer = 0;
         nuovo.virusshot = null;
 
