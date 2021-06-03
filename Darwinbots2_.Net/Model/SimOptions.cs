@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Iersera.Modules;
+using System.Collections.Generic;
 
 namespace Iersera.Model
 {
@@ -15,7 +16,7 @@ namespace Iersera.Model
         public bool CorpseEnabled { get; set; }
         public double CostExecCond { get; set; }
         public int CostRadioSetting { get; set; }
-        public double[] Costs { get; set; } = new double[70];
+        public Costs Costs { get; set; } = new Costs();
         public int CycleLength { get; set; }
         public double CycSec { get; set; }
         public bool DayNight { get; set; }

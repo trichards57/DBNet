@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
+    <StartupObject>Iesera.App</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Forms\datirob.xaml.cs" />

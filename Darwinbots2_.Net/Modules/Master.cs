@@ -91,11 +91,11 @@ internal static class Master
                 //We don't muck with it if the bots are within X% of the target.  If they are outside the target, then
                 //we adjust only if the populatiuon isn't heading towards the range and then we do it my an amount that is a function
                 //of how far of the range we are (not how far from the target itself) and the sensitivity set in the sim
-                SimOpts.Costs[COSTMULTIPLIER] = SimOpts.Costs[COSTMULTIPLIER] + (0.0000001 * CorrectionAmount * Math.Sign(AmountOff) * SimOpts.Costs[DYNAMICCOSTSENSITIVITY]);
+                SimOpts.Costs.CostMultiplier = SimOpts.Costs[COSTMULTIPLIER] + (0.0000001 * CorrectionAmount * Math.Sign(AmountOff) * SimOpts.Costs[DYNAMICCOSTSENSITIVITY]);
 
                 //Don't let the costs go negative if the user doesn't want them to
                 if ((SimOpts.Costs[ALLOWNEGATIVECOSTX] != 1) && SimOpts.Costs[COSTMULTIPLIER] < 0)
-                    SimOpts.Costs[COSTMULTIPLIER] = 0;
+                    SimOpts.Costs.CostMultiplier = 0;
 
                 DynamicCountdown = 10; // Reset the countdown timer
             }
@@ -105,12 +105,12 @@ internal static class Master
         {
             CostsWereZeroed = true;
             SimOpts.OldCostX = SimOpts.Costs[COSTMULTIPLIER];
-            SimOpts.Costs[COSTMULTIPLIER] = 0; // The population has fallen below the threshold to 0 all costs
+            SimOpts.Costs.CostMultiplier = 0; // The population has fallen below the threshold to 0 all costs
         }
         else if ((CurrentPopulation > SimOpts.Costs[COSTXREINSTATEMENTLEVEL]) && CostsWereZeroed)
         {
             CostsWereZeroed = false; // Set the flag so we don't do this again unless they get zeored again
-            SimOpts.Costs[COSTMULTIPLIER] = SimOpts.OldCostX;
+            SimOpts.Costs.CostMultiplier = SimOpts.OldCostX;
         }
 
         if (hidepred)

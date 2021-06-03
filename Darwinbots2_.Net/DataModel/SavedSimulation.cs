@@ -1,4 +1,5 @@
 ﻿using Iersera.Model;
+using Iersera.Modules;
 using System.Collections.Generic;
 
 namespace Iersera.DataModel
@@ -16,7 +17,7 @@ namespace Iersera.DataModel
         public bool CorpseEnabled { get; internal set; }
         public double CostExecCond { get; internal set; }
         public int CostRadioSetting { get; internal set; }
-        public double[] Costs { get; internal set; }
+        public Costs Costs { get; internal set; }
         public int CycleLength { get; internal set; }
         public bool DayNight { get; internal set; }
         public int DayNightCycleCounter { get; internal set; }
