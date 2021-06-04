@@ -17,14 +17,13 @@
     <Compile Remove="Forms\frmGset.xaml.cs" />
     <Compile Remove="Forms\frmMonitorSet.xaml.cs" />
     <Compile Remove="Forms\frmPBMode.xaml.cs" />
-    <Compile Remove="Forms\frmRestriOps.xaml.cs" />
     <Compile Remove="Forms\grafico.xaml.cs" />
     <Compile Remove="Forms\InfoForm.xaml.cs" />
     <Compile Remove="Forms\MDIForm1.xaml.cs" />
     <Compile Remove="Forms\MutationsProbability.xaml.cs" />
     <Compile Remove="Forms\NetEvent.xaml.cs" />
     <Compile Remove="Forms\ObstacleForm.xaml.cs" />
-    <Compile Remove="Forms\optionsform.xaml.cs" />
+    <Compile Remove="Forms\OptionsForm.xaml.cs" />
     <Compile Remove="Forms\parentele.xaml.cs" />
     <Compile Remove="Forms\PhysicsOptions.xaml.cs" />
     <Compile Remove="Forms\TeleportForm.xaml.cs" />
@@ -40,19 +39,19 @@
     <Page Remove="Forms\frmGset.xaml" />
     <Page Remove="Forms\frmMonitorSet.xaml" />
     <Page Remove="Forms\frmPBMode.xaml" />
-    <Page Remove="Forms\frmRestriOps.xaml" />
     <Page Remove="Forms\grafico.xaml" />
     <Page Remove="Forms\InfoForm.xaml" />
     <Page Remove="Forms\MDIForm1.xaml" />
     <Page Remove="Forms\MutationsProbability.xaml" />
     <Page Remove="Forms\NetEvent.xaml" />
     <Page Remove="Forms\ObstacleForm.xaml" />
-    <Page Remove="Forms\optionsform.xaml" />
+    <Page Remove="Forms\OptionsForm.xaml" />
     <Page Remove="Forms\parentele.xaml" />
     <Page Remove="Forms\PhysicsOptions.xaml" />
     <Page Remove="Forms\TeleportForm.xaml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="5.1.0" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.227701">
       <PrivateAssets>all</PrivateAssets>

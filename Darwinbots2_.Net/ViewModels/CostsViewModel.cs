@@ -43,6 +43,11 @@ namespace Iersera.ViewModels
         private double _voluntaryMovementCost;
         private int _zeroCostPopulationLimit;
 
+        public CostsViewModel()
+        {
+            RestoreDefaultsCommand = new RelayCommand(RestoreDefaults);
+        }
+
         public double AdvancedCommandCost { get => _advancedCommandCost; set { _advancedCommandCost = value; RaisePropertyChanged(); } }
         public double AgeCost { get => _ageCost; set { _ageCost = value; RaisePropertyChanged(); } }
         public int AgeCostBeginAge { get => _ageCostBeginAge; set { _ageCostBeginAge = value; RaisePropertyChanged(); } }
@@ -92,7 +97,7 @@ namespace Iersera.ViewModels
         public double NumberCost { get => _numberCost; set { _numberCost = value; RaisePropertyChanged(); } }
         public double PoisonCost { get => _poisonCost; set { _poisonCost = value; RaisePropertyChanged(); } }
         public int ReinstateCostPopulationLimit { get => _reinstateCostPopulationLimit; set { _reinstateCostPopulationLimit = value; RaisePropertyChanged(); } }
-        public ICommand RestoreDefaultsCommand => new RelayCommand(() => RestoreDefaults());
+        public ICommand RestoreDefaultsCommand { get; }
         public double RotationCost { get => _rotationCost; set { _rotationCost = value; RaisePropertyChanged(); } }
         public double ShellCost { get => _shellCost; set { _shellCost = value; RaisePropertyChanged(); } }
         public double ShotFormationCost { get => _shotFormationCost; set { _shotFormationCost = value; RaisePropertyChanged(); } }

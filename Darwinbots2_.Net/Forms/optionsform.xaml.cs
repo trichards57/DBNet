@@ -107,13 +107,9 @@ using static DBNet.Forms.frmFirstTimeInfo;
 
 namespace DBNet.Forms
 {
-    public partial class optionsform : Window
+    public partial class OptionsForm : Window
     {
-        private static optionsform _instance;
-        public static optionsform instance { set { _instance = null; } get { return _instance ?? (_instance = new optionsform()); } }
-        public static void Load() { if (_instance == null) { dynamic A = optionsform.instance; } }
-        public static void Unload() { if (_instance != null) instance.Close(); _instance = null; }
-        public optionsform() { InitializeComponent(); }
+        public OptionsForm() { InitializeComponent(); }
 
 
         //Botsareus 5/8/2012 Selected the first tab to be the default when window first opens (vb generated code above may have changed)
