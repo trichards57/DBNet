@@ -708,9 +708,9 @@ Private Sub DrawRobAim(n As Integer)
     
     If MDIForm1.displayMovementVectorsToggle Then
       'Draw the voluntary movement vectors
-      If .lastup <> 0 Then
-        If .lastup < -1000 Then rob(n).lastup = -1000
-        If .lastup > 1000 Then rob(n).lastup = 1000
+      If rob(n).lastup <> 0 Then
+        If rob(n).lastup < -1000 Then rob(n).lastup = -1000
+        If rob(n).lastup > 1000 Then rob(n).lastup = 1000
         vol = VectorAdd(pos2, VectorScalar(pos, CSng(rob(n).lastup)))
         Line (pos2.x, pos2.y)-(vol.x, vol.y), rob(n).color
         
@@ -799,7 +799,7 @@ Private Sub DrawRobSkin(n As Integer)
       For t = 2 To 6 Step 2
         rob(n).OSkin(t) = (Cos(rob(n).Skin(t + 1) / 100 - rob(n).aim) * rob(n).Skin(t)) * rob(n).radius / 60
         rob(n).OSkin(t + 1) = (Sin(rob(n).Skin(t + 1) / 100 - rob(n).aim) * rob(n).Skin(t)) * rob(n).radius / 60
-        Line -(rob(n).OSkin(t) + .pos.x, rob(n).OSkin(t + 1) + rob(n).pos.y), rob(n).color
+        Line -(rob(n).OSkin(t) + rob(n).pos.x, rob(n).OSkin(t + 1) + rob(n).pos.y), rob(n).color
       Next
       rob(n).oaim = rob(n).aim
     Else
@@ -842,7 +842,7 @@ Private Sub DrawRobTies(t As Integer, w As Integer, ByVal s As Integer)
       End If
     End If
     k = k + 1
-  End With
+  Wend
 End Sub
 
 ' draws ties if ties colouring used
@@ -1257,7 +1257,7 @@ Sub StartSimul()
   Dim oo As Integer
   For o = 1 To UBound(xObstacle)
     If xObstacle(o).exist Then
-      oo = NewObstacle(.pos.x * SimOpts.FieldWidth, xObstacle(o).pos.y * SimOpts.FieldHeight, xObstacle(o).Width * SimOpts.FieldWidth, xObstacle(o).Height * SimOpts.FieldHeight)
+      oo = NewObstacle(xObstacle(o).pos.x * SimOpts.FieldWidth, xObstacle(o).pos.y * SimOpts.FieldHeight, xObstacle(o).Width * SimOpts.FieldWidth, xObstacle(o).Height * SimOpts.FieldHeight)
       Obstacles.Obstacles(oo).color = xObstacle(o).color
       Obstacles.Obstacles(oo).vel = xObstacle(o).vel
     End If
@@ -2338,7 +2338,7 @@ Private Sub CalcStats(ByRef nomi, ByRef dati, graphNum As Integer) 'Botsareus 8/
                 copyl = 0
     
                 For x = t + 1 To MaxRobs 'search trough all robots and figure out genetic distance for the once that have enough mutations
-                If rob(x).exist And Not rob(x).Corpse And rob(x).FName = .FName And rob(x).GenMut = 0 Then  ' Must exist, have enugh mutations, and be of same species
+                If rob(x).exist And Not rob(x).Corpse And rob(x).FName = rob(t).FName And rob(x).GenMut = 0 Then  ' Must exist, have enugh mutations, and be of same species
                     l = DoGeneticDistance(t, x) * 1000
                     If l > copyl Then copyl = l 'here we store the max genetic distance for a given robot
                 End If

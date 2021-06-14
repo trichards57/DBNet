@@ -3,6 +3,30 @@ using System.Collections.Generic;
 
 namespace Iersera.Model
 {
+    public enum DecayType
+    {
+        None = 0,
+        Waste = 1,
+        Energy = 2
+    }
+    public enum ShotMode
+    {
+        Proportional,
+        Fixed
+    }
+    public enum FieldMode
+    {
+        Fluid,
+        Solid,
+        Custom
+    }
+
+    public enum CostSetting
+    {
+        None,
+        Custom,
+    }
+
     public class SimOptions
     {
         public bool AllowHorizontalShapeDrift { get; set; }
@@ -15,7 +39,7 @@ namespace Iersera.Model
         public double CoefficientStatic { get; set; }
         public bool CorpseEnabled { get; set; }
         public double CostExecCond { get; set; }
-        public int CostRadioSetting { get; set; }
+        public CostSetting CostRadioSetting { get; set; }
         public Costs Costs { get; set; } = new Costs();
         public int CycleLength { get; set; }
         public double CycSec { get; set; }
@@ -25,7 +49,7 @@ namespace Iersera.Model
         public bool DeadRobotSnp { get; set; }
         public double Decay { get; set; }
         public int Decaydelay { get; set; }
-        public int DecayType { get; set; }
+        public DecayType DecayType { get; set; }
         public double Density { get; set; }
         public double Diffuse { get; set; }
         public bool DisableFixing { get; set; }
@@ -37,7 +61,7 @@ namespace Iersera.Model
         public bool EGridEnabled { get; set; }
         public int EGridWidth { get; set; }
         public bool EnableAutoSpeciation { get; set; }
-        public bool EnergyExType { get; set; }
+        public ShotMode EnergyExType { get; set; }
         public int EnergyFix { get; set; }
         public double EnergyProp { get; set; }
         public bool F1 { get; set; }
@@ -45,7 +69,7 @@ namespace Iersera.Model
         public int FieldSize { get; set; }
         public int FieldWidth { get; set; }
         public bool FixedBotRadii { get; set; }
-        public int FluidSolidCustom { get; set; }
+        public FieldMode FluidSolidCustom { get; set; }
         public double Gradient { get; set; }
         public bool KillDistVegs { get; set; }
         public bool League { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Iersera.Modules
 {
-    public class Costs
+    public struct Costs
     {
         public double AdvancedCommandCost { get; set; }
         public double AgeCost { get; set; }
@@ -40,6 +40,49 @@ namespace Iersera.Modules
         public double VenomCost { get; set; }
         public double VoluntaryMovementCost { get; set; }
         public int ZeroCostPopulationLimit { get; set; }
+
+        public static Costs ZeroCosts()
+        {
+            return new Costs
+            {
+                AdvancedCommandCost = 0,
+                AgeCost = 0,
+                AgeCostIncreasePerCycle = 0,
+                EnableAgeCostIncreasePerCycle = false,
+                EnableAgeCostIncreaseLog = false,
+                AgeCostBeginAge = 0,
+                AllowMultiplerToGoNegative = false,
+                BasicCommandCost = 0,
+                BodyUpkeepCost = 0,
+                ZeroCostPopulationLimit = 0,
+                BitwiseCommandCost = 0,
+                CholorplastCost = 0,
+                ConditionCost = 0,
+                CostMultiplier = 0,
+                StoresCost = 0,
+                ReinstateCostPopulationLimit = 0,
+                DnaCopyCost = 0,
+                DnaUpkeepCost = 0,
+                DotNumberCost = 0,
+                DynamicCostsIncludePlants = false,
+                FlowCommandCost = 0,
+                LogicCost = 0,
+                VoluntaryMovementCost = 0,
+                NumberCost = 0,
+                PoisonCost = 0,
+                ShellCost = 0,
+                ShotFormationCost = 0,
+                SlimeCost = 0,
+                TieFormationCost = 0,
+                RotationCost = 0,
+                EnableDynamicCosts = false,
+                VenomCost = 0,
+                DynamicCostsTargetPopulation = 0,
+                DynamicCostsSensitivity = 0,
+                DynamicCostsUpperRangeTarget = 0,
+                DynamicCostsLowerRangeTarget = 0,
+            };
+        }
 
         [Obsolete("Use direct property access")]
         public double this[int index] => index switch

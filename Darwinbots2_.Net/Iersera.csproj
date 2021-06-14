@@ -23,7 +23,6 @@
     <Compile Remove="Forms\MutationsProbability.xaml.cs" />
     <Compile Remove="Forms\NetEvent.xaml.cs" />
     <Compile Remove="Forms\ObstacleForm.xaml.cs" />
-    <Compile Remove="Forms\OptionsForm.xaml.cs" />
     <Compile Remove="Forms\parentele.xaml.cs" />
     <Compile Remove="Forms\PhysicsOptions.xaml.cs" />
     <Compile Remove="Forms\TeleportForm.xaml.cs" />
@@ -45,7 +44,6 @@
     <Page Remove="Forms\MutationsProbability.xaml" />
     <Page Remove="Forms\NetEvent.xaml" />
     <Page Remove="Forms\ObstacleForm.xaml" />
-    <Page Remove="Forms\OptionsForm.xaml" />
     <Page Remove="Forms\parentele.xaml" />
     <Page Remove="Forms\PhysicsOptions.xaml" />
     <Page Remove="Forms\TeleportForm.xaml" />
@@ -58,6 +56,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
     <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
+    <PackageReference Include="PostSharp" Version="6.9.6" />
+    <PackageReference Include="PostSharp.Patterns.Model" Version="6.9.6" />
     <PackageReference Include="stdole" Version="16.9.31023.347" />
   </ItemGroup>
   <ItemGroup>

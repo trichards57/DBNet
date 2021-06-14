@@ -1,9 +1,12 @@
 ﻿using AsyncAwaitBestPractices.MVVM;
 using GalaSoft.MvvmLight;
 using Iersera.DataModel;
+using Iersera.Model;
 using Microsoft.Win32;
+using PostSharp.Patterns.Model;
 using System;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
@@ -11,32 +14,11 @@ using System.Windows.Input;
 
 namespace Iersera.ViewModels
 {
+    [NotifyPropertyChanged]
     internal class RestrictionOptionsViewModel : ViewModelBase
     {
         private RestrictionOptionsDialogState _dialogState;
-        private bool _disableChloroplastsNonVeg;
-        private bool _disableDnaNonVeg;
-        private bool _disableDnaVeg;
-        private bool _disableMotionNonVeg;
-        private bool _disableMotionVeg;
-        private bool _disableMutationsNonVeg;
-        private bool _disableMutationsVeg;
-        private bool _disableReproductionNonVeg;
-        private bool _disableReproductionVeg;
-        private bool _disableVisionNonVeg;
-        private bool _disableVisionVeg;
-        private bool _fixedInPlaceNonVeg;
-        private bool _fixedInPlaceVeg;
-        private bool _killNonMultibotNonVeg;
-        private bool _killNonMultibotVeg;
-        private bool _showNonVegetablePropertySettings;
-        private bool _showNonVegetableSettings;
-        private bool _showVegetablePropertySettings;
-        private bool _showVegetableSettings;
-        private string _title;
-        private bool _virusImmuneNonVeg;
-        private bool _virusImmuneVeg;
-        private string speciesName;
+        private string _speciesName;
 
         public RestrictionOptionsViewModel()
         {
@@ -58,63 +40,41 @@ namespace Iersera.ViewModels
             }
         }
 
-        public bool DisableChloroplastsNonVeg { get => _disableChloroplastsNonVeg; set { _disableChloroplastsNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableDnaNonVeg { get => _disableDnaNonVeg; set { _disableDnaNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableDnaVeg { get => _disableDnaVeg; set { _disableDnaVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableMotionNonVeg { get => _disableMotionNonVeg; set { _disableMotionNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableMotionVeg { get => _disableMotionVeg; set { _disableMotionVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableMutationsNonVeg { get => _disableMutationsNonVeg; set { _disableMutationsNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableMutationsVeg { get => _disableMutationsVeg; set { _disableMutationsVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableReproductionNonVeg { get => _disableReproductionNonVeg; set { _disableReproductionNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableReproductionVeg { get => _disableReproductionVeg; set { _disableReproductionVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableVisionNonVeg { get => _disableVisionNonVeg; set { _disableVisionNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool DisableVisionVeg { get => _disableVisionVeg; set { _disableVisionVeg = value; RaisePropertyChanged(); } }
-
-        public bool FixedInPlaceNonVeg { get => _fixedInPlaceNonVeg; set { _fixedInPlaceNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool FixedInPlaceVeg { get => _fixedInPlaceVeg; set { _fixedInPlaceVeg = value; RaisePropertyChanged(); } }
-
-        public bool KillNonMultibotNonVeg { get => _killNonMultibotNonVeg; set { _killNonMultibotNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool KillNonMultibotVeg { get => _killNonMultibotVeg; set { _killNonMultibotVeg = value; RaisePropertyChanged(); } }
-
+        public bool DisableChloroplastsNonVeg { get; set; }
+        public bool DisableDnaNonVeg { get; set; }
+        public bool DisableDnaVeg { get; set; }
+        public bool DisableMotionNonVeg { get; set; }
+        public bool DisableMotionVeg { get; set; }
+        public bool DisableMutationsNonVeg { get; set; }
+        public bool DisableMutationsVeg { get; set; }
+        public bool DisableReproductionNonVeg { get; set; }
+        public bool DisableReproductionVeg { get; set; }
+        public bool DisableVisionNonVeg { get; set; }
+        public bool DisableVisionVeg { get; set; }
+        public bool FixedInPlaceNonVeg { get; set; }
+        public bool FixedInPlaceVeg { get; set; }
+        public bool KillNonMultibotNonVeg { get; set; }
+        public bool KillNonMultibotVeg { get; set; }
         public ICommand LoadPresetCommand { get; }
-
         public ICommand SavePresetCommand { get; }
-
-        public bool ShowNonVegetablePropertySettings { get => _showNonVegetablePropertySettings; set { _showNonVegetablePropertySettings = value; RaisePropertyChanged(); } }
-
-        public bool ShowNonVegetableSettings { get => _showNonVegetableSettings; set { _showNonVegetableSettings = value; RaisePropertyChanged(); } }
-
-        public bool ShowVegetablePropertySettings { get => _showVegetablePropertySettings; set { _showVegetablePropertySettings = value; RaisePropertyChanged(); } }
-
-        public bool ShowVegetableSettings { get => _showVegetableSettings; set { _showVegetableSettings = value; RaisePropertyChanged(); } }
+        public bool ShowNonVegetablePropertySettings { get; set; }
+        public bool ShowNonVegetableSettings { get; set; }
+        public bool ShowVegetablePropertySettings { get; set; }
+        public bool ShowVegetableSettings { get; set; }
 
         public string SpeciesName
         {
-            get => speciesName;
+            get => _speciesName;
             set
             {
-                speciesName = value;
+                _speciesName = value;
                 UpdateDisplay();
             }
         }
 
-        public string Title { get => _title; set { _title = value; RaisePropertyChanged(); } }
-
-        public bool VirusImmuneNonVeg { get => _virusImmuneNonVeg; set { _virusImmuneNonVeg = value; RaisePropertyChanged(); } }
-
-        public bool VirusImmuneVeg { get => _virusImmuneVeg; set { _virusImmuneVeg = value; RaisePropertyChanged(); } }
+        public string Title { get; set; }
+        public bool VirusImmuneNonVeg { get; set; }
+        public bool VirusImmuneVeg { get; set; }
 
         private async Task LoadPreset()
         {
@@ -234,6 +194,79 @@ namespace Iersera.ViewModels
                 case RestrictionOptionsDialogState.ActiveSimulation:
                     Title = $"Restriction Options: Active Simulation";
                     break;
+            }
+        }
+
+        public void LoadFromSpecies(SpeciesViewModel species)
+        {
+            switch (DialogState)
+            {
+                case RestrictionOptionsDialogState.VegetableKillsOnly:
+                    KillNonMultibotVeg = species.KillNonMultibot;
+                    break;
+                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
+                    KillNonMultibotNonVeg = species.KillNonMultibot;
+                    break;
+                case RestrictionOptionsDialogState.ActiveSimulation:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public void SaveToAllRobs()
+        {
+            foreach (var rob in Robots.rob.Where(r => r.exist))
+            {
+                if (rob.Veg)
+                {
+                    rob.multibot_time = KillNonMultibotVeg ? 210 : 0;
+                    rob.Fixed = FixedInPlaceVeg;
+
+                    if (rob.Fixed)
+                    {
+                        rob.mem[216] = 1;
+                        rob.vel = new vector(0, 0);
+                    }
+
+                    rob.CantSee = DisableVisionVeg;
+                    rob.DisableDNA = DisableDnaVeg;
+                    rob.CantReproduce = DisableReproductionVeg;
+                    rob.VirusImmune = VirusImmuneVeg;
+                    rob.Mutables.Mutations = !DisableMutationsVeg;
+                    rob.DisableMovementSysvars = DisableMotionVeg;
+                }
+                else
+                {
+                    rob.multibot_time = KillNonMultibotNonVeg ? 210 : 0;
+                    rob.Fixed = FixedInPlaceNonVeg;
+
+                    if (rob.Fixed)
+                    {
+                        rob.mem[216] = 1;
+                        rob.vel = new vector(0, 0);
+                    }
+
+                    rob.CantSee = DisableVisionNonVeg;
+                    rob.DisableDNA = DisableDnaNonVeg;
+                    rob.CantReproduce = DisableReproductionNonVeg;
+                    rob.VirusImmune = VirusImmuneNonVeg;
+                    rob.Mutables.Mutations = !DisableMutationsNonVeg;
+                    rob.DisableMovementSysvars = DisableMotionNonVeg;
+                }
+            }
+        }
+
+        public void SaveToSpecies(SpeciesViewModel species)
+        {
+            switch (DialogState)
+            {
+                case RestrictionOptionsDialogState.VegetableKillsOnly:
+                    species.KillNonMultibot = KillNonMultibotVeg;
+                    break;
+                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
+                    species.KillNonMultibot = KillNonMultibotNonVeg;
+                    break;
+                case RestrictionOptionsDialogState.ActiveSimulation:
+                    throw new NotImplementedException();
             }
         }
     }

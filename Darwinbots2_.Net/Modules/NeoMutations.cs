@@ -251,42 +251,6 @@ internal static class NeoMutations
         changeme.StdDev[TranslocationUP] = 75;
     }
 
-    public static async Task SetDefaultMutationRates(MutationProbabilities changeme, bool skipNorm = false)
-    {
-        //Botsareus 12/17/2013 Figure dna length
-        var len = 0;
-
-        //if (NormMut && !skipNorm)
-        //{
-        //    if (optionsform.instance.CurrSpec == 50 || optionsform.instance.CurrSpec == -1)
-        //        len = robfocus.dna.Count;
-        //    else
-        //    {
-        //        var robot = new robot();
-
-        //        var path = Path.Combine(TmpOpts.Specie[optionsform.instance.CurrSpec].path, TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
-
-        //        if (!File.Exists(path))
-        //            path = Path.Combine("Robots", TmpOpts.Specie[optionsform.instance.CurrSpec].Name);
-
-        //        if (await LoadDNA(path, robot))
-        //            len = DnaLen(robot.dna);
-        //    }
-        //}
-
-        for (var a = 0; a < 20; a++)
-        {
-            changeme.mutarray[a] = (NormMut && !skipNorm ? len * valNormMut : 5000);
-            changeme.Mean[a] = 1;
-            changeme.StdDev[a] = 0;
-        }
-
-        if (skipNorm)
-            changeme.mutarray[P2UP] = 0; //Botsareus 2/21/2014 Might as well disable p2 mutations if loading from the net
-
-        SetDefaultLengths(changeme);
-    }
-
     private static void Amplification(robot rob)
     {
         var floor = rob.dna.Count * (rob.Mutables.Mean[AmplificationUP] + rob.Mutables.StdDev[AmplificationUP]) / (1200 * overtime);
