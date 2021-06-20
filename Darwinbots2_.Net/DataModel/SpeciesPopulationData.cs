@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace Iersera.DataModel
+namespace DarwinBots.DataModel
 {
     internal class SpeciesPopulationData
     {

@@ -1,29 +1,40 @@
-﻿using DBNet.Forms;
+﻿using DarwinBots.Forms;
+using DarwinBots.Model;
+using DarwinBots.Modules;
+using DarwinBots.Support;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Iersera.Model;
 using PostSharp.Patterns.Model;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Iersera.ViewModels
+namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged]
     internal class SpeciesViewModel : ViewModelBase
     {
         // TODO : Sort out initial position
+        // TODO : Sort out displaying skin
+        // TODO : Sort out displaying mutation rates dialog
+        // TODO : Sort out colour picking
 
         private readonly Species _species;
         private bool _disableChloroplasts;
+        private bool enableRepopulation;
+        private int initialEnergy;
 
         public SpeciesViewModel(Species species)
         {
             _species = species;
 
             DisplayFatalRestrictionsCommand = new RelayCommand(DisplayFatalRestrictions);
+            ChangeSkinCommand = new RelayCommand(ChangeSkin);
+            SetInitialEnergyCommand = new RelayCommand<int>(SetInitialEnergy);
+            SetInitialIndividualsCommand = new RelayCommand<int>(SetInitialIndividuals);
 
             DisableChloroplasts = _species.NoChlr;
             DisableDna = _species.DisableDNA;
@@ -39,6 +50,9 @@ namespace Iersera.ViewModels
             KillNonMultibot = species.kill_mb;
             Name = species.Name;
             Comments = species.Comment;
+
+            for (var i = 0; i < species.Skin.Length; i++)
+                Skin[i] = species.Skin[i];
         }
 
         public ICommand ChangeSkinCommand { get; }
@@ -67,8 +81,31 @@ namespace Iersera.ViewModels
         public bool DisableVision { get; set; }
         public ICommand DisplayFatalRestrictionsCommand { get; }
         public ICommand DisplayMutationRatesCommand { get; }
-        public bool EnableRepopulation { get; set; }
-        public int InitialEnergy { get; set; }
+
+        public bool EnableRepopulation
+        {
+            get => enableRepopulation;
+            set
+            {
+                enableRepopulation = value;
+
+                if (enableRepopulation)
+                    DisableChloroplasts = false;
+
+                RaisePropertyChanged();
+            }
+        }
+
+        public int InitialEnergy
+        {
+            get => initialEnergy;
+            set
+            {
+                initialEnergy = value % 32000;
+                RaisePropertyChanged();
+            }
+        }
+
         public int InitialIndividuals { get; set; }
         public bool IsFixedInPlace { get; set; }
         public bool IsVeg => EnableRepopulation;
@@ -77,12 +114,10 @@ namespace Iersera.ViewModels
         public string Name { get; set; }
         public bool Native => _species.Native;
         public ICommand PickColourCommand { get; }
-
         public ICommand ResetPositionCommand { get; }
-
         public ICommand SetInitialEnergyCommand { get; }
-
         public ICommand SetInitialIndividualsCommand { get; }
+        public ObservableCollection<int> Skin { get; set; } = new(new int[8]);
 
         public SpeciesViewModel Duplicate()
         {
@@ -139,6 +174,11 @@ namespace Iersera.ViewModels
                 _species.Veg = false;
         }
 
+        private void ChangeSkin()
+        {
+            Skin[6] = (Skin[6] + ThreadSafeRandom.Local.Next(0, Robots.half + 1)) * 2 / 3;
+        }
+
         private void DisplayFatalRestrictions()
         {
             var vm = new RestrictionOptionsViewModel
@@ -155,9 +195,14 @@ namespace Iersera.ViewModels
                 vm.SaveToSpecies(this);
         }
 
-        private void ChangeSkin()
+        private void SetInitialEnergy(int value)
         {
-            
+            InitialIndividuals = value;
+        }
+
+        private void SetInitialIndividuals(int value)
+        {
+            InitialIndividuals = value;
         }
     }
 }

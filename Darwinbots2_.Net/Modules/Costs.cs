@@ -1,45 +1,45 @@
 ﻿using System;
 
-namespace Iersera.Modules
+namespace DarwinBots.Modules
 {
-    public struct Costs
+    public record Costs
     {
-        public double AdvancedCommandCost { get; set; }
-        public double AgeCost { get; set; }
-        public int AgeCostBeginAge { get; set; }
-        public double AgeCostIncreasePerCycle { get; set; }
-        public bool AllowMultiplerToGoNegative { get; set; }
-        public double BasicCommandCost { get; set; }
-        public double BitwiseCommandCost { get; set; }
-        public double BodyUpkeepCost { get; set; }
-        public double CholorplastCost { get; set; }
-        public double ConditionCost { get; set; }
-        public double CostMultiplier { get; set; }
-        public double DnaCopyCost { get; set; }
-        public double DnaUpkeepCost { get; set; }
-        public double DotNumberCost { get; set; }
-        public bool DynamicCostsIncludePlants { get; set; }
-        public int DynamicCostsLowerRangeTarget { get; set; }
-        public double DynamicCostsSensitivity { get; set; }
-        public int DynamicCostsTargetPopulation { get; set; }
-        public int DynamicCostsUpperRangeTarget { get; set; }
-        public bool EnableAgeCostIncreaseLog { get; set; }
-        public bool EnableAgeCostIncreasePerCycle { get; set; }
-        public bool EnableDynamicCosts { get; set; }
-        public double FlowCommandCost { get; set; }
-        public double LogicCost { get; set; }
-        public double NumberCost { get; set; }
-        public double PoisonCost { get; set; }
-        public int ReinstateCostPopulationLimit { get; set; }
-        public double RotationCost { get; set; }
-        public double ShellCost { get; set; }
-        public double ShotFormationCost { get; set; }
-        public double SlimeCost { get; set; }
-        public double StoresCost { get; set; }
-        public double TieFormationCost { get; set; }
-        public double VenomCost { get; set; }
-        public double VoluntaryMovementCost { get; set; }
-        public int ZeroCostPopulationLimit { get; set; }
+        public double AdvancedCommandCost { get; init; }
+        public double AgeCost { get; init; }
+        public int AgeCostBeginAge { get; init; }
+        public double AgeCostIncreasePerCycle { get; init; }
+        public bool AllowMultiplerToGoNegative { get; init; }
+        public double BasicCommandCost { get; init; }
+        public double BitwiseCommandCost { get; init; }
+        public double BodyUpkeepCost { get; init; }
+        public double CholorplastCost { get; init; }
+        public double ConditionCost { get; init; }
+        public double CostMultiplier { get; init; }
+        public double DnaCopyCost { get; init; }
+        public double DnaUpkeepCost { get; init; }
+        public double DotNumberCost { get; init; }
+        public bool DynamicCostsIncludePlants { get; init; }
+        public int DynamicCostsLowerRangeTarget { get; init; }
+        public double DynamicCostsSensitivity { get; init; }
+        public int DynamicCostsTargetPopulation { get; init; }
+        public int DynamicCostsUpperRangeTarget { get; init; }
+        public bool EnableAgeCostIncreaseLog { get; init; }
+        public bool EnableAgeCostIncreasePerCycle { get; init; }
+        public bool EnableDynamicCosts { get; init; }
+        public double FlowCommandCost { get; init; }
+        public double LogicCost { get; init; }
+        public double NumberCost { get; init; }
+        public double PoisonCost { get; init; }
+        public int ReinstateCostPopulationLimit { get; init; }
+        public double RotationCost { get; init; }
+        public double ShellCost { get; init; }
+        public double ShotFormationCost { get; init; }
+        public double SlimeCost { get; init; }
+        public double StoresCost { get; init; }
+        public double TieFormationCost { get; init; }
+        public double VenomCost { get; init; }
+        public double VoluntaryMovementCost { get; init; }
+        public int ZeroCostPopulationLimit { get; init; }
 
         public static Costs ZeroCosts()
         {

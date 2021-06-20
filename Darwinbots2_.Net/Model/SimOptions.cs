@@ -1,19 +1,21 @@
-﻿using Iersera.Modules;
+﻿using DarwinBots.Modules;
 using System.Collections.Generic;
 
-namespace Iersera.Model
+namespace DarwinBots.Model
 {
+    public enum CostSetting
+    {
+        None,
+        Custom,
+    }
+
     public enum DecayType
     {
         None = 0,
         Waste = 1,
         Energy = 2
     }
-    public enum ShotMode
-    {
-        Proportional,
-        Fixed
-    }
+
     public enum FieldMode
     {
         Fluid,
@@ -21,10 +23,10 @@ namespace Iersera.Model
         Custom
     }
 
-    public enum CostSetting
+    public enum ShotMode
     {
-        None,
-        Custom,
+        Proportional,
+        Fixed
     }
 
     public class SimOptions

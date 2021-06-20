@@ -1,7 +1,8 @@
 ﻿using AsyncAwaitBestPractices.MVVM;
+using DarwinBots.DataModel;
+using DarwinBots.Model;
+using DarwinBots.Modules;
 using GalaSoft.MvvmLight;
-using Iersera.DataModel;
-using Iersera.Model;
 using Microsoft.Win32;
 using PostSharp.Patterns.Model;
 using System;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Iersera.ViewModels
+namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged]
     internal class RestrictionOptionsViewModel : ViewModelBase
@@ -75,6 +76,83 @@ namespace Iersera.ViewModels
         public string Title { get; set; }
         public bool VirusImmuneNonVeg { get; set; }
         public bool VirusImmuneVeg { get; set; }
+
+        public void LoadFromSpecies(SpeciesViewModel species)
+        {
+            switch (DialogState)
+            {
+                case RestrictionOptionsDialogState.VegetableKillsOnly:
+                    KillNonMultibotVeg = species.KillNonMultibot;
+                    break;
+
+                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
+                    KillNonMultibotNonVeg = species.KillNonMultibot;
+                    break;
+
+                case RestrictionOptionsDialogState.ActiveSimulation:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public void SaveToAllRobs()
+        {
+            foreach (var rob in Robots.rob.Where(r => r.exist))
+            {
+                if (rob.Veg)
+                {
+                    rob.multibot_time = KillNonMultibotVeg ? 210 : 0;
+                    rob.Fixed = FixedInPlaceVeg;
+
+                    if (rob.Fixed)
+                    {
+                        rob.mem[216] = 1;
+                        rob.vel = new vector(0, 0);
+                    }
+
+                    rob.CantSee = DisableVisionVeg;
+                    rob.DisableDNA = DisableDnaVeg;
+                    rob.CantReproduce = DisableReproductionVeg;
+                    rob.VirusImmune = VirusImmuneVeg;
+                    rob.Mutables.Mutations = !DisableMutationsVeg;
+                    rob.DisableMovementSysvars = DisableMotionVeg;
+                }
+                else
+                {
+                    rob.multibot_time = KillNonMultibotNonVeg ? 210 : 0;
+                    rob.Fixed = FixedInPlaceNonVeg;
+
+                    if (rob.Fixed)
+                    {
+                        rob.mem[216] = 1;
+                        rob.vel = new vector(0, 0);
+                    }
+
+                    rob.CantSee = DisableVisionNonVeg;
+                    rob.DisableDNA = DisableDnaNonVeg;
+                    rob.CantReproduce = DisableReproductionNonVeg;
+                    rob.VirusImmune = VirusImmuneNonVeg;
+                    rob.Mutables.Mutations = !DisableMutationsNonVeg;
+                    rob.DisableMovementSysvars = DisableMotionNonVeg;
+                }
+            }
+        }
+
+        public void SaveToSpecies(SpeciesViewModel species)
+        {
+            switch (DialogState)
+            {
+                case RestrictionOptionsDialogState.VegetableKillsOnly:
+                    species.KillNonMultibot = KillNonMultibotVeg;
+                    break;
+
+                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
+                    species.KillNonMultibot = KillNonMultibotNonVeg;
+                    break;
+
+                case RestrictionOptionsDialogState.ActiveSimulation:
+                    throw new NotImplementedException();
+            }
+        }
 
         private async Task LoadPreset()
         {
@@ -194,79 +272,6 @@ namespace Iersera.ViewModels
                 case RestrictionOptionsDialogState.ActiveSimulation:
                     Title = $"Restriction Options: Active Simulation";
                     break;
-            }
-        }
-
-        public void LoadFromSpecies(SpeciesViewModel species)
-        {
-            switch (DialogState)
-            {
-                case RestrictionOptionsDialogState.VegetableKillsOnly:
-                    KillNonMultibotVeg = species.KillNonMultibot;
-                    break;
-                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
-                    KillNonMultibotNonVeg = species.KillNonMultibot;
-                    break;
-                case RestrictionOptionsDialogState.ActiveSimulation:
-                    throw new NotImplementedException();
-            }
-        }
-
-        public void SaveToAllRobs()
-        {
-            foreach (var rob in Robots.rob.Where(r => r.exist))
-            {
-                if (rob.Veg)
-                {
-                    rob.multibot_time = KillNonMultibotVeg ? 210 : 0;
-                    rob.Fixed = FixedInPlaceVeg;
-
-                    if (rob.Fixed)
-                    {
-                        rob.mem[216] = 1;
-                        rob.vel = new vector(0, 0);
-                    }
-
-                    rob.CantSee = DisableVisionVeg;
-                    rob.DisableDNA = DisableDnaVeg;
-                    rob.CantReproduce = DisableReproductionVeg;
-                    rob.VirusImmune = VirusImmuneVeg;
-                    rob.Mutables.Mutations = !DisableMutationsVeg;
-                    rob.DisableMovementSysvars = DisableMotionVeg;
-                }
-                else
-                {
-                    rob.multibot_time = KillNonMultibotNonVeg ? 210 : 0;
-                    rob.Fixed = FixedInPlaceNonVeg;
-
-                    if (rob.Fixed)
-                    {
-                        rob.mem[216] = 1;
-                        rob.vel = new vector(0, 0);
-                    }
-
-                    rob.CantSee = DisableVisionNonVeg;
-                    rob.DisableDNA = DisableDnaNonVeg;
-                    rob.CantReproduce = DisableReproductionNonVeg;
-                    rob.VirusImmune = VirusImmuneNonVeg;
-                    rob.Mutables.Mutations = !DisableMutationsNonVeg;
-                    rob.DisableMovementSysvars = DisableMotionNonVeg;
-                }
-            }
-        }
-
-        public void SaveToSpecies(SpeciesViewModel species)
-        {
-            switch (DialogState)
-            {
-                case RestrictionOptionsDialogState.VegetableKillsOnly:
-                    species.KillNonMultibot = KillNonMultibotVeg;
-                    break;
-                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
-                    species.KillNonMultibot = KillNonMultibotNonVeg;
-                    break;
-                case RestrictionOptionsDialogState.ActiveSimulation:
-                    throw new NotImplementedException();
             }
         }
     }

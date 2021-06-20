@@ -1,7 +1,7 @@
-using Iersera.ViewModels;
+using DarwinBots.ViewModels;
 using System.Windows;
 
-namespace DBNet.Forms
+namespace DarwinBots.Forms
 {
     public partial class CostsForm : Window
     {

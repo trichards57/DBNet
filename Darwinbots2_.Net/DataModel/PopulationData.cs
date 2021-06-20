@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Iersera.DataModel
+namespace DarwinBots.DataModel
 {
     internal class PopulationData
     {

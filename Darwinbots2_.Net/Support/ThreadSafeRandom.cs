@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iersera.Support
+namespace DarwinBots.Support
 {
     internal class ThreadSafeRandom
     {

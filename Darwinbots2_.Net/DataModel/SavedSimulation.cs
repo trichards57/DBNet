@@ -1,8 +1,8 @@
-﻿using Iersera.Model;
-using Iersera.Modules;
+﻿using DarwinBots.Model;
+using DarwinBots.Modules;
 using System.Collections.Generic;
 
-namespace Iersera.DataModel
+namespace DarwinBots.DataModel
 {
     internal class SavedSimulation
     {
@@ -16,7 +16,7 @@ namespace Iersera.DataModel
         public double CoefficientStatic { get; internal set; }
         public bool CorpseEnabled { get; internal set; }
         public double CostExecCond { get; internal set; }
-        public int CostRadioSetting { get; internal set; }
+        public CostSetting CostRadioSetting { get; internal set; }
         public Costs Costs { get; internal set; }
         public int CycleLength { get; internal set; }
         public bool DayNight { get; internal set; }
@@ -25,7 +25,7 @@ namespace Iersera.DataModel
         public bool DeadRobotSnp { get; internal set; }
         public double Decay { get; internal set; }
         public int DecayDelay { get; internal set; }
-        public int DecayType { get; internal set; }
+        public DecayType DecayType { get; internal set; }
         public double Density { get; internal set; }
         public bool DisableFixing { get; internal set; }
         public bool DisableMutations { get; internal set; }
@@ -41,7 +41,7 @@ namespace Iersera.DataModel
         public double EnergyDifX2 { get; internal set; }
         public double EnergyDifXP { get; internal set; }
         public double EnergyDifXP2 { get; internal set; }
-        public bool EnergyExType { get; internal set; }
+        public ShotMode EnergyExType { get; internal set; }
         public int EnergyFix { get; internal set; }
         public double EnergyProp { get; internal set; }
         public bool F1 { get; internal set; }
@@ -49,7 +49,7 @@ namespace Iersera.DataModel
         public int FieldSize { get; internal set; }
         public int FieldWidth { get; internal set; }
         public bool FixedBotRadii { get; internal set; }
-        public int FluidSolidCustom { get; internal set; }
+        public FieldMode FluidSolidCustom { get; internal set; }
         public double Gradient { get; internal set; }
         public IEnumerable<SavedGraph> Graphs { get; internal set; }
         public bool HidePred { get; internal set; }

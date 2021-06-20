@@ -1,9 +1,9 @@
 ﻿using AsyncAwaitBestPractices.MVVM;
-using DBNet.Forms;
+using DarwinBots.Forms;
+using DarwinBots.Model;
+using DarwinBots.Modules;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Iersera.Model;
-using Iersera.Modules;
 using Microsoft.Win32;
 using PostSharp.Patterns.Model;
 using System;
@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace Iersera.ViewModels
+namespace DarwinBots.ViewModels
 {
     public enum BrownianMotion
     {
@@ -60,7 +60,11 @@ namespace Iersera.ViewModels
     [NotifyPropertyChanged]
     internal class OptionsViewModel : ViewModelBase
     {
+        // TODO : Show custom physics dialog
+        // TODO : Implement saving and loading settings
+
         private readonly Timer _lightTimer;
+        private Costs _costs;
         private int _cyclesHigh;
         private int _cyclesLow;
         private int _fieldSize;
@@ -72,15 +76,21 @@ namespace Iersera.ViewModels
         private bool decayTypeWaste;
         private bool enabelMutationSineWave;
         private bool enableCorpseMode;
+        private float energyScalingFactor;
         private bool fieldModeCustom;
         private bool fieldModeFluid;
         private bool fieldModeSolid;
+        private int initialLightEnergy;
         private int lightLevel;
+        private int maximumChloroplasts;
+        private int minimumChloroplastsThreshold;
         private double mutationMultiplier;
+        private int repopulationCooldownPeriod;
+        private int robotsPerRepopulationEvent;
         private double sedimentLevel;
+        private int shotEnergy;
         private bool shotModeFixedEnergy;
         private bool shotModeProportional;
-        private Costs _costs;
 
         public OptionsViewModel()
         {
@@ -109,19 +119,21 @@ namespace Iersera.ViewModels
                 if (costsCustom)
                 {
                     CostsNoCosts = false;
-                    _costs = Costs.ZeroCosts();
-                    _costs.ConditionCost = 0.004;
-                    _costs.StoresCost = 0.04;
-                    _costs.VoluntaryMovementCost = 0.05;
-                    _costs.TieFormationCost = 2;
-                    _costs.ShotFormationCost = 2;
-                    _costs.VenomCost = 0.01;
-                    _costs.PoisonCost = 0.01;
-                    _costs.SlimeCost = 0.1;
-                    _costs.ShellCost = 0.1;
-                    _costs.BodyUpkeepCost = 0.00001;
-                    _costs.AgeCost = 0.01;
-                    _costs.CostMultiplier = 1;
+                    _costs = Costs.ZeroCosts() with
+                    {
+                        ConditionCost = 0.004,
+                        StoresCost = 0.04,
+                        VoluntaryMovementCost = 0.05,
+                        TieFormationCost = 2,
+                        ShotFormationCost = 2,
+                        VenomCost = 0.01,
+                        PoisonCost = 0.01,
+                        SlimeCost = 0.1,
+                        ShellCost = 0.1,
+                        BodyUpkeepCost = 0.00001,
+                        AgeCost = 0.01,
+                        CostMultiplier = 1
+                    };
                 }
             }
         }
@@ -228,8 +240,23 @@ namespace Iersera.ViewModels
         public bool EnablePondMode { get; set; }
         public bool EnableTides { get; set; }
         public bool EnableTopDownWrap { get; set; }
-        public float EnergyScalingFactor { get; set; }
-        public int FieldHeight { get; set; }
+        public float EnergyScalingFactor { get => energyScalingFactor; set { energyScalingFactor = value == 0 ? 1 : value; RaisePropertyChanged(); } }
+
+        public int FieldHeight
+        {
+            get
+            {
+                if (FieldSize == 1)
+                    return 6928;
+
+                var height = 6000;
+
+                if (FieldSize <= 12)
+                    return height * FieldSize;
+
+                return height * 12 * (FieldSize - 12) * 2;
+            }
+        }
 
         public bool FieldModeCustom
         {
@@ -258,7 +285,6 @@ namespace Iersera.ViewModels
                     FieldModeCustom = false;
                     FieldModeSolid = false;
                     MovementFriction = FrictionPresets.None;
-
                 }
             }
         }
@@ -278,21 +304,47 @@ namespace Iersera.ViewModels
             }
         }
 
-        public int FieldSize { get => _fieldSize; set { _fieldSize = value; RaisePropertyChanged(); } }
-        public int FieldWidth { get; set; }
+        public int FieldSize
+        {
+            get => _fieldSize;
+            set
+            {
+                _fieldSize = value;
+                RaisePropertyChanged();
+                RaisePropertyChanged(nameof(FieldWidth));
+                RaisePropertyChanged(nameof(FieldHeight));
+            }
+        }
+
+        public int FieldWidth
+        {
+            get
+            {
+                if (FieldSize == 1)
+                    return 9237;
+
+                var width = 8000;
+
+                if (FieldSize <= 12)
+                    return width * FieldSize;
+
+                return width * 12 * (FieldSize - 12) * 2;
+            }
+        }
+
         public bool FixBotRadii { get; set; }
         public bool ForceCholoplastsSustain { get; set; }
         public int GraphUpdateInterval { get; set; }
         public VerticalGravity Gravity { get; set; }
-        public int InitialLightEnergy { get; set; }
+        public int InitialLightEnergy { get => initialLightEnergy; set { initialLightEnergy = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
         public int LightLevel { get => lightLevel; set { lightLevel = Math.Clamp(value, 0, 1000); RaisePropertyChanged(); } }
         public ICommand ListNonNativeSpeciesCommand { get; }
         public ICommand LoadSettingsCommand { get; set; }
         public string MaxCyclesLabel => EnabelMutationSineWave ? "Max at 20x" : "Cycles at 16x";
-        public int MaximumChloroplasts { get; set; }
+        public int MaximumChloroplasts { get => maximumChloroplasts; set { maximumChloroplasts = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
         public double MaxVelocity { get; set; }
         public string MinCyclesLabel => EnabelMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
-        public int MinimumChloroplastsThreshold { get; set; }
+        public int MinimumChloroplastsThreshold { get => minimumChloroplastsThreshold; set { minimumChloroplastsThreshold = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
         public DragPresets MovementDrag { get; set; }
         public MovementEfficiency MovementEfficiency { get; set; }
         public FrictionPresets MovementFriction { get; set; }
@@ -319,12 +371,12 @@ namespace Iersera.ViewModels
         }
 
         public ICommand RenameSpeciesCommand { get; }
-        public int RepopulationCooldownPeriod { get; set; }
-        public int RobotsPerRepopulationEvent { get; set; }
+        public int RepopulationCooldownPeriod { get => repopulationCooldownPeriod; set { repopulationCooldownPeriod = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
+        public int RobotsPerRepopulationEvent { get => robotsPerRepopulationEvent; set { robotsPerRepopulationEvent = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
         public ICommand SaveSettingsCommand { get; }
         public double SedimentLevel { get => sedimentLevel; set { sedimentLevel = Math.Clamp(value, 0.0, 200.0); RaisePropertyChanged(); } }
         public SpeciesViewModel SelectedSpecies { get; set; }
-        public int ShotEnergy { get; set; }
+        public int ShotEnergy { get => shotEnergy; set { shotEnergy = Math.Clamp(value, 0, 10000); RaisePropertyChanged(); } }
 
         public bool ShotModeFixedEnergy
         {
@@ -352,16 +404,12 @@ namespace Iersera.ViewModels
         public ICommand ShowCustomCostsCommand { get; }
         public ICommand ShowCustomPhysicsCommand { get; }
         public ICommand ShowEnergyManagementCommand { get; }
-
         public ICommand ShowGlobalSettingsCommand { get; }
-
         public ObservableCollection<SpeciesViewModel> SpeciesList { get; } = new ObservableCollection<SpeciesViewModel>();
-
         public ICommand StartNewCommand { get; }
-
         public double VegEnergyBodyDistribution { get; set; }
-
         public int WasteThreshold { get; set; }
+        public object YGravity { get; private set; }
 
         public async Task LoadFromOptions(SimOptions options)
         {
@@ -457,7 +505,7 @@ namespace Iersera.ViewModels
             MaxVelocity = options.MaxVelocity;
             VegEnergyBodyDistribution = options.VegFeedingToBody * 100;
             GraphUpdateInterval = options.ChartingInterval;
-            WasteThreshold = options.BadWastelevel;
+            WasteThreshold = options.BadWastelevel == -1 ? 0 : options.BadWastelevel;
             CollisionElasticity = options.CoefficientElasticity * 10;
             FixBotRadii = options.FixedBotRadii;
             SelectedSpecies = null;
@@ -518,6 +566,7 @@ namespace Iersera.ViewModels
             options.Gradient = SedimentLevel / 10 + 1;
             options.Updnconnected = EnableTopDownWrap;
             options.Dxsxconnected = EnableLeftRightWrap;
+            options.Toroidal = EnableTopDownWrap && EnableLeftRightWrap;
             options.Pondmode = EnablePondMode;
             options.EnergyProp = ShotProportion / 100;
             options.EnergyFix = ShotEnergy;
@@ -600,7 +649,7 @@ namespace Iersera.ViewModels
             options.MaxVelocity = MaxVelocity;
             options.VegFeedingToBody = VegEnergyBodyDistribution / 100;
             options.ChartingInterval = GraphUpdateInterval;
-            options.BadWastelevel = WasteThreshold;
+            options.BadWastelevel = WasteThreshold == 0 ? -1 : WasteThreshold;
             options.CoefficientElasticity = CollisionElasticity / 10;
             options.FixedBotRadii = FixBotRadii;
             // TODO : Work out how this works
@@ -610,29 +659,47 @@ namespace Iersera.ViewModels
             {
                 MovementEfficiency.Ideal => 0.66,
                 MovementEfficiency.Biological => 0.33,
-                _ => 0,
+                _ => 1,
             };
 
             options.PhysBrown = BrownianMotion switch
             {
-                BrownianMotion.Bacterial => 8,
-                BrownianMotion.Molecular => 0.6,
+                BrownianMotion.Bacterial => 7,
+                BrownianMotion.Molecular => 0.5,
                 _ => 0,
             };
 
             options.Ygravity = Gravity switch
             {
                 VerticalGravity.None => 0,
-                VerticalGravity.Moon => 0.3,
-                VerticalGravity.Earth => 0.9,
-                VerticalGravity.Jupiter => 9,
-                _ => 10,
+                VerticalGravity.Moon => 0.1,
+                VerticalGravity.Earth => 0.3,
+                VerticalGravity.Jupiter => 0.9,
+                _ => 6,
             };
 
             foreach (var s in SpeciesList)
                 s.Save();
 
             options.Costs = _costs;
+        }
+
+        public void SetPondMode(bool enable)
+        {
+            if (enable)
+            {
+                var res = MessageBox.Show("Turning on Pond Mode will greatly alter the physics of the simulation.  Chloroplasts will recieve less energy towards the bottom of the field.  Gravity will be turned on and top/down wrapping switched off.  Do you want to continue?", "Enable Pond Mode", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
+
+                if (res == MessageBoxResult.Yes)
+                {
+                    EnablePondMode = true;
+                    EnableTopDownWrap = false;
+                    YGravity = 6.2;
+                    LightLevel = 100;
+                    SedimentLevel = 2;
+                }
+            }
+            EnablePondMode = false;
         }
 
         public void StartLightTimer()
@@ -643,6 +710,52 @@ namespace Iersera.ViewModels
         public void StopLightTimer()
         {
             _lightTimer.Change(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
+        }
+
+        private async Task AddSpecies()
+        {
+            var dialog = new OpenFileDialog
+            {
+                Filter = "DNA File (*.txt)|*.txt|All Files (*.*)|*.*",
+                InitialDirectory = "robots",
+                Title = "Choose a DNA File",
+                CheckFileExists = true,
+                ShowReadOnly = false
+            };
+
+            var result = dialog.ShowDialog();
+
+            if (result != true)
+                return;
+
+            var species = new Species(dialog.FileName);
+            await species.ResetMutationsToDefault();
+            species.AssignSkin();
+
+            var vm = new SpeciesViewModel(species);
+
+            SpeciesList.Add(vm);
+        }
+
+        private void DeleteSpecies()
+        {
+            if (SelectedSpecies == null)
+                return;
+
+            SpeciesList.Remove(SelectedSpecies);
+
+            SelectedSpecies = null;
+        }
+
+        private void DuplicateSpecies()
+        {
+            if (SelectedSpecies == null)
+                return;
+
+            if (SelectedSpecies.Native)
+                SpeciesList.Add(SelectedSpecies.Duplicate());
+            else
+                MessageBox.Show("You cannot duplicate a bot that did not originate in this simulation.", "Cannot Duplicate Non-Native Species", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
 
         private void LightTimerTick(object state)
@@ -689,16 +802,6 @@ namespace Iersera.ViewModels
             }
         }
 
-        private void ShowEnergyManagement()
-        {
-            // TODO : Implement this
-        }
-
-        private void ShowGlobalSettings()
-        {
-            // TODO : Implement this
-        }
-
         private void ShowCustomCosts()
         {
             var vm = new CostsViewModel();
@@ -711,50 +814,14 @@ namespace Iersera.ViewModels
                 _costs = vm.SaveOptions();
         }
 
-        private async Task AddSpecies()
+        private void ShowEnergyManagement()
         {
-            var dialog = new OpenFileDialog
-            {
-                Filter = "DNA File (*.txt)|*.txt|All Files (*.*)|*.*",
-                InitialDirectory = "robots",
-                Title = "Choose a DNA File",
-                CheckFileExists = true,
-                ShowReadOnly = false
-            };
-
-            var result = dialog.ShowDialog();
-
-            if (result != true)
-                return;
-
-            var species = new Species(dialog.FileName);
-            await species.ResetMutationsToDefault();
-            species.AssignSkin();
-
-            var vm = new SpeciesViewModel(species);
-
-            SpeciesList.Add(vm);
+            // TODO : Implement this
         }
 
-        private void DuplicateSpecies()
+        private void ShowGlobalSettings()
         {
-            if (SelectedSpecies == null)
-                return;
-
-            if (SelectedSpecies.Native)
-                SpeciesList.Add(SelectedSpecies.Duplicate());
-            else
-                MessageBox.Show("You cannot duplicate a bot that did not originate in this simulation.", "Cannot Duplicate Non-Native Species", MessageBoxButton.OK, MessageBoxImage.Warning);
-        }
-
-        private void DeleteSpecies()
-        {
-            if (SelectedSpecies == null)
-                return;
-
-            SpeciesList.Remove(SelectedSpecies);
-
-            SelectedSpecies = null;
+            // TODO : Implement this
         }
     }
 }

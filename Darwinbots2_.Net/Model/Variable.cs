@@ -1,4 +1,4 @@
-﻿namespace Iersera.Model
+﻿namespace DarwinBots.Model
 {
     public class Variable
     {

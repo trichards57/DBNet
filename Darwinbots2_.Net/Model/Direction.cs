@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Iersera.Model
+namespace DarwinBots.Model
 {
     [Flags]
     internal enum Direction

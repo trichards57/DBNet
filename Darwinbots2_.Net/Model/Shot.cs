@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Media;
 
-namespace Iersera.Model
+namespace DarwinBots.Model
 {
     internal class Shot
     {

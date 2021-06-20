@@ -5,6 +5,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <StartupObject>Iesera.App</StartupObject>
+    <RootNamespace>DarwinBots</RootNamespace>
+    <AssemblyName>DarwinBots</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Forms\datirob.xaml.cs" />

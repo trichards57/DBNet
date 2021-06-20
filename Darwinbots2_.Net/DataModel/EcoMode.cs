@@ -2,7 +2,7 @@
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Iersera.DataModel
+namespace DarwinBots.DataModel
 {
     internal class EcoMode
     {

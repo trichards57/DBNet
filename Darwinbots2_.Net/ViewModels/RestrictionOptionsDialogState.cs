@@ -1,4 +1,4 @@
-﻿namespace Iersera.ViewModels
+﻿namespace DarwinBots.ViewModels
 {
     internal enum RestrictionOptionsDialogState
     {

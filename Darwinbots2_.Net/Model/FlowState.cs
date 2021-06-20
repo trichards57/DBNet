@@ -1,4 +1,4 @@
-﻿namespace Iersera.Model
+﻿namespace DarwinBots.Model
 {
     internal enum FlowState
     {

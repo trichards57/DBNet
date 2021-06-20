@@ -1,6 +1,6 @@
 ﻿using System.Drawing;
 
-namespace Iersera.Model
+namespace DarwinBots.Model
 {
     public class Teleporter
     {

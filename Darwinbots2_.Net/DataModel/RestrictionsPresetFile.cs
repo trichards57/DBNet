@@ -1,4 +1,4 @@
-﻿namespace Iersera.DataModel
+﻿namespace DarwinBots.DataModel
 {
     public class RestrictionsPresetFile
     {

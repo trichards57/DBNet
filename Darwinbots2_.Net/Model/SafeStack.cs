@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Iersera.Model
+namespace DarwinBots.Model
 {
     public class SafeStack<T> : Stack<T>
     {

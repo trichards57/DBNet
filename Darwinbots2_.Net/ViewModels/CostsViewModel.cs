@@ -1,10 +1,10 @@
-﻿using GalaSoft.MvvmLight;
+﻿using DarwinBots.Modules;
+using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
-using Iersera.Modules;
 using PostSharp.Patterns.Model;
 using System.Windows.Input;
 
-namespace Iersera.ViewModels
+namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged]
     internal class CostsViewModel : ViewModelBase
