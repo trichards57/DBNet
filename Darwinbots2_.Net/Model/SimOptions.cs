@@ -29,6 +29,13 @@ namespace DarwinBots.Model
         Fixed
     }
 
+    public enum SunThresholdMode
+    {
+        TemporarilySuspend,
+        AdvanceToDawnDusk,
+        PermanentlyToggle
+    }
+
     public class SimOptions
     {
         public bool AllowHorizontalShapeDrift { get; set; }
@@ -116,7 +123,7 @@ namespace DarwinBots.Model
         public bool SunDown { get; set; }
         public int SunDownThreshold { get; set; }
         public bool SunOnRnd { get; set; }
-        public int SunThresholdMode { get; set; }
+        public SunThresholdMode SunThresholdMode { get; set; }
         public bool SunUp { get; set; }
         public int SunUpThreshold { get; set; }
         public int Tides { get; set; }
