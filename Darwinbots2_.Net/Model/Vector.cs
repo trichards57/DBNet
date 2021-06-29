@@ -17,12 +17,12 @@ namespace DarwinBots.Model
         {
         }
 
-        public double X { get => x; set => x = Math.Min(Math.Max(value, -32000), 32000); }
-        public double Y { get => y; set => y = Math.Min(Math.Max(value, -32000), 32000); }
+        public double X { get => x; set => x = Math.Clamp(value, -32000, 32000); }
+        public double Y { get => y; set => y = Math.Clamp(value, -32000, 32000); }
 
         public static vector operator -(vector v1, vector v2)
         {
-            return new vector
+            return new()
             {
                 X = v1.X - v2.X,
                 Y = v1.Y - v2.Y
@@ -31,7 +31,7 @@ namespace DarwinBots.Model
 
         public static vector operator *(vector v1, double k)
         {
-            return new vector
+            return new()
             {
                 X = v1.X * k,
                 Y = v1.Y * k
@@ -40,7 +40,7 @@ namespace DarwinBots.Model
 
         public static vector operator +(vector v1, vector v2)
         {
-            return new vector
+            return new()
             {
                 X = v1.X + v2.X,
                 Y = v1.Y + v2.Y
@@ -52,7 +52,7 @@ namespace DarwinBots.Model
             var minVal = Math.Min(Math.Abs(X), Math.Abs(Y));
             var maxVal = Math.Max(Math.Abs(X), Math.Abs(Y));
 
-            return maxVal < 0.00001 ? 0 : maxVal * Math.Sqrt(Math.Pow(1 + (minVal / maxVal), 2));
+            return maxVal < 0.00001 ? 0 : maxVal * Math.Sqrt(Math.Pow(1 + minVal / maxVal, 2));
         }
 
         public double MagnitudeSquare()

@@ -3,14 +3,14 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class OptionsForm : Window
+    public partial class OptionsForm
     {
         public OptionsForm()
         {
             InitializeComponent();
         }
 
-        internal OptionsViewModel ViewModel { get; set; } = new OptionsViewModel();
+        internal OptionsViewModel ViewModel { get; set; } = new();
 
         private void LightBox_GotFocus(object sender, RoutedEventArgs e)
         {

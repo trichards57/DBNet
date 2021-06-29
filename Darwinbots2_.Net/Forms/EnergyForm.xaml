@@ -1,4 +1,4 @@
-<Window x:Class="DBNet.Forms.EnergyForm"
+<Window x:Class="DarwinBots.Forms.EnergyForm"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,7 +24,7 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <CheckBox IsChecked="{Binding EnableDayNightCycles}" Margin="5,5,2.5,2.5">Enable Day Cycles</CheckBox>
-                <Grid Grid.Column="1" HorizontalAlignment="Stretch" Margin="2.5,5,5,2.5">
+                <Grid Grid.Row="0" Grid.Column="1" HorizontalAlignment="Stretch" Margin="2.5,5,5,2.5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition />
@@ -32,7 +32,7 @@
                     <Label IsEnabled="{Binding EnableDayNightCycles}" Margin="0,0,2.5,0">Period</Label>
                     <TextBox IsEnabled="{Binding EnableDayNightCycles}" Grid.Column="1" Margin="2.5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding DayNightCyclePeriod}" />
                 </Grid>
-                <CheckBox Grid.Row="1" Margin="5,2.5,5,2.5">Enable Weather</CheckBox>
+                <CheckBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,5,2.5">Enable Weather</CheckBox>
 
                 <GroupBox Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,5,2.5" Header="Tide Simulator (Advanced)">
                     <Grid>
@@ -46,13 +46,13 @@
                             <RowDefinition />
                         </Grid.RowDefinitions>
                         <TextBox Grid.Column="1" Margin="2.5,5,2.5,2.5" />
-                        <TextBlock Grid.Column="2" Margin="2.5,5,5,2.5">cycles (off)</TextBlock>
-                        <Label Padding="0" Grid.Row="1" Margin="5,2.5,2.5,5">offset</Label>
+                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="2.5,5,5,2.5">cycles (off)</TextBlock>
+                        <Label Padding="0" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5">offset</Label>
                         <TextBox Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,2.5,2.5" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="2.5,2.5,5,5">cycles</TextBlock>
                     </Grid>
                 </GroupBox>
-                <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Margin="5,2.5,5,5" Header="Thresholds">
+                <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,5" Header="Thresholds">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -66,12 +66,12 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Label Grid.RowSpan="3" Margin="5,5,2.5,2.5" VerticalAlignment="Center">When Threshold reached:</Label>
-                        <RadioButton Grid.Column="2" GroupName="ThresholdMode" Margin="2.5,5,5,2.5">Temporarily Suspend Day Cycles</RadioButton>
-                        <RadioButton Grid.Row="1" Grid.Column="2" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Permanently Toggle Sun State</RadioButton>
-                        <RadioButton Grid.Row="2" Grid.Column="2" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Advance Sun to Dawn / Dusk</RadioButton>
-                        <CheckBox IsChecked="{Binding EnableSunGoesDownThreshold}" Grid.Row="3" Margin="5,2.5,2.5,2.5" >Sun goes down if nrg &gt;</CheckBox>
+                        <RadioButton Grid.Row="0" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,5,5,2.5">Temporarily Suspend Day Cycles</RadioButton>
+                        <RadioButton Grid.Row="1" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Permanently Toggle Sun State</RadioButton>
+                        <RadioButton Grid.Row="2" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Advance Sun to Dawn / Dusk</RadioButton>
+                        <CheckBox IsChecked="{Binding EnableSunGoesDownThreshold}" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" >Sun goes down if nrg &gt;</CheckBox>
                         <TextBox IsEnabled="{Binding EnableSunGoesDownThreshold}" Grid.Column="1" Grid.Row="3" x:Name="SunDownThreshold" Margin="2.5,2.5,5,2.5" />
-                        <CheckBox IsChecked="{Binding EnableSunComesUpThreshold}" Grid.Row="4" Margin="5,2.5,2.5,5">Sun comes up if nrg &lt;</CheckBox>
+                        <CheckBox IsChecked="{Binding EnableSunComesUpThreshold}" Grid.Row="4" Grid.Column="0" Margin="5,2.5,2.5,5">Sun comes up if nrg &lt;</CheckBox>
                         <TextBox IsEnabled="{Binding EnableSunComesUpThreshold}" Grid.Column="1" Grid.Row="4" x:Name="SunUpThreshold" Margin="2.5,2.5,5,5" />
                     </Grid>
                 </GroupBox>

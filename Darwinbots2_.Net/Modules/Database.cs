@@ -23,8 +23,8 @@ namespace DarwinBots.Modules
             var deadRobotsExists = File.Exists(path1);
             var deadRobotsMutationExists = File.Exists(path2);
 
-            using var deadRobotsFile = new StreamWriter(path1);
-            using var deadRobotsMutationFile = new StreamWriter(path2);
+            await using var deadRobotsFile = new StreamWriter(path1);
+            await using var deadRobotsMutationFile = new StreamWriter(path2);
 
             if (!deadRobotsExists)
                 await deadRobotsFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
@@ -60,7 +60,7 @@ namespace DarwinBots.Modules
 
             SnapName = dialog.FileName;
 
-            using var snapFile = new StreamWriter(SnapName);
+            await using var snapFile = new StreamWriter(SnapName);
 
             await snapFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
 
@@ -80,7 +80,8 @@ namespace DarwinBots.Modules
                 //Form1.instance.GraphLab.Visibility = Visibility.Visible;
                 foreach (var rob in Robots.rob.Where(r => r.exist && r.dna.Count > 1))
                 {
-                    await mutationsFiles?.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
+                    if (mutationsFiles != null)
+                        await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
                     var fitness = GetFitness(rob);
 
@@ -95,8 +96,11 @@ namespace DarwinBots.Modules
             finally
             {
                 await snapFile.FlushAsync();
-                await mutationsFiles.FlushAsync();
-                mutationsFiles?.Dispose();
+                if (mutationsFiles != null)
+                {
+                    await mutationsFiles.FlushAsync();
+                    await mutationsFiles.DisposeAsync();
+                }
             }
         }
 

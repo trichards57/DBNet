@@ -19,7 +19,7 @@ namespace DarwinBots.DataModel
                 var input = await File.ReadAllTextAsync(FileName);
                 var data = JsonSerializer.Deserialize<EcoMode>(input);
 
-                return data.EcoIm;
+                return data?.EcoIm ?? 0;
             }
             catch (JsonException)
             {

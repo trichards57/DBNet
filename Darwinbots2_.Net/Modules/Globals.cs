@@ -247,18 +247,18 @@ namespace DarwinBots.Modules
                 return false;
 
             //see if any active robots have chloroplasts
-            foreach (var rob in Robots.rob.Where(r => r.exist && r.chloroplasts > 0))
+            if (rob.Where(r => r.exist && r.chloroplasts > 0)
+                .Select(rob => new { rob, splitname = rob.FName.Split(")") })
+                .Select(t =>
+                    t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
+                        ? t.splitname[1]
+                        : t.rob.FName).Any(robname => species.Name == robname))
             {
-                //remove old nick name
-                var splitname = rob.FName.Split(")");
-                //if it is a nick name only
-                var robname = (splitname[0].StartsWith("(") && int.TryParse(splitname[0][1..], out var _)) ? splitname[1] : rob.FName;
-                if (species.Name == robname)
-                    return true;
+                return true;
             }
 
             //If there is no robots at all with chlr then repop everything
-            return !Robots.rob.Any(r => r.exist && r.Veg && r.age > 0);
+            return !rob.Any(r => r.exist && r.Veg && r.age > 0);
         }
     }
 }

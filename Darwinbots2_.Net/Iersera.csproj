@@ -21,7 +21,6 @@
     <Compile Remove="Forms\grafico.xaml.cs" />
     <Compile Remove="Forms\InfoForm.xaml.cs" />
     <Compile Remove="Forms\MDIForm1.xaml.cs" />
-    <Compile Remove="Forms\MutationsProbability.xaml.cs" />
     <Compile Remove="Forms\NetEvent.xaml.cs" />
     <Compile Remove="Forms\ObstacleForm.xaml.cs" />
     <Compile Remove="Forms\parentele.xaml.cs" />
@@ -41,7 +40,6 @@
     <Page Remove="Forms\grafico.xaml" />
     <Page Remove="Forms\InfoForm.xaml" />
     <Page Remove="Forms\MDIForm1.xaml" />
-    <Page Remove="Forms\MutationsProbability.xaml" />
     <Page Remove="Forms\NetEvent.xaml" />
     <Page Remove="Forms\ObstacleForm.xaml" />
     <Page Remove="Forms\parentele.xaml" />

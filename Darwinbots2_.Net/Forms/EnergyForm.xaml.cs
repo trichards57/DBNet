@@ -1,9 +1,9 @@
 using DarwinBots.ViewModels;
 using System.Windows;
 
-namespace DBNet.Forms
+namespace DarwinBots.Forms
 {
-    public partial class EnergyForm : Window
+    public partial class EnergyForm
     {
         public EnergyForm()
         {
@@ -11,7 +11,7 @@ namespace DBNet.Forms
             DataContext = ViewModel;
         }
 
-        public EnergyViewModel ViewModel { get; } = new EnergyViewModel();
+        public EnergyViewModel ViewModel { get; } = new();
 
         private void CancelButton_Click(object sender, RoutedEventArgs e)
         {

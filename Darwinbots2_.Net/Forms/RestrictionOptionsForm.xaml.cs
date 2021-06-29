@@ -3,8 +3,10 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class RestrictionOptionsForm : Window
+    public partial class RestrictionOptionsForm
     {
+        // TODO : Implement validation on apply.
+
         public byte res_state = 0;
 
         public RestrictionOptionsForm()
@@ -13,7 +15,7 @@ namespace DarwinBots.Forms
             DataContext = ViewModel;
         }
 
-        internal RestrictionOptionsViewModel ViewModel { get; } = new RestrictionOptionsViewModel();
+        internal RestrictionOptionsViewModel ViewModel { get; } = new();
 
         private void ApplyClick(object sender, RoutedEventArgs e)
         {

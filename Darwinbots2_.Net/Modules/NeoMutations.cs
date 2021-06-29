@@ -265,34 +265,30 @@ namespace DarwinBots.Modules
             do
             {
                 t++;
-                if (ThreadSafeRandom.Local.NextDouble() < 1 / (rob.Mutables.mutarray[AmplificationUP] / SimOpts.MutCurrMult))
-                {
-                    var Length = (int)Gauss(rob.Mutables.StdDev[AmplificationUP], rob.Mutables.Mean[AmplificationUP]);
-                    Length %= rob.dna.Count;
-                    if (Length < 1)
-                        Length = 1;
+                if (!(ThreadSafeRandom.Local.NextDouble() <
+                      1 / (rob.Mutables.mutarray[AmplificationUP] / SimOpts.MutCurrMult))) continue;
+                var Length = (int)Gauss(rob.Mutables.StdDev[AmplificationUP], rob.Mutables.Mean[AmplificationUP]);
+                Length %= rob.dna.Count;
+                if (Length < 1)
+                    Length = 1;
 
-                    Length--;
-                    Length /= 2;
+                Length--;
+                Length /= 2;
 
-                    if (t - Length < 1 || t + Length > rob.dna.Count - 1 || rob.dna.Count + Length * 2 > 32000)
-                        continue;
+                if (t - Length < 1 || t + Length > rob.dna.Count - 1 || rob.dna.Count + Length * 2 > 32000)
+                    continue;
 
-                    if (Length > 0)
-                    {
-                        var tempDNA = rob.dna.Skip(t).Take(Length);
+                if (Length <= 0) continue;
+                var tempDNA = rob.dna.Skip(t).Take(Length);
 
-                        //we now have the appropriate length of DNA in the temporary array.
+                //we now have the appropriate length of DNA in the temporary array.
 
-                        var start = ThreadSafeRandom.Local.Next(1, rob.dna.Count - 1);
-                        rob.dna.InsertRange(start, tempDNA);
+                var start = ThreadSafeRandom.Local.Next(1, rob.dna.Count - 1);
+                rob.dna.InsertRange(start, tempDNA);
 
-                        //BOTSAREUSIFIED
-                        rob.Mutations++;
-                        rob.LastMut++;
-                        LogMutation(rob, $"Amplification copied a series at {t}, {Length * 2 + 1}bps long to {start} during cycle {SimOpts.TotRunCycle}");
-                    }
-                }
+                rob.Mutations++;
+                rob.LastMut++;
+                LogMutation(rob, $"Amplification copied a series at {t}, {Length * 2 + 1}bps long to {start} during cycle {SimOpts.TotRunCycle}");
             } while (t < rob.dna.Count);
 
             if (!(rob.dna.Last().tipo == 10 && rob.dna.Last().value == 1))

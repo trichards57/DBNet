@@ -17,10 +17,10 @@ namespace DarwinBots.Modules
         private const bool NextElse = false;
         private static readonly SafeStack<bool> BoolStack = new() { DefaultValue = true };
         private static readonly SafeStack<int> IntStack = new() { DefaultValue = 0 };
-        private static bool CurrentCondFlag = false;
+        private static bool CurrentCondFlag;
         private static FlowState CurrentFlow = FlowState.Clear;
-        private static int CurrentGene = 0;
-        private static bool InGene = false;
+        private static int CurrentGene;
+        private static bool InGene;
 
         public static void ExecRobs()
         {
@@ -461,6 +461,8 @@ namespace DarwinBots.Modules
                     break;
 
                 case 2:
+                case 3:
+                case 4:
                     //this is supposed to come before case 2 and 3, since these commands
                     //must be executed before start and else have a chance to go
                     condFound = true;

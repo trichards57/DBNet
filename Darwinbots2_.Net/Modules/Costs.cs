@@ -43,7 +43,7 @@ namespace DarwinBots.Modules
 
         public static Costs ZeroCosts()
         {
-            return new Costs
+            return new()
             {
                 AdvancedCommandCost = 0,
                 AgeCost = 0,

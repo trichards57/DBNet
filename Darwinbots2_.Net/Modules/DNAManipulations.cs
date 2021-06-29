@@ -61,9 +61,7 @@ namespace DarwinBots.Modules
 
         public static int GeneEnd(IList<DNABlock> dna, int position)
         {
-            var condgene = false;
-            if (dna[position].tipo == 9 && dna[position].value == 1)
-                condgene = true;
+            var condgene = dna[position].tipo == 9 && dna[position].value == 1;
 
             for (var i = position + 1; i < dna.Count; i++)
             {
@@ -102,7 +100,7 @@ namespace DarwinBots.Modules
             if (n == 0)
                 return 0;
 
-            while (k > 0 & genepos == 0 & k <= 32000)
+            while (k is > 0 and <= 32000)
             {
                 //A start or else
                 if (dna[k].tipo == 9 && (dna[k].value == 2 || dna[k].value == 3))
@@ -176,7 +174,7 @@ namespace DarwinBots.Modules
         {
             //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
             //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
-            rob.aim = ThreadSafeRandom.Local.Next(0, 628) / 100;
+            rob.aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
             rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
             rob.exist = true;
             rob.BucketPos.X = -2;

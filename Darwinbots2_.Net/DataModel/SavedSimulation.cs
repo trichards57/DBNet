@@ -108,7 +108,7 @@ namespace DarwinBots.DataModel
         public bool SunOnRnd { get; internal set; }
         public double SunPosition { get; internal set; }
         public double SunRange { get; internal set; }
-        public int SunThresholdMode { get; internal set; }
+        public SunThresholdMode SunThresholdMode { get; internal set; }
         public bool SunUp { get; internal set; }
         public int SunUpThreshold { get; internal set; }
         public IEnumerable<Teleporter> Teleporters { get; internal set; }

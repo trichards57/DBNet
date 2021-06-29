@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static DarwinBots.Modules.BucketManager;
 
 namespace DarwinBots.Modules
@@ -14,7 +13,7 @@ namespace DarwinBots.Modules
                 c.highlight = true;
         }
 
-        public static async Task KillOrganism(robot rob)
+        public static void KillOrganism(robot rob)
         {
             //var temp = MDIForm1.instance.nopoff;
             //MDIForm1.instance.nopoff = true;
@@ -27,8 +26,7 @@ namespace DarwinBots.Modules
 
         public static IEnumerable<robot> ListCells(robot rob, HashSet<robot> checkedBots = null)
         {
-            if (checkedBots == null)
-                checkedBots = new HashSet<robot>();
+            checkedBots ??= new HashSet<robot>();
 
             if (checkedBots.Contains(rob))
                 return checkedBots;

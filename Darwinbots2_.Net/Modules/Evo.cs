@@ -16,7 +16,7 @@ namespace DarwinBots.Modules
 
         public static double CalculateHandycap()
         {
-            return SimOpts.TotRunCycle < (hidePredCycl * 8)
+            return SimOpts.TotRunCycle < hidePredCycl * 8
                 ? CalculateExactHandycap() * SimOpts.TotRunCycle / (hidePredCycl * 8)
                 : CalculateExactHandycap();
         }

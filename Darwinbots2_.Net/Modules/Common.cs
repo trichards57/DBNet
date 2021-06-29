@@ -8,14 +8,14 @@ namespace DarwinBots.Modules
     {
         public static string filemem { get; set; } = string.Empty;
 
-        public static double Cross(vector V1, vector V2)
+        public static double Cross(vector v1, vector v2)
         {
-            return V1.X * V2.Y - V1.Y * V2.X;
+            return v1.X * v2.Y - v1.Y * v2.X;
         }
 
-        public static double Dot(vector V1, vector V2)
+        public static double Dot(vector v1, vector v2)
         {
-            return V1.X * V2.X + V1.Y * V2.Y;
+            return v1.X * v2.X + v1.Y * v2.Y;
         }
 
         public static double Gauss(double stdDev, double mean = 0)
@@ -46,14 +46,14 @@ namespace DarwinBots.Modules
         }
 
         [Obsolete("Use .Magnitude instead")]
-        public static double VectorMagnitude(vector V1)
+        public static double VectorMagnitude(vector v1)
         {
-            return V1.Magnitude();
+            return v1.Magnitude();
         }
 
         public static vector VectorMax(vector x, vector y)
         {
-            return new vector
+            return new()
             {
                 X = Math.Max(x.X, y.X),
                 Y = Math.Max(x.Y, y.Y)
@@ -62,7 +62,7 @@ namespace DarwinBots.Modules
 
         public static vector VectorMin(vector x, vector y)
         {
-            return new vector
+            return new()
             {
                 X = Math.Min(x.X, y.X),
                 Y = Math.Min(x.Y, y.Y)
@@ -72,7 +72,7 @@ namespace DarwinBots.Modules
         [Obsolete("Use new vector(x,y) instead")]
         public static vector VectorSet(double x, double y)
         {
-            return new vector
+            return new()
             {
                 X = x,
                 Y = y
@@ -80,9 +80,9 @@ namespace DarwinBots.Modules
         }
 
         [Obsolete("Use - instead")]
-        public static vector VectorSub(vector V1, vector V2)
+        public static vector VectorSub(vector v1, vector v2)
         {
-            return V1 - V2;
+            return v1 - v2;
         }
 
         private static double GaussianDistribution()

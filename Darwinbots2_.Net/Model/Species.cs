@@ -2,7 +2,6 @@
 using DarwinBots.Support;
 using System.Drawing;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace DarwinBots.Model
 {
@@ -106,36 +105,6 @@ namespace DarwinBots.Model
                 Skin[i] = ThreadSafeRandom.Local.Next(0, Robots.half + 1);
                 Skin[i + 1] = ThreadSafeRandom.Local.Next(0, 629);
             }
-        }
-
-        public async Task ResetMutationsToDefault(bool skipNorm = false)
-        {
-            var len = 0;
-
-            if (Globals.NormMut && !skipNorm)
-            {
-                var robot = new robot();
-
-                var pth = Path.Combine(path, Name);
-
-                if (!File.Exists(pth))
-                    pth = Path.Combine("Robots", Name);
-
-                if (await DNATokenizing.LoadDNA(pth, robot))
-                    len = DNAManipulations.DnaLen(robot.dna);
-            }
-
-            for (var a = 0; a < 20; a++)
-            {
-                Mutables.mutarray[a] = Globals.NormMut && !skipNorm ? len * Globals.valNormMut : 5000;
-                Mutables.Mean[a] = 1;
-                Mutables.StdDev[a] = 0;
-            }
-
-            if (skipNorm)
-                Mutables.mutarray[NeoMutations.P2UP] = 0; //Botsareus 2/21/2014 Might as well disable p2 mutations if loading from the net
-
-            NeoMutations.SetDefaultLengths(Mutables);
         }
     }
 }

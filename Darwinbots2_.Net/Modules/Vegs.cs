@@ -131,14 +131,14 @@ namespace DarwinBots.Modules
                 //Sim Energy has fallen below the threshold.  Let the sun shine!
                 switch (SimOpts.SunThresholdMode)
                 {
-                    case TEMPSUNSUSPEND:
+                    case SunThresholdMode.TemporarilySuspend:
                         // We only suspend the sun cycles for this cycle.  We want to feed this cycle, but not
                         // advance the sun or disable day/night cycles
                         FeedThisCycle = true;
                         OverrideDayNight = true;
                         break;
 
-                    case ADVANCESUN:
+                    case SunThresholdMode.AdvanceToDawnDusk:
                         //Speed up time until Dawn.  No need to override the day night cycles as we want them to take over.
                         //Note that the real dawn won't actually start until the nrg climbs above the threshold since
                         //we will keep coming in here and zeroing the counter, but that's probably okay.
@@ -147,7 +147,7 @@ namespace DarwinBots.Modules
                         FeedThisCycle = true;
                         break;
 
-                    case PERMSUNSUSPEND:
+                    case SunThresholdMode.PermanentlyToggle:
                         //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
                         //We want to feed this cycle.
                         //We also want to turn on the sun.  The test below should avoid trying to execute day/night cycles.
@@ -160,14 +160,14 @@ namespace DarwinBots.Modules
             {
                 switch (SimOpts.SunThresholdMode)
                 {
-                    case TEMPSUNSUSPEND:
+                    case SunThresholdMode.TemporarilySuspend:
                         // We only suspend the sun cycles for this cycle.  We do not want to feed this cycle, nor do we
                         // advance the sun or disable day/night cycles
                         FeedThisCycle = false;
                         OverrideDayNight = true;
                         break;
 
-                    case ADVANCESUN:
+                    case SunThresholdMode.AdvanceToDawnDusk:
                         //Speed up time until Dusk.  No need to override the day night cycles as we want them to take over.
                         //Note that the real night time won't actually start until the nrg falls below the threshold since
                         //we will keep coming in here and zeroing the counter, but that's probably okay.
@@ -176,7 +176,7 @@ namespace DarwinBots.Modules
                         FeedThisCycle = false;
                         break;
 
-                    case PERMSUNSUSPEND:
+                    case SunThresholdMode.PermanentlyToggle:
                         //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
                         //We do not want to feed this cycle.
                         //We also want to turn off the sun.  The test below should avoid trying to execute day/night cycles
@@ -189,7 +189,7 @@ namespace DarwinBots.Modules
             //In this mode, we ignore sun cycles and just bounce between thresholds.  I don't really want to add another
             //feature enable checkbox, so we will just test to make sure the user is using both thresholds.  If not, we
             //don't override the cycles even if one of the thresholds is set.
-            if (SimOpts.SunThresholdMode == PERMSUNSUSPEND && SimOpts.SunDown && SimOpts.SunUp)
+            if (SimOpts.SunThresholdMode == SunThresholdMode.PermanentlyToggle && SimOpts.SunDown && SimOpts.SunUp)
                 OverrideDayNight = true;
 
             if (SimOpts.DayNight && !OverrideDayNight)

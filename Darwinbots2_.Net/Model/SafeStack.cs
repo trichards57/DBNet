@@ -8,13 +8,14 @@ namespace DarwinBots.Model
 
         public void Over()
         {
-            if (Count == 0)
-                return;
-
-            if (Count == 1)
+            switch (Count)
             {
-                Push(DefaultValue);
-                return;
+                case 0:
+                    return;
+
+                case 1:
+                    Push(DefaultValue);
+                    return;
             }
 
             var a = Pop();
@@ -26,18 +27,12 @@ namespace DarwinBots.Model
 
         public new T Peek()
         {
-            if (Count == 0)
-                return DefaultValue;
-
-            return Peek();
+            return Count == 0 ? DefaultValue : base.Peek();
         }
 
         public new T Pop()
         {
-            if (Count == 0)
-                return DefaultValue;
-
-            return Pop();
+            return Count == 0 ? DefaultValue : base.Pop();
         }
 
         public void Swap()

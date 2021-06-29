@@ -32,11 +32,9 @@ namespace DarwinBots.Modules
                         value = y_value + 1
                     };
                     var result = Parse(Y);
-                    if (result != "")
-                    {
-                        dnamatrix[y_tipo, y_value] = count;
-                        count++;
-                    }
+                    if (result == "") continue;
+                    dnamatrix[y_tipo, y_value] = count;
+                    count++;
                 }
             }
         }
@@ -133,34 +131,24 @@ namespace DarwinBots.Modules
 
         public static int DNAtoInt(int tipo, int value)
         {
-            var result = 0;
-
             value = Math.Clamp(value, -32000, 32000);
 
             //figure out conversion
-            if (tipo < 2)
-            {
-                result = -16646;
+            if (tipo >= 2)
+                return 32691 + dnamatrix[tipo - 2, value - 1]; //dnamatrix adds max of 76 because we have 76 commands
 
-                if (Math.Abs(value) > 999)
-                    value = (int)(512 * Math.Sign(value) + value / 2.05);
+            var result = -16646;
 
-                result += value;
+            if (Math.Abs(value) > 999)
+                value = (int)(512 * Math.Sign(value) + value / 2.05);
 
-                if (tipo == 1)
-                    result += 32729;
-            }
-            else if (tipo > 1)
-            {
-                //other types
-                result = 32691 + dnamatrix[tipo - 2, value - 1]; //dnamatrix adds max of 76 because we have 76 commands
-            }
+            result += value;
+
+            if (tipo == 1)
+                result += 32729;
+
             return result;
         }
-
-        /*
-        ' loads the dna and parses it
-        */
 
         public static string Hash(string s)
         {
@@ -522,7 +510,7 @@ namespace DarwinBots.Modules
 
         public static string SaveRobHeader(robot rob)
         {
-            var totmut = Math.Min(rob.Mutations + rob.OldMutations, DNAExecution.MaxIntValue);
+            var totmut = Math.Min(rob.Mutations + rob.OldMutations, MaxIntValue);
 
             return $"'#generation: {rob.generation}\n'#mutations: {totmut}\n";
         }
@@ -537,15 +525,11 @@ namespace DarwinBots.Modules
             if (savingToFile)
                 return n.ToString();
 
-            if (rob != null & n != 0)
-            {
-                var v = rob.vars.FirstOrDefault(v => v.Value == n);
+            if (!(rob != null & n != 0)) return n.ToString();
 
-                if (v != null)
-                    return $".{v.Name}";
-            }
+            var v = rob.vars.FirstOrDefault(v => v.Value == n);
 
-            return n.ToString();
+            return v != null ? $".{v.Name}" : n.ToString();
         }
 
         public static int SysvarTok(string a, robot rob)
@@ -614,7 +598,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock AdvancedCommandTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 3,
                 value = s switch
@@ -660,7 +644,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock BasicCommandTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 2,
                 value = s switch
@@ -708,7 +692,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock BitwiseCommandTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 4,
                 value = s switch
@@ -747,7 +731,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock ConditionsTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 5,
                 value = s switch
@@ -781,7 +765,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock FlowTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 9,
                 value = s switch
@@ -848,7 +832,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock LogicTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 6,
                 value = s switch
@@ -880,7 +864,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock MasterFlowTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 10,
                 value = s switch
@@ -915,7 +899,7 @@ namespace DarwinBots.Modules
 
         private static DNABlock StoresTok(string s)
         {
-            return new DNABlock
+            return new()
             {
                 tipo = 7,
                 value = s switch

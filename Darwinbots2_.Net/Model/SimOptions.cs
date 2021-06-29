@@ -49,7 +49,7 @@ namespace DarwinBots.Model
         public bool CorpseEnabled { get; set; }
         public double CostExecCond { get; set; }
         public CostSetting CostRadioSetting { get; set; }
-        public Costs Costs { get; set; } = new Costs();
+        public Costs Costs { get; set; } = new();
         public int CycleLength { get; set; }
         public double CycSec { get; set; }
         public bool DayNight { get; set; }

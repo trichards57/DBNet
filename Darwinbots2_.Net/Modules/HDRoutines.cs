@@ -26,7 +26,7 @@ namespace DarwinBots.Modules
         /// <summary>
         /// Adds a record to the species array when a bot with a new species is loaded or teleported in.
         /// </summary>
-        public static async Task AddSpecie(robot rob, bool IsNative)
+        public static void AddSpecie(robot rob, bool isNative)
         {
             if (rob.Corpse || rob.FName == "Corpse" || rob.exist == false)
                 return;
@@ -53,11 +53,11 @@ namespace DarwinBots.Modules
                 Postp = 0,
                 qty = 5,
                 Stnrg = 3000,
-                Native = IsNative,
+                Native = isNative,
                 path = "robots",
             };
 
-            await d.ResetMutationsToDefault();
+            d.Mutables.ResetToDefault();
             d.Mutables.Mutations = rob.Mutables.Mutations;
 
             SimOpts.Specie.Add(d);
@@ -332,6 +332,9 @@ namespace DarwinBots.Modules
 
             var input = await File.ReadAllTextAsync(path);
             var savedFile = JsonSerializer.Deserialize<SavedSimulation>(input);
+
+            if (savedFile == null)
+                return;
 
             MaxRobs = savedFile.Robots.Count();
 

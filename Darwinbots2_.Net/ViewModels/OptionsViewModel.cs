@@ -1,5 +1,4 @@
-﻿using AsyncAwaitBestPractices.MVVM;
-using DarwinBots.Forms;
+﻿using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Modules;
 using GalaSoft.MvvmLight;
@@ -99,7 +98,7 @@ namespace DarwinBots.ViewModels
             ShowGlobalSettingsCommand = new RelayCommand(ShowGlobalSettings);
             ListNonNativeSpeciesCommand = new RelayCommand(ListNonNativeSpecies);
             ShowCustomCostsCommand = new RelayCommand(ShowCustomCosts);
-            AddSpeciesCommand = new AsyncCommand(AddSpecies);
+            AddSpeciesCommand = new RelayCommand(AddSpecies);
             DuplicateSpeciesCommand = new RelayCommand(DuplicateSpecies);
             DeleteSpeciesCommand = new RelayCommand(DeleteSpecies);
         }
@@ -712,7 +711,7 @@ namespace DarwinBots.ViewModels
             _lightTimer.Change(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
         }
 
-        private async Task AddSpecies()
+        private void AddSpecies()
         {
             var dialog = new OpenFileDialog
             {
@@ -729,7 +728,7 @@ namespace DarwinBots.ViewModels
                 return;
 
             var species = new Species(dialog.FileName);
-            await species.ResetMutationsToDefault();
+            species.Mutables.ResetToDefault();
             species.AssignSkin();
 
             var vm = new SpeciesViewModel(species);

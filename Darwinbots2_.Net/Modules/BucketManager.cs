@@ -18,8 +18,8 @@ namespace DarwinBots.Modules
         //This is the buckets Array
         private static Bucket[,] Buckets;
 
-        private static int NumXBuckets = 0;// Field Width divided by bucket size
-        private static int NumYBuckets = 0;// Field height divided by bucket size
+        private static int NumXBuckets;// Field Width divided by bucket size
+        private static int NumYBuckets;// Field height divided by bucket size
 
         /// <summary>
         /// Checks all the bots in the same bucket and surrounding buckets for collisions.
@@ -64,12 +64,12 @@ namespace DarwinBots.Modules
 
         public static double EyeSightDistance(int width, robot rob)
         {
-            return width == 35 ? 1440 * EyeStrength(rob) : 1440 * (1 - (Math.Log(width / 35) / 4)) * EyeStrength(rob);
+            return width == 35 ? 1440 * EyeStrength(rob) : 1440 * (1 - Math.Log(width / 35) / 4) * EyeStrength(rob);
         }
 
         public static void InitialiseBuckets()
         {
-            // Determine the nubmer of buckets.
+            // Determine the number of buckets.
             NumXBuckets = SimOpts.FieldWidth / BucketSize;
             NumYBuckets = SimOpts.FieldHeight / BucketSize;
 
@@ -273,7 +273,7 @@ namespace DarwinBots.Modules
             var theta = Physics.NormaliseAngle(Math.Atan2(ad.Y, ad.X));
             var beta = Physics.NormaliseAngle(Math.Atan2(ac.Y, ac.X));
 
-            //lets be sure to just deal with postive angles
+            //lets be sure to just deal with positive angles
             var botspanszero = beta > theta;
 
             //For each eye
@@ -281,82 +281,80 @@ namespace DarwinBots.Modules
             {
                 var eyedist = rob1.mem[EYE1WIDTH + a] == 0 ? 1440 * EyeStrength(rob1) : EyeSightDistance(AbsoluteEyeWidth(rob1.mem[EYE1WIDTH + a]), rob1);
                 //Now we check to see if the sight distance for this specific eye is far enough to see bot N2
-                if (edgetoedgedist <= eyedist)
+                if (!(edgetoedgedist <= eyedist)) continue;
+                //Check to see if the bot is viewable in this eye
+                //First, figure out the direction in radians in which the eye is pointed relative to .aim
+                //We have to mod the value and divide by 200 to get radians
+                //then since the eyedir values are offsets from their defaults, eye 1 is off from .aim by 4 eye field widths,
+                //three for eye2, and so on.
+                var eyeaim = rob1.mem[EYE1DIR + a] % 1256 / 200 - Math.PI / 18 * a + Math.PI / 18 * 4 + rob1.aim;
+
+                //It's possible we wrapped 0 so check
+                while (eyeaim > 2 * Math.PI)
+                    eyeaim -= 2 * Math.PI;
+
+                while (eyeaim < 0)
+                    eyeaim += 2 * Math.PI;
+
+                //These are the left and right sides of the field of view for the eye
+                double halfeyewidth = rob1.mem[EYE1WIDTH + a] % 1256 / 400;
+                while (halfeyewidth > Math.PI - Math.PI / 36)
+                    halfeyewidth -= Math.PI;
+
+                while (halfeyewidth < -Math.PI / 36)
+                    halfeyewidth += Math.PI;
+
+                var eyeaimleft = eyeaim + halfeyewidth + Math.PI / 36;
+                var eyeaimright = eyeaim - halfeyewidth - Math.PI / 36;
+
+                //Check the case where the eye field of view spans 0
+                if (eyeaimright < 0)
+                    eyeaimright = 2 * Math.PI + eyeaimright;
+
+                if (eyeaimleft > 2 * Math.PI)
+                    eyeaimleft -= 2 * Math.PI;
+
+                var eyespanszero = eyeaimleft < eyeaimright;
+
+                // Bot is visiable if either left edge is in eye or right edge is in eye or whole bot spans eye
+                //If leftside of bot is in eye or
+                //   rightside of bot is in eye or
+                //   bot spans eye
+                if ((eyeaimleft < theta || theta < eyeaimright || eyespanszero) && (eyeaimleft < theta || eyespanszero || !botspanszero) && (eyeaimright < beta || eyespanszero || !botspanszero) && (eyeaimleft > theta || eyeaimright < beta || !eyespanszero || !botspanszero))
+                    continue;
+
+                //The bot is viewable in this eye.
+                double eyevalue;
+
+                //Calculate the eyevalue
+                if (edgetoedgedist <= 0)
+                { // bots overlap
+                    eyevalue = 32000;
+                }
+                else
                 {
-                    //Check to see if the bot is viewable in this eye
-                    //First, figure out the direction in radians in which the eye is pointed relative to .aim
-                    //We have to mod the value and divide by 200 to get radians
-                    //then since the eyedir values are offsets from their defaults, eye 1 is off from .aim by 4 eye field widths,
-                    //three for eye2, and so on.
-                    var eyeaim = rob1.mem[EYE1DIR + a] % 1256 / 200 - (Math.PI / 18 * a) + Math.PI / 18 * 4 + rob1.aim;
-
-                    //It's possible we wrapped 0 so check
-                    while (eyeaim > 2 * Math.PI)
-                        eyeaim -= 2 * Math.PI;
-
-                    while (eyeaim < 0)
-                        eyeaim += 2 * Math.PI;
-
-                    //These are the left and right sides of the field of view for the eye
-                    double halfeyewidth = rob1.mem[EYE1WIDTH + a] % 1256 / 400;
-                    while (halfeyewidth > Math.PI - Math.PI / 36)
-                        halfeyewidth -= Math.PI;
-
-                    while (halfeyewidth < -Math.PI / 36)
-                        halfeyewidth += Math.PI;
-
-                    var eyeaimleft = eyeaim + halfeyewidth + Math.PI / 36;
-                    var eyeaimright = eyeaim - halfeyewidth - Math.PI / 36;
-
-                    //Check the case where the eye field of view spans 0
-                    if (eyeaimright < 0)
-                        eyeaimright = 2 * Math.PI + eyeaimright;
-
-                    if (eyeaimleft > 2 * Math.PI)
-                        eyeaimleft -= 2 * Math.PI;
-
-                    var eyespanszero = eyeaimleft < eyeaimright;
-
-                    // Bot is visiable if either left edge is in eye or right edge is in eye or whole bot spans eye
-                    //If leftside of bot is in eye or
-                    //   rightside of bot is in eye or
-                    //   bot spans eye
-                    if ((eyeaimleft < theta || theta < eyeaimright || eyespanszero) && (eyeaimleft < theta || eyespanszero || !botspanszero) && (eyeaimright < beta || eyespanszero || !botspanszero) && (eyeaimleft > theta || eyeaimright < beta || !eyespanszero || !botspanszero))
-                        continue;
-
-                    //The bot is viewable in this eye.
-                    double eyevalue;
-
-                    //Calculate the eyevalue
-                    if (edgetoedgedist <= 0)
-                    { // bots overlap
+                    var percentdist = (edgetoedgedist + 10) / eyedist;
+                    eyevalue = 1 / (percentdist * percentdist);
+                    if (eyevalue > 32000)
+                    {
                         eyevalue = 32000;
                     }
-                    else
-                    {
-                        var percentdist = (edgetoedgedist + 10) / eyedist;
-                        eyevalue = 1 / (percentdist * percentdist);
-                        if (eyevalue > 32000)
-                        {
-                            eyevalue = 32000;
-                        }
-                    }
+                }
 
-                    //Check to see if it is closer than other bots we may have seen
-                    if (rob1.mem[EyeStart + 1 + a] < eyevalue)
+                //Check to see if it is closer than other bots we may have seen
+                if (rob1.mem[EyeStart + 1 + a] < eyevalue)
+                {
+                    //It is closer than other bots we may have seen.
+                    //Check to see if this eye has the focus
+                    if (a == Math.Abs(rob1.mem[FOCUSEYE] + 4) % 9)
                     {
-                        //It is closer than other bots we may have seen.
-                        //Check to see if this eye has the focus
-                        if (a == Math.Abs(rob1.mem[FOCUSEYE] + 4) % 9)
-                        {
-                            //This eye does have the focus
-                            //Set the EYEF value and also lastopp so the lookoccur list will get populated later
-                            rob1.lastopp = rob.IndexOf(rob2);
-                            rob1.mem[EYEF] = (int)eyevalue;
-                        }
-                        //Set the distance for the eye
-                        rob1.mem[EyeStart + 1 + a] = (int)eyevalue;
+                        //This eye does have the focus
+                        //Set the EYEF value and also lastopp so the lookoccur list will get populated later
+                        rob1.lastopp = rob.IndexOf(rob2);
+                        rob1.mem[EYEF] = (int)eyevalue;
                     }
+                    //Set the distance for the eye
+                    rob1.mem[EyeStart + 1 + a] = (int)eyevalue;
                 }
             }
         }
@@ -570,98 +568,96 @@ namespace DarwinBots.Modules
                         }
                     }
 
-                    if (lowestDist == 32000)
+                    if (lowestDist != 32000) continue;
+                    // eye doesn't span corner or spot perpendicular to line from bot to shape side
+                    if (botLocation.HasFlag(Direction.North))
                     {
-                        // eye doesn't span corner or spot perpendicular to line from bot to shape side
-                        if (botLocation.HasFlag(Direction.North))
-                        {
-                            var dist = CheckDistance(P0, p[1], D1[1], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
+                        var dist = CheckDistance(P0, p[1], D1[1], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
 
-                            if (dist > 0 && dist < lowestDist)
+                        if (dist > 0 && dist < lowestDist)
+                        {
+                            lowestDist = dist;
+                            if (a == 4)
                             {
-                                lowestDist = dist;
-                                if (a == 4)
-                                {
-                                    lastopppos = (distleft < distright) && (distleft > 0)
-                                        ? rob.pos + (eyeaimleftvector.Unit() * dist)
-                                        : rob.pos + (eyeaimrightvector.Unit() * dist);
-                                }
+                                lastopppos = (distleft < distright) && (distleft > 0)
+                                    ? rob.pos + (eyeaimleftvector.Unit() * dist)
+                                    : rob.pos + (eyeaimrightvector.Unit() * dist);
                             }
                         }
+                    }
 
-                        if (botLocation.HasFlag(Direction.East))
+                    if (botLocation.HasFlag(Direction.East))
+                    {
+                        var dist = CheckDistance(P0, p[3], D1[4], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
+
+                        if ((dist > 0) && (dist < lowestDist))
                         {
-                            var dist = CheckDistance(P0, p[3], D1[4], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
-
-                            if ((dist > 0) && (dist < lowestDist))
+                            lowestDist = dist;
+                            if (a == 4)
                             {
-                                lowestDist = dist;
-                                if (a == 4)
-                                {
-                                    lastopppos = (distleft < distright) && (distleft > 0)
-                                        ? rob.pos + (eyeaimleftvector.Unit() * dist)
-                                        : rob.pos + (eyeaimrightvector.Unit() * dist);
-                                }
+                                lastopppos = (distleft < distright) && (distleft > 0)
+                                    ? rob.pos + (eyeaimleftvector.Unit() * dist)
+                                    : rob.pos + (eyeaimrightvector.Unit() * dist);
                             }
                         }
+                    }
 
-                        if (botLocation.HasFlag(Direction.South))
+                    if (botLocation.HasFlag(Direction.South))
+                    {
+                        var dist = CheckDistance(P0, p[2], D1[3], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
+
+                        if ((dist > 0) && (dist < lowestDist))
                         {
-                            var dist = CheckDistance(P0, p[2], D1[3], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
-
-                            if ((dist > 0) && (dist < lowestDist))
+                            lowestDist = dist;
+                            if (a == 4)
                             {
-                                lowestDist = dist;
-                                if (a == 4)
-                                {
-                                    lastopppos = (distleft < distright) && (distleft > 0)
-                                        ? rob.pos + (eyeaimleftvector.Unit() * dist)
-                                        : rob.pos + (eyeaimrightvector.Unit() * dist);
-                                }
+                                lastopppos = (distleft < distright) && (distleft > 0)
+                                    ? rob.pos + (eyeaimleftvector.Unit() * dist)
+                                    : rob.pos + (eyeaimrightvector.Unit() * dist);
                             }
                         }
+                    }
 
-                        if (botLocation.HasFlag(Direction.West))
+                    if (botLocation.HasFlag(Direction.West))
+                    {
+                        var dist = CheckDistance(P0, p[1], D1[2], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
+
+                        if ((dist > 0) && (dist < lowestDist))
                         {
-                            var dist = CheckDistance(P0, p[1], D1[2], eyeaimleftvector, eyeaimrightvector, out var distright, out var distleft);
-
-                            if ((dist > 0) && (dist < lowestDist))
+                            lowestDist = dist;
+                            if (a == 4)
                             {
-                                lowestDist = dist;
-                                if (a == 4)
-                                {
-                                    lastopppos = (distleft < distright) && (distleft > 0)
-                                        ? rob.pos + (eyeaimleftvector.Unit() * dist)
-                                        : rob.pos + (eyeaimrightvector.Unit() * dist);
-                                }
+                                lastopppos = (distleft < distright) && (distleft > 0)
+                                    ? rob.pos + (eyeaimleftvector.Unit() * dist)
+                                    : rob.pos + (eyeaimrightvector.Unit() * dist);
                             }
                         }
+                    }
 
-                        if (lowestDist < 32000)
+                    if (lowestDist < 32000)
+                    {
+                        var percentdist = (lowestDist - rob.radius + 10) / eyedist;
+                        var eyevalue = percentdist <= 0 ? 32000 : (int)(1 / (percentdist * percentdist));
+                        if (eyevalue > 32000)
                         {
-                            var percentdist = (lowestDist - rob.radius + 10) / eyedist;
-                            var eyevalue = percentdist <= 0 ? 32000 : (int)(1 / (percentdist * percentdist));
-                            if (eyevalue > 32000)
-                            {
-                                eyevalue = 32000;
-                            }
+                            eyevalue = 32000;
+                        }
 
-                            if (rob.mem[EyeStart + 1 + a] < eyevalue)
+                        if (rob.mem[EyeStart + 1 + a] < eyevalue)
+                        {
+                            //It is closer than other bots we may have seen.
+                            //Check to see if this eye has the focus
+                            if (a == Math.Abs(rob.mem[FOCUSEYE] + 4) % 9)
                             {
-                                //It is closer than other bots we may have seen.
-                                //Check to see if this eye has the focus
-                                if (a == Math.Abs(rob.mem[FOCUSEYE] + 4) % 9)
-                                {
-                                    //This eye does have the focus
-                                    //Set the EYEF value and also lastopp so the lookoccur list will get populated later
-                                    rob.lastopp = ObstaclesManager.Obstacles.IndexOf(o);
-                                    rob.lastopptype = 1;
-                                    rob.mem[EYEF] = eyevalue;
-                                    rob.lastopppos = lastopppos;
-                                }
-                                //Set the distance for the eye
-                                rob.mem[EyeStart + 1 + a] = eyevalue;
+                                //This eye does have the focus
+                                //Set the EYEF value and also lastopp so the lookoccur list will get populated later
+                                rob.lastopp = ObstaclesManager.Obstacles.IndexOf(o);
+                                rob.lastopptype = 1;
+                                rob.mem[EYEF] = eyevalue;
+                                rob.lastopppos = lastopppos;
                             }
+                            //Set the distance for the eye
+                            rob.mem[EyeStart + 1 + a] = eyevalue;
                         }
                     }
                 }
@@ -706,15 +702,14 @@ namespace DarwinBots.Modules
         {
             var dotPerp = D0.X * D1.Y - D1.X * D0.Y; // Test for intersection
 
-            if (dotPerp != 0)
-            {
-                var Delta = P1 - P0;
-                var s = Dot(Delta, new vector(D1.Y, -D1.X)) / dotPerp;
-                var t = Dot(Delta, new vector(D0.Y, -D0.X)) / dotPerp;
+            if (dotPerp == 0) return 0.0;
 
-                if (s >= 0 & s <= 1 && t >= 0 & t <= 1)
-                    return s;
-            }
+            var Delta = P1 - P0;
+            var s = Dot(Delta, new vector(D1.Y, -D1.X)) / dotPerp;
+            var t = Dot(Delta, new vector(D0.Y, -D0.X)) / dotPerp;
+
+            if (s >= 0 & s <= 1 && t >= 0 & t <= 1)
+                return s;
 
             return 0.0;
         }
@@ -725,7 +720,7 @@ namespace DarwinBots.Modules
             var p = new vector[5];
 
             //Cheap weed out check
-            if ((o.pos.X > Math.Max(rob1.pos.X, rob2.pos.X)) || (o.pos.X + o.Width < Math.Min(rob1.pos.X, rob2.pos.X)) || (o.pos.Y > Math.Max(rob1.pos.Y, rob2.pos.Y)) || (o.pos.Y + o.Height < Math.Min(rob1.pos.Y, rob2.pos.Y)))
+            if (o.pos.X > Math.Max(rob1.pos.X, rob2.pos.X) || o.pos.X + o.Width < Math.Min(rob1.pos.X, rob2.pos.X) || o.pos.Y > Math.Max(rob1.pos.Y, rob2.pos.Y) || o.pos.Y + o.Height < Math.Min(rob1.pos.Y, rob2.pos.Y))
                 return false;
 
             D1[1] = new vector(0, o.Width); // top
@@ -744,18 +739,16 @@ namespace DarwinBots.Modules
             for (var i = 1; i < 4; i++)
             {
                 var numerator = Cross(D0, D1[i]);
-                if (numerator != 0)
-                {
-                    var delta = p[i] - P0;
-                    var s = Cross(delta, D1[i]) / numerator;
-                    var t = Cross(delta, D0) / numerator;
+                if (numerator == 0) continue;
+                var delta = p[i] - P0;
+                var s = Cross(delta, D1[i]) / numerator;
+                var t = Cross(delta, D0) / numerator;
 
-                    if (t >= 0 & t <= 1)
-                        return true;
+                if (t >= 0 & t <= 1)
+                    return true;
 
-                    if (s >= 0 & s <= 1)
-                        return true;
-                }
+                if (s >= 0 & s <= 1)
+                    return true;
             }
 
             return false;

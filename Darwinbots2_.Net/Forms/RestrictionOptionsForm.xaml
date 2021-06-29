@@ -33,28 +33,28 @@
             <Button Click="ApplyClick" HorizontalAlignment="Left" Margin="5,5,2.5,5" IsDefault="True">Apply</Button>
             <Button Click="CancelClick" HorizontalAlignment="Left" Margin="2.5,5,5,5" IsCancel="True">Cancel</Button>
         </StackPanel>
-        <GroupBox Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Margin="10,10,5,10" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="For Non-Repopulating Robots">
+        <GroupBox Grid.Row="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Margin="10,10,5,10" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="For Non-Repopulating Robots">
             <StackPanel>
                 <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
                     <StackPanel>
-                        <CheckBox IsChecked="{Binding KillNonMultibotNonVeg}" x:Name="chkMBKillNChlr">Kill robot if robot not MB for 150 cycles</CheckBox>
+                        <CheckBox IsChecked="{Binding KillNonMultibotNonVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Visibility="{Binding ShowNonVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Margin="10,5,10,10" HorizontalAlignment="Stretch" Header="Property Applied Restrictions">
                     <StackPanel>
-                        <CheckBox IsChecked="{Binding FixedInPlaceNonVeg}" x:Name="BlockSpec">Fixed in place</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableVisionNonVeg}" x:Name="DisableVisionCheck">Disable Vision</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableDnaNonVeg}" x:Name="DisableDNACheck">Disable DNA Execution</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableReproductionNonVeg}" x:Name="DisableReproductionCheck">Disable Reproduction</CheckBox>
-                        <CheckBox IsChecked="{Binding VirusImmuneNonVeg}" x:Name="VirusImmuneCheck">Virus Immune</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMutationsNonVeg}" x:Name="MutEnabledCheck">Disable Mutations</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMotionNonVeg}" x:Name="DisableMovementSysvarsCheck">Disable Voluntary Movement</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableChloroplastsNonVeg}" x:Name="chkNoChlr">Disable Chloroplasts</CheckBox>
+                        <CheckBox IsChecked="{Binding FixedInPlaceNonVeg}">Fixed in place</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableVisionNonVeg}">Disable Vision</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableDnaNonVeg}">Disable DNA Execution</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableReproductionNonVeg}">Disable Reproduction</CheckBox>
+                        <CheckBox IsChecked="{Binding VirusImmuneNonVeg}">Virus Immune</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsNonVeg}">Disable Mutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMotionNonVeg}">Disable Voluntary Movement</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableChloroplastsNonVeg}">Disable Chloroplasts</CheckBox>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
         </GroupBox>
-        <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Column="1" Margin="5,10,10,10" Header="For Repopulating Robots">
+        <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Row="0" Grid.Column="1" Margin="5,10,10,10" Header="For Repopulating Robots">
             <StackPanel>
                 <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
                     <StackPanel>
@@ -63,13 +63,13 @@
                 </GroupBox>
                 <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Margin="10,5,10,10" HorizontalAlignment="Stretch" Header="Property Applied Restrictions">
                     <StackPanel>
-                        <CheckBox IsChecked="{Binding FixedInPlaceVeg}" x:Name="BlockSpecVeg">Fixed in place</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableVisionVeg}" x:Name="DisableVisionCheckVeg">Disable Vision</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableDnaVeg}" x:Name="DisableDNACheckVeg">Disable DNA Execution</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableReproductionVeg}" x:Name="DisableReproductionCheckChlr">Disable Reproduction</CheckBox>
-                        <CheckBox IsChecked="{Binding VirusImmuneVeg}" x:Name="VirusImmuneCheckVeg">Virus Immune</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMutationsVeg}" x:Name="MutEnabledCheckVeg">Disable Mutations</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMotionVeg}" x:Name="DisableMovementSysvarsCheckVeg">Disable Voluntary Movement</CheckBox>
+                        <CheckBox IsChecked="{Binding FixedInPlaceVeg}">Fixed in place</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableVisionVeg}">Disable Vision</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableDnaVeg}">Disable DNA Execution</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableReproductionVeg}">Disable Reproduction</CheckBox>
+                        <CheckBox IsChecked="{Binding VirusImmuneVeg}">Virus Immune</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsVeg}">Disable Mutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMotionVeg}">Disable Voluntary Movement</CheckBox>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
