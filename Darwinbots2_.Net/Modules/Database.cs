@@ -9,11 +9,11 @@ namespace DarwinBots.Modules
 {
     internal static class Database
     {
-        private static string SnapName = "";
+        private static string _snapName = "";
 
         public static async Task AddRecord(robot rob)
         {
-            var folder = "Autosave";
+            const string folder = "Autosave";
 
             Directory.CreateDirectory(folder);
 
@@ -27,7 +27,7 @@ namespace DarwinBots.Modules
             await using var deadRobotsMutationFile = new StreamWriter(path2);
 
             if (!deadRobotsExists)
-                await deadRobotsFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
+                await deadRobotsFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Energy,Chloroplasts");
 
             if (!deadRobotsMutationExists)
                 await deadRobotsMutationFile.WriteLineAsync("Rob id,Mutation History");
@@ -35,11 +35,9 @@ namespace DarwinBots.Modules
             if (rob.dna.Count == 1)
                 return;
 
-            var fitness = GetFitness(rob);
-
             await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 
-            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{fitness},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
             await deadRobotsFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
         }
 
@@ -58,9 +56,9 @@ namespace DarwinBots.Modules
             if (!result != true)
                 return;
 
-            SnapName = dialog.FileName;
+            _snapName = dialog.FileName;
 
-            await using var snapFile = new StreamWriter(SnapName);
+            await using var snapFile = new StreamWriter(_snapName);
 
             await snapFile.WriteLineAsync("Rob id,Parent id,Founder name,Generation,Birth cycle,Age,Mutations,New mutations,Dna length,Offspring number,kills,Fitness,Energy,Chloroplasts");
 
@@ -72,24 +70,19 @@ namespace DarwinBots.Modules
             {
                 if (m == MessageBoxResult.Yes)
                 {
-                    mutationsFiles = new StreamWriter(Path.Join(Path.GetDirectoryName(SnapName), Path.GetFileNameWithoutExtension(SnapName) + "_Mutations.txt"));
+                    mutationsFiles = new StreamWriter(Path.Join(Path.GetDirectoryName(_snapName), Path.GetFileNameWithoutExtension(_snapName) + "_Mutations.txt"));
                     await mutationsFiles.WriteLineAsync("Rob id,Mutation History");
                 }
 
-                //records a snapshot of all living robots in a snapshot database
-                //Form1.instance.GraphLab.Visibility = Visibility.Visible;
+                // Records a snapshot of all living robots in a snapshot database
                 foreach (var rob in Robots.rob.Where(r => r.exist && r.dna.Count > 1))
                 {
                     if (mutationsFiles != null)
                         await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
-                    var fitness = GetFitness(rob);
-
-                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{fitness},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
                     await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
                 }
-
-                //Form1.instance.GraphLab.Visibility = Visibility.Hidden;
 
                 MessageBox.Show("Saved snapshot successfully.");
             }
@@ -102,20 +95,6 @@ namespace DarwinBots.Modules
                     await mutationsFiles.DisposeAsync();
                 }
             }
-        }
-
-        private static double GetFitness(robot rob)
-        {
-            //var sEnergy = (Globals.intFindBestV2 > 100 ? 100 : Globals.intFindBestV2) / 100;
-            //var sPopulation = (Globals.intFindBestV2 < 100 ? 100 : 200 - Globals.intFindBestV2) / 100;
-            ////Form1.instance.TotalOffspring = 1;
-            ////var fitness = Form1.instance.score(rob, 1, 10, 0) + rob.nrg + rob.body * 10; //Botsareus 5/22/2013 Advanced fit test
-            //if (fitness < 0)
-            //    fitness = 0; //Botsareus 9/23/2016 Bug fix
-
-            ////fitness = Math.Pow(Form1.instance.TotalOffspring, sPopulation) * Math.Pow(fitness, sEnergy);
-            //return fitness;
-            return 0;
         }
     }
 }
