@@ -38,7 +38,7 @@ namespace DarwinBots.Modules
             await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 
             await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
-            await deadRobotsFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
+            await deadRobotsFile.WriteLineAsync(DnaTokenizing.DetokenizeDNA(rob).Trim());
         }
 
         public static async Task Snapshot()
@@ -81,7 +81,7 @@ namespace DarwinBots.Modules
                         await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
                     await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
-                    await snapFile.WriteLineAsync(DNATokenizing.DetokenizeDNA(rob).Trim());
+                    await snapFile.WriteLineAsync(DnaTokenizing.DetokenizeDNA(rob).Trim());
                 }
 
                 MessageBox.Show("Saved snapshot successfully.");

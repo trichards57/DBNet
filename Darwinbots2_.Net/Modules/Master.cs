@@ -113,7 +113,7 @@ namespace DarwinBots.Modules
                 SimOpts.Costs = SimOpts.Costs with { CostMultiplier = SimOpts.OldCostX };
             }
 
-            DnaEngine.ExecRobs(rob);
+            DnaEngine.ExecRobs(SimOpts.Costs, rob);
 
             //updateshots can write to bot sense, so we need to clear bot senses before updating shots
             foreach (var rob in rob.Where(r => r.exist && r.DisableDNA == false))

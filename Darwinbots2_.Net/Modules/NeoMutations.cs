@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using static DarwinBots.Modules.Common;
-using static DarwinBots.Modules.DNAManipulations;
-using static DarwinBots.Modules.DNATokenizing;
+using static DarwinBots.Modules.DnaManipulations;
+using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.Robots;
@@ -567,7 +567,7 @@ namespace DarwinBots.Modules
 
         private static void DeleteSpecificGene(List<DNABlock> dna, int k)
         {
-            var i = genepos(dna, k);
+            var i = GenePosition(dna, k);
             if (i < 0)
                 return;
 

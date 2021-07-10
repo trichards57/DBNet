@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using static DarwinBots.Modules.Database;
-using static DarwinBots.Modules.DNAManipulations;
-using static DarwinBots.Modules.DNATokenizing;
+using static DarwinBots.Modules.DnaManipulations;
+using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.NeoMutations;
@@ -1459,7 +1459,7 @@ namespace DarwinBots.Modules
 
         private static int GeneLength(robot rob, int p)
         {
-            var pos = genepos(rob.dna, p);
+            var pos = GenePosition(rob.dna, p);
             return GeneEnd(rob.dna, pos) - pos + 1;
         }
 

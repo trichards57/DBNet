@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using static DarwinBots.Modules.DNATokenizing;
+using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.Master;
 using static DarwinBots.Modules.Physics;

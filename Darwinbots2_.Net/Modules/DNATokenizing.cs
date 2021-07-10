@@ -6,11 +6,11 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static DarwinBots.Modules.DnaEngine;
-using static DarwinBots.Modules.DNAManipulations;
+using static DarwinBots.Modules.DnaManipulations;
 
 namespace DarwinBots.Modules
 {
-    internal static class DNATokenizing
+    internal static class DnaTokenizing
     {
         private static readonly int[,] dnamatrix = new int[9, 14];
 

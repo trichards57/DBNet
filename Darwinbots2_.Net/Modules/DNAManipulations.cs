@@ -5,18 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using static DarwinBots.Modules.DNATokenizing;
+using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Robots;
 
 namespace DarwinBots.Modules
 {
-    internal static class DNAManipulations
+    internal static class DnaManipulations
     {
-        //All functions that manipulate DNA without actually mutating it should go here.
-        //That is, anything that searches DNA, etc.
-        // loads a dna file, inserting the robot in the simulation
-
-        public static int CountGenes(IList<DNABlock> dna)
+        public static int CountGenes(IEnumerable<DNABlock> dna)
         {
             var genesCount = 0;
             var ingene = false;
@@ -53,7 +49,7 @@ namespace DarwinBots.Modules
             return genesCount;
         }
 
-        public static int DnaLen(IList<DNABlock> dna)
+        public static int DnaLen(IEnumerable<DNABlock> dna)
         {
             return dna.TakeWhile(d => !(d.tipo == 10 & d.value == 1)).Count();
         }
@@ -89,7 +85,7 @@ namespace DarwinBots.Modules
             return dna.Count - 1;
         }
 
-        public static int genepos(IList<DNABlock> dna, int n)
+        public static int GenePosition(IList<DNABlock> dna, int n)
         {
             var k = 1;
             var genenum = 0;

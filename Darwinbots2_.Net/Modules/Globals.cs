@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.DNAManipulations;
+using static DarwinBots.Modules.DnaManipulations;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.ShotsManager;
 using static DarwinBots.Modules.SimOpt;

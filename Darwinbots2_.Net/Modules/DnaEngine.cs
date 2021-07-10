@@ -3,7 +3,6 @@ using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
 {
@@ -13,18 +12,25 @@ namespace DarwinBots.Modules
         private const bool NextBody = true;
         private const bool NextElse = false;
         private readonly SafeStack<bool> _boolStack = new() { DefaultValue = true };
+        private readonly Costs _costs;
         private readonly SafeStack<int> _intStack = new() { DefaultValue = 0 };
         private bool _currentCondFlag;
         private FlowState _currentFlow = FlowState.Clear;
         private int _currentGene;
         private bool _inGene;
+
+        private DnaEngine(Costs costs)
+        {
+            _costs = costs;
+        }
+
         public static IReadOnlyList<Variable> SystemVariables { get; private set; } = new List<Variable>();
 
-        public static void ExecRobs(IEnumerable<robot> robs)
+        public static void ExecRobs(Costs costs, IEnumerable<robot> robs)
         {
             foreach (var rob in robs.Where(r => r.exist && !r.Corpse && !r.DisableDNA))
             {
-                var engine = new DnaEngine();
+                var engine = new DnaEngine(costs);
                 engine.ExecuteDna(rob);
             }
         }
@@ -349,7 +355,7 @@ namespace DarwinBots.Modules
             int a, b, e;
             double c, d;
 
-            rob.nrg -= SimOpts.Costs.AdvancedCommandCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.AdvancedCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -451,7 +457,7 @@ namespace DarwinBots.Modules
 
             int a, b;
 
-            rob.nrg -= SimOpts.Costs.BasicCommandCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.BasicCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -533,7 +539,7 @@ namespace DarwinBots.Modules
 
             int a, b;
 
-            rob.nrg -= SimOpts.Costs.BitwiseCommandCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.BitwiseCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -594,7 +600,7 @@ namespace DarwinBots.Modules
 
             int a, b, c, d;
 
-            rob.nrg -= SimOpts.Costs.ConditionCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.ConditionCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -682,7 +688,7 @@ namespace DarwinBots.Modules
                             break;
 
                         _intStack.Push(block.value);
-                        rob.nrg -= SimOpts.Costs.NumberCost * SimOpts.Costs.CostMultiplier;
+                        rob.nrg -= _costs.NumberCost * _costs.CostMultiplier;
                         break;
 
                     case 1:
@@ -691,7 +697,7 @@ namespace DarwinBots.Modules
 
                         var b = NormaliseMemoryAddress(block.value);
                         _intStack.Push(rob.mem[b]);
-                        rob.nrg -= SimOpts.Costs.DotNumberCost * SimOpts.Costs.CostMultiplier;
+                        rob.nrg -= _costs.DotNumberCost * _costs.CostMultiplier;
                         break;
 
                     case 2:
@@ -737,7 +743,7 @@ namespace DarwinBots.Modules
 
         private bool ExecuteFlowCommands(robot rob, int n)
         {
-            rob.nrg -= SimOpts.Costs.FlowCommandCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.FlowCommandCost * _costs.CostMultiplier;
 
             var condFound = false;
 
@@ -793,7 +799,7 @@ namespace DarwinBots.Modules
 
         private void ExecuteLogic(robot rob, int n)
         {
-            rob.nrg -= SimOpts.Costs.LogicCost * SimOpts.Costs.CostMultiplier;
+            rob.nrg -= _costs.LogicCost * _costs.CostMultiplier;
 
             bool a, b;
 
@@ -874,78 +880,78 @@ namespace DarwinBots.Modules
             {
                 case 1:
                     rob.mem[b] = Mod32000(_intStack.Pop());
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier;
                     break;
 
                 case 2:
                     rob.mem[b] = Mod32000(rob.mem[b] + 1);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 10;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 10;
                     break;
 
                 case 3:
                     rob.mem[b] = Mod32000(rob.mem[b] - 1);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 10;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 10;
                     break;
 
                 case 4:
                     a = _intStack.Pop();
                     rob.mem[b] = Mod32000(rob.mem[b] + a);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 5:
                     a = _intStack.Pop();
                     rob.mem[b] = Mod32000(rob.mem[b] - a);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 6:
                     a = _intStack.Pop();
                     rob.mem[b] = Mod32000(rob.mem[b] * Mod32000(a));
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 7:
                     a = _intStack.Pop();
                     rob.mem[b] = a == 0 ? 0 : rob.mem[b] / a;
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 8:
                     a = _intStack.Pop();
                     rob.mem[b] = Mod32000(Math.Min(rob.mem[b], a));
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 9:
                     a = _intStack.Pop();
                     rob.mem[b] = Mod32000(Math.Max(rob.mem[b], a));
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 5;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 10:
                     rob.mem[b] = ThreadSafeRandom.Local.Next(0, Math.Abs(rob.mem[b])) * Math.Sign(rob.mem[b]);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 7;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 11:
                     rob.mem[b] = Math.Sign(rob.mem[b]);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 7;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 12:
                     rob.mem[b] = Math.Abs(rob.mem[b]);
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 8;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 8;
                     break;
 
                 case 13:
                     rob.mem[b] = rob.mem[b] > 0 ? (int)Math.Sqrt(rob.mem[b]) : 0;
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 7;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 14:
                     rob.mem[b] = -rob.mem[b];
-                    rob.nrg -= SimOpts.Costs.StoresCost * SimOpts.Costs.CostMultiplier / 8;
+                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 8;
                     break;
             }
         }

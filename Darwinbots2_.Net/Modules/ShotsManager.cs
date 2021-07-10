@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using static DarwinBots.Modules.DNAManipulations;
+using static DarwinBots.Modules.DnaManipulations;
 using static DarwinBots.Modules.NeoMutations;
 using static DarwinBots.Modules.ObstaclesManager;
 using static DarwinBots.Modules.Physics;
@@ -451,7 +451,7 @@ namespace DarwinBots.Modules
                 Insert = 0;
             else
             {
-                Insert = GeneEnd(rob.dna, genepos(rob.dna, Position));
+                Insert = GeneEnd(rob.dna, GenePosition(rob.dna, Position));
                 if (Insert == rob.dna.Count)
                 {
                     Insert = rob.dna.Count;
@@ -477,7 +477,7 @@ namespace DarwinBots.Modules
             if ((p > shot.parent.genenum) || p < 1)
                 return false;
 
-            var GeneStart = genepos(shot.parent.dna, p);
+            var GeneStart = GenePosition(shot.parent.dna, p);
             var GeneEnding = GeneEnd(shot.parent.dna, GeneStart);
             var genelen = GeneEnding - GeneStart + 1;
 
