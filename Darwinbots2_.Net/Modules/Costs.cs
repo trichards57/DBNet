@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace DarwinBots.Modules
+﻿namespace DarwinBots.Modules
 {
     public record Costs
     {
@@ -83,47 +81,5 @@ namespace DarwinBots.Modules
                 DynamicCostsLowerRangeTarget = 0,
             };
         }
-
-        [Obsolete("Use direct property access")]
-        public double this[int index] => index switch
-        {
-            SimOpt.ADCMDCOST => AdvancedCommandCost,
-            SimOpt.AGECOST => AgeCost,
-            SimOpt.AGECOSTLINEARFRACTION => AgeCostIncreasePerCycle,
-            SimOpt.AGECOSTMAKELINEAR => EnableAgeCostIncreasePerCycle ? 1 : 0,
-            SimOpt.AGECOSTMAKELOG => EnableAgeCostIncreaseLog ? 1 : 0,
-            SimOpt.AGECOSTSTART => AgeCostBeginAge,
-            SimOpt.ALLOWNEGATIVECOSTX => AllowMultiplerToGoNegative ? 1 : 0,
-            SimOpt.BCCMDCOST => BasicCommandCost,
-            SimOpt.BODYUPKEEP => BodyUpkeepCost,
-            SimOpt.BOTNOCOSTLEVEL => ZeroCostPopulationLimit,
-            SimOpt.BTCMDCOST => BitwiseCommandCost,
-            SimOpt.CHLRCOST => CholorplastCost,
-            SimOpt.CONDCOST => ConditionCost,
-            SimOpt.COSTMULTIPLIER => CostMultiplier,
-            SimOpt.COSTSTORE => StoresCost,
-            SimOpt.COSTXREINSTATEMENTLEVEL => ReinstateCostPopulationLimit,
-            SimOpt.DNACOPYCOST => DnaCopyCost,
-            SimOpt.DNACYCCOST => DnaUpkeepCost,
-            SimOpt.DOTNUMCOST => DotNumberCost,
-            SimOpt.DYNAMICCOSTINCLUDEPLANTS => DynamicCostsIncludePlants ? 1 : 0,
-            SimOpt.FLOWCOST => FlowCommandCost,
-            SimOpt.LOGICCOST => LogicCost,
-            SimOpt.MOVECOST => VoluntaryMovementCost,
-            SimOpt.NUMCOST => NumberCost,
-            SimOpt.POISONCOST => PoisonCost,
-            SimOpt.SHELLCOST => ShellCost,
-            SimOpt.SHOTCOST => ShotFormationCost,
-            SimOpt.SLIMECOST => SlimeCost,
-            SimOpt.TIECOST => TieFormationCost,
-            SimOpt.TURNCOST => RotationCost,
-            SimOpt.USEDYNAMICCOSTS => EnableDynamicCosts ? 1 : 0,
-            SimOpt.VENOMCOST => VenomCost,
-            SimOpt.DYNAMICCOSTTARGET => DynamicCostsTargetPopulation,
-            SimOpt.DYNAMICCOSTSENSITIVITY => DynamicCostsSensitivity,
-            SimOpt.DYNAMICCOSTTARGETUPPERRANGE => DynamicCostsUpperRangeTarget,
-            SimOpt.DYNAMICCOSTTARGETLOWERRANGE => DynamicCostsLowerRangeTarget,
-            _ => throw new InvalidOperationException(),
-        };
     }
 }
