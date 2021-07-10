@@ -62,7 +62,6 @@ namespace DarwinBots.Modules
         public static bool GraphUp = false;
         public static bool[] graphvisible = new bool[(NUMGRAPHS + 1)];
         public static bool HideDB = false;
-        public static bool hidepred = false;
         public static int hidePredCycl = 0;
         public static int hidePredOffset = 0;
         public static int Init_hidePredCycl = 0;

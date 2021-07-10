@@ -206,7 +206,7 @@ namespace DarwinBots.Modules
             }
 
             //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
-            foreach (var rob in rob.Where(r => r.nrg > 0 && r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in rob.Where(r => r.nrg > 0 && r.exist))
             {
                 rob.mem[218] = 0;
             }
@@ -218,7 +218,7 @@ namespace DarwinBots.Modules
 
             ScreenArea -= ObstaclesManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 
-            var TotalRobotArea = rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
+            var TotalRobotArea = rob.Where(r => r.exist).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
 
             if (ScreenArea < 1)
             {
@@ -248,7 +248,7 @@ namespace DarwinBots.Modules
                 sunstart2 = 0;
             }
 
-            foreach (var rob in Robots.rob.Where(r => r.nrg > 0 && r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in Robots.rob.Where(r => r.nrg > 0 && r.exist))
             {
                 double acttok = 0;
                 //Botsareus 8/16/2014 Allow robots to share chloroplasts again

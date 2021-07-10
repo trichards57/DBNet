@@ -237,7 +237,7 @@ namespace DarwinBots.Modules
 
         private void CheckBotBucketForCollision(robot rob, IntVector pos)
         {
-            foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && !(i.FName == "Base.txt" && Globals.hidepred) && i.AbsNum > rob.AbsNum))
+            foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && i.AbsNum > rob.AbsNum))
             {
                 var distvector = rob.pos - r.pos;
                 var dist = rob.radius + r.radius;
@@ -254,9 +254,6 @@ namespace DarwinBots.Modules
 
         private void CompareRobots(robot rob1, robot rob2)
         {
-            if (rob2.FName == "Base.txt" && Globals.hidepred)
-                return;
-
             var ab = rob2.pos - rob1.pos;
             var edgeToEdgeDistance = ab.Magnitude() - rob1.radius - rob2.radius;
 

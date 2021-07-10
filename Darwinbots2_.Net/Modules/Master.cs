@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.DNAExecution;
-using static DarwinBots.Modules.Evo;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.ObstaclesManager;
 using static DarwinBots.Modules.Robots;
@@ -115,14 +113,7 @@ namespace DarwinBots.Modules
                 SimOpts.Costs = SimOpts.Costs with { CostMultiplier = SimOpts.OldCostX };
             }
 
-            if (hidepred)
-            {
-                //Store new energy handycap
-                foreach (var rob in rob.Where(r => r.exist && r.FName == "Mutate.txt"))
-                    rob.nrg += rob.LastMut > 0 ? CalculateHandycap() : CalculateHandycap() / 2;
-            }
-
-            ExecRobs();
+            DnaEngine.ExecRobs(rob);
 
             //updateshots can write to bot sense, so we need to clear bot senses before updating shots
             foreach (var rob in rob.Where(r => r.exist && r.DisableDNA == false))
@@ -131,13 +122,13 @@ namespace DarwinBots.Modules
             UpdateShots();
 
             //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in rob.Where(r => r.exist))
                 rob.opos = rob.pos;
 
             await UpdateBots();
 
             //to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred) && !(r.opos.X == 0 & r.opos.Y == 0)))
+            foreach (var rob in rob.Where(r => r.exist && !(r.opos.X == 0 & r.opos.Y == 0)))
                 rob.actvel = rob.pos - rob.opos;
 
             if (Obstacles.Count > 0)
@@ -146,7 +137,7 @@ namespace DarwinBots.Modules
             if (Teleporters.Count > 0)
                 UpdateTeleporters();
 
-            var AllChlr = (int)rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)).Sum(r => r.chloroplasts);
+            var AllChlr = (int)rob.Where(r => r.exist).Sum(r => r.chloroplasts);
 
             TotalChlr = AllChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 

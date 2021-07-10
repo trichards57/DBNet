@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using static DarwinBots.Modules.Common;
 using static DarwinBots.Modules.Database;
 using static DarwinBots.Modules.DNAManipulations;
 using static DarwinBots.Modules.DNATokenizing;
@@ -973,7 +972,7 @@ namespace DarwinBots.Modules
 
         public static bool SimpleCollision(int X, int Y, robot rob)
         {
-            if (Robots.rob.Any(r => r.exist && !(r.FName == "Base.txt" && hidepred) && r != rob && Math.Abs(r.pos.X - X) < r.radius + rob.radius && Math.Abs(r.pos.Y - Y) < r.radius + rob.radius))
+            if (Robots.rob.Any(r => r.exist && r != rob && Math.Abs(r.pos.X - X) < r.radius + rob.radius && Math.Abs(r.pos.Y - Y) < r.radius + rob.radius))
                 return true;
 
             if (ObstaclesManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
@@ -1020,14 +1019,14 @@ namespace DarwinBots.Modules
             if (Teleporters.Any())
             {
                 // Need to do this first as NetForces can update bots later in the loop
-                foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+                foreach (var rob in rob.Where(r => r.exist))
                     CheckTeleporters(rob);
             }
 
             //Only calculate mass due to fuild displacement if the sim medium has density.
             if (SimOpts.Density != 0)
             {
-                foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+                foreach (var rob in rob.Where(r => r.exist))
                     AddedMass(rob);
             }
 
@@ -1044,7 +1043,7 @@ namespace DarwinBots.Modules
             }
 
             //this loops is for pre update
-            foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in rob.Where(r => r.exist))
             {
                 if (!rob.Corpse)
                     Upkeep(rob); // No upkeep costs if you are dead!
@@ -1096,10 +1095,10 @@ namespace DarwinBots.Modules
             foreach (var s in SimOpts.Specie)
                 s.population = 0;
 
-            foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in rob.Where(r => r.exist))
                 await UpdateCounters(rob); // Counts the number of bots and decays body...
 
-            foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
+            foreach (var rob in rob.Where(r => r.exist))
             {
                 UpdateTies(rob); // Carries all tie routines
 
@@ -1129,7 +1128,7 @@ namespace DarwinBots.Modules
             {
                 UpdateTieAngles(rob); // Updates .tielen and .tieang.  Have to do this here after all bot movement happens above.
 
-                if (!rob.Corpse && !rob.DisableDNA && rob.exist && !(rob.FName == "Base.txt" & hidepred))
+                if (!rob.Corpse && !rob.DisableDNA && rob.exist)
                 {
                     Mutate(rob);
                     MakeStuff(rob);
@@ -1146,7 +1145,7 @@ namespace DarwinBots.Modules
                     WriteSenses(rob);
                     FireTies(rob);
                 }
-                if (!rob.Corpse && rob.exist && !(rob.FName == "Base.txt" && hidepred))
+                if (!rob.Corpse && rob.exist)
                 {
                     Ageing(rob); // Even bots with disabled DNA age...
                     ManageDeath(rob); // Even bots with disabled DNA can die...

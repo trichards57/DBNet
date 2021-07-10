@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using static DarwinBots.Modules.Common;
 using static DarwinBots.Modules.DNAManipulations;
-using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.NeoMutations;
 using static DarwinBots.Modules.ObstaclesManager;
 using static DarwinBots.Modules.Physics;
@@ -543,7 +541,7 @@ namespace DarwinBots.Modules
 
             foreach (var rob in rob)
             {
-                if (!rob.exist || shot.parent == rob || rob.FName == "Base.txt" && hidepred || Math.Abs(shot.opos.X - rob.pos.X) >= MaxBotShotSeperation || Math.Abs(shot.opos.Y - rob.pos.Y) >= MaxBotShotSeperation)
+                if (!rob.exist || shot.parent == rob || Math.Abs(shot.opos.X - rob.pos.X) >= MaxBotShotSeperation || Math.Abs(shot.opos.Y - rob.pos.Y) >= MaxBotShotSeperation)
                     continue;
 
                 var B0 = rob.pos - rob.vel + rob.actvel;

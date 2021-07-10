@@ -451,7 +451,6 @@ namespace DarwinBots.Modules
             energydifXP = savedFile.EnergyDifXP;
             ModeChangeCycles = savedFile.ModeChangeCycles;
             hidePredOffset = savedFile.HidePredOffset;
-            hidepred = savedFile.HidePred;
             energydif2 = savedFile.EnergyDif2;
             energydifX2 = savedFile.EnergyDifX2;
             energydifXP2 = savedFile.EnergyDifXP2;
@@ -811,7 +810,6 @@ namespace DarwinBots.Modules
                 FluidSolidCustom = SimOpts.FluidSolidCustom,
                 Gradient = SimOpts.Gradient,
                 Graphs = Enumerable.Range(0, NUMGRAPHS).Select(SaveGraphs),
-                HidePred = hidepred,
                 HidePredOffset = hidePredOffset,
                 KillDistVegs = SimOpts.KillDistVegs,
                 LightIntensity = SimOpts.LightIntensity,

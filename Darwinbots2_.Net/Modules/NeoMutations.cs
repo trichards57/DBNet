@@ -412,7 +412,7 @@ namespace DarwinBots.Modules
             do
             {
                 randomsysvar = (int)(ThreadSafeRandom.Local.NextDouble() * 256);
-            } while (DNAExecution.sysvar[randomsysvar].Name != "");
+            } while (DnaEngine.SystemVariables[randomsysvar].Name != "");
 
             var special = false;
             //special cases
@@ -429,7 +429,7 @@ namespace DarwinBots.Modules
                         4 => -4,
                         5 => -6,
                         6 => -8,
-                        _ => DNAExecution.sysvar[randomsysvar].Value
+                        _ => DnaEngine.SystemVariables[randomsysvar].Value
                     };
                     rob.dna[nth].tipo = 0;
                     holddetail = $"changed dna location {nth} to {rob.dna[nth].value}";
@@ -452,7 +452,7 @@ namespace DarwinBots.Modules
                         2 => -3,
                         3 => -4,
                         4 => -6,
-                        _ => DNAExecution.sysvar[randomsysvar].Value
+                        _ => DnaEngine.SystemVariables[randomsysvar].Value
                     };
 
                     rob.dna[nth].tipo = 0;
@@ -472,8 +472,8 @@ namespace DarwinBots.Modules
                 if (nth < DNAsize - 1 && (int)(ThreadSafeRandom.Local.NextDouble() * 3) == 0)
                 { //1/3 chance functional
                     rob.dna[nth].tipo = 0;
-                    rob.dna[nth].value = DNAExecution.sysvar[randomsysvar].Value;
-                    LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} changed dna location {nth} to number .{DNAExecution.sysvar[randomsysvar].Name} during cycle {SimOpts.TotRunCycle}");
+                    rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value;
+                    LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} changed dna location {nth} to number .{DnaEngine.SystemVariables[randomsysvar].Name} during cycle {SimOpts.TotRunCycle}");
                     rob.Mutations++;
                     rob.LastMut++;
 
@@ -492,9 +492,9 @@ namespace DarwinBots.Modules
                         do
                         {
                             randomsysvar = (int)(ThreadSafeRandom.Local.NextDouble() * 1000);
-                        } while (DNAExecution.sysvar[randomsysvar].Name != "");
+                        } while (DnaEngine.SystemVariables[randomsysvar].Name != "");
                         rob.dna[nth].tipo = 0;
-                        rob.dna[nth].value = DNAExecution.sysvar[randomsysvar].Value + (int)(ThreadSafeRandom.Local.NextDouble() * 32) * 1000;
+                        rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value + (int)(ThreadSafeRandom.Local.NextDouble() * 32) * 1000;
                         holddetail = $"changed dna location {nth} to number {rob.dna[nth].value}";
                     }
                     else
@@ -502,10 +502,10 @@ namespace DarwinBots.Modules
                         do
                         {
                             randomsysvar = (int)(ThreadSafeRandom.Local.NextDouble() * 256);
-                        } while (DNAExecution.sysvar[randomsysvar].Name != "");
+                        } while (DnaEngine.SystemVariables[randomsysvar].Name != "");
                         rob.dna[nth].tipo = 1;
-                        rob.dna[nth].value = DNAExecution.sysvar[randomsysvar].Value;
-                        holddetail = $"changed dna location {nth} to *number *.{DNAExecution.sysvar[randomsysvar].Name}";
+                        rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value;
+                        holddetail = $"changed dna location {nth} to *number *.{DnaEngine.SystemVariables[randomsysvar].Name}";
                     }
                     LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} {holddetail} during cycle {SimOpts.TotRunCycle}");
                     rob.Mutations++;

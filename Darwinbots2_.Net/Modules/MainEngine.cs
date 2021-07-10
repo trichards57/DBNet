@@ -34,7 +34,7 @@ namespace DarwinBots.Modules
         {
             // TODO : Save last run settings
 
-            DNATokenizing.LoadSysVars();
+            DnaEngine.LoadSysVars();
 
             await AutoSaved.Save(false);
             await SafeMode.Save(true);
