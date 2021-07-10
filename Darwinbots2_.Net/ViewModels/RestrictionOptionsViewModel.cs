@@ -106,7 +106,7 @@ namespace DarwinBots.ViewModels
                     if (rob.Fixed)
                     {
                         rob.mem[216] = 1;
-                        rob.vel = new vector(0, 0);
+                        rob.vel = new DoubleVector(0, 0);
                     }
 
                     rob.CantSee = DisableVisionVeg;
@@ -124,7 +124,7 @@ namespace DarwinBots.ViewModels
                     if (rob.Fixed)
                     {
                         rob.mem[216] = 1;
-                        rob.vel = new vector(0, 0);
+                        rob.vel = new DoubleVector(0, 0);
                     }
 
                     rob.CantSee = DisableVisionNonVeg;

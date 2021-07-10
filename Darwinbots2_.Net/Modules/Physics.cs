@@ -51,12 +51,12 @@ namespace DarwinBots.Modules
 
             var smudge = rob.radius + SmudgeFactor;
 
-            var dif = VectorMin(VectorMax(rob.pos, new vector(smudge, smudge)), new vector(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge));
+            var dif = VectorMin(VectorMax(rob.pos, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge));
             var dist = dif - rob.pos;
 
             if (dist.X != 0)
             {
-                if (SimOpts.Dxsxconnected == true)
+                if (SimOpts.Dxsxconnected)
                 {
                     if (dist.X < 0)
                         ReSpawn(rob, smudge, rob.pos.Y);
@@ -68,12 +68,12 @@ namespace DarwinBots.Modules
                     rob.mem[214] = 1;
 
                     if (rob.pos.X - rob.radius < 0)
-                        rob.pos.X = rob.radius;
+                        rob.pos = rob.pos with { X = rob.radius };
 
                     if (rob.pos.X + rob.radius > SimOpts.FieldWidth)
-                        rob.pos.X = SimOpts.FieldWidth - rob.radius;
+                        rob.pos = rob.pos with { X = SimOpts.FieldWidth - rob.radius };
 
-                    rob.ImpulseRes.X += rob.vel.X * b;
+                    rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
                 }
             }
 
@@ -91,12 +91,12 @@ namespace DarwinBots.Modules
                     rob.mem[214] = 1;
 
                     if (rob.pos.Y - rob.radius < 0)
-                        rob.pos.Y = rob.radius;
+                        rob.pos = rob.pos with { Y = rob.radius };
 
                     if (rob.pos.Y + rob.radius > SimOpts.FieldHeight)
-                        rob.pos.Y = SimOpts.FieldHeight - rob.radius;
+                        rob.pos = rob.pos with { Y = SimOpts.FieldHeight - rob.radius };
 
-                    rob.ImpulseRes.Y += rob.vel.Y * b;
+                    rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
                 }
             }
         }
@@ -106,13 +106,18 @@ namespace DarwinBots.Modules
             rob.mass = Math.Clamp((rob.body / 1000) + (rob.shell / 200) + (rob.chloroplasts / 32000) * 31680, 1, 32000);
         }
 
+        public static double IntToRadians(int angle)
+        {
+            return NormaliseAngle((double)angle / 200);
+        }
+
         public static void NetForces(robot rob)
         {
             if (Math.Abs(rob.vel.X) < 0.0000001)
-                rob.vel.X = 0;
+                rob.vel = rob.vel with { X = 0 };
 
             if (Math.Abs(rob.vel.Y) < 0.0000001)
-                rob.vel.Y = 0;
+                rob.vel = rob.vel with { Y = 0 };
 
             PlanetEaters(rob);
             FrictionForces(rob);
@@ -155,10 +160,15 @@ namespace DarwinBots.Modules
             }
         }
 
+        public static int RadiansToInt(double angle)
+        {
+            return (int)(NormaliseAngle(angle) * 200);
+        }
+
         public static void Repel3(robot rob1, robot rob2)
         {
             double fixedSep;
-            vector fixedSepVector;
+            DoubleVector fixedSepVector;
             var e = SimOpts.CoefficientElasticity;
 
             var normal = rob2.pos - rob1.pos;
@@ -380,7 +390,7 @@ namespace DarwinBots.Modules
                     var nay = Math.Clamp(-Math.Cos(anl) * m * dist / 10, -100, 100);
 
                     //EricL 4/24/2006 This is the torque vector on robot t from it's movement of the tie
-                    var TorqueVector = new vector(-Math.Sin(anl) * m * dist / 10, -Math.Cos(anl) * m * dist / 10);
+                    var TorqueVector = new DoubleVector(-Math.Sin(anl) * m * dist / 10, -Math.Cos(anl) * m * dist / 10);
 
                     tie.OtherBot.ImpulseInd -= TorqueVector; //EricL Subtact the torque for bot n.
                     rob.ImpulseInd += TorqueVector; //EricL Add the acceleration for bot t
@@ -401,9 +411,9 @@ namespace DarwinBots.Modules
             var mult = rob.NewMove == false ? rob.mass : 1;
 
             //yes it's backwards, that's on purpose
-            var dir = new vector(rob.mem[dirup] - rob.mem[dirdn], rob.mem[dirsx] - rob.mem[dirdx]) * mult;
+            var dir = new DoubleVector(rob.mem[dirup] - rob.mem[dirdn], rob.mem[dirsx] - rob.mem[dirdx]) * mult;
 
-            var NewAccel = new vector(Dot(rob.aimvector, dir), Cross(rob.aimvector, dir));
+            var NewAccel = new DoubleVector(Dot(rob.aimvector, dir), Cross(rob.aimvector, dir));
 
             //EricL 4/2/2006 Clip the magnitude of the acceleration vector to avoid an overflow crash
             //Its possible to get some really high accelerations here when altzheimers sets in or if a mutation
@@ -443,7 +453,7 @@ namespace DarwinBots.Modules
             var Impulse = SimOpts.PhysBrown * 0.5 * ThreadSafeRandom.Local.NextDouble();
             var RandomAngle = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
 
-            rob.ImpulseInd += new vector(Math.Cos(RandomAngle) * Impulse, Math.Sin(RandomAngle) * Impulse);
+            rob.ImpulseInd += new DoubleVector(Math.Cos(RandomAngle) * Impulse, Math.Sin(RandomAngle) * Impulse);
             rob.ma += Impulse / 100 * (ThreadSafeRandom.Local.NextDouble() - 0.5); // turning motion due to brownian motion
         }
 
@@ -493,7 +503,7 @@ namespace DarwinBots.Modules
         {
             if ((SimOpts.Ygravity == 0 || !SimOpts.Pondmode || SimOpts.Updnconnected))
             {
-                rob.ImpulseInd += new vector(0, SimOpts.Ygravity * rob.mass);
+                rob.ImpulseInd += new DoubleVector(0, SimOpts.Ygravity * rob.mass);
             }
             else
             {
@@ -501,9 +511,9 @@ namespace DarwinBots.Modules
                     rob.nrg -= SimOpts.Ygravity / SimOpts.PhysMoving * (rob.mass > 192 ? 192 : rob.mass) * SimOpts.Costs.VoluntaryMovementCost * SimOpts.Costs.CostMultiplier * rob.Bouyancy;
 
                 if (((1 / BouyancyScaling) - rob.pos.Y / SimOpts.FieldHeight) > rob.Bouyancy)
-                    rob.ImpulseInd += new vector(0, SimOpts.Ygravity * rob.mass);
+                    rob.ImpulseInd += new DoubleVector(0, SimOpts.Ygravity * rob.mass);
                 else
-                    rob.ImpulseInd += new vector(0, -SimOpts.Ygravity * rob.mass);
+                    rob.ImpulseInd += new DoubleVector(0, -SimOpts.Ygravity * rob.mass);
             }
         }
 

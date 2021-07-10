@@ -2,7 +2,6 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.BucketManager;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.SimOpt;
@@ -273,16 +272,16 @@ namespace DarwinBots.Modules
             rob.mem[TotalBots] = TotalRobots;
             rob.mem[TOTALMYSPECIES] = SpeciesFromBot(rob).population;
 
-            if (!rob.CantSee && !rob.Corpse && BucketsProximity(rob) != null)
+            if (!rob.CantSee && !rob.Corpse && Globals.BucketManager.BucketsProximity(rob) != null)
             {
-                switch (rob.lastopptype)
+                switch (rob.lastopp)
                 {
-                    case 0:
-                        LookOccurr(rob, rob.lastopp as robot); // It's a bot.  Populate the refvar sysvars
+                    case robot r:
+                        LookOccurr(rob, r); // It's a bot.  Populate the refvar sysvars
                         break;
 
-                    case 1:
-                        LookOccurrShape(rob, rob.lastopp as Obstacle);
+                    case Obstacle o:
+                        LookOccurrShape(rob, o);
                         break;
                 }
             }
@@ -313,19 +312,13 @@ namespace DarwinBots.Modules
 
             rob.mem[215] = rob.Fixed ? 1 : 0;
 
-            if (rob.pos.Y < 0)
-                rob.pos.Y = 0;
+            rob.pos = DoubleVector.Max(rob.pos, 0);
 
-            //var temp = Math.Floor(rob.pos.Y / Form1.instance.yDivisor / 32000) * 32000;
-            //temp = (rob.pos.Y / Form1.instance.yDivisor) - temp;
-            //rob.mem[217] = (int)(temp % 32000);
+            var temp = DoubleVector.Floor(rob.pos / 32000) * 32000;
+            temp = rob.pos - temp;
 
-            //if (rob.pos.X < 0)
-            //    rob.pos.X = 0;
-
-            //temp = Math.Floor(rob.pos.X / Form1.instance.xDivisor / 32000) * 32000;
-            //temp = (rob.pos.X / Form1.instance.xDivisor) - temp;
-            //rob.mem[219] = (int)(temp % 32000);
+            rob.mem[217] = (int)(temp.Y % 32000);
+            rob.mem[219] = (int)(temp.X % 32000);
         }
 
         private static void EraseLookOccurr(robot rob)

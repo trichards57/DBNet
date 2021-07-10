@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using static DarwinBots.Modules.BucketManager;
 using static DarwinBots.Modules.Common;
 using static DarwinBots.Modules.Database;
 using static DarwinBots.Modules.DNAManipulations;
@@ -291,7 +290,7 @@ namespace DarwinBots.Modules
             rob.age = 0;
             DeleteAllTies(rob);
             rob.exist = false; // do this after deleting the ties...
-            UpdateBotBucket(rob);
+            Globals.BucketManager.UpdateBotBucket(rob);
 
             //if (!MDIForm1.instance.nopoff)
             //    MakePoff(rob);
@@ -310,7 +309,7 @@ namespace DarwinBots.Modules
             Robots.rob.Remove(rob);
         }
 
-        public static async Task Reproduce(robot rob, int per)
+        public static void Reproduce(robot rob, int per)
         {
             if (rob.body < 5)
                 return;
@@ -376,17 +375,16 @@ namespace DarwinBots.Modules
             Array.Clear(nuovo.mem, 0, nuovo.mem.Length);
             nuovo.Ties.Clear();
 
-            nuovo.pos = new vector(rob.pos.X + AbsX(rob.aim, sondist, 0, 0, 0), rob.pos.Y + AbsY(rob.aim, sondist, 0, 0, 0));
+            nuovo.pos = new DoubleVector(rob.pos.X + AbsX(rob.aim, sondist, 0, 0, 0), rob.pos.Y + AbsY(rob.aim, sondist, 0, 0, 0));
             nuovo.exist = true;
-            nuovo.BucketPos.X = -2;
-            nuovo.BucketPos.Y = -2;
-            UpdateBotBucket(nuovo);
+            nuovo.BucketPos = new IntVector(-2, -2);
+            Globals.BucketManager.UpdateBotBucket(nuovo);
             nuovo.vel = rob.vel;
             nuovo.actvel = rob.actvel;
             nuovo.color = rob.color;
             nuovo.aim = Physics.NormaliseAngle(rob.aim + Math.PI);
 
-            nuovo.aimvector = new vector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
+            nuovo.aimvector = new DoubleVector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
             nuovo.mem[SetAim] = (int)(nuovo.aim * 200);
             nuovo.mem[468] = 32000;
             nuovo.Corpse = false;
@@ -529,7 +527,7 @@ namespace DarwinBots.Modules
                     }
                     nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC);
                     nuovo.Mutables.CopyErrorWhatToChange = Math.Clamp(nuovo.Mutables.CopyErrorWhatToChange, 0, 100);
-                    await Mutate(nuovo, true);
+                    Mutate(nuovo, true);
                 }
             }
             else
@@ -547,12 +545,12 @@ namespace DarwinBots.Modules
                             nuovo.Mutables.mutarray[t] = 1000;
                     }
 
-                    await Mutate(nuovo, true);
+                    Mutate(nuovo, true);
 
                     nuovo.Mutables = temp;
                 }
                 else
-                    await Mutate(nuovo, true);
+                    Mutate(nuovo, true);
             }
 
             MakeOccurrList(nuovo);
@@ -592,7 +590,7 @@ namespace DarwinBots.Modules
                 rob.nrg = 0;
         }
 
-        public static async Task SexReproduce(robot female)
+        public static void SexReproduce(robot female)
         {
             if (female.body < 5 || !female.exist || female.Corpse || female.CantReproduce || female.body <= 2 || !female.spermDNA.Any())
                 return;
@@ -698,18 +696,16 @@ namespace DarwinBots.Modules
             Array.Clear(nuovo.mem, 0, nuovo.mem.Length);
             nuovo.Ties.Clear();
 
-            nuovo.pos.X += AbsX(female.aim, (int)sondist, 0, 0, 0);
-            nuovo.pos.Y += AbsY(female.aim, (int)sondist, 0, 0, 0);
+            nuovo.pos += new DoubleVector(AbsX(female.aim, (int)sondist, 0, 0, 0), AbsY(female.aim, (int)sondist, 0, 0, 0));
             nuovo.exist = true;
-            nuovo.BucketPos.X = -2;
-            nuovo.BucketPos.Y = -2;
-            UpdateBotBucket(nuovo);
+            nuovo.BucketPos = new IntVector(-2, -2);
+            Globals.BucketManager.UpdateBotBucket(nuovo);
 
             nuovo.vel = female.vel;
             nuovo.actvel = female.actvel; //Botsareus 7/1/2016 Bugfix
             nuovo.color = female.color;
             nuovo.aim = Physics.NormaliseAngle(female.aim + Math.PI);
-            nuovo.aimvector = new vector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
+            nuovo.aimvector = new DoubleVector(Math.Cos(nuovo.aim), Math.Sin(nuovo.aim));
             nuovo.mem[SetAim] = (int)(nuovo.aim * 200);
             nuovo.mem[468] = 32000;
             nuovo.Corpse = false;
@@ -851,11 +847,11 @@ namespace DarwinBots.Modules
                 if (nuovo.Mutables.CopyErrorWhatToChange > 100)
                     nuovo.Mutables.CopyErrorWhatToChange = 100;
 
-                await Mutate(nuovo, true);
+                Mutate(nuovo, true);
             }
             else
             {
-                await Mutate(nuovo, true);
+                Mutate(nuovo, true);
             }
 
             MakeOccurrList(nuovo);
@@ -1025,7 +1021,7 @@ namespace DarwinBots.Modules
             {
                 // Need to do this first as NetForces can update bots later in the loop
                 foreach (var rob in rob.Where(r => r.exist && !(r.FName == "Base.txt" && hidepred)))
-                    await CheckTeleporters(rob);
+                    CheckTeleporters(rob);
             }
 
             //Only calculate mass due to fuild displacement if the sim medium has density.
@@ -1074,7 +1070,7 @@ namespace DarwinBots.Modules
                 if (!rob.Fixed)
                     NetForces(rob); //calculate forces on all robots
 
-                BucketsCollision(rob);
+                Globals.BucketManager.BucketsCollision(rob);
 
                 if (rob.ImpulseStatic > 0 & (rob.ImpulseInd.X != 0 || rob.ImpulseInd.Y != 0))
                 {
@@ -1085,7 +1081,7 @@ namespace DarwinBots.Modules
                         staticV = rob.ImpulseStatic * Math.Abs(Cross(rob.vel.Unit(), rob.ImpulseInd.Unit())); // Takes into account the fact that the robot may be moving along the same vector
 
                     if (staticV > rob.ImpulseInd.Magnitude())
-                        rob.ImpulseInd = new vector(0, 0); // If static vector is greater then impulse vector, reset impulse vector
+                        rob.ImpulseInd = new DoubleVector(0, 0); // If static vector is greater then impulse vector, reset impulse vector
                 }
 
                 rob.ImpulseInd -= rob.ImpulseRes;
@@ -1135,7 +1131,7 @@ namespace DarwinBots.Modules
 
                 if (!rob.Corpse && !rob.DisableDNA && rob.exist && !(rob.FName == "Base.txt" & hidepred))
                 {
-                    await Mutate(rob);
+                    Mutate(rob);
                     MakeStuff(rob);
                     HandleWaste(rob);
                     Shooting(rob);
@@ -1185,18 +1181,18 @@ namespace DarwinBots.Modules
                 }
 
                 rob.pos += rob.vel;
-                UpdateBotBucket(rob);
+                Globals.BucketManager.UpdateBotBucket(rob);
             }
             else
-                rob.vel = new vector(0, 0);
+                rob.vel = new DoubleVector(0, 0);
 
             //Have to do these here for both fixed and unfixed bots to avoid build up of forces in case fixed bots become unfixed.
-            rob.ImpulseInd = new vector(0, 0);
+            rob.ImpulseInd = new DoubleVector(0, 0);
             rob.ImpulseRes = rob.ImpulseInd;
             rob.ImpulseStatic = 0;
 
             if (SimOpts.ZeroMomentum == true)
-                rob.vel = new vector(0, 0);
+                rob.vel = new DoubleVector(0, 0);
 
             rob.lastup = rob.mem[dirup];
             rob.lastdown = rob.mem[dirdn];
@@ -1459,7 +1455,7 @@ namespace DarwinBots.Modules
             }
 
             if (resetlastopp)
-                rob.lastopp = 0; //Botsareus 8/26/2012 reset lastopp to zero
+                rob.lastopp = null;
         }
 
         private static int GeneLength(robot rob, int p)
@@ -1709,12 +1705,12 @@ namespace DarwinBots.Modules
                     }
                 }
 
-                await Reproduce(r, per);
+                Reproduce(r, per);
             }
 
             foreach (var r in BotsToReproduceSexually)
             {
-                await SexReproduce(r);
+                SexReproduce(r);
             }
 
             foreach (var r in BotsToKill)
@@ -1785,7 +1781,7 @@ namespace DarwinBots.Modules
                     rob.ma = 0;
             }
 
-            rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
+            rob.aimvector = new DoubleVector(Math.Cos(rob.aim), Math.Sin(rob.aim));
 
             rob.mem[aimsx] = 0;
             rob.mem[aimdx] = 0;
@@ -2164,7 +2160,7 @@ namespace DarwinBots.Modules
             if (!rob.Corpse)
             {
                 if (species == null)
-                    await AddSpecie(rob, false);
+                    AddSpecie(rob, false);
                 else
                 {
                     species.population++;

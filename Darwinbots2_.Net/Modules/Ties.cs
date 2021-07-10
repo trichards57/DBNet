@@ -208,11 +208,7 @@ namespace DarwinBots.Modules
             rob.mem[trefvelyourdx] = tie.OtherBot.mem[veldx];
 
             //Botsareus 9/27/2014 I was thinking long and hard where to place this bug fix, probebly best to place it at the source
-            if (Math.Abs(tie.OtherBot.vel.Y) > 16000)
-                tie.OtherBot.vel.Y = 16000 * Math.Sign(tie.OtherBot.vel.Y);
-
-            if (Math.Abs(tie.OtherBot.vel.X) > 16000)
-                tie.OtherBot.vel.X = 16000 * Math.Sign(tie.OtherBot.vel.X);
+            tie.OtherBot.vel = DoubleVector.Clamp(tie.OtherBot.vel, -16000, 16000);
 
             rob.mem[trefvelmyup] = (int)(tie.OtherBot.vel.X * Math.Cos(rob.aim) + Math.Sin(rob.aim) * tie.OtherBot.vel.Y * -1 - rob.mem[velup]); //gives velocity from mybots frame of reference
             rob.mem[trefvelmydn] = rob.mem[trefvelmyup] * -1;

@@ -3,7 +3,6 @@ using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using static DarwinBots.Modules.Common;
 using static DarwinBots.Modules.DNAManipulations;
@@ -56,7 +55,7 @@ namespace DarwinBots.Modules
             rob.LastMutDetail = $"{strmut}\n{rob.LastMutDetail}";
         }
 
-        public static async Task Mutate(robot rob, bool reproducing = false)
+        public static void Mutate(robot rob, bool reproducing = false)
         {
             if (!rob.Mutables.Mutations || SimOpts.DisableMutations)
                 return;
@@ -182,7 +181,7 @@ namespace DarwinBots.Modules
                     {
                         rob.FName = robname;
                         rob.Mutations = 0;
-                        await AddSpecie(rob, false);
+                        AddSpecie(rob, false);
                     }
                     else
                         SimOpts.SpeciationForkInterval--;

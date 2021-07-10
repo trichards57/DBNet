@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.Multibots;
@@ -20,9 +19,9 @@ namespace DarwinBots.Modules
         public static int teleporterFocus { get; set; }
         public static List<Teleporter> Teleporters { get; set; } = new();
 
-        public static async Task CheckTeleporters(robot rob)
+        public static void CheckTeleporters(robot rob)
         {
-            vector randomV = null;
+            DoubleVector randomV = null;
 
             foreach (var tel in Teleporters.Where(t => t.Out || t.Local).Where(t => rob.exist && (TeleportCollision(rob, t))))
             {
@@ -34,7 +33,7 @@ namespace DarwinBots.Modules
                         var name = $@"\{DateTime.Today}{rob.FName}{Teleporters.IndexOf(tel)}{tel.NumTeleported}.dbo";
                         SaveOrganism(Path.Join(tel.path, name), rob);
 
-                        await KillOrganism(rob);
+                        KillOrganism(rob);
                     }
                 }
                 else if (tel.Local)
@@ -44,7 +43,7 @@ namespace DarwinBots.Modules
                         if (tel.Local)
                             tel.NumTeleported++;
 
-                        randomV = new vector(ThreadSafeRandom.Local.Next(0, SimOpts.FieldWidth), ThreadSafeRandom.Local.Next(0, SimOpts.FieldHeight));
+                        randomV = new DoubleVector(ThreadSafeRandom.Local.Next(0, SimOpts.FieldWidth), ThreadSafeRandom.Local.Next(0, SimOpts.FieldHeight));
 
                         ReSpawn(rob, randomV.X, randomV.Y);
                     }
@@ -160,10 +159,10 @@ namespace DarwinBots.Modules
             var vel = SimOpts.MaxVelocity / 4;
 
             if (tel.DriftHorizontal)
-                tel.Vel.X += ThreadSafeRandom.Local.NextDouble() - 0.5;
+                tel.Vel += new DoubleVector(ThreadSafeRandom.Local.NextDouble() - 0.5, 0);
 
             if (tel.DriftVertical)
-                tel.Vel.Y += ThreadSafeRandom.Local.NextDouble() - 0.5;
+                tel.Vel += new DoubleVector(0, ThreadSafeRandom.Local.NextDouble() - 0.5);
 
             if (tel.Vel.Magnitude() > vel)
                 tel.Vel *= vel / tel.Vel.Magnitude();
@@ -180,36 +179,36 @@ namespace DarwinBots.Modules
             if (tel.DriftHorizontal && tel.DriftVertical)
                 tel.Pos += tel.Vel;
 
-            tel.Center = new vector(tel.Pos.X + (tel.Width * 0.5), tel.Pos.Y + (tel.Height * 0.3));
+            tel.Center = new DoubleVector(tel.Pos.X + (tel.Width * 0.5), tel.Pos.Y + (tel.Height * 0.3));
 
             //Keep teleporters from drifting off into space.
             if (tel.Pos.X < 0)
             {
                 if (tel.Pos.X + tel.Width < 0)
-                    tel.Pos.X = 0;
+                    tel.Pos = tel.Pos with { X = 0 };
 
-                tel.Pos.X = SimOpts.Dxsxconnected ? tel.Pos.X + SimOpts.FieldWidth - tel.Width : SimOpts.MaxVelocity * 0.1;
+                tel.Pos = tel.Pos with { X = SimOpts.Dxsxconnected ? tel.Pos.X + SimOpts.FieldWidth - tel.Width : SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.Y < 0)
             {
                 if (tel.Pos.Y + tel.Height < 0)
-                    tel.Pos.Y = 0;
+                    tel.Pos = tel.Pos with { Y = 0 };
 
-                tel.Pos.Y = SimOpts.Updnconnected ? tel.Pos.Y + SimOpts.FieldHeight - tel.Height : SimOpts.MaxVelocity * 0.1;
+                tel.Pos = tel.Pos with { Y = SimOpts.Updnconnected ? tel.Pos.Y + SimOpts.FieldHeight - tel.Height : SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.X + tel.Width > SimOpts.FieldWidth)
             {
                 if (tel.Pos.X > SimOpts.FieldWidth)
-                    tel.Pos.X = SimOpts.FieldWidth - tel.Width;
+                    tel.Pos = tel.Pos with { X = SimOpts.FieldWidth - tel.Width };
 
-                tel.Pos.Y = SimOpts.Dxsxconnected ? tel.Pos.X - (SimOpts.FieldWidth - tel.Width) : -SimOpts.MaxVelocity * 0.1;
+                tel.Pos = tel.Pos with { Y = SimOpts.Dxsxconnected ? tel.Pos.X - (SimOpts.FieldWidth - tel.Width) : -SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.Y + tel.Height > SimOpts.FieldHeight)
             {
                 if (tel.Pos.Y > SimOpts.FieldHeight)
-                    tel.Pos.Y = SimOpts.FieldHeight - tel.Height;
+                    tel.Pos = tel.Pos with { Y = SimOpts.FieldHeight - tel.Height };
 
-                tel.Pos.Y = SimOpts.Updnconnected ? tel.Pos.Y - (SimOpts.FieldHeight - tel.Height) : -SimOpts.MaxVelocity * 0.1;
+                tel.Pos = tel.Pos with { Y = SimOpts.Updnconnected ? tel.Pos.Y - (SimOpts.FieldHeight - tel.Height) : -SimOpts.MaxVelocity * 0.1 };
             }
         }
 
@@ -228,10 +227,10 @@ namespace DarwinBots.Modules
                 var teleporter = new Teleporter
                 {
                     Exist = true,
-                    Pos = new vector(randomX, randomy),
+                    Pos = new DoubleVector(randomX, randomy),
                     Width = Height * aspectRatio,
                     Height = Height,
-                    Vel = new vector(0, 0),
+                    Vel = new DoubleVector(0, 0),
                     Color = Color.White,
                     In = PortIn,
                     Out = PortOut,

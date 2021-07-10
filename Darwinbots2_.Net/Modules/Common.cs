@@ -8,12 +8,12 @@ namespace DarwinBots.Modules
     {
         public static string filemem { get; set; } = string.Empty;
 
-        public static double Cross(vector v1, vector v2)
+        public static double Cross(DoubleVector v1, DoubleVector v2)
         {
             return v1.X * v2.Y - v1.Y * v2.X;
         }
 
-        public static double Dot(vector v1, vector v2)
+        public static double Dot(DoubleVector v1, DoubleVector v2)
         {
             return v1.X * v2.X + v1.Y * v2.Y;
         }
@@ -46,12 +46,12 @@ namespace DarwinBots.Modules
         }
 
         [Obsolete("Use .Magnitude instead")]
-        public static double VectorMagnitude(vector v1)
+        public static double VectorMagnitude(DoubleVector v1)
         {
             return v1.Magnitude();
         }
 
-        public static vector VectorMax(vector x, vector y)
+        public static DoubleVector VectorMax(DoubleVector x, DoubleVector y)
         {
             return new()
             {
@@ -60,7 +60,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        public static vector VectorMin(vector x, vector y)
+        public static DoubleVector VectorMin(DoubleVector x, DoubleVector y)
         {
             return new()
             {
@@ -69,8 +69,8 @@ namespace DarwinBots.Modules
             };
         }
 
-        [Obsolete("Use new vector(x,y) instead")]
-        public static vector VectorSet(double x, double y)
+        [Obsolete("Use new DoubleVector(x,y) instead")]
+        public static DoubleVector VectorSet(double x, double y)
         {
             return new()
             {
@@ -80,7 +80,7 @@ namespace DarwinBots.Modules
         }
 
         [Obsolete("Use - instead")]
-        public static vector VectorSub(vector v1, vector v2)
+        public static DoubleVector VectorSub(DoubleVector v1, DoubleVector v2)
         {
             return v1 - v2;
         }

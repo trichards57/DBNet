@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using System;
 using System.Collections.Generic;
-using static DarwinBots.Modules.BucketManager;
 
 namespace DarwinBots.Modules
 {
@@ -67,11 +66,9 @@ namespace DarwinBots.Modules
 
             foreach (var cell in clist)
             {
-                cell.pos.X += dx;
-                cell.pos.Y += dy;
-                cell.opos.X = cell.pos.X;
-                cell.opos.Y = cell.pos.Y;
-                UpdateBotBucket(cell);
+                cell.pos += new DoubleVector(dx, dy);
+                cell.opos = cell.pos;
+                Globals.BucketManager.UpdateBotBucket(cell);
             }
         }
     }

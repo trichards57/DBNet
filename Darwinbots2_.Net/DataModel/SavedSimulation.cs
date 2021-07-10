@@ -1,5 +1,6 @@
 ﻿using DarwinBots.Model;
 using DarwinBots.Modules;
+using System;
 using System.Collections.Generic;
 
 namespace DarwinBots.DataModel
@@ -89,7 +90,7 @@ namespace DarwinBots.DataModel
         public bool ShapesAreSeeThrough { get; internal set; }
         public bool ShapesAreVisable { get; internal set; }
         public IEnumerable<Shot> Shots { get; set; }
-        public int SimGUID { get; internal set; }
+        public Guid SimGUID { get; internal set; }
         public string SimName { get; internal set; }
         public bool SnpExcludeVegs { get; internal set; }
         public int SpeciationForkInterval { get; internal set; }

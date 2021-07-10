@@ -16,7 +16,7 @@
         public double Bend { get; set; }
         public bool EnergyUsed { get; set; }
         public bool FixedAngle { get; set; }
-        public vector Force { get; set; }
+        public DoubleVector Force { get; set; }
         public bool InfoUsed { get; set; }
         public double k { get; set; }
         public int Last { get; set; }

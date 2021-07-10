@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.BucketManager;
 using static DarwinBots.Modules.DNAManipulations;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.ShotsManager;
@@ -77,7 +76,7 @@ namespace DarwinBots.Modules
         public static bool loadstartnovid = false;
         public static int maxfieldsize = 0;
         public static int ModeChangeCycles = 0;
-        public static vector Mouse_loc = null;
+        public static DoubleVector Mouse_loc = null;
         public static bool NoDeaths = false;
         public static bool NormMut = false;
         public static List<KeyData> PB_keys = new() { };
@@ -130,6 +129,8 @@ namespace DarwinBots.Modules
         public static string y_robdir = "";
         public static int y_Stgwins = 0;
         public static int y_zblen = 0;
+
+        public static BucketManager BucketManager { get; set; }
 
         public static async Task aggiungirob(int r, double x, double y)
         {
@@ -191,14 +192,13 @@ namespace DarwinBots.Modules
                 if (a.Fixed)
                     a.mem[216] = 1;
 
-                a.pos.X = x;
-                a.pos.Y = y;
+                a.pos = new DoubleVector(x, y);
 
                 a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
                 a.mem[SetAim] = (int)a.aim * 200;
 
                 //Bot is already in a bucket due to the prepare routine
-                UpdateBotBucket(a);
+                Globals.BucketManager.UpdateBotBucket(a);
                 a.nrg = SimOpts.Specie[r].Stnrg;
                 a.Mutables = SimOpts.Specie[r].Mutables;
 

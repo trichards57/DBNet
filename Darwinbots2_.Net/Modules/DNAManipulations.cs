@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using static DarwinBots.Modules.BucketManager;
 using static DarwinBots.Modules.DNATokenizing;
 using static DarwinBots.Modules.Robots;
 
@@ -166,7 +165,7 @@ namespace DarwinBots.Modules
 
             rob.exist = false;
             Robots.rob.Remove(rob);
-            UpdateBotBucket(rob);
+            Globals.BucketManager.UpdateBotBucket(rob);
             return null;
         }
 
@@ -175,11 +174,10 @@ namespace DarwinBots.Modules
             //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
             //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
             rob.aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
-            rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
+            rob.aimvector = new DoubleVector(Math.Cos(rob.aim), Math.Sin(rob.aim));
             rob.exist = true;
-            rob.BucketPos.X = -2;
-            rob.BucketPos.Y = -2;
-            UpdateBotBucket(rob);
+            rob.BucketPos = new IntVector(-2, -2);
+            Globals.BucketManager.UpdateBotBucket(rob);
 
             rob.color = Color.FromRgb((byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255));
             rob.vars.Clear();

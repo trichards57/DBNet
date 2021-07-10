@@ -2,10 +2,15 @@
 
 namespace DarwinBots.Model
 {
-    public class IntVector
+    public record IntVector
     {
-        private int _x;
-        private int _y;
+        private readonly int _x;
+        private readonly int _y;
+
+        public int X { get => _x; init => _x = Math.Clamp(value, -32000, 32000); }
+        public int Y { get => _y; init => _y = Math.Clamp(value, -32000, 32000); }
+
+        public IntVector() { }
 
         public IntVector(int x, int y)
         {
@@ -13,12 +18,10 @@ namespace DarwinBots.Model
             Y = y;
         }
 
-        public IntVector()
+        public static implicit operator DoubleVector(IntVector vector)
         {
+            return new(vector.X, vector.Y);
         }
-
-        public int X { get => _x; set => _x = Math.Clamp(value, -32000, 32000); }
-        public int Y { get => _y; set => _y = Math.Clamp(value, -32000, 32000); }
 
         public static IntVector operator -(IntVector v1, IntVector v2)
         {

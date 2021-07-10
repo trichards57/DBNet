@@ -16,13 +16,13 @@ namespace DarwinBots.Model
         public int memloc { get; set; }
         public int Memval { get; set; }
         public double nrg { get; set; }
-        public vector opos { get; set; }
+        public DoubleVector opos { get; set; }
         public robot parent { get; set; }
-        public vector pos { get; set; }
+        public DoubleVector pos { get; set; }
         public double Range { get; set; }
         public int shottype { get; set; }
         public bool stored { get; set; }
         public int value { get; set; }
-        public vector velocity { get; set; }
+        public DoubleVector velocity { get; set; }
     }
 }

@@ -5,7 +5,7 @@ namespace DarwinBots.Model
     public class Teleporter
     {
         public int BotsPerPoll { get; set; }
-        public vector Center { get; set; }
+        public DoubleVector Center { get; set; }
         public Color Color { get; set; }
         public bool DriftHorizontal { get; set; }
         public bool DriftVertical { get; set; }
@@ -22,12 +22,12 @@ namespace DarwinBots.Model
         public bool Out { get; set; }
         public string path { get; set; }
         public int PollCountDown { get; set; }
-        public vector Pos { get; set; }
+        public DoubleVector Pos { get; set; }
         public bool RespectShapes { get; set; }
         public bool TeleportCorpses { get; set; }
         public bool TeleportHeterotrophs { get; set; }
         public bool TeleportVeggies { get; set; }
-        public vector Vel { get; set; }
+        public DoubleVector Vel { get; set; }
         public double Width { get; set; }
     }
 }

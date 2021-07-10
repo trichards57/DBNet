@@ -6,11 +6,11 @@ namespace DarwinBots.Model
     internal class robot
     {
         public int AbsNum { get; set; }
-        public vector actvel { get; set; }
+        public DoubleVector actvel { get; set; }
         public double AddedMass { get; set; }
         public int age { get; set; }
         public double aim { get; set; }
-        public vector aimvector { get; set; }
+        public DoubleVector aimvector { get; set; }
         public int BirthCycle { get; set; }
         public double body { get; set; }
         public double Bouyancy { get; set; }
@@ -36,8 +36,8 @@ namespace DarwinBots.Model
         public int generation { get; set; }
         public decimal GenMut { get; set; }
         public bool highlight { get; set; }
-        public vector ImpulseInd { get; set; }
-        public vector ImpulseRes { get; set; }
+        public DoubleVector ImpulseInd { get; set; }
+        public DoubleVector ImpulseRes { get; set; }
         public double ImpulseStatic { get; set; }
         public int Kills { get; set; }
         public int lastdown { get; set; }
@@ -45,8 +45,7 @@ namespace DarwinBots.Model
         public int LastMut { get; set; }
         public string LastMutDetail { get; set; }
         public object lastopp { get; set; }
-        public vector lastopppos { get; set; }
-        public int lastopptype { get; set; }
+        public DoubleVector lastopppos { get; set; }
         public string LastOwner { get; set; }
         public int lastright { get; set; }
         public robot lasttch { get; set; }
@@ -71,7 +70,7 @@ namespace DarwinBots.Model
         public float OldGD { get; set; }
         public int OldMutations { get; set; }
         public double onrg { get; set; }
-        public vector opos { get; set; }
+        public DoubleVector opos { get; set; }
         public int order { get; set; }
         public int[] OSkin { get; set; } = new int[13];
         public double Paracount { get; set; }
@@ -84,7 +83,7 @@ namespace DarwinBots.Model
         public double poison { get; set; }
         public double Poisoncount { get; set; }
         public bool Poisoned { get; set; }
-        public vector pos { get; set; }
+        public DoubleVector pos { get; set; }
         public int Pval { get; set; }
         public double Pwaste { get; set; }
         public double radius { get; set; }
@@ -103,7 +102,7 @@ namespace DarwinBots.Model
         public List<Variable> vars { get; set; } = new();
         public double vbody { get; set; }
         public bool Veg { get; set; }
-        public vector vel { get; set; }
+        public DoubleVector vel { get; set; }
         public double venom { get; set; }
         public bool View { get; set; }
         public bool VirusImmune { get; set; }

@@ -25,7 +25,18 @@ namespace DarwinBots.Modules
         private const double SlimeEffectiveness = 1 / 20;
         private const int VenumEffectivenessVSShell = 25;
 
-        public static List<Color> FlashColor { get; set; } = new();
+        public static Dictionary<int, Color> FlashColor { get; set; } = new()
+        {
+            { 1, Colors.Black },
+            { -1, Colors.Red },
+            { -2, Colors.White },
+            { -3, Colors.Blue },
+            { -4, Colors.Green },
+            { -5, Colors.Yellow },
+            { -6, Colors.Magenta },
+            { -7, Colors.Cyan },
+        };
+
         public static double MaxBotShotSeperation { get; set; }
         public static int maxshotarray { get; set; }
         public static List<Shot> Shots { get; set; } = new();
@@ -41,9 +52,9 @@ namespace DarwinBots.Modules
                 parent = par,
                 FromSpecie = par.FName,
                 fromveg = par.Veg,
-                pos = new vector(X, Y),
-                velocity = new vector(vx, vy),
-                opos = new vector(X + vx, Y + vy),
+                pos = new DoubleVector(X, Y),
+                velocity = new DoubleVector(vx, vy),
+                opos = new DoubleVector(X + vx, Y + vy),
                 age = 0,
                 color = col,
                 exist = true,
@@ -92,7 +103,7 @@ namespace DarwinBots.Modules
             rob.DecayTimer = 0;
 
             rob.aim = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
-            rob.aimvector = new vector(Math.Cos(rob.aim), Math.Sin(rob.aim));
+            rob.aimvector = new DoubleVector(Math.Cos(rob.aim), Math.Sin(rob.aim));
 
             var va = Math.Clamp(rob.body, 0, SimOpts.Decay / 10);
 
@@ -196,7 +207,7 @@ namespace DarwinBots.Modules
 
             ShAngle += (ThreadSafeRandom.Local.NextDouble() - .5) * 0.2;
 
-            var angle = new vector(Math.Cos(ShAngle), -Math.Sin(ShAngle));
+            var angle = new DoubleVector(Math.Cos(ShAngle), -Math.Sin(ShAngle));
 
             shot.pos = rob.pos + (angle * rob.radius);
 
@@ -271,8 +282,8 @@ namespace DarwinBots.Modules
 
             var ShAngle = (double)ThreadSafeRandom.Local.Next(1, 1256) / 200;
             shot.stored = false;
-            shot.pos += new vector(Math.Cos(ShAngle) * rob.radius, -Math.Sin(ShAngle) * rob.radius);
-            shot.velocity = new vector(AbsX(ShAngle, RobSize / 3, 0, 0, 0), AbsY(ShAngle, RobSize / 3, 0, 0, 0)) + rob.actvel;
+            shot.pos += new DoubleVector(Math.Cos(ShAngle) * rob.radius, -Math.Sin(ShAngle) * rob.radius);
+            shot.velocity = new DoubleVector(AbsX(ShAngle, RobSize / 3, 0, 0, 0), AbsY(ShAngle, RobSize / 3, 0, 0, 0)) + rob.actvel;
 
             shot.opos = shot.pos - shot.velocity;
         }
@@ -487,42 +498,42 @@ namespace DarwinBots.Modules
             if (SimOpts.Updnconnected == true)
             {
                 if (shot.pos.Y > SimOpts.FieldHeight)
-                    shot.pos.Y -= SimOpts.FieldHeight;
+                    shot.pos -= new DoubleVector(0, SimOpts.FieldHeight);
                 else if (shot.pos.Y < 0)
-                    shot.pos.Y += SimOpts.FieldHeight;
+                    shot.pos += new DoubleVector(0, SimOpts.FieldHeight);
             }
             else
             {
                 if (shot.pos.Y > SimOpts.FieldHeight)
                 {
-                    shot.pos.Y = SimOpts.FieldHeight;
-                    shot.velocity.Y = -1 * Math.Abs(shot.velocity.Y);
+                    shot.pos = shot.pos with { Y = SimOpts.FieldHeight };
+                    shot.velocity = shot.velocity with { Y = -1 * Math.Abs(shot.velocity.Y) };
                 }
                 else if (shot.pos.Y < 0)
                 {
-                    shot.pos.Y = 0;
-                    shot.velocity.Y = Math.Abs(shot.velocity.Y);
+                    shot.pos = shot.pos with { Y = 0 };
+                    shot.velocity = shot.velocity with { Y = Math.Abs(shot.velocity.Y) };
                 }
             }
 
-            if (SimOpts.Dxsxconnected == true)
+            if (SimOpts.Dxsxconnected)
             {
                 if (shot.pos.X > SimOpts.FieldWidth)
-                    shot.pos.X -= SimOpts.FieldWidth;
+                    shot.pos -= new DoubleVector(SimOpts.FieldWidth, 0);
                 else if (shot.pos.X < 0)
-                    shot.pos.X += SimOpts.FieldWidth;
+                    shot.pos += new DoubleVector(SimOpts.FieldWidth, 0);
             }
             else
             {
                 if (shot.pos.X > SimOpts.FieldWidth)
                 {
-                    shot.pos.X = SimOpts.FieldWidth;
-                    shot.velocity.X = -1 * Math.Abs(shot.velocity.X);
+                    shot.pos = shot.pos with { X = SimOpts.FieldWidth };
+                    shot.velocity = shot.velocity with { X = -1 * Math.Abs(shot.velocity.X) };
                 }
                 else if (shot.pos.X < 0)
                 {
-                    shot.pos.X = 0;
-                    shot.velocity.X = Math.Abs(shot.velocity.X);
+                    shot.pos = shot.pos with { X = 0 };
+                    shot.velocity = shot.velocity with { X = Math.Abs(shot.velocity.X) };
                 }
             }
 
