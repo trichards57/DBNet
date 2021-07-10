@@ -566,7 +566,7 @@ namespace DarwinBots.Modules
                 if (D2 == 0)
                     continue;
 
-                var DdotP = Dot(d, p);
+                var DdotP = DoubleVector.Dot(d, p);
                 var X = -DdotP;
                 var Y = Math.Pow(DdotP, 2) - D2 * (P2 - Math.Pow(rob.radius, 2));
 

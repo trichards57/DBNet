@@ -187,8 +187,8 @@ namespace DarwinBots.Modules
 
             var delta = p1 - p0;
 
-            var s = Common.Dot(delta, new DoubleVector(d1.Y, -d1.X)) / dotPerp;
-            var t = Common.Dot(delta, new DoubleVector(d0.Y, -d0.X)) / dotPerp;
+            var s = DoubleVector.Dot(delta, new DoubleVector(d1.Y, -d1.X)) / dotPerp;
+            var t = DoubleVector.Dot(delta, new DoubleVector(d0.Y, -d0.X)) / dotPerp;
 
             if (s >= 0 & s <= 1 && t >= 0 & t <= 1)
                 return s;
@@ -219,11 +219,11 @@ namespace DarwinBots.Modules
 
             for (var i = 1; i < 4; i++)
             {
-                var numerator = Common.Cross(d0, d1[i]);
+                var numerator = DoubleVector.Cross(d0, d1[i]);
                 if (numerator == 0) continue;
                 var delta = p[i] - p0;
-                var s = Common.Cross(delta, d1[i]) / numerator;
-                var t = Common.Cross(delta, d0) / numerator;
+                var s = DoubleVector.Cross(delta, d1[i]) / numerator;
+                var t = DoubleVector.Cross(delta, d0) / numerator;
 
                 if (t >= 0 & t <= 1)
                     return true;

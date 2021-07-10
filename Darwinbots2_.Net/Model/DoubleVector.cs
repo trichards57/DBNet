@@ -72,6 +72,24 @@ namespace DarwinBots.Model
             };
         }
 
+        public static DoubleVector Max(DoubleVector x, DoubleVector y)
+        {
+            return new()
+            {
+                X = Math.Max(x.X, y.X),
+                Y = Math.Max(x.Y, y.Y)
+            };
+        }
+
+        public static DoubleVector Min(DoubleVector x, DoubleVector y)
+        {
+            return new()
+            {
+                X = Math.Min(x.X, y.X),
+                Y = Math.Min(x.Y, y.Y)
+            };
+        }
+
         public static DoubleVector Max(DoubleVector v1, double val)
         {
             return new()
@@ -136,6 +154,16 @@ namespace DarwinBots.Model
         public DoubleVector InvertY()
         {
             return new(X, -Y);
+        }
+
+        public static double Cross(DoubleVector v1, DoubleVector v2)
+        {
+            return v1.X * v2.Y - v1.Y * v2.X;
+        }
+
+        public static double Dot(DoubleVector v1, DoubleVector v2)
+        {
+            return v1.X * v2.X + v1.Y * v2.Y;
         }
     }
 }

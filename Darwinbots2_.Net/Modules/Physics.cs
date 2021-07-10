@@ -51,7 +51,7 @@ namespace DarwinBots.Modules
 
             var smudge = rob.radius + SmudgeFactor;
 
-            var dif = VectorMin(VectorMax(rob.pos, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge));
+            var dif = DoubleVector.Min(DoubleVector.Max(rob.pos, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpts.FieldWidth - smudge, SimOpts.FieldHeight - smudge));
             var dist = dif - rob.pos;
 
             if (dist.X != 0)
@@ -221,7 +221,7 @@ namespace DarwinBots.Modules
                 //appropriate to the collision.  This would be all we needed if the bots all massed the same.
                 //It's possible the bots are already moving away from each other having "collided" last cycle.  If so,
                 //we don't want to reverse them again and we don't want to add too much more further acceleration
-                var projection = Dot(vel1, unit) * 0.99;
+                var projection = DoubleVector.Dot(vel1, unit) * 0.99;
 
                 if (projection <= 0)
                 { // bots are already moving away from one another
@@ -229,7 +229,7 @@ namespace DarwinBots.Modules
                 }
                 var V1 = unit * projection;
 
-                projection = Dot(vel2, unit) * 0.99; // try damping things down a little
+                projection = DoubleVector.Dot(vel2, unit) * 0.99; // try damping things down a little
 
                 if (projection >= 0)
                 { // bots are already moving away from one another
@@ -354,7 +354,7 @@ namespace DarwinBots.Modules
 
                                 //next -bv
                                 var vy = rob.vel - tie.OtherBot.vel;
-                                Impulse = Dot(vy, uv) * -tie.b;
+                                Impulse = DoubleVector.Dot(vy, uv) * -tie.b;
                                 rob.ImpulseInd += uv * Impulse;
                             }
                         }
@@ -413,7 +413,7 @@ namespace DarwinBots.Modules
             //yes it's backwards, that's on purpose
             var dir = new DoubleVector(rob.mem[dirup] - rob.mem[dirdn], rob.mem[dirsx] - rob.mem[dirdx]) * mult;
 
-            var NewAccel = new DoubleVector(Dot(rob.aimvector, dir), Cross(rob.aimvector, dir));
+            var NewAccel = new DoubleVector(DoubleVector.Dot(rob.aimvector, dir), DoubleVector.Cross(rob.aimvector, dir));
 
             //EricL 4/2/2006 Clip the magnitude of the acceleration vector to avoid an overflow crash
             //Its possible to get some really high accelerations here when altzheimers sets in or if a mutation

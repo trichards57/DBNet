@@ -1078,7 +1078,7 @@ namespace DarwinBots.Modules
                     if (rob.vel.X == 0 & rob.vel.Y == 0)
                         staticV = rob.ImpulseStatic;
                     else
-                        staticV = rob.ImpulseStatic * Math.Abs(Cross(rob.vel.Unit(), rob.ImpulseInd.Unit())); // Takes into account the fact that the robot may be moving along the same vector
+                        staticV = rob.ImpulseStatic * Math.Abs(DoubleVector.Cross(rob.vel.Unit(), rob.ImpulseInd.Unit())); // Takes into account the fact that the robot may be moving along the same vector
 
                     if (staticV > rob.ImpulseInd.Magnitude())
                         rob.ImpulseInd = new DoubleVector(0, 0); // If static vector is greater then impulse vector, reset impulse vector
