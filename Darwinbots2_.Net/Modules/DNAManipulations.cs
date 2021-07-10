@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using static DarwinBots.Modules.DnaTokenizing;
-using static DarwinBots.Modules.Robots;
 
 namespace DarwinBots.Modules
 {
@@ -147,15 +145,15 @@ namespace DarwinBots.Modules
 
         public static async Task<robot> RobScriptLoad(string path)
         {
-            var rob = GetNewBot();
+            var rob = Robots.GetNewBot();
             PrepareRob(rob, path); // prepares structure
-            if (await LoadDNA(path, rob))
+            if (await DnaTokenizing.LoadDNA(path, rob))
             {
                 // loads and parses dna
                 Senses.MakeOccurrList(rob); // creates the ref* array
                 rob.genenum = CountGenes(rob.dna);
-                rob.mem[DnaLenSys] = rob.dna.Count;
-                rob.mem[GenesSys] = rob.genenum;
+                rob.mem[Robots.DnaLenSys] = rob.dna.Count;
+                rob.mem[Robots.GenesSys] = rob.genenum;
                 return rob; // returns the index of the created rob
             }
 
