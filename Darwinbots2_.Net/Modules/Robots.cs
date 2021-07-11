@@ -212,8 +212,8 @@ namespace DarwinBots.Modules
             var ndna1 = new List<block3>();
             var ndna2 = new List<block3>();
 
-            ndna1.AddRange(r1.dna.Select(b => new block3() { nucli = DNAtoInt(b.tipo, b.value) }));
-            ndna2.AddRange(r2.dna.Select(b => new block3() { nucli = DNAtoInt(b.tipo, b.value) }));
+            ndna1.AddRange(r1.dna.Select(b => new block3() { nucli = DnaToInt(b.Type, b.Value) }));
+            ndna2.AddRange(r2.dna.Select(b => new block3() { nucli = DnaToInt(b.Type, b.Value) }));
 
             //Step3 Figure genetic distance
             SimpleMatch(ndna1, ndna2);
@@ -638,13 +638,13 @@ namespace DarwinBots.Modules
 
             //Step1 Copy both dnas into block2
 
-            var dna1 = female.dna.Select(d => new block2 { tipo = d.tipo, value = d.value }).ToList();
-            var dna2 = female.spermDNA.Select(d => new block2 { tipo = d.tipo, value = d.value }).ToList();
+            var dna1 = female.dna.Select(d => new block2 { tipo = d.Type, value = d.Value }).ToList();
+            var dna2 = female.spermDNA.Select(d => new block2 { tipo = d.Type, value = d.Value }).ToList();
 
             //Step2 map nucli
 
-            var ndna1 = dna1.Select(d => new block3 { nucli = DNAtoInt(d.tipo, d.value) }).ToList();
-            var ndna2 = dna2.Select(d => new block3 { nucli = DNAtoInt(d.tipo, d.value) }).ToList();
+            var ndna1 = dna1.Select(d => new block3 { nucli = DnaToInt(d.tipo, d.value) }).ToList();
+            var ndna2 = dna2.Select(d => new block3 { nucli = DnaToInt(d.tipo, d.value) }).ToList();
 
             //Step3 Check longest sequences
 
@@ -1356,12 +1356,12 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DNABlock { tipo = dna1[a].tipo, value = dna1[a].value });
+                            outDna.Add(new DNABlock { Type = dna1[a].tipo, Value = dna1[a].value });
                     }
                     else
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DNABlock { tipo = dna2[a].tipo, value = dna2[a].value });
+                            outDna.Add(new DNABlock { Type = dna2[a].tipo, Value = dna2[a].value });
                     }
                 }
                 else if (res1 - n1 > 0)
@@ -1369,7 +1369,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DNABlock { tipo = dna1[a].tipo, value = dna1[a].value });
+                            outDna.Add(new DNABlock { Type = dna1[a].tipo, Value = dna1[a].value });
                     }
                 }
                 else if (res2 - n2 > 0)
@@ -1377,7 +1377,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DNABlock { tipo = dna2[a].tipo, value = dna2[a].value });
+                            outDna.Add(new DNABlock { Type = dna2[a].tipo, Value = dna2[a].value });
                     }
                 }
 
@@ -1395,8 +1395,8 @@ namespace DarwinBots.Modules
                 {
                     var block = new DNABlock
                     {
-                        tipo = whatside ? dna1[a].tipo : dna2[a - nn + res2].tipo,
-                        value = ((dna1[a].tipo == dna2[a - nn + res2].tipo && Math.Abs(dna2[a].value) > 999 && Math.Abs(dna2[a - nn + res2].value) > 999 ? ThreadSafeRandom.Local.Next(0, 2) == 0 : whatside) ? dna1[a].value : dna2[a - nn + res2].value)
+                        Type = whatside ? dna1[a].tipo : dna2[a - nn + res2].tipo,
+                        Value = ((dna1[a].tipo == dna2[a - nn + res2].tipo && Math.Abs(dna2[a].value) > 999 && Math.Abs(dna2[a - nn + res2].value) > 999 ? ThreadSafeRandom.Local.Next(0, 2) == 0 : whatside) ? dna1[a].value : dna2[a - nn + res2].value)
                     };
                     outDna.Add(block);
                 }

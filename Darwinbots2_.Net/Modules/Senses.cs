@@ -168,21 +168,21 @@ namespace DarwinBots.Modules
 
             for (var i = 0; i < rob.dna.Count; i++)
             {
-                if (rob.dna[i].tipo == 10 && rob.dna[i].value == 1)
+                if (rob.dna[i].Type == 10 && rob.dna[i].Value == 1)
                     break;
 
-                switch (rob.dna[i].tipo)
+                switch (rob.dna[i].Type)
                 {
                     case 0:
                         //number
-                        if (rob.dna[i + 1].tipo == 7)
+                        if (rob.dna[i + 1].Type == 7)
                         {
                             //DNA is going to store to this value, so it's probably a sysvar
-                            switch (rob.dna[i].value)
+                            switch (rob.dna[i].Value)
                             {
                                 case > 0 and < 9:
                                     //if we are dealing with one of the first 8 sysvars
-                                    rob.occurr[rob.dna[i].value]++; //then the occur listing for this fxn is incremented
+                                    rob.occurr[rob.dna[i].Value]++; //then the occur listing for this fxn is incremented
                                     break;
 
                                 case 826:
@@ -196,7 +196,7 @@ namespace DarwinBots.Modules
                                     break;
                             }
                         }
-                        else if (rob.dna[i].value == 330)
+                        else if (rob.dna[i].Value == 330)
                         {
                             //the bot is referencing .tie 'Botsareus 11/29/2013 Moved to "." list
                             rob.occurr[9]++; //ties
@@ -205,7 +205,7 @@ namespace DarwinBots.Modules
 
                     case 1:
                         //*number
-                        if (rob.dna[i].value > 500 & rob.dna[i].value < 510)
+                        if (rob.dna[i].Value > 500 & rob.dna[i].Value < 510)
                         {
                             //the bot is referencing an eye
                             rob.occurr[8]++; //eyes

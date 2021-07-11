@@ -5,41 +5,36 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.DnaEngine;
 using static DarwinBots.Modules.DnaManipulations;
 
 namespace DarwinBots.Modules
 {
     internal static class DnaTokenizing
     {
-        private static readonly int[,] dnamatrix = new int[9, 14];
+        private static readonly int[,] DnaMatrix = new int[9, 14];
 
-        //make sure that when we are saving to file do not normalize custome sysvars
-
-        public static void CalculateDnaMatrix()
+        static DnaTokenizing()
         {
-            //calculate dna matrix
-
             var count = 0;
 
-            for (var y_tipo = 0; y_tipo < 9; y_tipo++)
+            for (var type = 0; type < 9; type++)
             {
-                for (var y_value = 0; y_value < 14; y_value++)
+                for (var value = 0; value < 14; value++)
                 {
-                    var Y = new DNABlock
+                    var y = new DNABlock
                     {
-                        tipo = y_tipo + 2,
-                        value = y_value + 1
+                        Type = type + 2,
+                        Value = value + 1
                     };
-                    var result = Parse(Y);
+                    var result = Parse(y);
                     if (result == "") continue;
-                    dnamatrix[y_tipo, y_value] = count;
+                    DnaMatrix[type, value] = count;
                     count++;
                 }
             }
         }
 
-        public static string DetokenizeDNA(robot rob, int Position = 0)
+        public static string DetokenizeDna(robot rob)
         {
             var result = new StringBuilder();
             var geneEnd = false;
@@ -48,12 +43,12 @@ namespace DarwinBots.Modules
             var coding = false;
             var t = 1;
             var gene = 0;
-            var lastgene = 0;
+            var lastGene = 0;
 
-            while (!(dna[t].tipo == 10 & dna[t].value == 1))
+            while (!(dna[t].Type == 10 & dna[t].Value == 1))
             {
                 // If a Start or Else
-                if (dna[t].tipo == 9 && (dna[t].value == 2 || dna[t].value == 3))
+                if (dna[t].Type == 9 && dna[t].Value is 2 or 3)
                 {
                     if (coding && !inGene)
                         result.AppendLine($"''''''''''''''''''''''''  Gene: {gene} Ends at position {t - 1}  '''''''''''''''''''''''");
@@ -66,7 +61,7 @@ namespace DarwinBots.Modules
                     coding = true;
                 }
                 // If a Cond
-                if (dna[t].tipo == 9 && (dna[t].value == 1))
+                if (dna[t].Type == 9 && (dna[t].Value == 1))
                 {
                     if (coding)
                     {
@@ -79,7 +74,7 @@ namespace DarwinBots.Modules
                     coding = true;
                 }
                 // If a stop
-                if (dna[t].tipo == 9 && dna[t].value == 4)
+                if (dna[t].Type == 9 && dna[t].Value == 4)
                 {
                     if (coding)
                         geneEnd = true;
@@ -88,7 +83,7 @@ namespace DarwinBots.Modules
                     coding = false;
                 }
 
-                if (gene != lastgene)
+                if (gene != lastGene)
                 {
                     if (gene > 1)
                     {
@@ -97,45 +92,44 @@ namespace DarwinBots.Modules
 
                     result.AppendLine();
 
-                    lastgene = gene;
+                    lastGene = gene;
                 }
 
-                var converttosysvar = dna[t + 1].tipo == 7;
-                var temp = Parse(dna[t], rob, converttosysvar);
+                var convertToSysVar = dna[t + 1].Type == 7;
+                var temp = Parse(dna[t], rob, convertToSysVar);
                 if (temp == "")
-                    temp = "VOID"; //alert user that there is an invalid DNA entry.
+                    temp = "VOID"; // alert user that there is an invalid DNA entry.
 
                 result.Append(temp);
-                //formatting
-                if (dna[t].tipo == 5 || dna[t].tipo == 6 || dna[t].tipo == 7 || dna[t].tipo == 9)
+                // formatting
+                if (dna[t].Type is 5 or 6 or 7 or 9)
                     result.AppendLine();
 
                 if (geneEnd)
-                { // Indicate gene ended via a stop.  Needs to come after base pair
+                {
+                    // Indicate gene ended via a stop.  Needs to come after base pair
                     result.AppendLine($"''''''''''''''''''''''''  Gene: {gene} Ends at position {t}  '''''''''''''''''''''''");
                     geneEnd = false;
                 }
 
-                if (Position > 0 & t == Position)
-                    result.AppendLine(" '[<POSITION MARKER]"); //Botsareus 2/25/2013 Makes the program easy to debug
-
                 t++;
             }
-            if (!(dna[t - 1].tipo == 9 && dna[t - 1].value == 4) && coding)
-            { // End of DNA without a stop.
+            if (!(dna[t - 1].Type == 9 && dna[t - 1].Value == 4) && coding)
+            {
+                // End of DNA without a stop.
                 result.AppendLine($"''''''''''''''''''''''''  Gene: {gene} Ends at position {t - 1}  '''''''''''''''''''''''");
             }
 
             return result.ToString();
         }
 
-        public static int DNAtoInt(int tipo, int value)
+        public static int DnaToInt(int tipo, int value)
         {
             value = Math.Clamp(value, -32000, 32000);
 
             //figure out conversion
             if (tipo >= 2)
-                return 32691 + dnamatrix[tipo - 2, value - 1]; //dnamatrix adds max of 76 because we have 76 commands
+                return 32691 + DnaMatrix[tipo - 2, value - 1]; //dnaMatrix adds max of 76 because we have 76 commands
 
             var result = -16646;
 
@@ -155,7 +149,7 @@ namespace DarwinBots.Modules
             return Convert.ToHexString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(s)));
         }
 
-        public static async Task<bool> LoadDNA(string path, robot rob)
+        public static async Task<bool> LoadDna(string path, robot rob)
         {
             var hold = new StringBuilder();
 
@@ -196,113 +190,36 @@ namespace DarwinBots.Modules
                 hold.AppendLine(a);
             }
 
-            rob.dna.Add(new DNABlock { tipo = 10, value = 1 });
+            rob.dna.Add(new DNABlock { Type = 10, Value = 1 });
 
             return true;
         }
 
-        public static DNABlock Parse(string Command, robot rob = null)
+        public static string Parse(DNABlock bp, robot rob = null, bool convertToSystemVariable = true)
         {
-            Command = Command.ToLowerInvariant();
-
-            var bp = BasicCommandTok(Command);
-            if (bp.value == 0)
-                bp = AdvancedCommandTok(Command);
-            if (bp.value == 0)
-                bp = BitwiseCommandTok(Command);
-            if (bp.value == 0)
-                bp = ConditionsTok(Command);
-            if (bp.value == 0)
-                bp = LogicTok(Command);
-            if (bp.value == 0)
-                bp = StoresTok(Command);
-            if (bp.value == 0)
-                bp = FlowTok(Command);
-            if (bp.value == 0)
-                bp = MasterFlowTok(Command);
-            if (bp.value == 0 & Command.StartsWith('*'))
-            {
-                bp.tipo = 1;
-                bp.value = SysvarTok(Command[1..], rob);
-            }
-            else if (bp.value == 0)
-            {
-                bp.tipo = 0;
-                bp.value = SysvarTok(Command, rob);
-            }
-
-            return bp;
-        }
-
-        public static string Parse(DNABlock bp, robot rob = null, bool converttosysvar = true)
-        {
-            return bp.tipo switch
+            return bp.Type switch
             {
                 //number
-                0 => converttosysvar ? SysvarDetok(bp.value, rob) : bp.value.ToString(),
-                1 => "*" + SysvarDetok(bp.value, rob),
-                2 => BasicCommandDetok(bp.value),
-                3 => AdvancedCommandDetok(bp.value),
-                4 => BitwiseCommandDetok(bp.value),
-                5 => ConditionsDetok(bp.value),
-                6 => LogicDetok(bp.value),
-                7 => StoresDetok(bp.value),
+                0 => convertToSystemVariable ? SystemVariableDetokenize(bp.Value, rob) : bp.Value.ToString(),
+                1 => "*" + SystemVariableDetokenize(bp.Value, rob),
+                2 => BasicCommandDetok(bp.Value),
+                3 => AdvancedCommandDetok(bp.Value),
+                4 => BitwiseCommandDetok(bp.Value),
+                5 => ConditionsDetok(bp.Value),
+                6 => LogicDetok(bp.Value),
+                7 => StoresDetok(bp.Value),
                 8 => "",
-                9 => FlowDetok(bp.value),
-                10 => MasterFlowDetok(bp.value),
-                _ => "",
+                9 => FlowDetok(bp.Value),
+                10 => MasterFlowDetok(bp.Value),
+                _ => ""
             };
         }
 
         public static string SaveRobHeader(robot rob)
         {
-            var totmut = Math.Min(rob.Mutations + rob.OldMutations, MaxIntValue);
+            var totalMutations = Math.Min(rob.Mutations + rob.OldMutations, DnaEngine.MaxIntValue);
 
-            return $"'#generation: {rob.generation}\n'#mutations: {totmut}\n";
-        }
-
-        public static string SysvarDetok(int n, robot rob = null, bool savingToFile = false)
-        {
-            var s = SystemVariables.FirstOrDefault(s => s.Value == n);
-
-            if (s != null)
-                return $".{s.Name}";
-
-            if (savingToFile)
-                return n.ToString();
-
-            if (!(rob != null & n != 0)) return n.ToString();
-
-            var v = rob.vars.FirstOrDefault(v => v.Value == n);
-
-            return v != null ? $".{v.Name}" : n.ToString();
-        }
-
-        public static int SysvarTok(string a, robot rob)
-        {
-            if (a.StartsWith("."))
-            {
-                a = a[1..].ToLowerInvariant();
-
-                var s = SystemVariables.FirstOrDefault(s => s.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
-
-                if (s != null)
-                    return s.Value;
-
-                var v = rob.vars.FirstOrDefault(s => s.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
-
-                if (v != null)
-                    return v.Value;
-            }
-            else
-            {
-                var intValid = int.TryParse(a, out var val);
-
-                if (intValid)
-                    return val;
-            }
-
-            return 0;
+            return $"'#generation: {rob.generation}\n'#mutations: {totalMutations}\n";
         }
 
         public static string TipoDetok(int tipo)
@@ -346,8 +263,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 3,
-                value = s switch
+                Type = 3,
+                Value = s switch
                 {
                     "angle" => 1,
                     "dist" => 2,
@@ -392,8 +309,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 2,
-                value = s switch
+                Type = 2,
+                Value = s switch
                 {
                     "add" => 1,
                     "sub" => 2,
@@ -440,8 +357,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 4,
-                value = s switch
+                Type = 4,
+                Value = s switch
                 {
                     "~" => 1,
                     "&" => 2,
@@ -479,8 +396,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 5,
-                value = s switch
+                Type = 5,
+                Value = s switch
                 {
                     "<" => 1,
                     ">" => 2,
@@ -513,8 +430,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 9,
-                value = s switch
+                Type = 9,
+                Value = s switch
                 {
                     "cond" => 1,
                     "start" => 2,
@@ -580,8 +497,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 6,
-                value = s switch
+                Type = 6,
+                Value = s switch
                 {
                     "and" => 1,
                     "or" => 2,
@@ -612,13 +529,52 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 10,
-                value = s switch
+                Type = 10,
+                Value = s switch
                 {
                     "end" => 1,
                     _ => 0,
                 }
             };
+        }
+
+        private static DNABlock Parse(string command, robot rob = null)
+        {
+            command = command.ToLowerInvariant();
+
+            var bp = BasicCommandTok(command);
+            if (bp.Value == 0)
+                bp = AdvancedCommandTok(command);
+            if (bp.Value == 0)
+                bp = BitwiseCommandTok(command);
+            if (bp.Value == 0)
+                bp = ConditionsTok(command);
+            if (bp.Value == 0)
+                bp = LogicTok(command);
+            if (bp.Value == 0)
+                bp = StoresTok(command);
+            if (bp.Value == 0)
+                bp = FlowTok(command);
+            if (bp.Value == 0)
+                bp = MasterFlowTok(command);
+            if (bp.Value == 0 & command.StartsWith('*'))
+            {
+                bp = new DNABlock
+                {
+                    Type = 1,
+                    Value = SystemVariableTokenize(command[1..], rob)
+                };
+            }
+            else if (bp.Value == 0)
+            {
+                bp = new DNABlock
+                {
+                    Type = 0,
+                    Value = SystemVariableTokenize(command, rob)
+                };
+            }
+
+            return bp;
         }
 
         private static string StoresDetok(int n)
@@ -647,8 +603,8 @@ namespace DarwinBots.Modules
         {
             return new()
             {
-                tipo = 7,
-                value = s switch
+                Type = 7,
+                Value = s switch
                 {
                     "store" => 1,
                     "inc" => 2,
@@ -667,6 +623,50 @@ namespace DarwinBots.Modules
                     _ => 0,
                 },
             };
+        }
+
+        private static string SystemVariableDetokenize(int n, robot rob = null, bool savingToFile = false)
+        {
+            var s = DnaEngine.SystemVariables.FirstOrDefault(t => t.Value == n);
+
+            if (s != null)
+                return $".{s.Name}";
+
+            if (savingToFile)
+                return n.ToString();
+
+            if (!(rob != null & n != 0)) return n.ToString();
+
+            var v = rob.vars.FirstOrDefault(u => u.Value == n);
+
+            return v != null ? $".{v.Name}" : n.ToString();
+        }
+
+        private static int SystemVariableTokenize(string a, robot rob)
+        {
+            if (a.StartsWith("."))
+            {
+                a = a[1..].ToLowerInvariant();
+
+                var s = DnaEngine.SystemVariables.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
+
+                if (s != null)
+                    return s.Value;
+
+                var v = rob.vars.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
+
+                if (v != null)
+                    return v.Value;
+            }
+            else
+            {
+                var intValid = int.TryParse(a, out var val);
+
+                if (intValid)
+                    return val;
+            }
+
+            return 0;
         }
     }
 }

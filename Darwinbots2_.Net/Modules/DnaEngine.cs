@@ -678,16 +678,16 @@ namespace DarwinBots.Modules
 
             foreach (var block in rob.dna)
             {
-                if (block.tipo == 10 && block.value == 1)
+                if (block.Type == 10 && block.Value == 1)
                     break;
 
-                switch (block.tipo)
+                switch (block.Type)
                 {
                     case 0:
                         if (_currentFlow == FlowState.Clear)
                             break;
 
-                        _intStack.Push(block.value);
+                        _intStack.Push(block.Value);
                         rob.nrg -= _costs.NumberCost * _costs.CostMultiplier;
                         break;
 
@@ -695,43 +695,43 @@ namespace DarwinBots.Modules
                         if (_currentFlow == FlowState.Clear)
                             break;
 
-                        var b = NormaliseMemoryAddress(block.value);
+                        var b = NormaliseMemoryAddress(block.Value);
                         _intStack.Push(rob.mem[b]);
                         rob.nrg -= _costs.DotNumberCost * _costs.CostMultiplier;
                         break;
 
                     case 2:
                         if (_currentFlow != FlowState.Clear)
-                            ExecuteBasicCommand(rob, block.value);
+                            ExecuteBasicCommand(rob, block.Value);
                         break;
 
                     case 3:
                         if (_currentFlow != FlowState.Clear)
-                            ExecuteAdvancedCommand(rob, block.value);
+                            ExecuteAdvancedCommand(rob, block.Value);
                         break;
 
                     case 4:
                         if (_currentFlow != FlowState.Clear)
-                            ExecuteBitwiseCommand(rob, block.value);
+                            ExecuteBitwiseCommand(rob, block.Value);
                         break;
 
                     case 5:
                         if (_currentFlow == FlowState.Condition || _currentFlow == FlowState.Body || _currentFlow == FlowState.ElseBody)
-                            ExecuteConditions(rob, block.value);
+                            ExecuteConditions(rob, block.Value);
                         break;
 
                     case 6:
                         if (_currentFlow == FlowState.Condition || _currentFlow == FlowState.Body || _currentFlow == FlowState.ElseBody)
-                            ExecuteLogic(rob, block.value);
+                            ExecuteLogic(rob, block.Value);
                         break;
 
                     case 7:
                         if ((_currentFlow == FlowState.Body || _currentFlow == FlowState.ElseBody) && _boolStack.Peek())
-                            ExecuteStores(rob, block.value);
+                            ExecuteStores(rob, block.Value);
                         break;
 
                     case 9:
-                        if (!ExecuteFlowCommands(rob, block.value))
+                        if (!ExecuteFlowCommands(rob, block.Value))
                             rob.condnum++;
                         rob.mem[Robots.thisgene] = _currentGene;
                         break;

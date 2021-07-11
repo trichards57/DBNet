@@ -17,12 +17,12 @@ namespace DarwinBots.Modules
 
             foreach (var block in dna)
             {
-                if (block.tipo == 10 & block.value == 1)
+                if (block.Type == 10 & block.Value == 1)
                     return genesCount;
 
-                if (block.tipo == 9)
+                if (block.Type == 9)
                 {
-                    switch (block.value)
+                    switch (block.Value)
                     {
                         case 1:
                             ingene = true;
@@ -49,21 +49,21 @@ namespace DarwinBots.Modules
 
         public static int DnaLen(IEnumerable<DNABlock> dna)
         {
-            return dna.TakeWhile(d => !(d.tipo == 10 & d.value == 1)).Count();
+            return dna.TakeWhile(d => !(d.Type == 10 & d.Value == 1)).Count();
         }
 
         public static int GeneEnd(IList<DNABlock> dna, int position)
         {
-            var condgene = dna[position].tipo == 9 && dna[position].value == 1;
+            var condgene = dna[position].Type == 9 && dna[position].Value == 1;
 
             for (var i = position + 1; i < dna.Count; i++)
             {
-                if (dna[i].tipo == 10)
+                if (dna[i].Type == 10)
                     break; // end of genome
 
-                if (dna[i].tipo == 9)
+                if (dna[i].Type == 9)
                 {
-                    switch (dna[i].value)
+                    switch (dna[i].Value)
                     {
                         case 1:
                             return i - 1;
@@ -96,7 +96,7 @@ namespace DarwinBots.Modules
             while (k is > 0 and <= 32000)
             {
                 //A start or else
-                if (dna[k].tipo == 9 && (dna[k].value == 2 || dna[k].value == 3))
+                if (dna[k].Type == 9 && (dna[k].Value == 2 || dna[k].Value == 3))
                 {
                     if (!ingene)
                     { // Does not follow a cond.  Make it a new gene
@@ -112,7 +112,7 @@ namespace DarwinBots.Modules
                 }
 
                 // If a Cond
-                if (dna[k].tipo == 9 && (dna[k].value == 1))
+                if (dna[k].Type == 9 && (dna[k].Value == 1))
                 {
                     ingene = true;
                     genenum++;
@@ -123,11 +123,11 @@ namespace DarwinBots.Modules
                     }
                 }
                 // If a stop
-                if (dna[k].tipo == 9 && dna[k].value == 4)
+                if (dna[k].Type == 9 && dna[k].Value == 4)
                     ingene = false;
 
                 k++;
-                if (dna[k].tipo == 10 & dna[k].value == 1)
+                if (dna[k].Type == 10 & dna[k].Value == 1)
                     k = -1;
             }
 
@@ -147,7 +147,7 @@ namespace DarwinBots.Modules
         {
             var rob = Robots.GetNewBot();
             PrepareRob(rob, path); // prepares structure
-            if (await DnaTokenizing.LoadDNA(path, rob))
+            if (await DnaTokenizing.LoadDna(path, rob))
             {
                 // loads and parses dna
                 Senses.MakeOccurrList(rob); // creates the ref* array

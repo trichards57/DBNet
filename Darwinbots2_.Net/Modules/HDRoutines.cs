@@ -675,7 +675,7 @@ namespace DarwinBots.Modules
                     hold.AppendLine("stop");
             }
 
-            hold.AppendLine(DetokenizeDNA(rob, 0));
+            hold.AppendLine(DetokenizeDna(rob));
 
             var hashed = Hash(hold.ToString());
 

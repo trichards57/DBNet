@@ -1,8 +1,8 @@
 ﻿namespace DarwinBots.Model
 {
-    public class DNABlock
+    public record DNABlock
     {
-        public int tipo { get; set; } = 0;
-        public int value { get; set; } = 0;
+        public int Type { get; init; }
+        public int Value { get; init; }
     }
 }

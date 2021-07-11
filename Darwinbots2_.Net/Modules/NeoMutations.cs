@@ -290,8 +290,8 @@ namespace DarwinBots.Modules
                 LogMutation(rob, $"Amplification copied a series at {t}, {Length * 2 + 1}bps long to {start} during cycle {SimOpts.TotRunCycle}");
             } while (t < rob.dna.Count);
 
-            if (!(rob.dna.Last().tipo == 10 && rob.dna.Last().value == 1))
-                rob.dna.Add(new DNABlock { tipo = 10, value = 1 });
+            if (!(rob.dna.Last().Type == 10 && rob.dna.Last().Value == 1))
+                rob.dna.Add(new DNABlock { Type = 10, Value = 1 });
         }
 
         private static void ChangeDNA(robot rob, int nth, int Mtype, int Length = 1, int PointWhatToChange = 50)
@@ -299,36 +299,36 @@ namespace DarwinBots.Modules
             for (var t = nth; t < (nth + Length); t++)
             {
                 //if length is 1, it's only one bp we're mutating, remember?
-                if (t >= rob.dna.Count || rob.dna[t].tipo == 10)
+                if (t >= rob.dna.Count || rob.dna[t].Type == 10)
                     return; //don't mutate end either
 
                 if (ThreadSafeRandom.Local.Next(0, 99) < PointWhatToChange)
                 {
-                    if (rob.dna[t].value != 0 && Mtype == InsertionUP)
-                        rob.dna[t].value = (int)Gauss(500, 0);
+                    if (rob.dna[t].Value != 0 && Mtype == InsertionUP)
+                        rob.dna[t] = rob.dna[t] with { Value = (int)Gauss(500, 0) };
 
-                    var old = rob.dna[t].value;
+                    var old = rob.dna[t].Value;
 
-                    if (rob.dna[t].tipo == 0 || rob.dna[t].tipo == 1)
+                    if (rob.dna[t].Type == 0 || rob.dna[t].Type == 1)
                     {
                         do
                         {
                             if (Math.Abs(old) <= 1000)
-                                rob.dna[t].value = ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Gauss(94, rob.dna[t].value) : (int)Gauss(7, rob.dna[t].value);
+                                rob.dna[t] = rob.dna[t] with { Value = ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Gauss(94, rob.dna[t].Value) : (int)Gauss(7, rob.dna[t].Value) };
                             else
-                                rob.dna[t].value = (int)Gauss(old / 10, rob.dna[t].value); //for very large numbers scale gauss
-                        } while (rob.dna[t].value == old);
+                                rob.dna[t] = rob.dna[t] with { Value = (int)Gauss(old / 10, rob.dna[t].Value) }; //for very large numbers scale gauss
+                        } while (rob.dna[t].Value == old);
 
                         rob.Mutations++;
                         rob.LastMut++;
 
-                        LogMutation(rob, $"{MutationType(Mtype)} changed {TipoDetok(rob.dna[t].tipo)} from {old} to {rob.dna[t].value} at position {t} during cycle {SimOpts.TotRunCycle}");
+                        LogMutation(rob, $"{MutationType(Mtype)} changed {TipoDetok(rob.dna[t].Type)} from {old} to {rob.dna[t].Value} at position {t} during cycle {SimOpts.TotRunCycle}");
                     }
                     else
                     {
                         var bp = new DNABlock
                         {
-                            tipo = rob.dna[t].tipo
+                            Type = rob.dna[t].Type
                         };
 
                         var Max = 0;
@@ -336,7 +336,7 @@ namespace DarwinBots.Modules
                         do
                         {
                             Max++;
-                            bp.value = Max;
+                            bp = bp with { Value = Max };
                         } while (Parse(bp) != "");
 
                         Max--;
@@ -346,11 +346,11 @@ namespace DarwinBots.Modules
 
                         do
                         {
-                            rob.dna[t].value = ThreadSafeRandom.Local.Next(1, Max);
-                        } while (rob.dna[t].value == old);
+                            rob.dna[t] = rob.dna[t] with { Value = ThreadSafeRandom.Local.Next(1, Max) };
+                        } while (rob.dna[t].Value == old);
 
-                        bp.tipo = rob.dna[t].tipo;
-                        bp.value = old;
+                        bp = bp with { Type = rob.dna[t].Type };
+                        bp = bp with { Value = old };
 
                         var Name = Parse(rob.dna[t]);
                         var oldname = Parse(bp);
@@ -358,28 +358,28 @@ namespace DarwinBots.Modules
                         rob.Mutations++;
                         rob.LastMut++;
 
-                        LogMutation(rob, $"{MutationType(Mtype)} changed value of {TipoDetok(rob.dna[t].tipo)} from {oldname} to {Name} at position {t} during cycle {SimOpts.TotRunCycle}");
+                        LogMutation(rob, $"{MutationType(Mtype)} changed value of {TipoDetok(rob.dna[t].Type)} from {oldname} to {Name} at position {t} during cycle {SimOpts.TotRunCycle}");
                     }
                 }
                 else
                 {
                     var bp = new DNABlock
                     {
-                        tipo = rob.dna[t].tipo,
-                        value = rob.dna[t].value
+                        Type = rob.dna[t].Type,
+                        Value = rob.dna[t].Value
                     };
                     do
                     {
-                        rob.dna[t].tipo = ThreadSafeRandom.Local.Next(0, 20);
-                    } while (rob.dna[t].tipo == bp.tipo || TipoDetok(rob.dna[t].tipo) == "");
+                        rob.dna[t] = rob.dna[t] with { Type = ThreadSafeRandom.Local.Next(0, 20) };
+                    } while (rob.dna[t].Type == bp.Type || TipoDetok(rob.dna[t].Type) == "");
 
                     var Max = 0;
-                    if (rob.dna[t].tipo >= 2)
+                    if (rob.dna[t].Type >= 2)
                     {
                         do
                         {
                             Max++;
-                            rob.dna[t].value = Max;
+                            rob.dna[t] = rob.dna[t] with { Value = Max };
                         } while (Parse(rob.dna[t]) != "");
 
                         Max--;
@@ -387,9 +387,9 @@ namespace DarwinBots.Modules
                         if (Max <= 1)
                             return;
 
-                        rob.dna[t].value = ((Math.Abs(bp.value) - 1) % Max) + 1; //put values in range 'Botsareus 4/10/2016 Bug fix
-                        if (rob.dna[t].value == 0)
-                            rob.dna[t].value = 1;
+                        rob.dna[t] = rob.dna[t] with { Value = ((Math.Abs(bp.Value) - 1) % Max) + 1 }; //put values in range 'Botsareus 4/10/2016 Bug fix
+                        if (rob.dna[t].Value == 0)
+                            rob.dna[t] = rob.dna[t] with { Value = 1 };
                     }
 
                     var Name = Parse(rob.dna[t]);
@@ -397,7 +397,7 @@ namespace DarwinBots.Modules
                     rob.Mutations++;
                     rob.LastMut++;
 
-                    LogMutation(rob, $"{MutationType(Mtype)} changed the {TipoDetok(bp.tipo)}: {oldname} to the {TipoDetok(rob.dna[t].tipo)} : {Name} at position {t} during cycle {SimOpts.TotRunCycle}");
+                    LogMutation(rob, $"{MutationType(Mtype)} changed the {TipoDetok(bp.Type)}: {oldname} to the {TipoDetok(rob.dna[t].Type)} : {Name} at position {t} during cycle {SimOpts.TotRunCycle}");
                 }
             }
         }
@@ -419,44 +419,48 @@ namespace DarwinBots.Modules
             if (nth < DNAsize - 2)
             {
                 //for .shoot store
-                if (rob.dna[nth + 1].tipo == 0 & rob.dna[nth + 1].value == shoot && rob.dna[nth + 2].tipo == 7 && rob.dna[nth + 2].value == 1)
+                if (rob.dna[nth + 1].Type == 0 & rob.dna[nth + 1].Value == shoot && rob.dna[nth + 2].Type == 7 && rob.dna[nth + 2].Value == 1)
                 {
-                    rob.dna[nth].value = ThreadSafeRandom.Local.Next(1, 8) switch
+                    rob.dna[nth] = new DNABlock
                     {
-                        1 => -1,
-                        2 => -2,
-                        3 => -3,
-                        4 => -4,
-                        5 => -6,
-                        6 => -8,
-                        _ => DnaEngine.SystemVariables[randomsysvar].Value
+                        Value = ThreadSafeRandom.Local.Next(1, 8) switch
+                        {
+                            1 => -1,
+                            2 => -2,
+                            3 => -3,
+                            4 => -4,
+                            5 => -6,
+                            6 => -8,
+                            _ => DnaEngine.SystemVariables[randomsysvar].Value
+                        },
+                        Type = 0
                     };
-                    rob.dna[nth].tipo = 0;
-                    holddetail = $"changed dna location {nth} to {rob.dna[nth].value}";
+                    holddetail = $"changed dna location {nth} to {rob.dna[nth].Value}";
                     special = true;
                 }
                 //for .focuseye store
-                if (rob.dna[nth + 1].tipo == 0 & rob.dna[nth + 1].value == FOCUSEYE && rob.dna[nth + 2].tipo == 7 && rob.dna[nth + 2].value == 1)
+                if (rob.dna[nth + 1].Type == 0 & rob.dna[nth + 1].Value == FOCUSEYE && rob.dna[nth + 2].Type == 7 && rob.dna[nth + 2].Value == 1)
                 {
-                    rob.dna[nth].value = (int)(ThreadSafeRandom.Local.NextDouble() * 9) - 4;
-                    rob.dna[nth].tipo = 0;
-                    holddetail = $"changed dna location {nth} to {rob.dna[nth].value}";
+                    rob.dna[nth] = new DNABlock { Value = (int)(ThreadSafeRandom.Local.NextDouble() * 9) - 4, Type = 0 };
+                    holddetail = $"changed dna location {nth} to {rob.dna[nth].Value}";
                     special = true;
                 }
                 //for .tieloc store
-                if (rob.dna[nth + 1].tipo == 0 & rob.dna[nth + 1].value == tieloc && rob.dna[nth + 2].tipo == 7 && rob.dna[nth + 2].value == 1)
+                if (rob.dna[nth + 1].Type == 0 & rob.dna[nth + 1].Value == tieloc && rob.dna[nth + 2].Type == 7 && rob.dna[nth + 2].Value == 1)
                 {
-                    rob.dna[nth].value = ThreadSafeRandom.Local.Next(1, 6) switch
+                    rob.dna[nth] = new DNABlock
                     {
-                        1 => -1,
-                        2 => -3,
-                        3 => -4,
-                        4 => -6,
-                        _ => DnaEngine.SystemVariables[randomsysvar].Value
+                        Value = ThreadSafeRandom.Local.Next(1, 6) switch
+                        {
+                            1 => -1,
+                            2 => -3,
+                            3 => -4,
+                            4 => -6,
+                            _ => DnaEngine.SystemVariables[randomsysvar].Value
+                        },
+                        Type = 0
                     };
-
-                    rob.dna[nth].tipo = 0;
-                    holddetail = $"changed dna location {nth} to {rob.dna[nth].value}";
+                    holddetail = $"changed dna location {nth} to {rob.dna[nth].Value}";
                     special = true;
                 }
             }
@@ -471,14 +475,12 @@ namespace DarwinBots.Modules
             { //other cases
                 if (nth < DNAsize - 1 && (int)(ThreadSafeRandom.Local.NextDouble() * 3) == 0)
                 { //1/3 chance functional
-                    rob.dna[nth].tipo = 0;
-                    rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value;
+                    rob.dna[nth] = new DNABlock { Type = 0, Value = DnaEngine.SystemVariables[randomsysvar].Value };
                     LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} changed dna location {nth} to number .{DnaEngine.SystemVariables[randomsysvar].Name} during cycle {SimOpts.TotRunCycle}");
                     rob.Mutations++;
                     rob.LastMut++;
 
-                    rob.dna[nth + 1].tipo = 7;
-                    rob.dna[nth + 1].value = 1;
+                    rob.dna[nth + 1] = new DNABlock { Type = 7, Value = 1 };
                     LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} changed dna location {nth + 1} to store during cycle {SimOpts.TotRunCycle}");
                     rob.Mutations++;
                     rob.LastMut++;
@@ -493,9 +495,8 @@ namespace DarwinBots.Modules
                         {
                             randomsysvar = (int)(ThreadSafeRandom.Local.NextDouble() * 1000);
                         } while (DnaEngine.SystemVariables[randomsysvar].Name != "");
-                        rob.dna[nth].tipo = 0;
-                        rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value + (int)(ThreadSafeRandom.Local.NextDouble() * 32) * 1000;
-                        holddetail = $"changed dna location {nth} to number {rob.dna[nth].value}";
+                        rob.dna[nth] = new DNABlock { Type = 0, Value = DnaEngine.SystemVariables[randomsysvar].Value + (int)(ThreadSafeRandom.Local.NextDouble() * 32) * 1000 };
+                        holddetail = $"changed dna location {nth} to number {rob.dna[nth].Value}";
                     }
                     else
                     {
@@ -503,8 +504,7 @@ namespace DarwinBots.Modules
                         {
                             randomsysvar = (int)(ThreadSafeRandom.Local.NextDouble() * 256);
                         } while (DnaEngine.SystemVariables[randomsysvar].Name != "");
-                        rob.dna[nth].tipo = 1;
-                        rob.dna[nth].value = DnaEngine.SystemVariables[randomsysvar].Value;
+                        rob.dna[nth] = new DNABlock { Type = 1, Value = DnaEngine.SystemVariables[randomsysvar].Value };
                         holddetail = $"changed dna location {nth} to *number *.{DnaEngine.SystemVariables[randomsysvar].Name}";
                     }
                     LogMutation(rob, $"{(IsPoint ? "Point Mutation 2" : "Copy Error 2")} {holddetail} during cycle {SimOpts.TotRunCycle}");
@@ -632,8 +632,8 @@ namespace DarwinBots.Modules
                 for (var i = 0; i < Length; i++)
                     rob.dna.Insert(t + 1 + i, new DNABlock
                     {
-                        tipo = 0,
-                        value = 100
+                        Type = 0,
+                        Value = 100
                     });
 
                 ChangeDNA(rob, t + 1, InsertionUP, Length, 0); //change the type first so that the mutated value is within the space of the new type
@@ -958,8 +958,7 @@ namespace DarwinBots.Modules
             }
 
             //add "end" to end of the DNA
-            rob.dna.Last().tipo = 10;
-            rob.dna.Last().value = 1;
+            rob.dna[-1] = new DNABlock { Type = 10, Value = 1 };
         }
     }
 }
