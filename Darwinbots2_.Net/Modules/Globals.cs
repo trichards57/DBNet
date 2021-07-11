@@ -20,6 +20,12 @@ namespace DarwinBots.Modules
         public static double DeltaMainLn { get; set; }
         public static int DeltaPm { get; set; }
         public static int DeltaWtc { get; set; }
+        public static double energydif { get; set; }
+        public static double energydif2 { get; set; }
+        public static double energydifX { get; set; }
+        public static double energydifX2 { get; set; }
+        public static double energydifXP { get; set; }
+        public static double energydifXP2 { get; set; }
         public static bool EpiReset { get; set; }
         public static double EpiResetEmp { get; set; }
         public static int EpiResetOp { get; set; }
@@ -30,6 +36,7 @@ namespace DarwinBots.Modules
         public static bool ReproFix { get; set; }
         public static bool SimAlreadyRunning { get; set; }
         public static string SimStart { get; set; }
+        public static bool stagnent { get; set; }
         public static int StartChlr { get; set; }
         public static bool SunBelt { get; set; }
         public static int TotalChlr { get; set; }

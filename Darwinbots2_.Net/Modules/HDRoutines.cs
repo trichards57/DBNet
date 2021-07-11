@@ -322,13 +322,13 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
             Globals.SimStart = savedFile.StrSimStart;
             SimOpt.SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
-            Master.energydif = savedFile.EnergyDif;
-            Master.energydifX = savedFile.EnergyDifX;
-            Master.energydifXP = savedFile.EnergyDifXP;
+            Globals.energydif = savedFile.EnergyDif;
+            Globals.energydifX = savedFile.EnergyDifX;
+            Globals.energydifXP = savedFile.EnergyDifXP;
             Globals.ModeChangeCycles = savedFile.ModeChangeCycles;
-            Master.energydif2 = savedFile.EnergyDif2;
-            Master.energydifX2 = savedFile.EnergyDifX2;
-            Master.energydifXP2 = savedFile.EnergyDifXP2;
+            Globals.energydif2 = savedFile.EnergyDif2;
+            Globals.energydifX2 = savedFile.EnergyDifX2;
+            Globals.energydifXP2 = savedFile.EnergyDifXP2;
             SimOpt.SimOpts.SunOnRnd = savedFile.SunOnRnd;
             SimOpt.SimOpts.DisableFixing = savedFile.DisableFixing;
             Vegs.SunPosition = savedFile.SunPosition;
@@ -337,7 +337,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.Tides = savedFile.Tides;
             SimOpt.SimOpts.TidesOf = savedFile.TidesOf;
             SimOpt.SimOpts.MutOscillSine = savedFile.MutOscillSine;
-            Master.stagnent = savedFile.Stagnent;
+            Globals.stagnent = savedFile.Stagnent;
 
             SimOpt.TmpOpts = SimOpt.SimOpts;
         }
@@ -599,12 +599,12 @@ namespace DarwinBots.Modules
                 EGridEnabled = SimOpt.SimOpts.EGridEnabled,
                 EGridWidth = SimOpt.SimOpts.EGridWidth,
                 EnableAutoSpeciation = SimOpt.SimOpts.EnableAutoSpeciation,
-                EnergyDif = Master.energydif,
-                EnergyDif2 = Master.energydif2,
-                EnergyDifX = Master.energydifX,
-                EnergyDifX2 = Master.energydifX2,
-                EnergyDifXP = Master.energydifXP,
-                EnergyDifXP2 = Master.energydifXP2,
+                EnergyDif = Globals.energydif,
+                EnergyDif2 = Globals.energydif2,
+                EnergyDifX = Globals.energydifX,
+                EnergyDifX2 = Globals.energydifX2,
+                EnergyDifXP = Globals.energydifXP,
+                EnergyDifXP2 = Globals.energydifXP2,
                 EnergyExType = SimOpt.SimOpts.EnergyExType,
                 EnergyFix = SimOpt.SimOpts.EnergyFix,
                 EnergyProp = SimOpt.SimOpts.EnergyProp,
@@ -658,7 +658,7 @@ namespace DarwinBots.Modules
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
                 SpeciationMinimumPopulation = SimOpt.SimOpts.SpeciationMinimumPopulation,
                 Species = SimOpt.SimOpts.Specie,
-                Stagnent = Master.stagnent,
+                Stagnent = Globals.stagnent,
                 StrSimStart = Globals.SimStart,
                 SunChange = Vegs.SunChange,
                 SunDown = SimOpt.SimOpts.SunDown,
