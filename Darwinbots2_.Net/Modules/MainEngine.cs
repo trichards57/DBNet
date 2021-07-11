@@ -80,7 +80,7 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                Globals.strSimStart = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+                Globals.SimStart = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
 
                 foreach (var o in Globals.xObstacle)
                 {
@@ -91,11 +91,10 @@ namespace DarwinBots.Modules
             }
             else
             {
-                Globals.NoDeaths = true;
                 Vegs.cooldown = -SimOpt.SimOpts.RepopCooldown;
-                Globals.totnvegsDisplayed = -1;
+                Globals.TotalNotVegsDisplayed = -1;
                 Vegs.totvegs = -1;
-                Globals.totnvegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
+                Globals.TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
             }
 
             Active = true;

@@ -50,7 +50,7 @@ namespace DarwinBots.Modules
             CurrentEnergyCycle = SimOpts.TotRunCycle % 100;
             TotalSimEnergy[CurrentEnergyCycle] = 0;
 
-            var CurrentPopulation = totnvegsDisplayed;
+            var CurrentPopulation = TotalNotVegsDisplayed;
 
             if (SimOpts.Costs.DynamicCostsIncludePlants)
                 CurrentPopulation += totvegsDisplayed; //Include Plants in target population

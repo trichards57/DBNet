@@ -18,6 +18,7 @@ using static DarwinBots.Modules.ShotsManager;
 using static DarwinBots.Modules.SimOpt;
 using static DarwinBots.Modules.Teleport;
 using static DarwinBots.Modules.Vegs;
+using AutoSaved = DarwinBots.DataModel.AutoSaved;
 
 namespace DarwinBots.Modules
 {
@@ -104,163 +105,67 @@ namespace DarwinBots.Modules
         public static async Task LoadGlobalSettings()
         {
             //defaults
-            bodyfix = 32100;
-            chseedstartnew = true;
-            chseedloadsim = true;
-            GraphUp = false;
-            HideDB = false;
+            BodyFix = 32100;
             UseSafeMode = true; //Botsareus 10/5/2015
             UseEpiGene = false; //Botsareus 10/8/2015
-            UseIntRnd = false; //Botsareus 10/8/2015
-            intFindBestV2 = 100;
-            UseOldColor = true;
             //mutations tab
-            epiresetemp = 1.3;
-            epiresetOP = 17;
+            EpiResetEmp = 1.3;
+            EpiResetOp = 17;
             //Delta2
             Delta2 = false;
             DeltaMainExp = 1;
             DeltaMainLn = 0;
             DeltaDevExp = 7;
             DeltaDevLn = 1;
-            DeltaPM = 3000;
-            DeltaWTC = 15;
+            DeltaPm = 3000;
+            DeltaWtc = 15;
             DeltaMainChance = 100;
             DeltaDevChance = 30;
             //Normailize mutation rates
             NormMut = false;
-            valNormMut = 1071;
-            valMaxNormMut = 1071;
-
-            y_hidePredCycl = 1500;
-            y_LFOR = 10;
-
-            y_zblen = 255;
-
-            leagueSourceDir = "Robots\\F1league";
-
-            //see if eco exsists
-            y_eco_im = await EcoMode.Load();
-
-            //see if restartmode exisit
-
-            var restartMode = await RestartMode.Load();
-            x_restartmode = restartMode.Mode;
-            x_filenumber = restartMode.FileNumber;
+            ValNormMut = 1071;
+            ValMaxNormMut = 1071;
 
             var globalSettings = await GlobalSettings.Load();
 
             if (globalSettings != null)
             {
-                screenratiofix = globalSettings.ScreenRatioFix;
-                bodyfix = globalSettings.BodyFix;
-                reprofix = globalSettings.ReproFix;
-                chseedstartnew = globalSettings.ChSeedStartNew;
-                chseedloadsim = globalSettings.ChSeedLoadSim;
+                BodyFix = globalSettings.BodyFix;
+                ReproFix = globalSettings.ReproFix;
                 UseSafeMode = globalSettings.UseSafeMode;
-                intFindBestV2 = globalSettings.IntFindBestV2;
-                UseOldColor = globalSettings.UseOldColor;
                 boylabldisp = globalSettings.BoyLablDisp;
-                startnovid = globalSettings.StartNovId;
-                epireset = globalSettings.EpiReset;
-                epiresetemp = globalSettings.EpiResetTemp;
-                epiresetOP = globalSettings.EpiResetOP;
-                sunbelt = globalSettings.SunBelt;
+                EpiReset = globalSettings.EpiReset;
+                EpiResetEmp = globalSettings.EpiResetTemp;
+                EpiResetOp = globalSettings.EpiResetOP;
+                SunBelt = globalSettings.SunBelt;
                 Delta2 = globalSettings.Delta2;
                 DeltaMainExp = globalSettings.DeltaMainExp;
                 DeltaMainLn = globalSettings.DeltaMainLn;
                 DeltaDevExp = globalSettings.DeltaDevExp;
                 DeltaDevLn = globalSettings.DeltaDevLn;
-                DeltaPM = globalSettings.DeltaPM;
+                DeltaPm = globalSettings.DeltaPM;
                 NormMut = globalSettings.NormMut;
-                valNormMut = globalSettings.ValNormMut;
-                valMaxNormMut = globalSettings.ValMaxNormMut;
-                DeltaWTC = globalSettings.DeltaWTC;
+                ValNormMut = globalSettings.ValNormMut;
+                ValMaxNormMut = globalSettings.ValMaxNormMut;
+                DeltaWtc = globalSettings.DeltaWTC;
                 DeltaMainChance = globalSettings.DeltaMainChance;
                 DeltaDevChance = globalSettings.DeltaDevChance;
-                leagueSourceDir = globalSettings.LeagueSourceDir;
-                UseStepladder = globalSettings.UseStepladder;
-                x_fudge = globalSettings.XFudge;
                 StartChlr = globalSettings.StartChlr;
-                Disqualify = globalSettings.Disqualify;
-                y_robdir = globalSettings.YRobDir;
-                y_graphs = globalSettings.YGraphs;
 
-                if (x_restartmode < 4 || x_restartmode == 10)
-                    y_normsize = false;
-                else
-                    y_normsize = globalSettings.YNormSize;
+                y_normsize = globalSettings.YNormSize;
 
-                y_hidePredCycl = globalSettings.YHidePredCycl;
-                y_LFOR = globalSettings.YLFOR;
-                y_zblen = globalSettings.YZblen;
-                x_res_kill_chlr = globalSettings.XResKillChlr;
-                x_res_kill_mb = globalSettings.XResKillMb;
-                x_res_other = globalSettings.XResOther;
-                y_res_kill_chlr = globalSettings.YResKillChlr;
-                y_res_kill_mb = globalSettings.YResKillMb;
-                y_res_kill_dq = globalSettings.YResKillDq;
-                y_res_other = globalSettings.YResOther;
-                x_res_kill_mb_veg = globalSettings.XResKillMbVeg;
-                x_res_other_veg = globalSettings.XResOtherVeg;
-                y_res_kill_mb_veg = globalSettings.YResKillMbVeg;
-                y_res_kill_dq_veg = globalSettings.YResKillDqVeg;
-                y_res_other_veg = globalSettings.YResOtherVeg;
-
-                GraphUp = globalSettings.GraphUp;
-                HideDB = globalSettings.HideDB;
                 UseEpiGene = globalSettings.UseEpiGene;
-                UseIntRnd = globalSettings.UseIntRnd;
             }
 
-            //some global settings change during simulation (copy is here)
-            loadboylabldisp = boylabldisp;
-            loadstartnovid = startnovid;
-
-            simalreadyrunning = await SafeMode.Load();
-            autosaved = await AutoSaved.Load();
+            SimAlreadyRunning = await SafeMode.Load();
+            Globals.AutoSaved = await AutoSaved.Load();
 
             //If we are not using safe mode assume simulation is not runnin'
             if (UseSafeMode == false)
-                simalreadyrunning = false;
+                SimAlreadyRunning = false;
 
-            if (simalreadyrunning == false)
-                autosaved = false;
-
-            //Botsareus 3/16/2014 If autosaved, we change restartmode, this forces system to run in diagnostic mode
-            //The difference between x_restartmode 0 and 5 is that 5 uses hidepred settings
-            if (autosaved && x_restartmode == 4)
-            {
-                x_restartmode = 5;
-                //MDIForm1.instance.y_info.setVisible(true);
-            }
-            if (autosaved && x_restartmode == 7)
-            {
-                x_restartmode = 8; //Botsareus 4/14/2014 same deal for zb evo
-                intFindBestV2 = 20 + (int)ThreadSafeRandom.Local.Next(0, 40); //Botsareus 10/26/2015 Value more interesting
-            }
-
-            //Botsareus 3/19/2014 Load data for evo mode
-            if (x_restartmode == 4 || x_restartmode == 5 || x_restartmode == 6)
-            {
-                var evoData = await EvoData.Load();
-
-                if (evoData != null)
-                {
-                    LFOR = evoData.LFOR;
-                    LFORdir = evoData.LFORdir;
-                    LFORcorr = evoData.LFORcorr;
-                    hidePredCycl = evoData.hidePredCycl;
-                    curr_dna_size = evoData.curr_dna_size;
-                    target_dna_size = evoData.target_dna_size;
-                    Init_hidePredCycl = evoData.Init_hidePredCycl;
-                    y_Stgwins = evoData.y_Stgwins;
-                }
-            }
-            else
-                y_eco_im = 0;
-
-            hidePredOffset = hidePredCycl / 6;
+            if (SimAlreadyRunning == false)
+                Globals.AutoSaved = false;
         }
 
         public static async Task<MutationProbabilities> LoadMutationRates(string FName)
@@ -348,7 +253,6 @@ namespace DarwinBots.Modules
             ObstaclesManager.Obstacles.AddRange(savedFile.Obstacles);
             Shots.Clear();
             Shots.AddRange(savedFile.Shots);
-            LoadGraphs(savedFile.Graphs);
 
             SimOpts.BlockedVegs = savedFile.BlockedVegs;
             SimOpts.Costs = savedFile.Costs;
@@ -441,16 +345,12 @@ namespace DarwinBots.Modules
             SimOpts.SpeciationMinimumPopulation = savedFile.SpeciationMinimumPopulation;
             SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
             SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
-            strGraphQuery1 = savedFile.StrGraphQuery1;
-            strGraphQuery2 = savedFile.StrGraphQuery2;
-            strGraphQuery3 = savedFile.StrGraphQuery3;
-            strSimStart = savedFile.StrSimStart;
+            SimStart = savedFile.StrSimStart;
             SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
             energydif = savedFile.EnergyDif;
             energydifX = savedFile.EnergyDifX;
             energydifXP = savedFile.EnergyDifXP;
             ModeChangeCycles = savedFile.ModeChangeCycles;
-            hidePredOffset = savedFile.HidePredOffset;
             energydif2 = savedFile.EnergyDif2;
             energydifX2 = savedFile.EnergyDifX2;
             energydifXP2 = savedFile.EnergyDifXP2;
@@ -688,9 +588,6 @@ namespace DarwinBots.Modules
             //Botsareus 12/11/2013 Save mrates file
             await Save_mrates(rob.Mutables, Path.Join(Path.GetDirectoryName(path), Path.GetFileNameWithoutExtension(path) + ".mrate"));
 
-            if (x_restartmode > 0)
-                return;
-
             if (MessageBox.Show($"Do you want to change robot's name to {Path.GetFileNameWithoutExtension(path)} ?", "Robot DNA saved", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 rob.FName = Path.GetFileNameWithoutExtension(path);
         }
@@ -809,8 +706,6 @@ namespace DarwinBots.Modules
                 FixedBotRadii = SimOpts.FixedBotRadii,
                 FluidSolidCustom = SimOpts.FluidSolidCustom,
                 Gradient = SimOpts.Gradient,
-                Graphs = Enumerable.Range(0, NUMGRAPHS).Select(SaveGraphs),
-                HidePredOffset = hidePredOffset,
                 KillDistVegs = SimOpts.KillDistVegs,
                 LightIntensity = SimOpts.LightIntensity,
                 MakeAllShapesBlack = SimOpts.MakeAllShapesBlack,
@@ -855,10 +750,7 @@ namespace DarwinBots.Modules
                 SpeciationMinimumPopulation = SimOpts.SpeciationMinimumPopulation,
                 Species = SimOpts.Specie,
                 Stagnent = stagnent,
-                StrGraphQuery1 = strGraphQuery1,
-                StrGraphQuery2 = strGraphQuery2,
-                StrGraphQuery3 = strGraphQuery3,
-                StrSimStart = strSimStart,
+                StrSimStart = SimStart,
                 SunChange = SunChange,
                 SunDown = SimOpts.SunDown,
                 SunDownThreshold = SimOpts.SunDownThreshold,
@@ -886,112 +778,6 @@ namespace DarwinBots.Modules
 
             Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
             File.WriteAllText(path, JsonSerializer.Serialize(sim));
-        }
-
-        private static void LoadGraphs(IEnumerable<SavedGraph> graphs)
-        {
-            //var graphsArray = graphs.ToArray();
-
-            //for (var i = 0; i < graphsArray.Length; i++)
-            //{
-            //    var g = graphsArray[i];
-
-            //    graphfilecounter[i] = g.FileCounter;
-            //    graphvisible[i] = g.Visible;
-            //    graphleft[i] = g.Left;
-            //    graphtop[i] = g.Top;
-            //    graphsave[i] = g.Save;
-
-            //    if (g.Visible)
-            //    {
-            //        switch (i)
-            //        {
-            //            case 1:
-            //                Form1.instance.NewGraph(POPULATION_GRAPH, "Populations");
-            //                break;
-
-            //            case 2:
-            //                Form1.instance.NewGraph(MUTATIONS_GRAPH, "Average_Mutations");
-            //                break;
-
-            //            case 3:
-            //                Form1.instance.NewGraph(AVGAGE_GRAPH, "Average_Age");
-            //                break;
-
-            //            case 4:
-            //                Form1.instance.NewGraph(OFFSPRING_GRAPH, "Average_Offspring");
-            //                break;
-
-            //            case 5:
-            //                Form1.instance.NewGraph(ENERGY_GRAPH, "Average_Energy");
-            //                break;
-
-            //            case 6:
-            //                Form1.instance.NewGraph(DNALENGTH_GRAPH, "Average_DNA_length");
-            //                break;
-
-            //            case 7:
-            //                Form1.instance.NewGraph(DNACOND_GRAPH, "Average_DNA_Cond_statements");
-            //                break;
-
-            //            case 8:
-            //                Form1.instance.NewGraph(MUT_DNALENGTH_GRAPH, "Average_Mutations_per_DNA_length_x1000-");
-            //                break;
-
-            //            case 9:
-            //                Form1.instance.NewGraph(ENERGY_SPECIES_GRAPH, "Total_Energy_per_Species_x1000-");
-            //                break;
-
-            //            case 10:
-            //                Form1.instance.NewGraph(DYNAMICCOSTS_GRAPH, "Dynamic_Costs");
-            //                break;
-
-            //            case 11:
-            //                Form1.instance.NewGraph(SPECIESDIVERSITY_GRAPH, "Species_Diversity");
-            //                break;
-
-            //            case 12:
-            //                Form1.instance.NewGraph(AVGCHLR_GRAPH, "Average_Chloroplasts");
-            //                break;
-
-            //            case 13:
-            //                Form1.instance.NewGraph(GENETIC_DIST_GRAPH, "Genetic_Distance_x1000-");
-            //                break;
-
-            //            case 14:
-            //                Form1.instance.NewGraph(GENERATION_DIST_GRAPH, "Max_Generational_Distance");
-            //                break;
-
-            //            case 15:
-            //                Form1.instance.NewGraph(GENETIC_SIMPLE_GRAPH, "Simple_Genetic_Distance_x1000-");
-            //                break;
-
-            //            case 16:
-            //                Form1.instance.NewGraph(CUSTOM_1_GRAPH, "Customizable_Graph_1-");
-            //                break;
-
-            //            case 17:
-            //                Form1.instance.NewGraph(CUSTOM_2_GRAPH, "Customizable_Graph_2-");
-            //                break;
-
-            //            case 18:
-            //                Form1.instance.NewGraph(CUSTOM_3_GRAPH, "Customizable_Graph_3-");
-            //                break;
-            //        }
-            //    }
-            //}
-        }
-
-        private static SavedGraph SaveGraphs(int i)
-        {
-            return new SavedGraph
-            {
-                FileCounter = graphfilecounter[i],
-                Visible = graphvisible[i],
-                Left = graphleft[i],
-                Top = graphtop[i],
-                Save = graphsave[i]
-            };
         }
     }
 }

@@ -4,156 +4,67 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.DnaManipulations;
-using static DarwinBots.Modules.Robots;
-using static DarwinBots.Modules.ShotsManager;
-using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
 {
     internal static class Globals
     {
-        public const int AVGAGE_GRAPH = 3;
-        public const int AVGCHLR_GRAPH = 12;
-        public const int CUSTOM_1_GRAPH = 16;
-        public const int CUSTOM_2_GRAPH = 17;
-        public const int CUSTOM_3_GRAPH = 18;
-        public const int DNACOND_GRAPH = 7;
-        public const int DNALENGTH_GRAPH = 6;
-        public const int DYNAMICCOSTS_GRAPH = 10;
-        public const int ENERGY_GRAPH = 5;
-        public const int ENERGY_SPECIES_GRAPH = 9;
-        public const int GENERATION_DIST_GRAPH = 14;
-        public const int GENETIC_DIST_GRAPH = 13;
-        public const int GENETIC_SIMPLE_GRAPH = 15;
-        public const uint INFINITE = 0xFFFFFFFF;
-        public const int MUT_DNALENGTH_GRAPH = 8;
-        public const int MUTATIONS_GRAPH = 2;
-        public const int NUMGRAPHS = 18;
-        public const int OFFSPRING_GRAPH = 4;
-        public const int POPULATION_GRAPH = 1;
-        public const int SPECIESDIVERSITY_GRAPH = 11;
-        public const int SYNCHRONIZE = 0x100000;
-        public const int WM_CLOSE = 0x10;
-        public static bool autosaved = false;
-        public static int bodyfix = 0;
-        public static bool chseedloadsim = false;
-        public static bool chseedstartnew = false;
-        public static int curr_dna_size = 0;
-        public static bool Delta2 = false;
-        public static int DeltaDevChance = 0;
-        public static double DeltaDevExp = 0;
-        public static double DeltaDevLn = 0;
-        public static int DeltaMainChance = 0;
-        public static double DeltaMainExp = 0;
-        public static double DeltaMainLn = 0;
-        public static int DeltaPM = 0;
-        public static int DeltaWTC = 0;
-        public static int Disqualify = 0;
-        public static bool epireset = false;
-        public static double epiresetemp = 0;
-        public static int epiresetOP = 0;
-        public static bool FudgeAll = false;
-        public static bool FudgeEyes = false;
-        public static int[] graphfilecounter = new int[(NUMGRAPHS + 1)];
-        public static int[] graphleft = new int[(NUMGRAPHS + 1)];
-        public static bool[] graphsave = new bool[(NUMGRAPHS + 1)];
-        public static int[] graphtop = new int[(NUMGRAPHS + 1)];
-        public static bool GraphUp = false;
-        public static bool[] graphvisible = new bool[(NUMGRAPHS + 1)];
-        public static bool HideDB = false;
-        public static int hidePredCycl = 0;
-        public static int hidePredOffset = 0;
-        public static int Init_hidePredCycl = 0;
-        public static int intFindBestV2 = 0;
-        public static bool ismutating = false;
-        public static string leagueSourceDir = "";
-        public static double LFOR = 0;
-        public static double LFORcorr = 0;
-        public static bool LFORdir = false;
-        public static bool loadboylabldisp = false;
-        public static bool loadstartnovid = false;
-        public static int maxfieldsize = 0;
-        public static int ModeChangeCycles = 0;
-        public static DoubleVector Mouse_loc = null;
-        public static bool NoDeaths = false;
-        public static bool NormMut = false;
-        public static List<KeyData> PB_keys = new() { };
-        public static bool reprofix = false;
-        public static bool screenratiofix = false;
-        public static bool simalreadyrunning = false;
-        public static int StartChlr = 0;
-        public static bool startnovid = false;
-        public static string strGraphQuery1 = "";
-        public static string strGraphQuery2 = "";
-        public static string strGraphQuery3 = "";
-        public static string strSimStart = "";
-        public static bool sunbelt = false;
-        public static int target_dna_size = 0;
-        public static int tmpseed = 0;
-        public static int TotalChlr = 0;
-        public static int TotalEnergy = 0;
-        public static int totcorpse = 0;
-        public static int totnvegs = 0;
-        public static int totnvegsDisplayed = 0;
-        public static int totwalls = 0;
-        public static bool UseEpiGene = false;
-        public static bool UseIntRnd = false;
-        public static bool UseOldColor = false;
-        public static bool UseSafeMode = false;
-        public static bool UseStepladder = false;
-        public static int valMaxNormMut = 0;
-        public static int valNormMut = 0;
-        public static int x_filenumber = 0;
-        public static int x_fudge = 0;
-        public static int x_res_kill_chlr = 0;
-        public static bool x_res_kill_mb = false;
-        public static bool x_res_kill_mb_veg = false;
-        public static int x_res_other = 0;
-        public static int x_res_other_veg = 0;
-        public static int x_restartmode = 0;
-        public static List<Obstacle> xObstacle = new();
-        public static int y_eco_im = 0;
-        public static bool y_graphs = false;
-        public static int y_hidePredCycl = 0;
-        public static double y_LFOR = 0;
-        public static bool y_normsize = false;
-        public static int y_res_kill_chlr = 0;
-        public static bool y_res_kill_dq = false;
-        public static bool y_res_kill_dq_veg = false;
-        public static bool y_res_kill_mb = false;
-        public static bool y_res_kill_mb_veg = false;
-        public static int y_res_other = 0;
-        public static int y_res_other_veg = 0;
-        public static string y_robdir = "";
-        public static int y_Stgwins = 0;
-        public static int y_zblen = 0;
-
+        public static bool AutoSaved { get; set; }
         public static BucketManager BucketManager { get; set; }
+        public static bool Delta2 { get; set; }
+        public static int DeltaDevChance { get; set; }
+        public static double DeltaDevExp { get; set; }
+        public static double DeltaDevLn { get; set; }
+        public static int DeltaMainChance { get; set; }
+        public static double DeltaMainExp { get; set; }
+        public static double DeltaMainLn { get; set; }
+        public static int DeltaPm { get; set; }
+        public static int DeltaWtc { get; set; }
+        public static bool EpiReset { get; set; }
+        public static double EpiResetEmp { get; set; }
+        public static int EpiResetOp { get; set; }
+        public static bool FudgeAll { get; set; }
+        public static bool FudgeEyes { get; set; }
+        public static int ModeChangeCycles { get; set; }
+        public static bool NormMut { get; set; }
+        public static bool ReproFix { get; set; }
+        public static bool SimAlreadyRunning { get; set; }
+        public static string SimStart { get; set; }
+        public static int StartChlr { get; set; }
+        public static bool SunBelt { get; set; }
+        public static int TotalChlr { get; set; }
+        public static int TotalNotVegs { get; set; }
+        public static int TotalNotVegsDisplayed { get; set; }
+        public static bool UseEpiGene { get; set; }
+        public static bool UseSafeMode { get; set; }
+        public static int ValMaxNormMut { get; set; }
+        public static int ValNormMut { get; set; }
+        public static List<Obstacle> xObstacle { get; set; } = new();
+        public static bool y_normsize { get; set; }
 
         public static async Task aggiungirob(int r, double x, double y)
         {
             if (r == -1)
             {
-                if (!SimOpts.Specie.Any(s => CheckVegStatus(s)))
+                if (!SimOpt.SimOpts.Specie.Any(CheckVegStatus))
                     return;
 
                 do
                 {
-                    r = ThreadSafeRandom.Local.Next(0, SimOpts.Specie.Count); // start randomly in the list of species
-                } while (!CheckVegStatus(SimOpts.Specie[r]));
+                    r = ThreadSafeRandom.Local.Next(0, SimOpt.SimOpts.Specie.Count); // start randomly in the list of species
+                } while (!CheckVegStatus(SimOpt.SimOpts.Specie[r]));
 
-                x = ThreadSafeRandom.Local.Next((int)(SimOpts.Specie[r].Poslf * (SimOpts.FieldWidth - 60)), (int)(SimOpts.Specie[r].Posrg * (SimOpts.FieldWidth - 60)));
-                y = ThreadSafeRandom.Local.Next((int)(SimOpts.Specie[r].Postp * (SimOpts.FieldHeight - 60)), (int)(SimOpts.Specie[r].Posdn * (SimOpts.FieldHeight - 60)));
+                x = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(SimOpt.SimOpts.Specie[r].Posrg * (SimOpt.SimOpts.FieldWidth - 60)));
+                y = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(SimOpt.SimOpts.Specie[r].Posdn * (SimOpt.SimOpts.FieldHeight - 60)));
             }
 
-            if (SimOpts.Specie[r].Name != "" && SimOpts.Specie[r].path != "Invalid Path")
+            if (SimOpt.SimOpts.Specie[r].Name != "" && SimOpt.SimOpts.Specie[r].path != "Invalid Path")
             {
-                var a = await RobScriptLoad(System.IO.Path.Join(SimOpts.Specie[r].path, SimOpts.Specie[r].Name));
+                var a = await DnaManipulations.RobScriptLoad(System.IO.Path.Join(SimOpt.SimOpts.Specie[r].path, SimOpt.SimOpts.Specie[r].Name));
 
                 if (a == null)
                 {
-                    SimOpts.Specie[r].Native = false;
+                    SimOpt.SimOpts.Specie[r].Native = false;
                     return;
                 }
 
@@ -162,24 +73,24 @@ namespace DarwinBots.Modules
                 //prevent endless looping of error dialogs.
                 if (!a.exist)
                 {
-                    SimOpts.Specie[r].path = "Invalid Path";
+                    SimOpt.SimOpts.Specie[r].path = "Invalid Path";
                     return;
                 }
 
-                a.Veg = SimOpts.Specie[r].Veg;
+                a.Veg = SimOpt.SimOpts.Specie[r].Veg;
                 if (a.Veg)
                     a.chloroplasts = StartChlr;
 
-                a.Fixed = SimOpts.Specie[r].Fixed;
-                a.CantSee = SimOpts.Specie[r].CantSee;
-                a.DisableDNA = SimOpts.Specie[r].DisableDNA;
-                a.DisableMovementSysvars = SimOpts.Specie[r].DisableMovementSysvars;
-                a.CantReproduce = SimOpts.Specie[r].CantReproduce;
-                a.VirusImmune = SimOpts.Specie[r].VirusImmune;
+                a.Fixed = SimOpt.SimOpts.Specie[r].Fixed;
+                a.CantSee = SimOpt.SimOpts.Specie[r].CantSee;
+                a.DisableDNA = SimOpt.SimOpts.Specie[r].DisableDNA;
+                a.DisableMovementSysvars = SimOpt.SimOpts.Specie[r].DisableMovementSysvars;
+                a.CantReproduce = SimOpt.SimOpts.Specie[r].CantReproduce;
+                a.VirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
                 a.Corpse = false;
                 a.Dead = false;
                 a.body = 1000;
-                a.radius = FindRadius(a);
+                a.radius = Robots.FindRadius(a);
                 a.Mutations = 0;
                 a.OldMutations = 0;
                 a.LastMut = 0;
@@ -194,31 +105,29 @@ namespace DarwinBots.Modules
                 a.pos = new DoubleVector(x, y);
 
                 a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
-                a.mem[SetAim] = (int)a.aim * 200;
+                a.mem[Robots.SetAim] = (int)a.aim * 200;
 
                 //Bot is already in a bucket due to the prepare routine
-                Globals.BucketManager.UpdateBotBucket(a);
-                a.nrg = SimOpts.Specie[r].Stnrg;
-                a.Mutables = SimOpts.Specie[r].Mutables;
+                BucketManager.UpdateBotBucket(a);
+                a.nrg = SimOpt.SimOpts.Specie[r].Stnrg;
+                a.Mutables = SimOpt.SimOpts.Specie[r].Mutables;
 
                 a.Vtimer = 0;
                 a.virusshot = null;
-                a.genenum = CountGenes(a.dna);
+                a.genenum = DnaManipulations.CountGenes(a.dna);
 
-                a.GenMut = a.dna.Count / GeneticSensitivity;
+                a.GenMut = (double)a.dna.Count / Robots.GeneticSensitivity;
 
-                a.mem[DnaLenSys] = a.dna.Count;
-                a.mem[GenesSys] = a.genenum;
+                a.mem[Robots.DnaLenSys] = a.dna.Count;
+                a.mem[Robots.GenesSys] = a.genenum;
 
-                a.multibot_time = SimOpts.Specie[r].kill_mb ? 210 : 0;
-                a.NoChlr = SimOpts.Specie[r].NoChlr;
+                a.multibot_time = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
+                a.NoChlr = SimOpt.SimOpts.Specie[r].NoChlr;
 
                 for (var i = 0; i < 7; i++)
-                {
-                    a.Skin[i] = SimOpts.Specie[r].Skin[i];
-                }
+                    a.Skin[i] = SimOpt.SimOpts.Specie[r].Skin[i];
 
-                a.color = SimOpts.Specie[r].color;
+                a.color = SimOpt.SimOpts.Specie[r].color;
                 Senses.MakeOccurrList(a);
             }
         }
@@ -228,15 +137,12 @@ namespace DarwinBots.Modules
             for (var t = 1; t < 20; t++)
             {
                 var an = 640 / 20 * t;
-                var vs = ThreadSafeRandom.Local.Next(RobSize / 40, RobSize / 30);
-                var vx = (int)(rob.vel.X + AbsX(an / 100, vs, 0, 0, 0));
-                var vy = (int)(rob.vel.Y + AbsY(an / 100, vs, 0, 0, 0));
+                var vs = ThreadSafeRandom.Local.Next(Robots.RobSize / 40, Robots.RobSize / 30);
+                var vx = (int)(rob.vel.X + Robots.AbsX(an / 100.0, vs, 0, 0, 0));
+                var vy = (int)(rob.vel.Y + Robots.AbsY(an / 100.0, vs, 0, 0, 0));
                 var x = ThreadSafeRandom.Local.Next((int)(rob.pos.X - rob.radius), (int)(rob.pos.X + rob.radius));
                 var y = ThreadSafeRandom.Local.Next((int)(rob.pos.Y - rob.radius), (int)(rob.pos.Y + rob.radius));
-                if (ThreadSafeRandom.Local.Next(1, 3) == 1)
-                    CreateShot(x, y, vx, vy, -100, null, 0, RobSize * 2, rob.color);
-                else
-                    CreateShot(x, y, vx, vy, -100, null, 0, RobSize * 2, DBrite(rob.color));
+                ShotsManager.CreateShot(x, y, vx, vy, -100, null, 0, Robots.RobSize * 2, ThreadSafeRandom.Local.Next(1, 3) == 1 ? rob.color : ShotsManager.DBrite(rob.color));
             }
         }
 
@@ -246,7 +152,7 @@ namespace DarwinBots.Modules
                 return false;
 
             //see if any active robots have chloroplasts
-            if (rob.Where(r => r.exist && r.chloroplasts > 0)
+            if (Robots.rob.Where(r => r.exist && r.chloroplasts > 0)
                 .Select(rob => new { rob, splitname = rob.FName.Split(")") })
                 .Select(t =>
                     t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
@@ -257,7 +163,7 @@ namespace DarwinBots.Modules
             }
 
             //If there is no robots at all with chlr then repop everything
-            return !rob.Any(r => r.exist && r.Veg && r.age > 0);
+            return !Robots.rob.Any(r => r.exist && r.Veg && r.age > 0);
         }
     }
 }

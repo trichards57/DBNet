@@ -17,7 +17,7 @@ namespace DarwinBots.Model
 
             for (var a = 0; a < 20; a++)
             {
-                mutarray[a] = Globals.NormMut ? len * Globals.valNormMut : 5000;
+                mutarray[a] = Globals.NormMut ? len * Globals.ValNormMut : 5000;
                 Mean[a] = 1;
                 StdDev[a] = 0;
             }

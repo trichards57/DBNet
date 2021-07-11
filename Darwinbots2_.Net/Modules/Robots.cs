@@ -181,7 +181,8 @@ namespace DarwinBots.Modules
         public const int velup = 200;
         public const int VshootSys = 338;
         public const int Vtimer = 337;
-
+        public static int BodyFix { get; set; }
+        public static int CurrentDnaSize { get; set; }
         public static int MaxRobs { get; set; }
         public static List<robot> rob { get; set; } = new();
         public static robot robfocus { get; set; }
@@ -334,7 +335,7 @@ namespace DarwinBots.Modules
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
 
-            if (reprofix && per < 3)
+            if (ReproFix && per < 3)
                 rob.Dead = true;
 
             if (per <= 0)
@@ -464,21 +465,8 @@ namespace DarwinBots.Modules
             //Botsareus 12/17/2013 Delta2
             if (Delta2)
             {
-                var MratesMax = NormMut ? nuovo.dna.Count * valMaxNormMut : 2000000000;
-                var dmoc = !y_normsize ? 1 : Math.Max(1 + (nuovo.dna.Count - curr_dna_size) / 500, 0.01);
-
-                //zerobot stabilization
-                if ((x_restartmode == 7 || x_restartmode == 8) && nuovo.FName == "Mutate.txt")
-                {
-                    //normalize child
-                    nuovo.Mutables.mutarray[PointUP] *= 1.75;
-                    if (nuovo.Mutables.mutarray[PointUP] > MratesMax)
-                        nuovo.Mutables.mutarray[PointUP] = MratesMax;
-
-                    nuovo.Mutables.mutarray[P2UP] *= 1.75;
-                    if (nuovo.Mutables.mutarray[P2UP] > MratesMax)
-                        nuovo.Mutables.mutarray[P2UP] = MratesMax;
-                }
+                var MratesMax = NormMut ? nuovo.dna.Count * ValMaxNormMut : 2000000000;
+                var dmoc = !y_normsize ? 1 : Math.Max(1 + (nuovo.dna.Count - CurrentDnaSize) / 500, 0.01);
 
                 var endItem = ThreadSafeRandom.Local.Next(2, 4);
 
@@ -524,7 +512,7 @@ namespace DarwinBots.Modules
                             nuovo.Mutables.Mean[t] = Math.Clamp(nuovo.Mutables.Mean[t], 1, 400);
                         }
                     }
-                    nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC);
+                    nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWtc);
                     nuovo.Mutables.CopyErrorWhatToChange = Math.Clamp(nuovo.Mutables.CopyErrorWhatToChange, 0, 100);
                     Mutate(nuovo, true);
                 }
@@ -567,10 +555,10 @@ namespace DarwinBots.Modules
             rob.mem[mrepro] = 0;
 
             //Botsareus 11/29/2013 Reset epigenetic memory
-            if (epireset)
+            if (EpiReset)
             {
-                nuovo.MutEpiReset = rob.MutEpiReset + Math.Pow(nuovo.LastMut, epiresetemp);
-                if (nuovo.MutEpiReset > epiresetOP && rob.MutEpiReset > 0)
+                nuovo.MutEpiReset = rob.MutEpiReset + Math.Pow(nuovo.LastMut, EpiResetEmp);
+                if (nuovo.MutEpiReset > EpiResetOp && rob.MutEpiReset > 0)
                 {
                     nuovo.MutEpiReset = 0;
                     for (var i = 0; i < 4; i++)
@@ -617,7 +605,7 @@ namespace DarwinBots.Modules
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
 
-            if (reprofix && per < 3)
+            if (ReproFix && per < 3)
                 female.Dead = true;
 
             if (per <= 0)
@@ -788,14 +776,14 @@ namespace DarwinBots.Modules
 
             if (Delta2)
             {
-                var MratesMax = NormMut ? nuovo.dna.Count * valMaxNormMut : 2000000000;
+                var MratesMax = NormMut ? nuovo.dna.Count * ValMaxNormMut : 2000000000;
 
                 double dmoc;
                 if (!y_normsize)
                     dmoc = 1;
                 else
                 {
-                    dmoc = 1 + (double)(nuovo.dna.Count - curr_dna_size) / 500;
+                    dmoc = 1 + (double)(nuovo.dna.Count - CurrentDnaSize) / 500;
                     if (dmoc < 0.01)
                         dmoc = 0.01; //Botsareus 1/16/2016 Bug fix
                 }
@@ -838,7 +826,7 @@ namespace DarwinBots.Modules
                         nuovo.Mutables.Mean[t] = Math.Clamp(nuovo.Mutables.Mean[t], 1, 400);
                     }
                 }
-                nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC);
+                nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWtc);
 
                 if (nuovo.Mutables.CopyErrorWhatToChange < 0)
                     nuovo.Mutables.CopyErrorWhatToChange = 0;
@@ -868,10 +856,10 @@ namespace DarwinBots.Modules
             female.mem[SYSFERTILIZED] = 0; // Sperm is only good for one birth presently
 
             //Botsareus 11/29/2013 Reset epigenetic memory
-            if (epireset)
+            if (EpiReset)
             {
-                nuovo.MutEpiReset = female.MutEpiReset + Math.Pow(nuovo.LastMut, epiresetemp);
-                if (nuovo.MutEpiReset > epiresetOP && female.MutEpiReset > 0)
+                nuovo.MutEpiReset = female.MutEpiReset + Math.Pow(nuovo.LastMut, EpiResetEmp);
+                if (nuovo.MutEpiReset > EpiResetOp && female.MutEpiReset > 0)
                 {
                     nuovo.MutEpiReset = 0;
 
@@ -1006,13 +994,10 @@ namespace DarwinBots.Modules
             BotsToKill.Clear();
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
-            TotalEnergy = 0;
-            totwalls = 0;
-            totcorpse = 0;
             TotalRobotsDisplayed = TotalRobots;
             TotalRobots = 0;
-            totnvegsDisplayed = totnvegs;
-            totnvegs = 0;
+            TotalNotVegsDisplayed = TotalNotVegs;
+            TotalNotVegs = 0;
             totvegsDisplayed = totvegs;
             totvegs = 0;
 
@@ -1121,7 +1106,7 @@ namespace DarwinBots.Modules
                 rob.Waste = Math.Clamp(rob.Waste, -32000, 32000);
             }
 
-            foreach (var rob in rob.Where(r => (r.chloroplasts < r.body / 2 || r.Kills > 5) && r.exist && r.body > bodyfix))
+            foreach (var rob in rob.Where(r => (r.chloroplasts < r.body / 2 || r.Kills > 5) && r.exist && r.body > BodyFix))
                 await KillRobot(rob);
 
             foreach (var rob in rob)
@@ -2171,14 +2156,13 @@ namespace DarwinBots.Modules
                 totvegs++;
             else if (rob.Corpse)
             {
-                totcorpse++;
                 if (rob.body > 0)
                     Decay(rob);
                 else
                     await KillRobot(rob);
             }
             else
-                totnvegs++;
+                TotalNotVegs++;
         }
 
         private static void Upkeep(robot rob)

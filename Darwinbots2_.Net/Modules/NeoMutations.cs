@@ -70,17 +70,17 @@ namespace DarwinBots.Modules
                 if (rob.Mutables.mutarray[DeltaUP] > 0 & !Delta2)
                     DeltaMut(rob);
 
-                if (rob.Mutables.mutarray[P2UP] > 0 & sunbelt)
+                if (rob.Mutables.mutarray[P2UP] > 0 & SunBelt)
                     PointMutation2(rob);
 
                 //special case update epigenetic reset
-                if (rob.LastMut - Delta > 0 & epireset)
-                    rob.MutEpiReset += Math.Pow(rob.LastMut - Delta, epiresetemp);
+                if (rob.LastMut - Delta > 0 & EpiReset)
+                    rob.MutEpiReset += Math.Pow(rob.LastMut - Delta, EpiResetEmp);
 
                 //Delta2 point mutation change
-                if (Delta2 && DeltaPM > 0 && rob.age % DeltaPM == 0 & rob.age > 0)
+                if (Delta2 && DeltaPm > 0 && rob.age % DeltaPm == 0 & rob.age > 0)
                 {
-                    var MratesMax = NormMut ? rob.dna.Count * valMaxNormMut : 2000000000;
+                    var MratesMax = NormMut ? rob.dna.Count * ValMaxNormMut : 2000000000;
 
                     foreach (var t in new[] { PointUP, P2UP })
                     {
@@ -125,7 +125,7 @@ namespace DarwinBots.Modules
                         }
                     }
 
-                    rob.Mutables.PointWhatToChange += (int)(ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWTC;
+                    rob.Mutables.PointWhatToChange += (int)(ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWtc;
 
                     if (rob.Mutables.PointWhatToChange < 0)
                         rob.Mutables.PointWhatToChange = 0;
@@ -142,7 +142,7 @@ namespace DarwinBots.Modules
                 if (rob.Mutables.mutarray[CopyErrorUP] > 0)
                     CopyError(rob);
 
-                if (rob.Mutables.mutarray[CE2UP] > 0 & sunbelt)
+                if (rob.Mutables.mutarray[CE2UP] > 0 & SunBelt)
                     CopyError2(rob);
 
                 if (rob.Mutables.mutarray[InsertionUP] > 0)
@@ -151,10 +151,10 @@ namespace DarwinBots.Modules
                 if (rob.Mutables.mutarray[ReversalUP] > 0)
                     Reversal(rob);
 
-                if (rob.Mutables.mutarray[TranslocationUP] > 0 & sunbelt)
+                if (rob.Mutables.mutarray[TranslocationUP] > 0 & SunBelt)
                     Translocation(rob);
 
-                if (rob.Mutables.mutarray[AmplificationUP] > 0 & sunbelt)
+                if (rob.Mutables.mutarray[AmplificationUP] > 0 & SunBelt)
                     Amplification(rob);
 
                 if (rob.Mutables.mutarray[MajorDeletionUP] > 0)

@@ -34,7 +34,7 @@ namespace DarwinBots.Model
         public string FName { get; set; }
         public int genenum { get; set; }
         public int generation { get; set; }
-        public decimal GenMut { get; set; }
+        public double GenMut { get; set; }
         public bool highlight { get; set; }
         public DoubleVector ImpulseInd { get; set; }
         public DoubleVector ImpulseRes { get; set; }
