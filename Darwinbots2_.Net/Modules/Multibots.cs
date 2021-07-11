@@ -1,6 +1,8 @@
 using DarwinBots.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace DarwinBots.Modules
 {
@@ -12,18 +14,44 @@ namespace DarwinBots.Modules
                 c.highlight = true;
         }
 
-        public static void KillOrganism(robot rob)
+        public static async Task KillOrganism(robot rob)
         {
-            //var temp = MDIForm1.instance.nopoff;
-            //MDIForm1.instance.nopoff = true;
-
-            //foreach (var c in ListCells(rob))
-            //    await KillRobot(c);
-
-            //MDIForm1.instance.nopoff = temp;
+            foreach (var c in ListCells(rob))
+                await Robots.KillRobot(c);
         }
 
-        public static IEnumerable<robot> ListCells(robot rob, HashSet<robot> checkedBots = null)
+        public static void ReSpawn(robot rob, double X, double Y)
+        {
+            robot robmin = null;
+
+            var cellList = ListCells(rob).ToList();
+            var min = 999999999999.0;
+
+            foreach (var cell in cellList)
+            {
+                var mag = Math.Pow(cell.pos.X - X, 2) + Math.Pow(cell.pos.Y - Y, 2);
+
+                if (!(mag <= min)) continue;
+
+                min = mag;
+                robmin = cell;
+            }
+
+            var distance = new DoubleVector(X, Y) - robmin.pos;
+
+            var radiidif = rob.radius - robmin.radius;
+
+            distance += DoubleVector.Sign(distance) * (radiidif - 1);
+
+            foreach (var cell in cellList)
+            {
+                cell.pos += distance;
+                cell.opos = cell.pos;
+                Globals.BucketManager.UpdateBotBucket(cell);
+            }
+        }
+
+        private static IEnumerable<robot> ListCells(robot rob, HashSet<robot> checkedBots = null)
         {
             checkedBots ??= new HashSet<robot>();
 
@@ -36,40 +64,6 @@ namespace DarwinBots.Modules
                 ListCells(tie.OtherBot, checkedBots);
 
             return checkedBots;
-        }
-
-        public static void ReSpawn(robot rob, double X, double Y)
-        {
-            robot robmin = null;
-
-            var clist = ListCells(rob);
-            var Min = 999999999999.0;
-
-            foreach (var cell in clist)
-            {
-                var mag = Math.Pow(cell.pos.X - X, 2) + Math.Pow(cell.pos.Y - Y, 2);
-                if (mag <= Min)
-                {
-                    Min = mag;
-                    robmin = cell;
-                }
-            }
-
-            var dx = X - robmin.pos.X;
-            var dy = Y - robmin.pos.Y;
-
-            //Botsareus 7/15/2016 Bug fix: corrects by radii difference between the two robots
-            var radiidif = rob.radius - robmin.radius;
-
-            dx = dx - 1 * Math.Sign(dx) + Math.Sign(dx) * radiidif;
-            dy = dy - 1 * Math.Sign(dy) + Math.Sign(dy) * radiidif;
-
-            foreach (var cell in clist)
-            {
-                cell.pos += new DoubleVector(dx, dy);
-                cell.opos = cell.pos;
-                Globals.BucketManager.UpdateBotBucket(cell);
-            }
         }
     }
 }

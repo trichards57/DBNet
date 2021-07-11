@@ -18,6 +18,15 @@ namespace DarwinBots.Model
 
         public DoubleVector() { }
 
+        public static DoubleVector Sign(DoubleVector v)
+        {
+            return new()
+            {
+                X = Math.Sign(v.X),
+                Y = Math.Sign(v.Y)
+            };
+        }
+
         public static DoubleVector operator -(DoubleVector v1, DoubleVector v2)
         {
             return new()
@@ -33,6 +42,15 @@ namespace DarwinBots.Model
             {
                 X = v1.X * k,
                 Y = v1.Y * k
+            };
+        }
+
+        public static DoubleVector operator *(DoubleVector v1, DoubleVector v2)
+        {
+            return new()
+            {
+                X = v1.X * v2.X,
+                Y = v1.Y * v2.Y
             };
         }
 

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.Multibots;
@@ -19,7 +20,7 @@ namespace DarwinBots.Modules
         public static int teleporterFocus { get; set; }
         public static List<Teleporter> Teleporters { get; set; } = new();
 
-        public static void CheckTeleporters(robot rob)
+        public static async Task CheckTeleporters(robot rob)
         {
             DoubleVector randomV = null;
 
@@ -33,7 +34,7 @@ namespace DarwinBots.Modules
                         var name = $@"\{DateTime.Today}{rob.FName}{Teleporters.IndexOf(tel)}{tel.NumTeleported}.dbo";
                         SaveOrganism(Path.Join(tel.path, name), rob);
 
-                        KillOrganism(rob);
+                        await KillOrganism(rob);
                     }
                 }
                 else if (tel.Local)

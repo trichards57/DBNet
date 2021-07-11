@@ -78,17 +78,17 @@ namespace DarwinBots.ViewModels
                 _mutationProbabilities.mutarray[GetCurrentMutation()] = value;
                 RaisePropertyChanged();
 
-                var pNone = AntiProb(_mutationProbabilities.mutarray[NeoMutations.AmplificationUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.CE2UP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.CopyErrorUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.DeltaUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.InsertionUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.MajorDeletionUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.MinorDeletionUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.P2UP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.PointUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.ReversalUP])
-                            * AntiProb(_mutationProbabilities.mutarray[NeoMutations.TranslocationUP]);
+                var pNone = AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Amplification])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.CopyError2])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.CopyError])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Delta])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Insertion])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.MajorDeletion])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.MinorDeletion])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.PointMutation2])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.PointMutation])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Reversal])
+                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Translocation]);
 
                 var pSome = 1 - pNone;
 
@@ -568,27 +568,27 @@ namespace DarwinBots.ViewModels
         private int GetCurrentMutation()
         {
             if (AmplificationSelected)
-                return NeoMutations.AmplificationUP;
+                return (int)MutationType.Amplification;
             if (CopyError2Selected)
-                return NeoMutations.CE2UP;
+                return (int)MutationType.CopyError2;
             if (CopyErrorSelected)
-                return NeoMutations.CopyErrorUP;
+                return (int)MutationType.CopyError;
             if (DeltaMutationSelected)
-                return NeoMutations.DeltaUP;
+                return (int)MutationType.Delta;
             if (InsertionSelected)
-                return NeoMutations.InsertionUP;
+                return (int)MutationType.Insertion;
             if (MajorDeletionSelected)
-                return NeoMutations.MajorDeletionUP;
+                return (int)MutationType.MajorDeletion;
             if (MinorDeletionSelected)
-                return NeoMutations.MinorDeletionUP;
+                return (int)MutationType.MinorDeletion;
             if (Point2Selected)
-                return NeoMutations.P2UP;
+                return (int)MutationType.PointMutation2;
             if (PointMutationSelected)
-                return NeoMutations.PointUP;
+                return (int)MutationType.PointMutation;
             if (ReversalSelected)
-                return NeoMutations.ReversalUP;
+                return (int)MutationType.Reversal;
 
-            return NeoMutations.TranslocationUP;
+            return (int)MutationType.Translocation;
         }
 
         private void SetDefaultRates()

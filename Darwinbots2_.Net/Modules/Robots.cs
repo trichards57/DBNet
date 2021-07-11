@@ -481,9 +481,9 @@ namespace DarwinBots.Modules
                         {
                             if (DeltaMainExp != 0)
                             {
-                                if (t == CopyErrorUP || t == TranslocationUP || t == ReversalUP || t == CE2UP)
+                                if (t == (int)MutationType.CopyError || t == (int)MutationType.Translocation || t == (int)MutationType.Reversal || t == (int)MutationType.CopyError2)
                                     nuovo.Mutables.mutarray[t] *= (dmoc + 2) / 3;
-                                else if (!(t == MinorDeletionUP || t == MajorDeletionUP))
+                                else if (!(t == (int)MutationType.MinorDeletion || t == (int)MutationType.MajorDeletion))
                                     nuovo.Mutables.mutarray[t] *= dmoc; //dynamic mutation overload correction
 
                                 nuovo.Mutables.mutarray[t] *= Math.Pow(10, ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaMainExp;
@@ -797,9 +797,9 @@ namespace DarwinBots.Modules
                     {
                         if (DeltaMainExp != 0)
                         {
-                            if (t == CopyErrorUP || t == TranslocationUP || t == ReversalUP || t == CE2UP)
+                            if (t == (int)MutationType.CopyError || t == (int)MutationType.Translocation || t == (int)MutationType.Reversal || t == (int)MutationType.CopyError2)
                                 nuovo.Mutables.mutarray[t] *= (dmoc + 2) / 3;
-                            else if (!(t == MinorDeletionUP || t == MajorDeletionUP))
+                            else if (!(t == (int)MutationType.MinorDeletion || t == (int)MutationType.MajorDeletion))
                                 nuovo.Mutables.mutarray[t] *= dmoc; //dynamic mutation overload correction
 
                             nuovo.Mutables.mutarray[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaMainExp);
@@ -1005,7 +1005,7 @@ namespace DarwinBots.Modules
             {
                 // Need to do this first as NetForces can update bots later in the loop
                 foreach (var rob in rob.Where(r => r.exist))
-                    CheckTeleporters(rob);
+                    await CheckTeleporters(rob);
             }
 
             //Only calculate mass due to fuild displacement if the sim medium has density.
