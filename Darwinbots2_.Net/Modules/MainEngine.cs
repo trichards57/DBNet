@@ -16,6 +16,7 @@ namespace DarwinBots.Modules
         private BucketManager _bucketManager;
         private bool _costsWereZeroed;
         private int _dynamicCountdown;
+        private ObstaclesManager _obstacleManager;
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
 
@@ -66,15 +67,16 @@ namespace DarwinBots.Modules
             if (!startLoaded)
             {
                 _bucketManager = new BucketManager(SimOpt.SimOpts);
+                _obstacleManager = new ObstaclesManager();
                 Robots.rob.Clear();
                 ShotsManager.Shots.Clear();
-                ObstaclesManager.Obstacles.Clear();
             }
 
             Globals.BucketManager = _bucketManager;
+            Globals.ObstacleManager = _obstacleManager;
 
-            ObstaclesManager.defaultHeight = 0.2;
-            ObstaclesManager.defaultWidth = 0.2;
+            _obstacleManager.DefaultHeight = 0.2;
+            _obstacleManager.DefaultWidth = 0.2;
 
             if (!startLoaded)
                 LoadRobots();
@@ -87,7 +89,7 @@ namespace DarwinBots.Modules
 
                 foreach (var o in Globals.xObstacle)
                 {
-                    var newO = ObstaclesManager.NewObstacle(o.pos.X, o.pos.Y, o.Width, o.Height);
+                    var newO = _obstacleManager.NewObstacle(o.pos.X, o.pos.Y, o.Width, o.Height);
                     newO.color = o.color;
                     newO.vel = o.vel;
                 }
@@ -245,8 +247,8 @@ namespace DarwinBots.Modules
             foreach (var rob in Robots.rob.Where(r => r.exist && !(r.opos.X == 0 & r.opos.Y == 0)))
                 rob.actvel = rob.pos - rob.opos;
 
-            if (ObstaclesManager.Obstacles.Count > 0)
-                ObstaclesManager.MoveObstacles();
+            if (_obstacleManager.Obstacles.Count > 0)
+                _obstacleManager.MoveObstacles();
 
             if (Teleport.Teleporters.Count > 0)
                 Teleport.UpdateTeleporters();

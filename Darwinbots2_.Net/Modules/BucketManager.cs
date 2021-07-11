@@ -270,7 +270,7 @@ namespace DarwinBots.Modules
             // If Shapes are see through, then there is no reason to check if a shape blocks a bot
             if (!_options.ShapesAreSeeThrough)
             {
-                if (ObstaclesManager.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
+                if (Globals.ObstacleManager.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
                     return;
             }
 
@@ -369,7 +369,7 @@ namespace DarwinBots.Modules
 
             var maxSightDistance = sightDistances.Max();
 
-            foreach (var o in ObstaclesManager.Obstacles.Where(o => o.exist))
+            foreach (var o in Globals.ObstacleManager.Obstacles.Where(o => o.exist))
             {
                 // Check to see if shape is too far away to be seen
                 if (o.pos.X > rob.pos.X + maxSightDistance || o.pos.X + o.Width < rob.pos.X - maxSightDistance || o.pos.Y > rob.pos.Y + maxSightDistance || o.pos.Y + o.Height < rob.pos.Y - maxSightDistance)

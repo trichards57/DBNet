@@ -10,20 +10,28 @@ using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
 {
-    internal static class ObstaclesManager
+    internal class ObstaclesManager
     {
-        public const int MAXOBSTACLES = 1000;
-        public static double defaultHeight { get; set; }
-        public static double defaultWidth { get; set; }
-        public static Obstacle leftCompactor { get; set; }
-        public static int mazeCorridorWidth { get; set; }
-        public static int mazeWallThickness { get; set; }
-        public static DoubleVector mousepos { get; set; }
-        public static int obstaclefocus { get; set; }
-        public static List<Obstacle> Obstacles { get; set; } = new();
-        public static Obstacle rightCompactor { get; set; }
+        private const int MaxObstacles = 1000;
+        public double DefaultHeight { get; set; }
+        public double DefaultWidth { get; set; }
+        public List<Obstacle> Obstacles { get; } = new();
+        private Obstacle LeftCompactor { get; set; }
+        private int MazeCorridorWidth { get; set; }
+        private int MazeWallThickness { get; set; }
+        private Obstacle RightCompactor { get; set; }
 
-        public static void AddRandomObstacles(int n)
+        public static bool ObstacleCollision(robot rob, Obstacle o)
+        {
+            var botrightedge = rob.pos.X + rob.radius;
+            var botleftedge = rob.pos.X - rob.radius;
+            var bottopedge = rob.pos.Y - rob.radius;
+            var botbottomedge = rob.pos.Y + rob.radius;
+
+            return botrightedge > o.pos.X && (botleftedge < o.pos.X + o.Width) && (botbottomedge > o.pos.Y) && (bottopedge < o.pos.Y + o.Height);
+        }
+
+        public void AddRandomObstacles(int n)
         {
             if (n < 1)
                 return;
@@ -33,36 +41,36 @@ namespace DarwinBots.Modules
                 var randomX = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldWidth;
                 var randomy = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldHeight;
 
-                var RandomWidth = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldWidth * defaultWidth;
-                var RandomHeight = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldHeight * defaultHeight;
+                var randomWidth = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldWidth * DefaultWidth;
+                var randomHeight = ThreadSafeRandom.Local.NextDouble() * SimOpts.FieldHeight * DefaultHeight;
 
                 //Shift everything up and left by half the max dimensions then trim to more evenly distribute obstacles across the field
-                randomX -= SimOpts.FieldWidth * (defaultWidth / 2);
-                randomy -= SimOpts.FieldHeight * (defaultHeight / 2);
+                randomX -= SimOpts.FieldWidth * (DefaultWidth / 2);
+                randomy -= SimOpts.FieldHeight * (DefaultHeight / 2);
 
                 if (randomX < 0)
                     randomX = 0;
                 if (randomy < 0)
                     randomy = 0;
 
-                if (randomX + RandomWidth > SimOpts.FieldWidth)
-                    RandomWidth = SimOpts.FieldWidth - randomX;
-                if (randomy + RandomHeight > SimOpts.FieldHeight)
-                    RandomHeight = SimOpts.FieldHeight - randomy;
-                var res = NewObstacle(randomX, randomy, RandomWidth, RandomHeight);
+                if (randomX + randomWidth > SimOpts.FieldWidth)
+                    randomWidth = SimOpts.FieldWidth - randomX;
+                if (randomy + randomHeight > SimOpts.FieldHeight)
+                    randomHeight = SimOpts.FieldHeight - randomy;
+                var res = NewObstacle(randomX, randomy, randomWidth, randomHeight);
 
                 if (res == null)
                     break;
             }
         }
 
-        public static void ChangeAllObstacleColor(Color? color)
+        public void ChangeAllObstacleColor(Color? color)
         {
             foreach (var o in Obstacles)
                 o.color = color ?? Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
         }
 
-        public static void DeleteAllObstacles()
+        public void DeleteAllObstacles()
         {
             foreach (var o in Obstacles.ToArray())
             {
@@ -71,13 +79,13 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void DeleteObstacle(Obstacle o)
+        public void DeleteObstacle(Obstacle o)
         {
             o.exist = false;
             Obstacles.Remove(o);
         }
 
-        public static void DeleteTenRandomObstacles()
+        public void DeleteTenRandomObstacles()
         {
             var numToDelete = Math.Min(Obstacles.Count, 10);
 
@@ -85,7 +93,7 @@ namespace DarwinBots.Modules
                 DeleteObstacle(Obstacles[ThreadSafeRandom.Local.Next(0, Obstacles.Count)]);
         }
 
-        public static void DoObstacleCollisions(robot rob)
+        public void DoObstacleCollisions(robot rob)
         {
             const double k = 0.5;
             const double b = 0.5;
@@ -183,7 +191,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void DoShotObstacleCollisions(Shot shot)
+        public void DoShotObstacleCollisions(Shot shot)
         {
             foreach (var o in Obstacles.Where(o => o.exist).Where(o => shot.pos.X >= o.pos.X && shot.pos.X <= o.pos.X + o.Width && shot.pos.Y >= o.pos.Y && shot.pos.Y <= o.pos.Y + o.Height))
             {
@@ -201,41 +209,41 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void DrawCheckerboardMaze()
+        public void DrawCheckerboardMaze()
         {
             var blockWidth = Math.Min(5000, (double)SimOpts.FieldWidth / 10);
 
-            var numBlocksAcross = (int)(SimOpts.FieldWidth / (blockWidth + mazeCorridorWidth));
-            var acrossGap = (numBlocksAcross * (blockWidth + mazeCorridorWidth) + mazeCorridorWidth - SimOpts.FieldWidth) / 2;
-            var numBlocksDown = (int)(SimOpts.FieldHeight / (blockWidth + mazeCorridorWidth));
-            var downGap = (numBlocksDown * (blockWidth + mazeCorridorWidth) + mazeCorridorWidth - SimOpts.FieldHeight) / 2;
+            var numBlocksAcross = (int)(SimOpts.FieldWidth / (blockWidth + MazeCorridorWidth));
+            var acrossGap = (numBlocksAcross * (blockWidth + MazeCorridorWidth) + MazeCorridorWidth - SimOpts.FieldWidth) / 2;
+            var numBlocksDown = (int)(SimOpts.FieldHeight / (blockWidth + MazeCorridorWidth));
+            var downGap = (numBlocksDown * (blockWidth + MazeCorridorWidth) + MazeCorridorWidth - SimOpts.FieldHeight) / 2;
 
             for (var i = 0; i < numBlocksAcross - 1; i++)
             {
                 for (var j = 0; j < numBlocksDown - 1; j++)
                 {
-                    var x = (i * blockWidth) + (i + 1) * mazeCorridorWidth - acrossGap;
-                    var y = (j * blockWidth) + (j + 1) * mazeCorridorWidth - downGap;
+                    var x = (i * blockWidth) + (i + 1) * MazeCorridorWidth - acrossGap;
+                    var y = (j * blockWidth) + (j + 1) * MazeCorridorWidth - downGap;
                     NewObstacle(x, y, blockWidth, blockWidth);
                 }
             }
         }
 
-        public static void DrawHorizontalMaze()
+        public void DrawHorizontalMaze()
         {
-            var numOfLines = (int)((double)SimOpts.FieldWidth / (mazeCorridorWidth + mazeWallThickness)) - 1;
+            var numOfLines = (int)((double)SimOpts.FieldWidth / (MazeCorridorWidth + MazeWallThickness)) - 1;
             for (var i = 1; i < numOfLines; i++)
             {
-                var Opening = ThreadSafeRandom.Local.Next(0, SimOpts.FieldHeight - mazeCorridorWidth);
-                NewObstacle(i * mazeCorridorWidth + mazeWallThickness, -100, mazeWallThickness, Opening);
-                if ((Opening + mazeCorridorWidth) < SimOpts.FieldHeight + 100)
+                var Opening = ThreadSafeRandom.Local.Next(0, SimOpts.FieldHeight - MazeCorridorWidth);
+                NewObstacle(i * MazeCorridorWidth + MazeWallThickness, -100, MazeWallThickness, Opening);
+                if ((Opening + MazeCorridorWidth) < SimOpts.FieldHeight + 100)
                 {
-                    NewObstacle(i * (mazeCorridorWidth + mazeWallThickness), Opening + mazeCorridorWidth, mazeWallThickness, SimOpts.FieldHeight + 100 - Opening - mazeCorridorWidth);
+                    NewObstacle(i * (MazeCorridorWidth + MazeWallThickness), Opening + MazeCorridorWidth, MazeWallThickness, SimOpts.FieldHeight + 100 - Opening - MazeCorridorWidth);
                 }
             }
         }
 
-        public static void DrawObstacles()
+        public void DrawObstacles()
         {
             //int i = 0;
 
@@ -259,7 +267,7 @@ namespace DarwinBots.Modules
             //}
         }
 
-        public static void DrawPolarIceMaze()
+        public void DrawPolarIceMaze()
         {
             var blockWidth = (double)SimOpts.FieldWidth / 2;
             var blockHeight = (double)SimOpts.FieldHeight / 2;
@@ -274,10 +282,10 @@ namespace DarwinBots.Modules
             SimOpts.ShapeDriftRate = 20;
         }
 
-        public static void DrawSpiral()
+        public void DrawSpiral()
         {
-            var numOfHorzLines = (int)((double)SimOpts.FieldHeight / (mazeCorridorWidth + mazeWallThickness)) - 1;
-            var numOfVertLines = (int)((double)SimOpts.FieldWidth / (mazeCorridorWidth + mazeWallThickness)) - 1;
+            var numOfHorzLines = (int)((double)SimOpts.FieldHeight / (MazeCorridorWidth + MazeWallThickness)) - 1;
+            var numOfVertLines = (int)((double)SimOpts.FieldWidth / (MazeCorridorWidth + MazeWallThickness)) - 1;
             var numOfLines = Math.Min(numOfHorzLines, numOfVertLines);
 
             if ((numOfLines % 2) != 0)
@@ -285,28 +293,28 @@ namespace DarwinBots.Modules
 
             for (var i = 1; i < (numOfLines / 2); i++)
             {
-                NewObstacle((i - 1) * mazeCorridorWidth, i * mazeCorridorWidth, SimOpts.FieldWidth - (mazeCorridorWidth * (2 * (i - 1) + 1)), mazeWallThickness);
-                NewObstacle(i * mazeCorridorWidth, SimOpts.FieldHeight - (mazeCorridorWidth * i), SimOpts.FieldWidth - (mazeCorridorWidth * 2 * i - mazeWallThickness), mazeWallThickness);
-                NewObstacle(SimOpts.FieldWidth - (mazeCorridorWidth * i), i * mazeCorridorWidth, mazeWallThickness, SimOpts.FieldHeight - mazeCorridorWidth * 2 * i);
-                NewObstacle(i * mazeCorridorWidth, (i + 1) * mazeCorridorWidth, mazeWallThickness, SimOpts.FieldHeight - (mazeCorridorWidth * (2 * i + 1)));
+                NewObstacle((i - 1) * MazeCorridorWidth, i * MazeCorridorWidth, SimOpts.FieldWidth - (MazeCorridorWidth * (2 * (i - 1) + 1)), MazeWallThickness);
+                NewObstacle(i * MazeCorridorWidth, SimOpts.FieldHeight - (MazeCorridorWidth * i), SimOpts.FieldWidth - (MazeCorridorWidth * 2 * i - MazeWallThickness), MazeWallThickness);
+                NewObstacle(SimOpts.FieldWidth - (MazeCorridorWidth * i), i * MazeCorridorWidth, MazeWallThickness, SimOpts.FieldHeight - MazeCorridorWidth * 2 * i);
+                NewObstacle(i * MazeCorridorWidth, (i + 1) * MazeCorridorWidth, MazeWallThickness, SimOpts.FieldHeight - (MazeCorridorWidth * (2 * i + 1)));
             }
         }
 
-        public static void DrawVerticalMaze()
+        public void DrawVerticalMaze()
         {
-            var numOfLines = (int)((double)SimOpts.FieldHeight / (mazeCorridorWidth + mazeWallThickness)) - 1;
+            var numOfLines = (int)((double)SimOpts.FieldHeight / (MazeCorridorWidth + MazeWallThickness)) - 1;
             for (var i = 1; i < numOfLines; i++)
             {
-                var Opening = ThreadSafeRandom.Local.Next(0, SimOpts.FieldWidth - mazeCorridorWidth);
-                NewObstacle(-100, i * (mazeCorridorWidth + mazeWallThickness), Opening, mazeWallThickness);
-                if ((Opening + mazeCorridorWidth) < SimOpts.FieldWidth + 100)
-                    NewObstacle(Opening + mazeCorridorWidth, i * (mazeCorridorWidth + mazeWallThickness), SimOpts.FieldWidth + 100 - Opening - mazeCorridorWidth, mazeWallThickness);
+                var Opening = ThreadSafeRandom.Local.Next(0, SimOpts.FieldWidth - MazeCorridorWidth);
+                NewObstacle(-100, i * (MazeCorridorWidth + MazeWallThickness), Opening, MazeWallThickness);
+                if ((Opening + MazeCorridorWidth) < SimOpts.FieldWidth + 100)
+                    NewObstacle(Opening + MazeCorridorWidth, i * (MazeCorridorWidth + MazeWallThickness), SimOpts.FieldWidth + 100 - Opening - MazeCorridorWidth, MazeWallThickness);
             }
         }
 
-        public static void DriftObstacles()
+        public void DriftObstacles()
         {
-            foreach (var o in Obstacles.Where(o => o.exist && o != leftCompactor && o != rightCompactor))
+            foreach (var o in Obstacles.Where(o => o.exist && o != LeftCompactor && o != RightCompactor))
             {
                 if (SimOpts.AllowHorizontalShapeDrift)
                     o.vel += new DoubleVector(ThreadSafeRandom.Local.Next(-SimOpts.ShapeDriftRate, SimOpts.ShapeDriftRate) * ThreadSafeRandom.Local.NextDouble() * 0.01, 0);
@@ -319,29 +327,29 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void InitObstacles()
+        public void InitObstacles()
         {
             Obstacles.Clear();
         }
 
-        public static void InitTrashCompactorMaze()
+        public void InitTrashCompactorMaze()
         {
             var blockWidth = 1000.0;
             var blockHeight = SimOpts.FieldHeight * 1.2;
 
-            leftCompactor = NewObstacle(-blockWidth + 1, SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
-            rightCompactor = NewObstacle(SimOpts.FieldWidth - 1, SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
+            LeftCompactor = NewObstacle(-blockWidth + 1, SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
+            RightCompactor = NewObstacle(SimOpts.FieldWidth - 1, SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
 
-            leftCompactor.vel = leftCompactor.vel with { X = SimOpts.ShapeDriftRate * 0.1 };
-            rightCompactor.vel = rightCompactor.vel with { X = -SimOpts.ShapeDriftRate * 0.1 };
+            LeftCompactor.vel = LeftCompactor.vel with { X = SimOpts.ShapeDriftRate * 0.1 };
+            RightCompactor.vel = RightCompactor.vel with { X = -SimOpts.ShapeDriftRate * 0.1 };
         }
 
-        public static void MoveObstacles()
+        public void MoveObstacles()
         {
             if (SimOpts.AllowHorizontalShapeDrift || SimOpts.AllowVerticalShapeDrift)
                 DriftObstacles();
 
-            if (leftCompactor != null || rightCompactor != null)
+            if (LeftCompactor != null || RightCompactor != null)
                 TrashCompactorMove();
 
             foreach (var o in Obstacles.Where(o => o.exist))
@@ -371,9 +379,9 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static Obstacle NewObstacle(double x, double y, double Width, double Height)
+        public Obstacle NewObstacle(double x, double y, double Width, double Height)
         {
-            if (Obstacles.Count >= MAXOBSTACLES)
+            if (Obstacles.Count >= MaxObstacles)
                 return null;
             else
             {
@@ -394,43 +402,33 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static bool ObstacleCollision(robot rob, Obstacle o)
-        {
-            var botrightedge = rob.pos.X + rob.radius;
-            var botleftedge = rob.pos.X - rob.radius;
-            var bottopedge = rob.pos.Y - rob.radius;
-            var botbottomedge = rob.pos.Y + rob.radius;
-
-            return botrightedge > o.pos.X && (botleftedge < o.pos.X + o.Width) && (botbottomedge > o.pos.Y) && (bottopedge < o.pos.Y + o.Height);
-        }
-
-        public static void StopAllHorizontalObstacleMovement()
+        public void StopAllHorizontalObstacleMovement()
         {
             foreach (var o in Obstacles.Where(o => o.exist))
                 o.vel = o.vel with { X = 0 };
         }
 
-        public static void StopAllVerticalObstacleMovement()
+        public void StopAllVerticalObstacleMovement()
         {
             foreach (var o in Obstacles.Where(o => o.exist))
                 o.vel = o.vel with { Y = 0 };
         }
 
-        public static void TrashCompactorMove()
+        public void TrashCompactorMove()
         {
-            if (leftCompactor.pos.X > rightCompactor.pos.X + 400)
+            if (LeftCompactor.pos.X > RightCompactor.pos.X + 400)
             {
-                leftCompactor.vel = leftCompactor.vel.InvertX();
-                rightCompactor.vel = rightCompactor.vel.InvertX();
+                LeftCompactor.vel = LeftCompactor.vel.InvertX();
+                RightCompactor.vel = RightCompactor.vel.InvertX();
             }
-            if (leftCompactor.pos.X <= -leftCompactor.Width)
+            if (LeftCompactor.pos.X <= -LeftCompactor.Width)
             {
-                leftCompactor.vel = leftCompactor.vel with { X = SimOpts.ShapeDriftRate * 0.1 };
-                rightCompactor.vel = rightCompactor.vel with { X = -SimOpts.ShapeDriftRate * 0.1 };
+                LeftCompactor.vel = LeftCompactor.vel with { X = SimOpts.ShapeDriftRate * 0.1 };
+                RightCompactor.vel = RightCompactor.vel with { X = -SimOpts.ShapeDriftRate * 0.1 };
             }
         }
 
-        public static Obstacle WhichObstacle(double x, double y)
+        public Obstacle WhichObstacle(double x, double y)
         {
             return Obstacles.FirstOrDefault(o => o.exist && x >= o.pos.X && x <= o.pos.X + o.Width && y >= o.pos.Y && y <= o.pos.Y + o.Height);
         }

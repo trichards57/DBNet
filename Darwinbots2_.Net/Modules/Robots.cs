@@ -11,7 +11,6 @@ using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.NeoMutations;
-using static DarwinBots.Modules.ObstaclesManager;
 using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Senses;
 using static DarwinBots.Modules.ShotsManager;
@@ -963,7 +962,7 @@ namespace DarwinBots.Modules
             if (Robots.rob.Any(r => r.exist && r != rob && Math.Abs(r.pos.X - X) < r.radius + rob.radius && Math.Abs(r.pos.Y - Y) < r.radius + rob.radius))
                 return true;
 
-            if (ObstaclesManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
+            if (Globals.ObstacleManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
                 return true;
 
             if (SimOpts.Dxsxconnected == false && (X < rob.radius + SmudgeFactor || X + rob.radius + SmudgeFactor > SimOpts.FieldWidth))
@@ -1041,8 +1040,8 @@ namespace DarwinBots.Modules
 
                 CalcMass(rob);
 
-                if (Obstacles.Count > 0)
-                    DoObstacleCollisions(rob);
+                if (Globals.ObstacleManager.Obstacles.Count > 0)
+                    Globals.ObstacleManager.DoObstacleCollisions(rob);
 
                 BorderCollision(rob);
 

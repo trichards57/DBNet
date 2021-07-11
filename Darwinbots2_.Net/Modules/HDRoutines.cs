@@ -224,8 +224,8 @@ namespace DarwinBots.Modules
             SimOpt.Species.AddRange(savedFile.Species);
             Teleport.Teleporters.Clear();
             Teleport.Teleporters.AddRange(savedFile.Teleporters);
-            ObstaclesManager.Obstacles.Clear();
-            ObstaclesManager.Obstacles.AddRange(savedFile.Obstacles);
+            Globals.ObstacleManager.Obstacles.Clear();
+            Globals.ObstacleManager.Obstacles.AddRange(savedFile.Obstacles);
             ShotsManager.Shots.Clear();
             ShotsManager.Shots.AddRange(savedFile.Shots);
 
@@ -632,7 +632,7 @@ namespace DarwinBots.Modules
                 MutOscillSine = SimOpt.SimOpts.MutOscillSine,
                 NoShotDecay = SimOpt.SimOpts.NoShotDecay,
                 NoWShotDecay = SimOpt.SimOpts.NoWShotDecay,
-                Obstacles = ObstaclesManager.Obstacles,
+                Obstacles = Globals.ObstacleManager.Obstacles,
                 OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,

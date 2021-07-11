@@ -6,7 +6,6 @@ using System.Linq;
 using System.Windows.Media;
 using static DarwinBots.Modules.DnaManipulations;
 using static DarwinBots.Modules.NeoMutations;
-using static DarwinBots.Modules.ObstaclesManager;
 using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.Senses;
@@ -397,8 +396,8 @@ namespace DarwinBots.Modules
                     shot.flash = true;
                 }
 
-                if (Obstacles.Count > 0)
-                    DoShotObstacleCollisions(shot);
+                if (Globals.ObstacleManager.Obstacles.Count > 0)
+                    Globals.ObstacleManager.DoShotObstacleCollisions(shot);
 
                 shot.opos = shot.pos;
                 shot.pos += shot.velocity; //Euler integration

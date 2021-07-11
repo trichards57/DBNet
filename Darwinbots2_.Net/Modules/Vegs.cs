@@ -216,7 +216,7 @@ namespace DarwinBots.Modules
 
             double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
-            ScreenArea -= ObstaclesManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
+            ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 
             var TotalRobotArea = rob.Where(r => r.exist).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
 

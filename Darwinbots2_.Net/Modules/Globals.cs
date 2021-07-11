@@ -48,6 +48,7 @@ namespace DarwinBots.Modules
         public static int ValNormMut { get; set; }
         public static List<Obstacle> xObstacle { get; set; } = new();
         public static bool y_normsize { get; set; }
+        public static ObstaclesManager ObstacleManager { get; internal set; }
 
         public static async Task aggiungirob(int r, double x, double y)
         {
