@@ -2,7 +2,6 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.SimOpt;
@@ -167,29 +166,6 @@ namespace DarwinBots.Modules
             for (var l = 1; l < 8; l++)
                 rob.mem[455 + l] = tie.OtherBot.occurr[l];
 
-            if (!tie.OtherBot.Veg && rob.FName != tie.OtherBot.FName)
-            {
-                //Botsareus 2/11/2014 Tie Eye Fudge
-                if (FudgeEyes || FudgeAll)
-                {
-                    if (rob.mem[455 + 8] < 2)
-                        rob.mem[455 + 8] = ThreadSafeRandom.Local.Next(1, 3);
-                    else
-                        rob.mem[455 + 8] = rob.mem[455 + 8] + ThreadSafeRandom.Local.Next(0, 4) - 1;
-                }
-                //Fudge the rest of Tie occurr
-                if (FudgeAll)
-                {
-                    for (var l = 1; l < 7; l++)
-                    {
-                        if (rob.mem[455 + l] < 2)
-                            rob.mem[455 + l] = ThreadSafeRandom.Local.Next(1, 3);
-                        else
-                            rob.mem[455 + l] = rob.mem[455 + l] + ThreadSafeRandom.Local.Next(0, 4) - 1;
-                    }
-                }
-            }
-
             if (rob.mem[476] > 0 & rob.mem[476] <= 1000)
             {
                 //tmemval and tmemloc couple used to read a specific memory value from tied robot.
@@ -220,15 +196,6 @@ namespace DarwinBots.Modules
             //These are the tie in/pairs
             for (var l = 410; l < 419; l++)
                 rob.mem[l + 10] = tie.OtherBot.mem[l];
-
-            if (!tie.OtherBot.Veg && FudgeAll && rob.FName != tie.OtherBot.FName)
-            {
-                for (var l = 410; l < 419; l++)
-                {
-                    if (rob.mem[l + 10] != 0)
-                        rob.mem[l + 10] += ThreadSafeRandom.Local.Next(0, 4) - 1;
-                }
-            }
         }
 
         public static void Regang(robot rob, Tie tie)

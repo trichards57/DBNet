@@ -2,7 +2,6 @@
 using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -91,8 +90,6 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                Globals.SimStart = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
-
                 foreach (var o in Globals.xObstacle)
                 {
                     var newO = _obstacleManager.NewObstacle(o.pos.X, o.pos.Y, o.Width, o.Height);
@@ -209,7 +206,6 @@ namespace DarwinBots.Modules
 
         private async Task UpdateSim()
         {
-            Globals.ModeChangeCycles++;
             SimOpt.SimOpts.TotRunCycle++;
 
             if (SimOpt.SimOpts.MutOscill && (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin) > 0)

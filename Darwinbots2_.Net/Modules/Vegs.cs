@@ -24,6 +24,94 @@ namespace DarwinBots.Modules
         public static int totvegs { get; set; }
         public static int totvegsDisplayed { get; set; }
 
+        public static async Task aggiungirob(int r, double x, double y)
+        {
+            if (!SimOpt.SimOpts.Specie.Any(CheckVegStatus))
+                return;
+
+            do
+            {
+                r = ThreadSafeRandom.Local.Next(0, SimOpt.SimOpts.Specie.Count); // start randomly in the list of species
+            } while (!CheckVegStatus(SimOpt.SimOpts.Specie[r]));
+
+            x = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(SimOpt.SimOpts.Specie[r].Posrg * (SimOpt.SimOpts.FieldWidth - 60)));
+            y = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(SimOpt.SimOpts.Specie[r].Posdn * (SimOpt.SimOpts.FieldHeight - 60)));
+
+            if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].path == "Invalid Path")
+                return;
+
+            var a = await DnaManipulations.RobScriptLoad(System.IO.Path.Join(SimOpt.SimOpts.Specie[r].path,
+                    SimOpt.SimOpts.Specie[r].Name));
+
+            if (a == null)
+            {
+                SimOpt.SimOpts.Specie[r].Native = false;
+                return;
+            }
+
+            //Check to see if we were able to load the bot.  If we can't, the path may be wrong, the sim may have
+            //come from another machine with a different install path.  Set the species path to an empty string to
+            //prevent endless looping of error dialogs.
+            if (!a.exist)
+            {
+                SimOpt.SimOpts.Specie[r].path = "Invalid Path";
+                return;
+            }
+
+            a.Veg = SimOpt.SimOpts.Specie[r].Veg;
+            if (a.Veg)
+                a.chloroplasts = StartChlr;
+
+            a.Fixed = SimOpt.SimOpts.Specie[r].Fixed;
+            a.CantSee = SimOpt.SimOpts.Specie[r].CantSee;
+            a.DisableDNA = SimOpt.SimOpts.Specie[r].DisableDNA;
+            a.DisableMovementSysvars = SimOpt.SimOpts.Specie[r].DisableMovementSysvars;
+            a.CantReproduce = SimOpt.SimOpts.Specie[r].CantReproduce;
+            a.VirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
+            a.Corpse = false;
+            a.Dead = false;
+            a.body = 1000;
+            a.radius = Robots.FindRadius(a);
+            a.Mutations = 0;
+            a.OldMutations = 0;
+            a.LastMut = 0;
+            a.generation = 0;
+            a.SonNumber = 0;
+            a.parent = null;
+            Array.Clear(a.mem, 0, a.mem.Length);
+
+            if (a.Fixed)
+                a.mem[216] = 1;
+
+            a.pos = new DoubleVector(x, y);
+
+            a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
+            a.mem[Robots.SetAim] = (int)a.aim * 200;
+
+            //Bot is already in a bucket due to the prepare routine
+            Globals.BucketManager.UpdateBotBucket(a);
+            a.nrg = SimOpt.SimOpts.Specie[r].Stnrg;
+            a.Mutables = SimOpt.SimOpts.Specie[r].Mutables;
+
+            a.Vtimer = 0;
+            a.virusshot = null;
+            a.genenum = DnaManipulations.CountGenes(a.dna);
+
+            a.GenMut = (double)a.dna.Count / Robots.GeneticSensitivity;
+
+            a.mem[Robots.DnaLenSys] = a.dna.Count;
+            a.mem[Robots.GenesSys] = a.genenum;
+
+            a.multibot_time = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
+            a.NoChlr = SimOpt.SimOpts.Specie[r].NoChlr;
+
+            for (var i = 0; i < 7; i++)
+                a.Skin[i] = SimOpt.SimOpts.Specie[r].Skin[i];
+
+            a.color = SimOpt.SimOpts.Specie[r].color;
+            Senses.MakeOccurrList(a);
+        }
+
         public static void feedveg2(robot rob)
         {
             var Energy = rob.chloroplasts / 64000 * (1 - SimOpts.VegFeedingToBody);
@@ -323,6 +411,26 @@ namespace DarwinBots.Modules
                 }
                 cooldown -= SimOpts.RepopCooldown;
             }
+        }
+
+        private static bool CheckVegStatus(Species species)
+        {
+            if (!species.Veg || !species.Native)
+                return false;
+
+            //see if any active robots have chloroplasts
+            if (Robots.rob.Where(r => r.exist && r.chloroplasts > 0)
+                .Select(rob => new { rob, splitname = rob.FName.Split(")") })
+                .Select(t =>
+                    t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
+                        ? t.splitname[1]
+                        : t.rob.FName).Any(robname => species.Name == robname))
+            {
+                return true;
+            }
+
+            //If there is no robots at all with chlr then repop everything
+            return !Robots.rob.Any(r => r.exist && r.Veg && r.age > 0);
         }
     }
 }

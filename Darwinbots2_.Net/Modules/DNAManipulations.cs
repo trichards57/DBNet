@@ -13,7 +13,7 @@ namespace DarwinBots.Modules
         public static int CountGenes(IEnumerable<DNABlock> dna)
         {
             var genesCount = 0;
-            var ingene = false;
+            var inGene = false;
 
             foreach (var block in dna)
             {
@@ -25,20 +25,20 @@ namespace DarwinBots.Modules
                     switch (block.Value)
                     {
                         case 1:
-                            ingene = true;
+                            inGene = true;
                             genesCount++;
                             break;
 
                         case 2:
                         case 3:
-                            if (!ingene)
+                            if (!inGene)
                                 genesCount++;
 
-                            ingene = false; // that follows a cond
+                            inGene = false; // that follows a cond
                             break;
 
                         case 4:
-                            ingene = false;
+                            inGene = false;
                             break;
                     }
                 }
@@ -54,7 +54,7 @@ namespace DarwinBots.Modules
 
         public static int GeneEnd(IList<DNABlock> dna, int position)
         {
-            var condgene = dna[position].Type == 9 && dna[position].Value == 1;
+            var condGene = dna[position].Type == 9 && dna[position].Value == 1;
 
             for (var i = position + 1; i < dna.Count; i++)
             {
@@ -70,9 +70,9 @@ namespace DarwinBots.Modules
 
                         case 2:
                         case 3:
-                            if (!condgene)
+                            if (!condGene)
                                 return i - 1;
-                            condgene = false;
+                            condGene = false;
                             break;
 
                         case 4:
@@ -86,9 +86,9 @@ namespace DarwinBots.Modules
         public static int GenePosition(IList<DNABlock> dna, int n)
         {
             var k = 1;
-            var genenum = 0;
-            var ingene = false;
-            var genepos = 0;
+            var geneNum = 0;
+            var inGene = false;
+            var genePos = 0;
 
             if (n == 0)
                 return 0;
@@ -98,40 +98,40 @@ namespace DarwinBots.Modules
                 //A start or else
                 if (dna[k].Type == 9 && (dna[k].Value == 2 || dna[k].Value == 3))
                 {
-                    if (!ingene)
+                    if (!inGene)
                     { // Does not follow a cond.  Make it a new gene
-                        genenum++;
-                        if (genenum == n)
+                        geneNum++;
+                        if (geneNum == n)
                         {
-                            genepos = k;
+                            genePos = k;
                             break;
                         }
                     }
                     else
-                        ingene = false; // First Start or Else following a cond
+                        inGene = false; // First Start or Else following a cond
                 }
 
                 // If a Cond
                 if (dna[k].Type == 9 && (dna[k].Value == 1))
                 {
-                    ingene = true;
-                    genenum++;
-                    if (genenum == n)
+                    inGene = true;
+                    geneNum++;
+                    if (geneNum == n)
                     {
-                        genepos = k;
+                        genePos = k;
                         break;
                     }
                 }
                 // If a stop
                 if (dna[k].Type == 9 && dna[k].Value == 4)
-                    ingene = false;
+                    inGene = false;
 
                 k++;
                 if (dna[k].Type == 10 & dna[k].Value == 1)
                     k = -1;
             }
 
-            return genepos;
+            return genePos;
         }
 
         public static void InsertVar(robot rob, string a)

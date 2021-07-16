@@ -1,8 +1,6 @@
 using DarwinBots.Model;
-using DarwinBots.Support;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.SimOpt;
 
@@ -38,29 +36,6 @@ namespace DarwinBots.Modules
             for (var t = 1; t < 8; t++)
                 rob1.mem[occurrstart + t] = rob2.occurr[t];
 
-            if (!rob2.Veg && rob2.FName != rob1.FName)
-            {
-                //Botsareus 2/5/2014 Eye Fudge
-                if (FudgeEyes || FudgeAll)
-                {
-                    if (rob1.mem[occurrstart + 8] < 2)
-                        rob1.mem[occurrstart + 8] = ThreadSafeRandom.Local.Next(1, 3);
-                    else
-                        rob1.mem[occurrstart + 8] = rob1.mem[occurrstart + 8] + ThreadSafeRandom.Local.Next(-1, 3);
-                }
-                //Fudge the rest of look occurr
-                if (FudgeAll)
-                {
-                    for (var t = 1; t < 7; t++)
-                    {
-                        if (rob1.mem[occurrstart + t] < 2)
-                            rob1.mem[occurrstart + t] = ThreadSafeRandom.Local.Next(1, 3);
-                        else
-                            rob1.mem[occurrstart + t] = rob1.mem[occurrstart + t] + ThreadSafeRandom.Local.Next(-1, 3);
-                    }
-                }
-            }
-
             rob1.mem[occurrstart + 9] = (int)Math.Clamp(rob2.nrg, 0, 32000);
 
             if (rob2.age < 32001)
@@ -79,53 +54,8 @@ namespace DarwinBots.Modules
             rob1.mem[in9] = rob2.mem[out9];
             rob1.mem[in10] = rob2.mem[out10];
 
-            if (!rob2.Veg && FudgeAll && rob2.FName != rob1.FName)
-            {
-                if (rob2.mem[out1] != 0)
-                    rob1.mem[in1] = rob2.mem[out1] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out2] != 0)
-                    rob1.mem[in2] = rob2.mem[out2] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out3] != 0)
-                    rob1.mem[in3] = rob2.mem[out3] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out4] != 0)
-                    rob1.mem[in4] = rob2.mem[out4] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out5] != 0)
-                    rob1.mem[in5] = rob2.mem[out5] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out6] != 0)
-                    rob1.mem[in6] = rob2.mem[out6] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out7] != 0)
-                    rob1.mem[in7] = rob2.mem[out7] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out8] != 0)
-                    rob1.mem[in8] = rob2.mem[out8] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out9] != 0)
-                    rob1.mem[in9] = rob2.mem[out9] + ThreadSafeRandom.Local.Next(-1, 3);
-
-                if (rob2.mem[out10] != 0)
-                    rob1.mem[in10] = rob2.mem[out10] + ThreadSafeRandom.Local.Next(-1, 3);
-            }
-
             rob1.mem[711] = rob2.mem[18]; //refaim
             rob1.mem[712] = rob2.occurr[9]; //reftie
-
-            if (!rob2.Veg && FudgeAll && rob2.FName != rob1.FName)
-            {
-                if (rob1.mem[712] < 2)
-                {
-                    rob1.mem[712] = ThreadSafeRandom.Local.Next(1, 3);
-                }
-                else
-                {
-                    rob1.mem[712] = ThreadSafeRandom.Local.Next(-1, 3);
-                }
-            }
 
             rob1.mem[refshell] = (int)rob2.shell;
             rob1.mem[refbody] = (int)rob2.body;

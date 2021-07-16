@@ -134,14 +134,10 @@ namespace DarwinBots.Modules
             }
 
             Globals.SimAlreadyRunning = await SafeMode.Load();
-            Globals.AutoSaved = await AutoSaved.Load();
 
             //If we are not using safe mode assume simulation is not runnin'
             if (Globals.UseSafeMode == false)
                 Globals.SimAlreadyRunning = false;
-
-            if (Globals.SimAlreadyRunning == false)
-                Globals.AutoSaved = false;
         }
 
         public static async Task<MutationProbabilities> LoadMutationRates(string filename)
@@ -300,15 +296,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
             SimOpt.SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
             SimOpt.SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
-            Globals.SimStart = savedFile.StrSimStart;
             SimOpt.SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
-            Globals.energydif = savedFile.EnergyDif;
-            Globals.energydifX = savedFile.EnergyDifX;
-            Globals.energydifXP = savedFile.EnergyDifXP;
-            Globals.ModeChangeCycles = savedFile.ModeChangeCycles;
-            Globals.energydif2 = savedFile.EnergyDif2;
-            Globals.energydifX2 = savedFile.EnergyDifX2;
-            Globals.energydifXP2 = savedFile.EnergyDifXP2;
             SimOpt.SimOpts.SunOnRnd = savedFile.SunOnRnd;
             SimOpt.SimOpts.DisableFixing = savedFile.DisableFixing;
             Vegs.SunPosition = savedFile.SunPosition;
@@ -317,7 +305,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.Tides = savedFile.Tides;
             SimOpt.SimOpts.TidesOf = savedFile.TidesOf;
             SimOpt.SimOpts.MutOscillSine = savedFile.MutOscillSine;
-            Globals.stagnent = savedFile.Stagnent;
 
             SimOpt.TmpOpts = SimOpt.SimOpts;
         }
@@ -573,12 +560,6 @@ namespace DarwinBots.Modules
                 DisableTypArepro = SimOpt.SimOpts.DisableTypArepro,
                 DxSxConnected = SimOpt.SimOpts.DxSxConnected,
                 EnableAutoSpeciation = SimOpt.SimOpts.EnableAutoSpeciation,
-                EnergyDif = Globals.energydif,
-                EnergyDif2 = Globals.energydif2,
-                EnergyDifX = Globals.energydifX,
-                EnergyDifX2 = Globals.energydifX2,
-                EnergyDifXP = Globals.energydifXP,
-                EnergyDifXP2 = Globals.energydifXP2,
                 EnergyExType = SimOpt.SimOpts.EnergyExType,
                 EnergyFix = SimOpt.SimOpts.EnergyFix,
                 EnergyProp = SimOpt.SimOpts.EnergyProp,
@@ -594,7 +575,6 @@ namespace DarwinBots.Modules
                 MaxPopulation = SimOpt.SimOpts.MaxPopulation,
                 MaxVelocity = SimOpt.SimOpts.MaxVelocity,
                 MinVegs = SimOpt.SimOpts.MinVegs,
-                ModeChangeCycles = Globals.ModeChangeCycles,
                 MutCurrMult = SimOpt.SimOpts.MutCurrMult,
                 MutCycMax = SimOpt.SimOpts.MutCycMax,
                 MutCycMin = SimOpt.SimOpts.MutCycMin,
@@ -622,8 +602,6 @@ namespace DarwinBots.Modules
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
                 Species = SimOpt.SimOpts.Specie,
-                Stagnent = Globals.stagnent,
-                StrSimStart = Globals.SimStart,
                 SunChange = Vegs.SunChange,
                 SunDown = SimOpt.SimOpts.SunDown,
                 SunDownThreshold = SimOpt.SimOpts.SunDownThreshold,
