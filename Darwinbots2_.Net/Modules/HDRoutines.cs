@@ -228,9 +228,7 @@ namespace DarwinBots.Modules
             ShotsManager.Shots.Clear();
             ShotsManager.Shots.AddRange(savedFile.Shots);
 
-            SimOpt.SimOpts.BlockedVegs = savedFile.BlockedVegs;
             SimOpt.SimOpts.Costs = savedFile.Costs;
-            SimOpt.SimOpts.CostExecCond = savedFile.CostExecCond;
             SimOpt.SimOpts.DeadRobotSnp = savedFile.DeadRobotSnp;
             SimOpt.SimOpts.SnpExcludeVegs = savedFile.SnpExcludeVegs;
             SimOpt.SimOpts.DisableTies = savedFile.DisableTies;
@@ -238,9 +236,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.EnergyFix = savedFile.EnergyFix;
             SimOpt.SimOpts.EnergyProp = savedFile.EnergyProp;
             SimOpt.SimOpts.FieldHeight = savedFile.FieldHeight;
-            SimOpt.SimOpts.FieldSize = savedFile.FieldSize;
             SimOpt.SimOpts.FieldWidth = savedFile.FieldWidth;
-            SimOpt.SimOpts.KillDistVegs = savedFile.KillDistVegs;
             SimOpt.SimOpts.MaxEnergy = savedFile.MaxEnergy;
             SimOpt.SimOpts.MaxPopulation = savedFile.MaxPopulation;
             SimOpt.SimOpts.MinVegs = savedFile.MinVegs;
@@ -252,13 +248,8 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.YGravity = savedFile.Ygravity;
             SimOpt.SimOpts.ZGravity = savedFile.Zgravity;
             SimOpt.SimOpts.PhysMoving = savedFile.PhysMoving;
-            SimOpt.SimOpts.PhysSwim = savedFile.PhysSwim;
-            SimOpt.SimOpts.PopLimMethod = savedFile.PopLimMethod;
-            SimOpt.SimOpts.SimName = savedFile.SimName;
-            SimOpt.SimOpts.Toroidal = savedFile.Toroidal;
             SimOpt.SimOpts.TotBorn = savedFile.TotBorn;
             SimOpt.SimOpts.TotRunCycle = savedFile.TotRunCycle;
-            SimOpt.SimOpts.TotRunTime = savedFile.TotRunTime;
             SimOpt.SimOpts.PondMode = savedFile.Pondmode;
             SimOpt.SimOpts.CorpseEnabled = savedFile.CorpseEnabled;
             SimOpt.SimOpts.LightIntensity = savedFile.LightIntensity;
@@ -268,14 +259,11 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.CycleLength = savedFile.CycleLength;
             SimOpt.SimOpts.DecayDelay = savedFile.DecayDelay;
             SimOpt.SimOpts.DecayType = savedFile.DecayType;
-            SimOpt.SimOpts.F1 = savedFile.F1;
-            SimOpt.SimOpts.Restart = savedFile.Restart;
             SimOpt.SimOpts.DxSxConnected = savedFile.DxSxConnected;
             SimOpt.SimOpts.UpDnConnected = savedFile.UpDnConnected;
             SimOpt.SimOpts.RepopAmount = savedFile.RepopAmount;
             SimOpt.SimOpts.RepopCooldown = savedFile.RepopCooldown;
             SimOpt.SimOpts.ZeroMomentum = savedFile.ZeroMomentum;
-            SimOpt.SimOpts.UserSeedNumber = savedFile.UserSeedNumber;
             SimOpt.SimOpts.VegFeedingToBody = savedFile.VegFeedingToBody;
             SimOpt.SimOpts.CoefficientStatic = savedFile.CoefficientStatic;
             SimOpt.SimOpts.CoefficientKinetic = savedFile.CoefficientKinetic;
@@ -285,10 +273,8 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.Density = savedFile.Density;
             SimOpt.SimOpts.Costs = savedFile.Costs;
             SimOpt.SimOpts.BadWasteLevel = savedFile.BadWastelevel;
-            SimOpt.SimOpts.ChartingInterval = savedFile.ChartingInterval;
             SimOpt.SimOpts.CoefficientElasticity = savedFile.CoefficientElasticity;
             SimOpt.SimOpts.FluidSolidCustom = savedFile.FluidSolidCustom;
-            SimOpt.SimOpts.CostRadioSetting = savedFile.CostRadioSetting;
             SimOpt.SimOpts.MaxVelocity = savedFile.MaxVelocity;
             SimOpt.SimOpts.NoShotDecay = savedFile.NoShotDecay;
             SimOpt.SimOpts.SunUpThreshold = savedFile.SunUpThreshold;
@@ -305,18 +291,13 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.ShapesAreSeeThrough = savedFile.ShapesAreSeeThrough;
             SimOpt.SimOpts.ShapesAbsorbShots = savedFile.ShapesAbsorbShots;
             SimOpt.SimOpts.ShapeDriftRate = savedFile.ShapeDriftRate;
-            SimOpt.SimOpts.MakeAllShapesTransparent = savedFile.MakeAllShapesTransparent;
             SimOpt.SimOpts.MakeAllShapesBlack = savedFile.MakeAllShapesBlack;
             SimOpt.SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
-            SimOpt.SimOpts.EGridWidth = savedFile.EGridWidth;
-            SimOpt.SimOpts.EGridEnabled = savedFile.EGridEnabled;
             SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
             SimOpt.SimOpts.SimGuid = savedFile.SimGUID;
-            SimOpt.SimOpts.SpeciationGenerationalDistance = savedFile.SpeciationGenerationalDistance;
             SimOpt.SimOpts.SpeciationGeneticDistance = savedFile.SpeciationGeneticDistance;
             SimOpt.SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
-            SimOpt.SimOpts.SpeciationMinimumPopulation = savedFile.SpeciationMinimumPopulation;
             SimOpt.SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
             SimOpt.SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
             Globals.SimStart = savedFile.StrSimStart;
@@ -572,14 +553,10 @@ namespace DarwinBots.Modules
                 AllowHorizontalShapeDrift = SimOpt.SimOpts.AllowHorizontalShapeDrift,
                 AllowVerticalShapeDrift = SimOpt.SimOpts.AllowVerticalShapeDrift,
                 BadWastelevel = SimOpt.SimOpts.BadWasteLevel,
-                BlockedVegs = SimOpt.SimOpts.BlockedVegs,
-                ChartingInterval = SimOpt.SimOpts.ChartingInterval,
                 CoefficientElasticity = SimOpt.SimOpts.CoefficientElasticity,
                 CoefficientKinetic = SimOpt.SimOpts.CoefficientKinetic,
                 CoefficientStatic = SimOpt.SimOpts.CoefficientStatic,
                 CorpseEnabled = SimOpt.SimOpts.CorpseEnabled,
-                CostExecCond = SimOpt.SimOpts.CostExecCond,
-                CostRadioSetting = SimOpt.SimOpts.CostRadioSetting,
                 Costs = SimOpt.SimOpts.Costs,
                 CycleLength = SimOpt.SimOpts.CycleLength,
                 DayNight = SimOpt.SimOpts.DayNight,
@@ -595,8 +572,6 @@ namespace DarwinBots.Modules
                 DisableTies = SimOpt.SimOpts.DisableTies,
                 DisableTypArepro = SimOpt.SimOpts.DisableTypArepro,
                 DxSxConnected = SimOpt.SimOpts.DxSxConnected,
-                EGridEnabled = SimOpt.SimOpts.EGridEnabled,
-                EGridWidth = SimOpt.SimOpts.EGridWidth,
                 EnableAutoSpeciation = SimOpt.SimOpts.EnableAutoSpeciation,
                 EnergyDif = Globals.energydif,
                 EnergyDif2 = Globals.energydif2,
@@ -607,17 +582,13 @@ namespace DarwinBots.Modules
                 EnergyExType = SimOpt.SimOpts.EnergyExType,
                 EnergyFix = SimOpt.SimOpts.EnergyFix,
                 EnergyProp = SimOpt.SimOpts.EnergyProp,
-                F1 = SimOpt.SimOpts.F1,
                 FieldHeight = SimOpt.SimOpts.FieldHeight,
-                FieldSize = SimOpt.SimOpts.FieldSize,
                 FieldWidth = SimOpt.SimOpts.FieldWidth,
                 FixedBotRadii = SimOpt.SimOpts.FixedBotRadii,
                 FluidSolidCustom = SimOpt.SimOpts.FluidSolidCustom,
                 Gradient = SimOpt.SimOpts.Gradient,
-                KillDistVegs = SimOpt.SimOpts.KillDistVegs,
                 LightIntensity = SimOpt.SimOpts.LightIntensity,
                 MakeAllShapesBlack = SimOpt.SimOpts.MakeAllShapesBlack,
-                MakeAllShapesTransparent = SimOpt.SimOpts.MakeAllShapesTransparent,
                 MaxAbsNum = SimOpt.SimOpts.MaxAbsNum,
                 MaxEnergy = SimOpt.SimOpts.MaxEnergy,
                 MaxPopulation = SimOpt.SimOpts.MaxPopulation,
@@ -635,14 +606,11 @@ namespace DarwinBots.Modules
                 OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
-                PhysSwim = SimOpt.SimOpts.PhysSwim,
                 PlanetEaters = SimOpt.SimOpts.PlanetEaters,
                 PlanetEatersG = SimOpt.SimOpts.PlanetEatersG,
                 Pondmode = SimOpt.SimOpts.PondMode,
-                PopLimMethod = SimOpt.SimOpts.PopLimMethod,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
-                Restart = SimOpt.SimOpts.Restart,
                 Robots = Robots.rob.Where(r => r.exist),
                 ShapeDriftRate = SimOpt.SimOpts.ShapeDriftRate,
                 ShapesAbsorbShots = SimOpt.SimOpts.ShapesAbsorbShots,
@@ -650,12 +618,9 @@ namespace DarwinBots.Modules
                 ShapesAreVisable = SimOpt.SimOpts.ShapesAreVisable,
                 Shots = ShotsManager.Shots,
                 SimGUID = SimOpt.SimOpts.SimGuid,
-                SimName = SimOpt.SimOpts.SimName,
                 SnpExcludeVegs = SimOpt.SimOpts.SnpExcludeVegs,
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
-                SpeciationGenerationalDistance = SimOpt.SimOpts.SpeciationGenerationalDistance,
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
-                SpeciationMinimumPopulation = SimOpt.SimOpts.SpeciationMinimumPopulation,
                 Species = SimOpt.SimOpts.Specie,
                 Stagnent = Globals.stagnent,
                 StrSimStart = Globals.SimStart,
@@ -671,12 +636,9 @@ namespace DarwinBots.Modules
                 Teleporters = Teleport.Teleporters,
                 Tides = SimOpt.SimOpts.Tides,
                 TidesOf = SimOpt.SimOpts.TidesOf,
-                Toroidal = SimOpt.SimOpts.Toroidal,
                 TotBorn = SimOpt.SimOpts.TotBorn,
                 TotRunCycle = SimOpt.SimOpts.TotRunCycle,
-                TotRunTime = SimOpt.SimOpts.TotRunTime,
                 UpDnConnected = SimOpt.SimOpts.UpDnConnected,
-                UserSeedNumber = SimOpt.SimOpts.UserSeedNumber,
                 VegFeedingToBody = SimOpt.SimOpts.VegFeedingToBody,
                 Viscosity = SimOpt.SimOpts.Viscosity,
                 Ygravity = SimOpt.SimOpts.YGravity,
@@ -684,7 +646,7 @@ namespace DarwinBots.Modules
                 Zgravity = SimOpt.SimOpts.ZGravity,
             };
 
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(path));
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, JsonSerializer.Serialize(sim));
         }
     }

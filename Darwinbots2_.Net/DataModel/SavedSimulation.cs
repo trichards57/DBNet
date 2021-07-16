@@ -17,7 +17,6 @@ namespace DarwinBots.DataModel
         public double CoefficientStatic { get; internal set; }
         public bool CorpseEnabled { get; internal set; }
         public double CostExecCond { get; internal set; }
-        public CostSetting CostRadioSetting { get; internal set; }
         public Costs Costs { get; internal set; }
         public int CycleLength { get; internal set; }
         public bool DayNight { get; internal set; }
