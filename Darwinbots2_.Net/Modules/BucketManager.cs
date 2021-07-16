@@ -242,7 +242,7 @@ namespace DarwinBots.Modules
                 var distvector = rob.pos - r.pos;
                 var dist = rob.radius + r.radius;
                 if (distvector.MagnitudeSquare() < dist * dist)
-                    Physics.Repel3(rob, r);
+                    Physics.Repel(rob, r);
             }
         }
 
@@ -666,7 +666,7 @@ namespace DarwinBots.Modules
         {
             double eyeStrength;
 
-            if (_options.Pondmode && rob.pos.Y > 1)
+            if (_options.PondMode && rob.pos.Y > 1)
                 eyeStrength = Math.Pow(Math.Pow(EyeEffectiveness / (rob.pos.Y / 2000), _options.Gradient), 6828.0 / _options.FieldHeight);
             else
                 eyeStrength = 1;

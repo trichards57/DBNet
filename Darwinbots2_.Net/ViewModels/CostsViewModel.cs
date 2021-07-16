@@ -123,12 +123,12 @@ namespace DarwinBots.ViewModels
             DynamicCostsTargetPopulation = costs.DynamicCostsTargetPopulation;
             DynamicCostsSensitivity = costs.DynamicCostsSensitivity;
             DynamicCostsUpperRangeTarget = costs.DynamicCostsUpperRangeTarget;
-            DynamicCostsLowerRangeTarget = (int)costs.DynamicCostsLowerRangeTarget;
+            DynamicCostsLowerRangeTarget = costs.DynamicCostsLowerRangeTarget;
         }
 
         public Costs SaveOptions()
         {
-            return new Costs
+            return new()
             {
                 AdvancedCommandCost = AdvancedCommandCost,
                 AgeCost = AgeCost,
@@ -171,39 +171,7 @@ namespace DarwinBots.ViewModels
 
         private void RestoreDefaults()
         {
-            // TODO : Check these are the defaults
-            // TODO : Set up the defaults for the rest of the properties
-
-            NumberCost = 0;
-            StarNumberCost = 0;
-            BasicCommandCost = 0;
-            AdvancedCommandCost = 0;
-            BitwiseCommandCost = 0;
-            ConditionCost = 0.004;
-            LogicCost = 0;
-            StoresCost = 0.04;
-            CholorplastCost = 0.2;
-            FlowCommandCost = 0;
-
-            VoluntaryMovementCost = 0.05;
-            RotationCost = 0;
-            TieFormationCost = 2;
-            ShotFormationCost = 2;
-            DnaUpkeepCost = 0;
-            DnaCopyCost = 0;
-            VenomCost = 0.01;
-            PoisonCost = 0.01;
-            SlimeCost = 0.1;
-            ShellCost = 0.1;
-            BodyUpkeepCost = 0.00001;
-            AgeCost = 0.01;
-
-            AgeCostBeginAge = 32;
-            EnableAgeCostIncreaseLog = false;
-            ZeroCostPopulationLimit = 0;
-            ReinstateCostPopulationLimit = 0;
-            EnableDynamicCosts = false;
-            CostMultiplier = 1;
+            LoadFromOptions(Costs.DefaultCosts);
         }
     }
 }

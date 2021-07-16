@@ -188,28 +188,28 @@ namespace DarwinBots.Modules
                 if (tel.Pos.X + tel.Width < 0)
                     tel.Pos = tel.Pos with { X = 0 };
 
-                tel.Pos = tel.Pos with { X = SimOpts.Dxsxconnected ? tel.Pos.X + SimOpts.FieldWidth - tel.Width : SimOpts.MaxVelocity * 0.1 };
+                tel.Pos = tel.Pos with { X = SimOpts.DxSxConnected ? tel.Pos.X + SimOpts.FieldWidth - tel.Width : SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.Y < 0)
             {
                 if (tel.Pos.Y + tel.Height < 0)
                     tel.Pos = tel.Pos with { Y = 0 };
 
-                tel.Pos = tel.Pos with { Y = SimOpts.Updnconnected ? tel.Pos.Y + SimOpts.FieldHeight - tel.Height : SimOpts.MaxVelocity * 0.1 };
+                tel.Pos = tel.Pos with { Y = SimOpts.UpDnConnected ? tel.Pos.Y + SimOpts.FieldHeight - tel.Height : SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.X + tel.Width > SimOpts.FieldWidth)
             {
                 if (tel.Pos.X > SimOpts.FieldWidth)
                     tel.Pos = tel.Pos with { X = SimOpts.FieldWidth - tel.Width };
 
-                tel.Pos = tel.Pos with { Y = SimOpts.Dxsxconnected ? tel.Pos.X - (SimOpts.FieldWidth - tel.Width) : -SimOpts.MaxVelocity * 0.1 };
+                tel.Pos = tel.Pos with { Y = SimOpts.DxSxConnected ? tel.Pos.X - (SimOpts.FieldWidth - tel.Width) : -SimOpts.MaxVelocity * 0.1 };
             }
             if (tel.Pos.Y + tel.Height > SimOpts.FieldHeight)
             {
                 if (tel.Pos.Y > SimOpts.FieldHeight)
                     tel.Pos = tel.Pos with { Y = SimOpts.FieldHeight - tel.Height };
 
-                tel.Pos = tel.Pos with { Y = SimOpts.Updnconnected ? tel.Pos.Y - (SimOpts.FieldHeight - tel.Height) : -SimOpts.MaxVelocity * 0.1 };
+                tel.Pos = tel.Pos with { Y = SimOpts.UpDnConnected ? tel.Pos.Y - (SimOpts.FieldHeight - tel.Height) : -SimOpts.MaxVelocity * 0.1 };
             }
         }
 

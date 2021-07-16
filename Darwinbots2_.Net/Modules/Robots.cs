@@ -183,13 +183,12 @@ namespace DarwinBots.Modules
         public static int BodyFix { get; set; }
         public static int CurrentDnaSize { get; set; }
         public static int MaxRobs { get; set; }
-        public static List<robot> rob { get; set; } = new();
-        public static robot robfocus { get; set; }
+        public static List<robot> rob { get; } = new();
         public static int TotalRobots { get; set; }
         public static int TotalRobotsDisplayed { get; set; }
-        private static List<robot> BotsToKill { get; set; } = new();
-        private static List<robot> BotsToReproduce { get; set; } = new();
-        private static List<robot> BotsToReproduceSexually { get; set; } = new();
+        private static List<robot> BotsToKill { get; } = new();
+        private static List<robot> BotsToReproduce { get; } = new();
+        private static List<robot> BotsToReproduceSexually { get; } = new();
 
         public static double AbsX(double aim, int up, int dn, int sx, int dx)
         {
@@ -965,10 +964,10 @@ namespace DarwinBots.Modules
             if (Globals.ObstacleManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, X) && o.pos.X + o.Width >= Math.Min(rob.pos.X, X) && o.pos.Y <= Math.Max(rob.pos.Y, Y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, Y)))
                 return true;
 
-            if (SimOpts.Dxsxconnected == false && (X < rob.radius + SmudgeFactor || X + rob.radius + SmudgeFactor > SimOpts.FieldWidth))
+            if (SimOpts.DxSxConnected == false && (X < rob.radius + SmudgeFactor || X + rob.radius + SmudgeFactor > SimOpts.FieldWidth))
                 return true;
 
-            if (SimOpts.Updnconnected == false && (Y < rob.radius + SmudgeFactor || Y + rob.radius + SmudgeFactor > SimOpts.FieldHeight))
+            if (SimOpts.UpDnConnected == false && (Y < rob.radius + SmudgeFactor || Y + rob.radius + SmudgeFactor > SimOpts.FieldHeight))
                 return true;
 
             return false;
@@ -1022,7 +1021,7 @@ namespace DarwinBots.Modules
             {
                 BouyancyScaling = (1 + Math.Sin((SimOpts.TotRunCycle + TmpOpts.TidesOf) % TmpOpts.Tides / SimOpts.Tides * Math.PI * 2)) / 2;
                 BouyancyScaling = Math.Sqrt(BouyancyScaling);
-                SimOpts.Ygravity = (1 - BouyancyScaling) * 4;
+                SimOpts.YGravity = (1 - BouyancyScaling) * 4;
                 SimOpts.PhysBrown = BouyancyScaling > 0.8 ? 10 : 0;
             }
 
@@ -1215,7 +1214,7 @@ namespace DarwinBots.Modules
         private static void Altzheimer(robot rob)
         {
             //makes robots with high waste act in a bizarre fashion.
-            var loops = (rob.Pwaste + rob.Waste - SimOpts.BadWastelevel) / 4;
+            var loops = (rob.Pwaste + rob.Waste - SimOpts.BadWasteLevel) / 4;
 
             for (var t = 0; t < loops; t++)
             {
@@ -1457,10 +1456,10 @@ namespace DarwinBots.Modules
             if (rob.Waste > 0 && rob.chloroplasts > 0)
                 feedveg2(rob);
 
-            if (SimOpts.BadWastelevel == 0)
-                SimOpts.BadWastelevel = 400;
+            if (SimOpts.BadWasteLevel == 0)
+                SimOpts.BadWasteLevel = 400;
 
-            if (SimOpts.BadWastelevel > 0 & rob.Pwaste + rob.Waste > SimOpts.BadWastelevel)
+            if (SimOpts.BadWasteLevel > 0 & rob.Pwaste + rob.Waste > SimOpts.BadWasteLevel)
                 Altzheimer(rob);
 
             if (rob.Waste > 32000)

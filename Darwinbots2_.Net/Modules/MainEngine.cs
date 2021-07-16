@@ -3,6 +3,7 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +21,15 @@ namespace DarwinBots.Modules
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
 
+        // TODO : Save last run settings
+        // TODO : Graphing statistics
+        // TODO : Handle showing data for the selected robot
+        // TODO : Handle signalling the window to draw
+        // TODO : Handle selected robot logic
+        // TODO : Handle saving the sim on error
+        // TODO : Drag and drop robots
+        // TODO : Triggering screen updates
+
         public robot RobotAtPoint(DoubleVector point)
         {
             return Robots.rob
@@ -36,8 +46,6 @@ namespace DarwinBots.Modules
 
         public async Task StartSimulation(bool startLoaded = false)
         {
-            // TODO : Save last run settings
-
             DnaEngine.LoadSysVars();
 
             await AutoSaved.Save(false);
@@ -57,7 +65,7 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                SimOpt.SimOpts.SimGUID = Guid.NewGuid();
+                SimOpt.SimOpts.SimGuid = Guid.NewGuid();
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
@@ -79,9 +87,7 @@ namespace DarwinBots.Modules
             _obstacleManager.DefaultWidth = 0.2;
 
             if (!startLoaded)
-                LoadRobots();
-
-            // TODO : Trigger a screen update
+                await LoadRobots();
 
             if (!startLoaded)
             {
@@ -107,12 +113,75 @@ namespace DarwinBots.Modules
             Main();
         }
 
-        private void LoadRobots()
+        private void Initialise()
         {
-            throw new NotImplementedException();
+            _obstacleManager.InitObstacles();
         }
 
-        // TODO : Graphing statistics
+        private async Task LoadRobots()
+        {
+            foreach (var species in SimOpt.SimOpts.Specie)
+            {
+                for (var t = 1; t < species.qty; t++)
+                {
+                    var rob = await DnaManipulations.RobScriptLoad(Path.Join(species.path, species.Name));
+
+                    if (rob == null)
+                    {
+                        species.Native = false;
+                        break;
+                    }
+
+                    species.Native = true;
+
+                    rob.Veg = species.Veg;
+                    rob.NoChlr = species.NoChlr;
+                    rob.Fixed = species.Fixed;
+
+                    if (rob.Fixed)
+                    {
+                        rob.mem[216] = 1;
+                    }
+
+                    rob.pos = new DoubleVector(ThreadSafeRandom.Local.Next((int)(species.Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(species.Posrg * (SimOpt.SimOpts.FieldWidth - 60))), ThreadSafeRandom.Local.Next((int)(species.Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(species.Posdn * (SimOpt.SimOpts.FieldHeight - 60))));
+
+                    rob.nrg = species.Stnrg;
+                    rob.body = 1000;
+
+                    rob.radius = Robots.FindRadius(rob);
+
+                    rob.mem[Robots.SetAim] = Physics.RadiansToInt(rob.aim * 200);
+                    if (rob.Veg)
+                        rob.chloroplasts = Globals.StartChlr;
+
+                    rob.Dead = false;
+
+                    rob.Mutables = species.Mutables;
+
+                    for (var i = 0; i < 7; i++)
+                    {
+                        rob.Skin[i] = species.Skin[i];
+                    }
+
+                    rob.color = species.color;
+                    rob.mem[Robots.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
+                    rob.CantSee = species.CantSee;
+                    rob.DisableDNA = species.DisableDNA;
+                    rob.DisableMovementSysvars = species.DisableMovementSysvars;
+                    rob.CantReproduce = species.CantReproduce;
+                    rob.VirusImmune = species.VirusImmune;
+                    rob.virusshot = null;
+                    rob.Vtimer = 0;
+                    rob.genenum = DnaManipulations.CountGenes(rob.dna);
+
+                    rob.GenMut = (double)rob.dna.Count / Robots.GeneticSensitivity; //Botsareus 4/9/2013 automatically apply genetic to inserted robots
+
+                    rob.mem[Robots.DnaLenSys] = rob.dna.Count;
+                    rob.mem[Robots.GenesSys] = rob.genenum;
+                }
+            }
+        }
+
         private void Main()
         {
             _simThread = new Thread(MainFunction);
@@ -130,11 +199,6 @@ namespace DarwinBots.Modules
                 if (_active)
                 {
                     await UpdateSim();
-
-                    // TODO : Handle showing data for the selected robot
-                    // TODO : Handle signalling the window to draw
-                    // TODO : Handle selected robot logic
-                    // TODO : Handle saving the sim on error
                 }
                 else
                 {
@@ -278,7 +342,5 @@ namespace DarwinBots.Modules
                     rob.LastMutDetail = "";
             }
         }
-
-        // TODO : Drag and drop robots
     }
 }

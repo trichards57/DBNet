@@ -11,7 +11,6 @@
   <ItemGroup>
     <Compile Remove="Forms\datirob.xaml.cs" />
     <Compile Remove="Forms\DNA_Help.xaml.cs" />
-    <Compile Remove="Forms\Form1.xaml.cs" />
     <Compile Remove="Forms\frmAbout.xaml.cs" />
     <Compile Remove="Forms\frmEYE.xaml.cs" />
     <Compile Remove="Forms\frmFirstTimeInfo.xaml.cs" />
@@ -20,7 +19,6 @@
     <Compile Remove="Forms\frmPBMode.xaml.cs" />
     <Compile Remove="Forms\grafico.xaml.cs" />
     <Compile Remove="Forms\InfoForm.xaml.cs" />
-    <Compile Remove="Forms\MDIForm1.xaml.cs" />
     <Compile Remove="Forms\NetEvent.xaml.cs" />
     <Compile Remove="Forms\ObstacleForm.xaml.cs" />
     <Compile Remove="Forms\parentele.xaml.cs" />
@@ -30,7 +28,6 @@
   <ItemGroup>
     <Page Remove="Forms\datirob.xaml" />
     <Page Remove="Forms\DNA_Help.xaml" />
-    <Page Remove="Forms\Form1.xaml" />
     <Page Remove="Forms\frmAbout.xaml" />
     <Page Remove="Forms\frmEYE.xaml" />
     <Page Remove="Forms\frmFirstTimeInfo.xaml" />
@@ -39,7 +36,6 @@
     <Page Remove="Forms\frmPBMode.xaml" />
     <Page Remove="Forms\grafico.xaml" />
     <Page Remove="Forms\InfoForm.xaml" />
-    <Page Remove="Forms\MDIForm1.xaml" />
     <Page Remove="Forms\NetEvent.xaml" />
     <Page Remove="Forms\ObstacleForm.xaml" />
     <Page Remove="Forms\parentele.xaml" />

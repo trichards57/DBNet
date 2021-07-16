@@ -261,7 +261,7 @@ namespace DarwinBots.Modules
                         continue;
 
                     double tok = 0;
-                    if (SimOpts.Pondmode)
+                    if (SimOpts.PondMode)
                     {
                         var depth = (rob.pos.Y / 2000) + 1;
                         if (depth < 1)

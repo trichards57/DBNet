@@ -94,7 +94,7 @@ namespace DarwinBots.Modules
         {
             rob.DecayTimer++;
 
-            if (rob.DecayTimer < SimOpts.Decaydelay)
+            if (rob.DecayTimer < SimOpts.DecayDelay)
                 return;
 
             rob.DecayTimer = 0;
@@ -492,7 +492,7 @@ namespace DarwinBots.Modules
         private static robot NewShotCollision(Shot shot)
         {
             // Check for collisions with the field edges
-            if (SimOpts.Updnconnected == true)
+            if (SimOpts.UpDnConnected == true)
             {
                 if (shot.pos.Y > SimOpts.FieldHeight)
                     shot.pos -= new DoubleVector(0, SimOpts.FieldHeight);
@@ -513,7 +513,7 @@ namespace DarwinBots.Modules
                 }
             }
 
-            if (SimOpts.Dxsxconnected)
+            if (SimOpts.DxSxConnected)
             {
                 if (shot.pos.X > SimOpts.FieldWidth)
                     shot.pos -= new DoubleVector(SimOpts.FieldWidth, 0);
