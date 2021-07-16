@@ -10,7 +10,7 @@ namespace DarwinBots.Forms
             InitializeComponent();
         }
 
-        internal OptionsViewModel ViewModel { get; set; } = new();
+        internal OptionsViewModel ViewModel { get; } = new();
 
         private void LightBox_GotFocus(object sender, RoutedEventArgs e)
         {
