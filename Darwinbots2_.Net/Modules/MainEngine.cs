@@ -310,9 +310,6 @@ namespace DarwinBots.Modules
             if (_obstacleManager.Obstacles.Count > 0)
                 _obstacleManager.MoveObstacles();
 
-            if (Teleport.Teleporters.Count > 0)
-                Teleport.UpdateTeleporters();
-
             var allChlr = (int)Robots.rob.Where(r => r.exist).Sum(r => r.chloroplasts);
 
             Globals.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts

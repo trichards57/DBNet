@@ -557,7 +557,7 @@ namespace DarwinBots.ViewModels
             Array.Copy(probs.mutarray, _mutationProbabilities.mutarray, _mutationProbabilities.mutarray.Length);
             Array.Copy(probs.StdDev, _mutationProbabilities.StdDev, _mutationProbabilities.StdDev.Length);
 
-            ShowDeltaMutation = Globals.Delta2;
+            ShowDeltaMutation = false;
         }
 
         private double AntiProb(double a)

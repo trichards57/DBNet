@@ -15,7 +15,6 @@ using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Senses;
 using static DarwinBots.Modules.ShotsManager;
 using static DarwinBots.Modules.SimOpt;
-using static DarwinBots.Modules.Teleport;
 using static DarwinBots.Modules.Ties;
 using static DarwinBots.Modules.Vegs;
 
@@ -333,9 +332,6 @@ namespace DarwinBots.Modules
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
 
-            if (ReproFix && per < 3)
-                rob.Dead = true;
-
             if (per <= 0)
                 return;
 
@@ -461,82 +457,25 @@ namespace DarwinBots.Modules
                 rob.epimem[i] = 0;
 
             //Botsareus 12/17/2013 Delta2
-            if (Delta2)
+            if (rob.mem[mrepro] > 0)
             {
-                var MratesMax = NormMut ? nuovo.dna.Count * ValMaxNormMut : 2000000000;
-                var dmoc = !y_normsize ? 1 : Math.Max(1 + (nuovo.dna.Count - CurrentDnaSize) / 500, 0.01);
+                var temp = nuovo.Mutables;
 
-                var endItem = ThreadSafeRandom.Local.Next(2, 4);
+                nuovo.Mutables.Mutations = true; // mutate even if mutations disabled for this bot
 
-                for (var mrep = 0; mrep < endItem; mrep++)
-                { //2x to 4x
-                    for (var t = 1; t < 10; t++)
-                    {
-                        if (t == 9 || nuovo.Mutables.mutarray[t] < 1)
-                            continue; //ignore PM2 mutation here
-
-                        if (ThreadSafeRandom.Local.NextDouble() < DeltaMainChance / 100)
-                        {
-                            if (DeltaMainExp != 0)
-                            {
-                                if (t == (int)MutationType.CopyError || t == (int)MutationType.Translocation || t == (int)MutationType.Reversal || t == (int)MutationType.CopyError2)
-                                    nuovo.Mutables.mutarray[t] *= (dmoc + 2) / 3;
-                                else if (!(t == (int)MutationType.MinorDeletion || t == (int)MutationType.MajorDeletion))
-                                    nuovo.Mutables.mutarray[t] *= dmoc; //dynamic mutation overload correction
-
-                                nuovo.Mutables.mutarray[t] *= Math.Pow(10, ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaMainExp;
-                            }
-                            nuovo.Mutables.mutarray[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaMainLn;
-                            if (nuovo.Mutables.mutarray[t] < 1)
-                                nuovo.Mutables.mutarray[t] = 1;
-
-                            if (nuovo.Mutables.mutarray[t] > MratesMax)
-                                nuovo.Mutables.mutarray[t] = MratesMax;
-                        }
-                        if (ThreadSafeRandom.Local.NextDouble() < DeltaDevChance / 100)
-                        {
-                            if (DeltaDevExp != 0)
-                            {
-                                nuovo.Mutables.StdDev[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaDevExp);
-                            }
-                            nuovo.Mutables.StdDev[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaDevLn;
-                            if (DeltaDevExp != 0)
-                            {
-                                nuovo.Mutables.Mean[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaDevExp);
-                            }
-                            nuovo.Mutables.Mean[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaDevLn;
-
-                            nuovo.Mutables.StdDev[t] = Math.Clamp(nuovo.Mutables.StdDev[t], 0, 200);
-                            nuovo.Mutables.Mean[t] = Math.Clamp(nuovo.Mutables.Mean[t], 1, 400);
-                        }
-                    }
-                    nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWtc);
-                    nuovo.Mutables.CopyErrorWhatToChange = Math.Clamp(nuovo.Mutables.CopyErrorWhatToChange, 0, 100);
-                    Mutate(nuovo, true);
+                for (var t = 0; t < 20; t++)
+                {
+                    nuovo.Mutables.mutarray[t] = nuovo.Mutables.mutarray[t] / 10;
+                    if (nuovo.Mutables.mutarray[t] == 0)
+                        nuovo.Mutables.mutarray[t] = 1000;
                 }
+
+                Mutate(nuovo, true);
+
+                nuovo.Mutables = temp;
             }
             else
-            {
-                if (rob.mem[mrepro] > 0)
-                {
-                    var temp = nuovo.Mutables;
-
-                    nuovo.Mutables.Mutations = true; // mutate even if mutations disabled for this bot
-
-                    for (var t = 0; t < 20; t++)
-                    {
-                        nuovo.Mutables.mutarray[t] = nuovo.Mutables.mutarray[t] / 10;
-                        if (nuovo.Mutables.mutarray[t] == 0)
-                            nuovo.Mutables.mutarray[t] = 1000;
-                    }
-
-                    Mutate(nuovo, true);
-
-                    nuovo.Mutables = temp;
-                }
-                else
-                    Mutate(nuovo, true);
-            }
+                Mutate(nuovo, true);
 
             MakeOccurrList(nuovo);
             nuovo.genenum = CountGenes(nuovo.dna);
@@ -551,24 +490,6 @@ namespace DarwinBots.Modules
             //Successfully reproduced
             rob.mem[Repro] = 0;
             rob.mem[mrepro] = 0;
-
-            //Botsareus 11/29/2013 Reset epigenetic memory
-            if (EpiReset)
-            {
-                nuovo.MutEpiReset = rob.MutEpiReset + Math.Pow(nuovo.LastMut, EpiResetEmp);
-                if (nuovo.MutEpiReset > EpiResetOp && rob.MutEpiReset > 0)
-                {
-                    nuovo.MutEpiReset = 0;
-                    for (var i = 0; i < 4; i++)
-                    {
-                        nuovo.mem[971 + i] = 0;
-                    }
-                    for (var i = 0; i < 14; i++)
-                    {
-                        nuovo.epimem[i] = 0;
-                    }
-                }
-            }
 
             rob.nrg -= rob.dna.Count * SimOpts.Costs.DnaCopyCost * SimOpts.Costs.CostMultiplier;
             if (rob.nrg < 0)
@@ -602,9 +523,6 @@ namespace DarwinBots.Modules
                 return;// no veggies can reproduce on the first cycle after the sim is restarted.
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
-
-            if (ReproFix && per < 3)
-                female.Dead = true;
 
             if (per <= 0)
                 return;
@@ -772,72 +690,7 @@ namespace DarwinBots.Modules
 
             LogMutation(nuovo, $"Female DNA len {female.dna.Count} and male DNA len {female.spermDNA.Count} had offspring DNA len {nuovo.dna.Count} during cycle {SimOpts.TotRunCycle}");
 
-            if (Delta2)
-            {
-                var MratesMax = NormMut ? nuovo.dna.Count * ValMaxNormMut : 2000000000;
-
-                double dmoc;
-                if (!y_normsize)
-                    dmoc = 1;
-                else
-                {
-                    dmoc = 1 + (double)(nuovo.dna.Count - CurrentDnaSize) / 500;
-                    if (dmoc < 0.01)
-                        dmoc = 0.01; //Botsareus 1/16/2016 Bug fix
-                }
-
-                for (var t = 1; t < 10; t++)
-                {
-                    if (t == 9 || nuovo.Mutables.mutarray[t] < 1)
-                        continue;
-
-                    if (ThreadSafeRandom.Local.NextDouble() < (double)DeltaMainChance / 100)
-                    {
-                        if (DeltaMainExp != 0)
-                        {
-                            if (t == (int)MutationType.CopyError || t == (int)MutationType.Translocation || t == (int)MutationType.Reversal || t == (int)MutationType.CopyError2)
-                                nuovo.Mutables.mutarray[t] *= (dmoc + 2) / 3;
-                            else if (!(t == (int)MutationType.MinorDeletion || t == (int)MutationType.MajorDeletion))
-                                nuovo.Mutables.mutarray[t] *= dmoc; //dynamic mutation overload correction
-
-                            nuovo.Mutables.mutarray[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaMainExp);
-                        }
-                        nuovo.Mutables.mutarray[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaMainLn;
-                        if (nuovo.Mutables.mutarray[t] < 1)
-                            nuovo.Mutables.mutarray[t] = 1;
-
-                        if (nuovo.Mutables.mutarray[t] > MratesMax)
-                            nuovo.Mutables.mutarray[t] = MratesMax;
-                    }
-                    if (ThreadSafeRandom.Local.NextDouble() < (double)DeltaDevChance / 100)
-                    {
-                        if (DeltaDevExp != 0)
-                            nuovo.Mutables.StdDev[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaDevExp);
-
-                        nuovo.Mutables.StdDev[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaDevLn;
-                        if (DeltaDevExp != 0)
-                            nuovo.Mutables.Mean[t] *= Math.Pow(10, (ThreadSafeRandom.Local.NextDouble() * 2 - 1) / DeltaDevExp);
-
-                        nuovo.Mutables.Mean[t] += (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaDevLn;
-
-                        nuovo.Mutables.StdDev[t] = Math.Clamp(nuovo.Mutables.StdDev[t], 0, 200);
-                        nuovo.Mutables.Mean[t] = Math.Clamp(nuovo.Mutables.Mean[t], 1, 400);
-                    }
-                }
-                nuovo.Mutables.CopyErrorWhatToChange += (int)((ThreadSafeRandom.Local.NextDouble() * 2 - 1) * DeltaWtc);
-
-                if (nuovo.Mutables.CopyErrorWhatToChange < 0)
-                    nuovo.Mutables.CopyErrorWhatToChange = 0;
-
-                if (nuovo.Mutables.CopyErrorWhatToChange > 100)
-                    nuovo.Mutables.CopyErrorWhatToChange = 100;
-
-                Mutate(nuovo, true);
-            }
-            else
-            {
-                Mutate(nuovo, true);
-            }
+            Mutate(nuovo, true);
 
             MakeOccurrList(nuovo);
             nuovo.genenum = CountGenes(nuovo.dna);
@@ -852,22 +705,6 @@ namespace DarwinBots.Modules
             female.mem[SEXREPRO] = 0; // sucessfully reproduced, so reset .sexrepro
             female.fertilized = -1; // Set to -1 so spermDNA space gets reclaimed next cycle
             female.mem[SYSFERTILIZED] = 0; // Sperm is only good for one birth presently
-
-            //Botsareus 11/29/2013 Reset epigenetic memory
-            if (EpiReset)
-            {
-                nuovo.MutEpiReset = female.MutEpiReset + Math.Pow(nuovo.LastMut, EpiResetEmp);
-                if (nuovo.MutEpiReset > EpiResetOp && female.MutEpiReset > 0)
-                {
-                    nuovo.MutEpiReset = 0;
-
-                    for (var i = 0; i < 4; i++)
-                        nuovo.mem[971 + i] = 0;
-
-                    for (var i = 0; i < 14; i++)
-                        nuovo.epimem[i] = 0;
-                }
-            }
 
             female.nrg -= female.dna.Count * SimOpts.Costs.DnaCopyCost * SimOpts.Costs.CostMultiplier; //Botsareus 7/7/2013 Reproduction DNACOPY cost
 
@@ -998,13 +835,6 @@ namespace DarwinBots.Modules
             TotalNotVegs = 0;
             totvegsDisplayed = totvegs;
             totvegs = 0;
-
-            if (Teleporters.Any())
-            {
-                // Need to do this first as NetForces can update bots later in the loop
-                foreach (var rob in rob.Where(r => r.exist))
-                    await CheckTeleporters(rob);
-            }
 
             //Only calculate mass due to fuild displacement if the sim medium has density.
             if (SimOpts.Density != 0)

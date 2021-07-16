@@ -61,95 +61,19 @@ namespace DarwinBots.Modules
                 if (rob.Mutables.mutarray[(int)MutationType.PointMutation] > 0)
                     PointMutation(rob);
 
-                if (rob.Mutables.mutarray[(int)MutationType.Delta] > 0 & !Globals.Delta2)
+                if (rob.Mutables.mutarray[(int)MutationType.Delta] > 0)
                     DeltaMut(rob);
-
-                if (rob.Mutables.mutarray[(int)MutationType.PointMutation2] > 0 & Globals.SunBelt)
-                    PointMutation2(rob);
-
-                //special case update epigenetic reset
-                if (rob.LastMut - delta > 0 & Globals.EpiReset)
-                    rob.MutEpiReset += Math.Pow(rob.LastMut - delta, Globals.EpiResetEmp);
-
-                //Delta2 point mutation change
-                if (Globals.Delta2 && Globals.DeltaPm > 0 && rob.age % Globals.DeltaPm == 0 & rob.age > 0)
-                {
-                    var mutationRatesMax = Globals.NormMut ? rob.dna.Count * Globals.ValMaxNormMut : 2000000000;
-
-                    foreach (var t in new[] { (int)MutationType.PointMutation, (int)MutationType.PointMutation2 })
-                    {
-                        //Point and Point2
-                        if (rob.Mutables.mutarray[t] < 1)
-                            continue;
-
-                        if (ThreadSafeRandom.Local.NextDouble() < Globals.DeltaMainChance / 100.0)
-                        {
-                            if (Globals.DeltaMainExp != 0)
-                                rob.Mutables.mutarray[t] = Math.Pow(rob.Mutables.mutarray[t] * 10, ((ThreadSafeRandom.Local.NextDouble() * 2 - 1) / Globals.DeltaMainExp));
-
-                            rob.Mutables.mutarray[t] = rob.Mutables.mutarray[t] + (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * Globals.DeltaMainLn;
-                            if (rob.Mutables.mutarray[t] < 1)
-                                rob.Mutables.mutarray[t] = 1;
-
-                            if (rob.Mutables.mutarray[t] > mutationRatesMax)
-                                rob.Mutables.mutarray[t] = mutationRatesMax;
-                        }
-                        if (ThreadSafeRandom.Local.NextDouble() < Globals.DeltaDevChance / 100.0)
-                        {
-                            if (Globals.DeltaDevExp != 0)
-                                rob.Mutables.StdDev[t] = rob.Mutables.StdDev[t] * Math.Pow(10, ((ThreadSafeRandom.Local.NextDouble() * 2 - 1) / Globals.DeltaDevExp));
-
-                            rob.Mutables.StdDev[t] = rob.Mutables.StdDev[t] + (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * Globals.DeltaDevLn;
-                            if (Globals.DeltaDevExp != 0)
-                                rob.Mutables.Mean[t] = rob.Mutables.Mean[t] * Math.Pow(10, ((ThreadSafeRandom.Local.NextDouble() * 2 - 1) / Globals.DeltaDevExp));
-
-                            rob.Mutables.Mean[t] = rob.Mutables.Mean[t] + (ThreadSafeRandom.Local.NextDouble() * 2 - 1) * Globals.DeltaDevLn;
-                            //Max range is always 0 to 800
-                            if (rob.Mutables.StdDev[t] < 0)
-                                rob.Mutables.StdDev[t] = 0;
-
-                            if (rob.Mutables.StdDev[t] > 200)
-                                rob.Mutables.StdDev[t] = 200;
-
-                            if (rob.Mutables.Mean[t] < 1)
-                                rob.Mutables.Mean[t] = 1;
-
-                            if (rob.Mutables.Mean[t] > 400)
-                                rob.Mutables.Mean[t] = 400;
-                        }
-                    }
-
-                    rob.Mutables.PointWhatToChange += (int)(ThreadSafeRandom.Local.NextDouble() * 2 - 1) * Globals.DeltaWtc;
-
-                    if (rob.Mutables.PointWhatToChange < 0)
-                        rob.Mutables.PointWhatToChange = 0;
-
-                    if (rob.Mutables.PointWhatToChange > 100)
-                        rob.Mutables.PointWhatToChange = 100;
-
-                    rob.Point2MutCycle = 0;
-                    rob.PointMutCycle = 0;
-                }
             }
             else
             {
                 if (rob.Mutables.mutarray[(int)MutationType.CopyError] > 0)
                     CopyError(rob);
 
-                if (rob.Mutables.mutarray[(int)MutationType.CopyError2] > 0 & Globals.SunBelt)
-                    CopyError2(rob);
-
                 if (rob.Mutables.mutarray[(int)MutationType.Insertion] > 0)
                     Insertion(rob);
 
                 if (rob.Mutables.mutarray[(int)MutationType.Reversal] > 0)
                     Reversal(rob);
-
-                if (rob.Mutables.mutarray[(int)MutationType.Translocation] > 0 & Globals.SunBelt)
-                    Translocation(rob);
-
-                if (rob.Mutables.mutarray[(int)MutationType.Amplification] > 0 & Globals.SunBelt)
-                    Amplification(rob);
 
                 if (rob.Mutables.mutarray[(int)MutationType.MajorDeletion] > 0)
                     MajorDeletion(rob);

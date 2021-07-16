@@ -13,11 +13,9 @@ namespace DarwinBots.Model
 
         public void ResetToDefault()
         {
-            var len = 0;
-
             for (var a = 0; a < 20; a++)
             {
-                mutarray[a] = Globals.NormMut ? len * Globals.ValNormMut : 5000;
+                mutarray[a] = 5000;
                 Mean[a] = 1;
                 StdDev[a] = 0;
             }
