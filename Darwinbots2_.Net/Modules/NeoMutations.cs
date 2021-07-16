@@ -99,7 +99,7 @@ namespace DarwinBots.Modules
                     {
                         rob.FName = robname;
                         rob.Mutations = 0;
-                        HDRoutines.AddSpecie(rob, false);
+                        MainEngine.AddSpecie(rob, false);
                     }
                     else
                         SimOpt.SimOpts.SpeciationForkInterval--;

@@ -9,7 +9,6 @@ using static DarwinBots.Modules.Database;
 using static DarwinBots.Modules.DnaManipulations;
 using static DarwinBots.Modules.DnaTokenizing;
 using static DarwinBots.Modules.Globals;
-using static DarwinBots.Modules.HDRoutines;
 using static DarwinBots.Modules.NeoMutations;
 using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Senses;
@@ -1972,7 +1971,7 @@ namespace DarwinBots.Modules
             if (!rob.Corpse)
             {
                 if (species == null)
-                    AddSpecie(rob, false);
+                    MainEngine.AddSpecie(rob, false);
                 else
                 {
                     species.population++;

@@ -2,24 +2,11 @@ using DarwinBots.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarwinBots.Modules
 {
     internal static class Multibots
     {
-        public static void FreezeOrganism(robot rob)
-        {
-            foreach (var c in ListCells(rob))
-                c.highlight = true;
-        }
-
-        public static async Task KillOrganism(robot rob)
-        {
-            foreach (var c in ListCells(rob))
-                await Robots.KillRobot(c);
-        }
-
         public static void ReSpawn(robot rob, double X, double Y)
         {
             robot robmin = null;
