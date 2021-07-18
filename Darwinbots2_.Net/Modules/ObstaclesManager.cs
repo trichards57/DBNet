@@ -180,19 +180,19 @@ namespace DarwinBots.Modules
 
         public void DoShotObstacleCollisions(Shot shot)
         {
-            foreach (var o in Obstacles.Where(o => o.exist).Where(o => shot.pos.X >= o.pos.X && shot.pos.X <= o.pos.X + o.Width && shot.pos.Y >= o.pos.Y && shot.pos.Y <= o.pos.Y + o.Height))
+            foreach (var o in Obstacles.Where(o => o.exist).Where(o => shot.Position.X >= o.pos.X && shot.Position.X <= o.pos.X + o.Width && shot.Position.Y >= o.pos.Y && shot.Position.Y <= o.pos.Y + o.Height))
             {
                 if (SimOpt.SimOpts.ShapesAbsorbShots)
                 {
-                    shot.exist = false;
-                    ShotsManager.Shots.Remove(shot);
+                    shot.Exist = false;
+                    Globals.ShotsManager.Shots.Remove(shot);
                 }
 
-                if (shot.opos.X < o.pos.X || shot.opos.X > o.pos.X + o.Width)
-                    shot.velocity = shot.velocity with { X = -shot.velocity.X };
+                if (shot.OldPosition.X < o.pos.X || shot.OldPosition.X > o.pos.X + o.Width)
+                    shot.Velocity = shot.Velocity with { X = -shot.Velocity.X };
 
-                if (shot.opos.Y < o.pos.Y || shot.opos.Y > o.pos.Y + o.Height)
-                    shot.velocity = shot.velocity with { Y = -shot.velocity.Y };
+                if (shot.OldPosition.Y < o.pos.Y || shot.OldPosition.Y > o.pos.Y + o.Height)
+                    shot.Velocity = shot.Velocity with { Y = -shot.Velocity.Y };
             }
         }
 

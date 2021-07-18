@@ -5,24 +5,23 @@ namespace DarwinBots.Model
 {
     internal class Shot
     {
-        public int age { get; set; }
-        public Color color { get; set; }
-        public List<DNABlock> dna { get; set; } = new();
-        public bool exist { get; set; }
-        public bool flash { get; set; }
-        public string FromSpecie { get; set; }
-        public bool fromveg { get; set; }
-        public int genenum { get; set; }
-        public int memloc { get; set; }
-        public int Memval { get; set; }
-        public double nrg { get; set; }
-        public DoubleVector opos { get; set; }
-        public robot parent { get; set; }
-        public DoubleVector pos { get; set; }
+        public int Age { get; set; }
+        public Color Color { get; set; }
+        public List<DNABlock> Dna { get; set; } = new();
+        public double Energy { get; set; }
+        public bool Exist { get; set; }
+        public bool Flash { get; set; }
+        public string FromSpecie { get; init; }
+        public int GeneNum { get; set; }
+        public int MemoryLocation { get; init; }
+        public int MemoryValue { get; set; }
+        public DoubleVector OldPosition { get; set; }
+        public robot Parent { get; init; }
+        public DoubleVector Position { get; set; }
         public double Range { get; set; }
-        public int shottype { get; set; }
-        public bool stored { get; set; }
-        public int value { get; set; }
-        public DoubleVector velocity { get; set; }
+        public int ShotType { get; set; }
+        public bool Stored { get; set; }
+        public int Value { get; init; }
+        public DoubleVector Velocity { get; set; }
     }
 }

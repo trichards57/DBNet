@@ -12,7 +12,6 @@ using static DarwinBots.Modules.Globals;
 using static DarwinBots.Modules.NeoMutations;
 using static DarwinBots.Modules.Physics;
 using static DarwinBots.Modules.Senses;
-using static DarwinBots.Modules.ShotsManager;
 using static DarwinBots.Modules.SimOpt;
 using static DarwinBots.Modules.Ties;
 using static DarwinBots.Modules.Vegs;
@@ -293,8 +292,8 @@ namespace DarwinBots.Modules
 
             if (rob.virusshot != null)
             {
-                rob.virusshot.exist = false; // We have to kill any stored shots for this bot
-                Shots.Remove(rob.virusshot);
+                rob.virusshot.Exist = false; // We have to kill any stored shots for this bot
+                Globals.ShotsManager.Shots.Remove(rob.virusshot);
                 rob.virusshot = null;
             }
 
@@ -1073,7 +1072,7 @@ namespace DarwinBots.Modules
                 if (rob.chloroplasts == 0)
                 {
                     //make the virus
-                    if (MakeVirus(rob, rob.mem[mkvirus]))
+                    if (Globals.ShotsManager.MakeVirus(rob, rob.mem[mkvirus]))
                     {
                         var length = GeneLength(rob, rob.mem[mkvirus]) * 2;
                         rob.nrg -= length / 2 * SimOpts.Costs.DnaCopyCost * SimOpts.Costs.CostMultiplier;
@@ -1096,7 +1095,7 @@ namespace DarwinBots.Modules
             if (rob.mem[VshootSys] != 0 & rob.Vtimer == 1)
             {
                 // Botsareus 10/5/2015 Bugfix for negative values in vshoot
-                ShootVirus(rob, rob.virusshot);
+                Globals.ShotsManager.ShootVirus(rob, rob.virusshot);
 
                 rob.mem[VshootSys] = 0;
                 rob.mem[Vtimer] = 0;
@@ -1293,7 +1292,7 @@ namespace DarwinBots.Modules
                 Altzheimer(rob);
 
             if (rob.Waste > 32000)
-                Defacate(rob);
+                Globals.ShotsManager.Defecate(rob);
 
             if (rob.Pwaste > 32000)
                 rob.Pwaste = 32000;
@@ -1731,7 +1730,7 @@ namespace DarwinBots.Modules
                         cost = rob.nrg;
 
                     rob.nrg -= cost; // EricL - postive shots should cost the shotcost
-                    NewShot(rob, shtype, value, 1, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
 
                     break;// Nrg request Feeding Shot
                 case -1:
@@ -1745,7 +1744,7 @@ namespace DarwinBots.Modules
                         cost = rob.nrg;
 
                     rob.nrg -= cost;
-                    NewShot(rob, shtype, value, rngmultiplier, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, rngmultiplier, true);
                     break;// Nrg shot
                 case -2:
                     value = Math.Abs(value);
@@ -1761,7 +1760,7 @@ namespace DarwinBots.Modules
                     else
                         rob.nrg -= energyLost;
 
-                    NewShot(rob, shtype, value, 1, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
                     break;//shoot venom
                 case -3:
                     value = Math.Abs(value);
@@ -1777,7 +1776,7 @@ namespace DarwinBots.Modules
 
                     rob.nrg = energyLost > rob.nrg ? 0 : rob.nrg - energyLost;
 
-                    NewShot(rob, shtype, value, 1, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
                     break;//shoot waste 'Botsareus 4/22/2016 Bugfix
                 case -4:
                     value = Math.Abs(value);
@@ -1792,7 +1791,7 @@ namespace DarwinBots.Modules
                     energyLost = SimOpts.Costs.ShotFormationCost * SimOpts.Costs.CostMultiplier / (rob.Ties.Count + 1);
                     rob.nrg = energyLost > rob.nrg ? 0 : rob.nrg - energyLost;
 
-                    NewShot(rob, shtype, value, 1, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
                     // no -5 shot here as poison can only be shot in response to an attack
                     break;//shoot body
                 case -6:
@@ -1806,7 +1805,7 @@ namespace DarwinBots.Modules
 
                     rob.nrg -= cost;
                     value *= multiplier;
-                    NewShot(rob, shtype, value, rngmultiplier, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, rngmultiplier, true);
                     break;// shoot sperm
                 case -8:
                     cost = SimOpts.Costs.ShotFormationCost * SimOpts.Costs.CostMultiplier;
@@ -1815,7 +1814,7 @@ namespace DarwinBots.Modules
                         cost = rob.nrg;
 
                     rob.nrg -= cost; // EricL - postive shots should cost the shotcost
-                    NewShot(rob, shtype, value, 1, true);
+                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
                     break;
             }
             rob.mem[shoot] = 0;
@@ -1995,7 +1994,7 @@ namespace DarwinBots.Modules
             else if (rob.Corpse)
             {
                 if (rob.body > 0)
-                    Decay(rob);
+                    Globals.ShotsManager.Decay(rob);
                 else
                     await KillRobot(rob);
             }

@@ -18,9 +18,9 @@ namespace DarwinBots.Modules
         private bool _costsWereZeroed;
         private int _dynamicCountdown;
         private ObstaclesManager _obstacleManager;
+        private ShotsManager _shotsManager;
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
-
         // TODO : Save last run settings
         // TODO : Graphing statistics
         // TODO : Handle showing data for the selected robot
@@ -86,8 +86,8 @@ namespace DarwinBots.Modules
             SimOpt.Species.AddRange(savedFile.Species);
             _obstacleManager.Obstacles.Clear();
             _obstacleManager.Obstacles.AddRange(savedFile.Obstacles);
-            ShotsManager.Shots.Clear();
-            ShotsManager.Shots.AddRange(savedFile.Shots);
+            _shotsManager.Shots.Clear();
+            _shotsManager.Shots.AddRange(savedFile.Shots);
 
             SimOpt.SimOpts.Costs = savedFile.Costs;
             SimOpt.SimOpts.DeadRobotSnp = savedFile.DeadRobotSnp;
@@ -251,7 +251,7 @@ namespace DarwinBots.Modules
                 ShapesAbsorbShots = SimOpt.SimOpts.ShapesAbsorbShots,
                 ShapesAreSeeThrough = SimOpt.SimOpts.ShapesAreSeeThrough,
                 ShapesAreVisable = SimOpt.SimOpts.ShapesAreVisable,
-                Shots = ShotsManager.Shots,
+                Shots = _shotsManager.Shots,
                 SimGUID = SimOpt.SimOpts.SimGuid,
                 SnpExcludeVegs = SimOpt.SimOpts.SnpExcludeVegs,
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
@@ -307,19 +307,20 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
-            ShotsManager.MaxBotShotSeperation = Math.Pow(Robots.FindRadius(null, -1), 2) +
-                                                Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robots.RobSize / 3.0, 2);
+            _shotsManager.MaxBotShotSeparation = Math.Pow(Robots.FindRadius(null, -1), 2) +
+                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robots.RobSize / 3.0, 2);
 
             if (!startLoaded)
             {
+                _shotsManager = new ShotsManager();
                 _bucketManager = new BucketManager(SimOpt.SimOpts);
                 _obstacleManager = new ObstaclesManager();
                 Robots.rob.Clear();
-                ShotsManager.Shots.Clear();
             }
 
             Globals.BucketManager = _bucketManager;
             Globals.ObstacleManager = _obstacleManager;
+            Globals.ShotsManager = _shotsManager;
 
             if (!startLoaded)
                 await LoadRobots();
@@ -531,7 +532,7 @@ namespace DarwinBots.Modules
             foreach (var rob in Robots.rob.Where(r => r.exist && r.DisableDNA == false))
                 Senses.EraseSenses(rob);
 
-            ShotsManager.UpdateShots();
+            _shotsManager.UpdateShots();
 
             //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
             foreach (var rob in Robots.rob.Where(r => r.exist))

@@ -78,7 +78,7 @@ namespace DarwinBots.Modules
             rob1.mem[713] = rob2.mem[827]; //refpoison. current value of poison. not poison commands
             rob1.mem[714] = rob2.mem[825]; //refvenom (as with poison)
             rob1.mem[715] = rob2.Kills; //refkills
-            rob1.mem[refmulti] = rob2.Multibot == true ? 1 : 0;
+            rob1.mem[refmulti] = rob2.Multibot ? 1 : 0;
 
             if (rob1.mem[474] > 0 & rob1.mem[474] <= 1000)
             {
@@ -153,13 +153,13 @@ namespace DarwinBots.Modules
             return SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
         }
 
-        public static void Taste(robot rob, double X, double Y, int value)
+        public static void Taste(robot rob, double x, double y, int value)
         {
             var aim = 6.28 - rob.aim;
             var xc = rob.pos.X;
             var yc = rob.pos.Y;
-            var dx = X - xc;
-            var dy = Y - yc;
+            var dx = x - xc;
+            var dy = y - yc;
             var ang = Math.Atan2(dy, dx);
             var dang = Physics.NormaliseAngle(ang - aim);
             var addr = dang switch
@@ -175,13 +175,13 @@ namespace DarwinBots.Modules
             rob.mem[shflav] = value;
         }
 
-        public static void Touch(robot rob, double X, double Y)
+        public static void Touch(robot rob, double x, double y)
         {
             var aim = 6.28 - rob.aim;
             var xc = rob.pos.X;
             var yc = rob.pos.Y;
-            var dx = X - xc;
-            var dy = Y - yc;
+            var dx = x - xc;
+            var dy = y - yc;
             var ang = Math.Atan2(dy, dx);
             var dang = Physics.NormaliseAngle(ang - aim);
             var addr = dang switch
@@ -238,7 +238,7 @@ namespace DarwinBots.Modules
             rob.mem[Energy] = (int)rob.nrg;
 
             if (rob.age == 0 & rob.mem[body] == 0)
-                rob.mem[body] = (int)rob.body; //to stop an odd bug in birth.  Don't ask
+                rob.mem[body] = (int)rob.body;
 
             rob.mem[215] = rob.Fixed ? 1 : 0;
 
@@ -296,7 +296,7 @@ namespace DarwinBots.Modules
         private static void LandMark(robot rob)
         {
             rob.mem[LandM] = 0;
-            if (rob.aim > 1.39 && rob.aim < 1.75)
+            if (rob.aim is > 1.39 and < 1.75)
             {
                 rob.mem[LandM] = 1;
             }
@@ -331,8 +331,8 @@ namespace DarwinBots.Modules
             rob.mem[refshell] = 0;
             rob.mem[refbody] = 0;
 
-            //rob.mem[refxpos] = (int)(rob.lastopppos.X / Form1.instance.xDivisor) % 32000;
-            //rob.mem[refypos] = (int)(rob.lastopppos.Y / Form1.instance.yDivisor) % 32000;
+            rob.mem[refxpos] = (int)rob.lastopppos.X % 32000;
+            rob.mem[refypos] = (int)rob.lastopppos.Y % 32000;
 
             //give reference variables from the bots frame of reference
             rob.mem[refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[velup];

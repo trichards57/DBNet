@@ -6,7 +6,8 @@ namespace DarwinBots.Modules
     internal static class Globals
     {
         public static BucketManager BucketManager { get; set; }
-        public static ObstaclesManager ObstacleManager { get; internal set; }
+        public static ObstaclesManager ObstacleManager { get; set; }
+        public static ShotsManager ShotsManager { get; set; }
         public static int StartChlr => 32000;
         public static int TotalChlr { get; set; }
         public static int TotalNotVegs { get; set; }
