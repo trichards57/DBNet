@@ -47,7 +47,7 @@
                         <CheckBox IsChecked="{Binding DisableDnaNonVeg}">Disable DNA Execution</CheckBox>
                         <CheckBox IsChecked="{Binding DisableReproductionNonVeg}">Disable Reproduction</CheckBox>
                         <CheckBox IsChecked="{Binding VirusImmuneNonVeg}">Virus Immune</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMutationsNonVeg}">Disable Mutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsNonVeg}">Disable EnableMutations</CheckBox>
                         <CheckBox IsChecked="{Binding DisableMotionNonVeg}">Disable Voluntary Movement</CheckBox>
                         <CheckBox IsChecked="{Binding DisableChloroplastsNonVeg}">Disable Chloroplasts</CheckBox>
                     </StackPanel>
@@ -68,7 +68,7 @@
                         <CheckBox IsChecked="{Binding DisableDnaVeg}">Disable DNA Execution</CheckBox>
                         <CheckBox IsChecked="{Binding DisableReproductionVeg}">Disable Reproduction</CheckBox>
                         <CheckBox IsChecked="{Binding VirusImmuneVeg}">Virus Immune</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableMutationsVeg}">Disable Mutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsVeg}">Disable EnableMutations</CheckBox>
                         <CheckBox IsChecked="{Binding DisableMotionVeg}">Disable Voluntary Movement</CheckBox>
                     </StackPanel>
                 </GroupBox>

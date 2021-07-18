@@ -19,7 +19,7 @@
                 <MenuItem Command="{Binding NewSimulationCommand}" Icon="{StaticResource NewItemIcon}" Header="New Simulation" InputGestureText="F1" />
                 <MenuItem Icon="{StaticResource OpenIcon}" Header="Load Simulation" InputGestureText="F2" />
                 <MenuItem Icon="{StaticResource SaveIcon}" Header="Save Simulation" InputGestureText="F3" />
-                <MenuItem Header="Save Simulation Without Mutations" InputGestureText="Ctrl+F3" />
+                <MenuItem Header="Save Simulation Without EnableMutations" InputGestureText="Ctrl+F3" />
                 <MenuItem Icon="{StaticResource PauseIcon}" Header="Pause Simulation" InputGestureText="F12" />
                 <Separator />
                 <MenuItem Header="Quit" InputGestureText="Alt+F4" />

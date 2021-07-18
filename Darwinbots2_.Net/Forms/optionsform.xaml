@@ -130,7 +130,7 @@
                                 <CheckBox IsChecked="{Binding DisableMovement}" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Voluntary Movement</CheckBox>
                                 <CheckBox IsChecked="{Binding DisableReproduction}" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Reproduction</CheckBox>
                                 <CheckBox IsChecked="{Binding IsVirusImmune}" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Virus Immune</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Mutations</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable EnableMutations</CheckBox>
                                 <Button Command="{Binding DisplayFatalRestrictionsCommand}" Grid.Row="13" Grid.Column="0" Margin="5,2.5,2.5,5" HorizontalAlignment="Stretch">Fatal Restrictions</Button>
                                 <Button IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}" Command="{Binding DisplayMutationRatesCommand}" Grid.Row="13" Grid.Column="1" Margin="2.5,2.5,5,5" HorizontalAlignment="Stretch">Mutation Rates</Button>
                             </Grid>
@@ -481,7 +481,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="Mutations">
+            <TabItem Header="EnableMutations">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -492,7 +492,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding DisableMutations}" Margin="5,5,5,2.5">Disable All Mutations</CheckBox>
+                    <CheckBox IsChecked="{Binding DisableMutations}" Margin="5,5,5,2.5">Disable All EnableMutations</CheckBox>
                     <GroupBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5" Header="Current Multiplier">
                         <Grid>
                             <Grid.ColumnDefinitions>

@@ -65,7 +65,7 @@ namespace DarwinBots.Modules
             };
 
             d.Mutables.ResetToDefault();
-            d.Mutables.Mutations = rob.Mutables.Mutations;
+            d.Mutables.EnableMutations = rob.Mutables.EnableMutations;
 
             SimOpt.SimOpts.Specie.Add(d);
         }

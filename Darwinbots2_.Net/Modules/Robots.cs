@@ -460,14 +460,15 @@ namespace DarwinBots.Modules
             {
                 var temp = nuovo.Mutables;
 
-                nuovo.Mutables.Mutations = true; // mutate even if mutations disabled for this bot
+                nuovo.Mutables.EnableMutations = true; // mutate even if mutations disabled for this bot
 
-                for (var t = 0; t < 20; t++)
-                {
-                    nuovo.Mutables.mutarray[t] = nuovo.Mutables.mutarray[t] / 10;
-                    if (nuovo.Mutables.mutarray[t] == 0)
-                        nuovo.Mutables.mutarray[t] = 1000;
-                }
+                nuovo.Mutables.CopyError = MutateProbability(nuovo.Mutables.CopyError);
+                nuovo.Mutables.Delta = MutateProbability(nuovo.Mutables.Delta);
+                nuovo.Mutables.Insertion = MutateProbability(nuovo.Mutables.Insertion);
+                nuovo.Mutables.MajorDeletion = MutateProbability(nuovo.Mutables.MajorDeletion);
+                nuovo.Mutables.MinorDeletion = MutateProbability(nuovo.Mutables.MinorDeletion);
+                nuovo.Mutables.PointMutation = MutateProbability(nuovo.Mutables.PointMutation);
+                nuovo.Mutables.Reversal = MutateProbability(nuovo.Mutables.Reversal);
 
                 Mutate(nuovo, true);
 
@@ -1443,6 +1444,16 @@ namespace DarwinBots.Modules
             //Sexual Reproduction
             if (rob.mem[SEXREPRO] > 0 & rob.fertilized >= 0 & !rob.CantReproduce)
                 BotsToReproduceSexually.Add(rob);
+        }
+
+        private static MutationProbability MutateProbability(MutationProbability probability)
+        {
+            var p = probability.Probability;
+            p /= 10;
+            if (p == 0)
+                p = 1000;
+
+            return probability with { Probability = p };
         }
 
         private static void Poisons(robot rob)

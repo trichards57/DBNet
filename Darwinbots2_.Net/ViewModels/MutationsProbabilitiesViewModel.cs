@@ -12,6 +12,7 @@ namespace DarwinBots.ViewModels
     public class MutationsProbabilitiesViewModel : ViewModelBase
     {
         // TODO : Save mutations to a mrates file.
+        // TODO : Work out a more efficient way of changing the mutation values.  Probably need a mutable version for this use.
 
         private bool _amplificationSelected;
         private bool _copyError2Selected;
@@ -72,23 +73,19 @@ namespace DarwinBots.ViewModels
 
         public double ChancePerUnit
         {
-            get => _mutationProbabilities.mutarray[GetCurrentMutation()];
+            get => _mutationProbabilities.GetProbability(GetCurrentMutation());
             set
             {
-                _mutationProbabilities.mutarray[GetCurrentMutation()] = value;
+                _mutationProbabilities.SetProbability(GetCurrentMutation(), value);
                 RaisePropertyChanged();
 
-                var pNone = AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Amplification])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.CopyError2])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.CopyError])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Delta])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Insertion])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.MajorDeletion])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.MinorDeletion])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.PointMutation2])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.PointMutation])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Reversal])
-                            * AntiProb(_mutationProbabilities.mutarray[(int)MutationType.Translocation]);
+                var pNone = AntiProb(_mutationProbabilities.CopyError.Probability)
+                            * AntiProb(_mutationProbabilities.Delta.Probability)
+                            * AntiProb(_mutationProbabilities.Insertion.Probability)
+                            * AntiProb(_mutationProbabilities.MajorDeletion.Probability)
+                            * AntiProb(_mutationProbabilities.MinorDeletion.Probability)
+                            * AntiProb(_mutationProbabilities.PointMutation.Probability)
+                            * AntiProb(_mutationProbabilities.Reversal.Probability);
 
                 var pSome = 1 - pNone;
 
@@ -168,7 +165,7 @@ namespace DarwinBots.ViewModels
             get => _customGaussLower;
             set
             {
-                if (_customGaussLower == value) return;
+                if (Math.Abs(_customGaussLower - value) < 0.01) return;
 
                 _customGaussLower = value;
 
@@ -181,14 +178,14 @@ namespace DarwinBots.ViewModels
 
         public double CustomGaussMean
         {
-            get => _mutationProbabilities.Mean[GetCurrentMutation()];
+            get => _mutationProbabilities.GetMean(GetCurrentMutation());
             set
             {
-                if (_mutationProbabilities.Mean[GetCurrentMutation()] == value) return;
+                if (Math.Abs(_mutationProbabilities.GetMean(GetCurrentMutation()) - value) < 0.01) return;
 
-                _mutationProbabilities.Mean[GetCurrentMutation()] = value;
+                _mutationProbabilities.SetMean(GetCurrentMutation(), value);
 
-                if (CustomGaussMean == (CustomGaussLower + CustomGaussUpper) / 2)
+                if (Math.Abs(CustomGaussMean - (CustomGaussLower + CustomGaussUpper) / 2) < 0.01)
                     return;
 
                 var temp = (CustomGaussUpper - CustomGaussLower) / 2;
@@ -203,13 +200,13 @@ namespace DarwinBots.ViewModels
 
         public double CustomGaussStdDev
         {
-            get => _mutationProbabilities.StdDev[GetCurrentMutation()];
+            get => _mutationProbabilities.GetStandardDeviation(GetCurrentMutation());
             set
             {
-                if (_mutationProbabilities.StdDev[GetCurrentMutation()] == value)
+                if (Math.Abs(_mutationProbabilities.GetStandardDeviation(GetCurrentMutation()) - value) < 0.01)
                     return;
 
-                _mutationProbabilities.StdDev[GetCurrentMutation()] = value;
+                _mutationProbabilities.SetStandardDeviation(GetCurrentMutation(), value);
                 _customGaussLower = CustomGaussMean - value * 2;
                 _customGaussUpper = CustomGaussMean + value * 2;
 
@@ -222,7 +219,7 @@ namespace DarwinBots.ViewModels
             get => _customGaussUpper;
             set
             {
-                if (_customGaussUpper == value) return;
+                if (Math.Abs(_customGaussUpper - value) < 0.01) return;
 
                 _customGaussUpper = value;
 
@@ -258,7 +255,7 @@ namespace DarwinBots.ViewModels
 
                     EnableGauss = true;
                     EnableTypeSlider = false;
-                    Explanation = "The mutation rates of a bot are allowed to change slowly over time.  This change in mutation rates can include Delta Mutations as well.  Theoretically, it may be possible for a bot to figure its own optimal mutation rate.";
+                    Explanation = "The mutation rates of a bot are allowed to change slowly over time.  This change in mutation rates can include Delta EnableMutations as well.  Theoretically, it may be possible for a bot to figure its own optimal mutation rate.";
                     Unit = "00 per cycle";
                     GaussLabel = "Standard Deviation";
                 }
@@ -270,7 +267,7 @@ namespace DarwinBots.ViewModels
         public bool EnableGauss { get; set; }
         public bool EnableTypeSlider { get; set; }
         public string Explanation { get; set; }
-        public string GaussLabel { get; set; }
+        public string GaussLabel { get; private set; }
 
         public bool InsertionSelected
         {
@@ -308,10 +305,12 @@ namespace DarwinBots.ViewModels
 
         public bool IsEnabled
         {
-            get => _mutationProbabilities.mutarray[GetCurrentMutation()] > 0;
+            get => _mutationProbabilities.GetProbability(GetCurrentMutation()) > 0;
             set
             {
-                _mutationProbabilities.mutarray[GetCurrentMutation()] = value ? 1 : 0;
+                _mutationProbabilities.SetProbability(GetCurrentMutation(), value
+                    ? Math.Abs(_mutationProbabilities.GetProbability(GetCurrentMutation()))
+                    : -Math.Abs(_mutationProbabilities.GetProbability(GetCurrentMutation())));
                 RaisePropertyChanged();
             }
         }
@@ -542,20 +541,23 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public string Unit { get; set; }
+        public string Unit { get; private set; }
 
         public void LoadFromProbabilities(MutationProbabilities probs)
         {
             _mutationProbabilities = new MutationProbabilities
             {
                 CopyErrorWhatToChange = probs.CopyErrorWhatToChange,
-                Mutations = probs.Mutations,
-                PointWhatToChange = probs.PointWhatToChange
+                EnableMutations = probs.EnableMutations,
+                PointWhatToChange = probs.PointWhatToChange,
+                CopyError = probs.CopyError,
+                Insertion = probs.Insertion,
+                MajorDeletion = probs.MajorDeletion,
+                Delta = probs.Delta,
+                PointMutation = probs.PointMutation,
+                MinorDeletion = probs.MinorDeletion,
+                Reversal = probs.Reversal
             };
-
-            Array.Copy(probs.Mean, _mutationProbabilities.Mean, _mutationProbabilities.Mean.Length);
-            Array.Copy(probs.mutarray, _mutationProbabilities.mutarray, _mutationProbabilities.mutarray.Length);
-            Array.Copy(probs.StdDev, _mutationProbabilities.StdDev, _mutationProbabilities.StdDev.Length);
 
             ShowDeltaMutation = false;
         }
@@ -565,30 +567,21 @@ namespace DarwinBots.ViewModels
             return a <= 0 ? 1 : 1 - 1 / a;
         }
 
-        private int GetCurrentMutation()
+        private MutationType GetCurrentMutation()
         {
-            if (AmplificationSelected)
-                return (int)MutationType.Amplification;
-            if (CopyError2Selected)
-                return (int)MutationType.CopyError2;
             if (CopyErrorSelected)
-                return (int)MutationType.CopyError;
+                return MutationType.CopyError;
             if (DeltaMutationSelected)
-                return (int)MutationType.Delta;
+                return MutationType.Delta;
             if (InsertionSelected)
-                return (int)MutationType.Insertion;
+                return MutationType.Insertion;
             if (MajorDeletionSelected)
-                return (int)MutationType.MajorDeletion;
+                return MutationType.MajorDeletion;
             if (MinorDeletionSelected)
-                return (int)MutationType.MinorDeletion;
-            if (Point2Selected)
-                return (int)MutationType.PointMutation2;
+                return MutationType.MinorDeletion;
             if (PointMutationSelected)
-                return (int)MutationType.PointMutation;
-            if (ReversalSelected)
-                return (int)MutationType.Reversal;
-
-            return (int)MutationType.Translocation;
+                return MutationType.PointMutation;
+            return MutationType.Reversal;
         }
 
         private void SetDefaultRates()

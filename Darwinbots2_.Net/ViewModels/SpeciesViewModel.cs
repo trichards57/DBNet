@@ -39,7 +39,7 @@ namespace DarwinBots.ViewModels
             DisableChloroplasts = _species.NoChlr;
             DisableDna = _species.DisableDNA;
             DisableMovement = species.DisableMovementSysvars;
-            DisableMutations = !species.Mutables.Mutations;
+            DisableMutations = !species.Mutables.EnableMutations;
             DisableReproduction = species.CantReproduce;
             DisableVision = species.CantSee;
             EnableRepopulation = species.Veg;
@@ -159,7 +159,7 @@ namespace DarwinBots.ViewModels
 
             _species.DisableDNA = DisableDna;
             _species.DisableMovementSysvars = DisableMovement;
-            _species.Mutables.Mutations = !DisableMutations;
+            _species.Mutables.EnableMutations = !DisableMutations;
             _species.CantReproduce = DisableReproduction;
             _species.CantSee = DisableVision;
             _species.Veg = EnableRepopulation;

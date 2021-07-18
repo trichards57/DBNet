@@ -113,7 +113,7 @@ namespace DarwinBots.ViewModels
                     rob.DisableDNA = DisableDnaVeg;
                     rob.CantReproduce = DisableReproductionVeg;
                     rob.VirusImmune = VirusImmuneVeg;
-                    rob.Mutables.Mutations = !DisableMutationsVeg;
+                    rob.Mutables.EnableMutations = !DisableMutationsVeg;
                     rob.DisableMovementSysvars = DisableMotionVeg;
                 }
                 else
@@ -131,7 +131,7 @@ namespace DarwinBots.ViewModels
                     rob.DisableDNA = DisableDnaNonVeg;
                     rob.CantReproduce = DisableReproductionNonVeg;
                     rob.VirusImmune = VirusImmuneNonVeg;
-                    rob.Mutables.Mutations = !DisableMutationsNonVeg;
+                    rob.Mutables.EnableMutations = !DisableMutationsNonVeg;
                     rob.DisableMovementSysvars = DisableMotionNonVeg;
                 }
             }
