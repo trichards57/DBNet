@@ -5,7 +5,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using static DarwinBots.Modules.DnaManipulations;
 
 namespace DarwinBots.Modules
 {
@@ -178,7 +177,7 @@ namespace DarwinBots.Modules
                 else
                 {
                     if (processedLine.StartsWith("def"))
-                        InsertVar(rob, a);
+                        DnaManipulations.InsertVar(rob, a);
                     else
                     {
                         var parts = processedLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);

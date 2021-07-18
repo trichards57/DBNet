@@ -321,9 +321,6 @@ namespace DarwinBots.Modules
             Globals.BucketManager = _bucketManager;
             Globals.ObstacleManager = _obstacleManager;
 
-            _obstacleManager.DefaultHeight = 0.2;
-            _obstacleManager.DefaultWidth = 0.2;
-
             if (!startLoaded)
                 await LoadRobots();
 
