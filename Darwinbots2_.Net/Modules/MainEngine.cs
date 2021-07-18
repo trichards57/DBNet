@@ -38,7 +38,7 @@ namespace DarwinBots.Modules
             if (rob.Corpse || rob.FName == "Corpse" || rob.exist == false)
                 return;
 
-            if (SimOpt.SimOpts.Specie.Count >= SimOpt.MAXNATIVESPECIES)
+            if (SimOpt.SimOpts.Specie.Count >= SimOpt.MaxNativeSpecies)
                 return;
 
             var d = new Species
