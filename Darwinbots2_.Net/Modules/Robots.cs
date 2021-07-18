@@ -316,7 +316,7 @@ namespace DarwinBots.Modules
                 return;
 
             //attempt to stop veg overpopulation but will it work?
-            if (rob.Veg == true && (TotalChlr > SimOpts.MaxPopulation || totvegsDisplayed < 0))
+            if (rob.Veg == true && (TotalChlr > SimOpts.MaxPopulation || TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and it's a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
@@ -325,7 +325,7 @@ namespace DarwinBots.Modules
             // then let them all reproduce.
             if (rob.Veg == true && (ThreadSafeRandom.Local.Next(0, 10) != 5) && (TotalChlr > (SimOpts.MaxPopulation * 0.9)))
                 return;
-            if (totvegsDisplayed == -1)
+            if (TotalVegsDisplayed == -1)
                 return;
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
@@ -349,7 +349,7 @@ namespace DarwinBots.Modules
             SimOpts.TotBorn = SimOpts.TotBorn + 1;
 
             if (rob.Veg)
-                totvegs++;
+                TotalVegs++;
 
             nuovo.dna.AddRange(rob.dna);
             nuovo.genenum = rob.genenum;
@@ -508,7 +508,7 @@ namespace DarwinBots.Modules
             //we let male veggies fertilize nonveggie females all they want since the offspring's "species" and thus vegginess
             //will be determined by their mother.  Perhaps a strategy will emerge where plants compete to reproduce
             //with nonveggies so as to bypass the popualtion limtis?  Who knows.
-            if (female.Veg == true && (TotalChlr > SimOpts.MaxPopulation || totvegsDisplayed < 0))
+            if (female.Veg == true && (TotalChlr > SimOpts.MaxPopulation || TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and the female is a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
@@ -518,7 +518,7 @@ namespace DarwinBots.Modules
             if (female.Veg == true && (ThreadSafeRandom.Local.Next(0, 9) != 5) && (TotalChlr > (SimOpts.MaxPopulation * 0.9)))
                 return;
 
-            if (totvegsDisplayed == -1)
+            if (TotalVegsDisplayed == -1)
                 return;// no veggies can reproduce on the first cycle after the sim is restarted.
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
@@ -576,7 +576,7 @@ namespace DarwinBots.Modules
 
             SimOpts.TotBorn++;
             if (female.Veg)
-                totvegs++;
+                TotalVegs++;
 
             //Step4 after robot is created store the dna
 
@@ -832,8 +832,8 @@ namespace DarwinBots.Modules
             TotalRobots = 0;
             TotalNotVegsDisplayed = TotalNotVegs;
             TotalNotVegs = 0;
-            totvegsDisplayed = totvegs;
-            totvegs = 0;
+            TotalVegsDisplayed = TotalVegs;
+            TotalVegs = 0;
 
             //Only calculate mass due to fuild displacement if the sim medium has density.
             if (SimOpts.Density != 0)
@@ -1990,7 +1990,7 @@ namespace DarwinBots.Modules
             }
 
             if (rob.Veg)
-                totvegs++;
+                TotalVegs++;
             else if (rob.Corpse)
             {
                 if (rob.body > 0)

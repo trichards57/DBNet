@@ -336,9 +336,9 @@ namespace DarwinBots.Modules
             }
             else
             {
-                Vegs.cooldown = -SimOpt.SimOpts.RepopCooldown;
+                Vegs.CoolDown = -SimOpt.SimOpts.RepopCooldown;
                 Globals.TotalNotVegsDisplayed = -1;
-                Vegs.totvegs = -1;
+                Vegs.TotalVegs = -1;
                 Globals.TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
             }
 
@@ -466,7 +466,7 @@ namespace DarwinBots.Modules
             var currentPopulation = Globals.TotalNotVegsDisplayed;
 
             if (SimOpt.SimOpts.Costs.DynamicCostsIncludePlants)
-                currentPopulation += Vegs.totvegsDisplayed; //Include Plants in target population
+                currentPopulation += Vegs.TotalVegsDisplayed; //Include Plants in target population
 
             //If (SimOpts.TotRunCycle + 200) Mod 2000 = 0 Then MsgBox "sup" & SimOpts.TotRunCycle 'debug only
 
@@ -551,7 +551,7 @@ namespace DarwinBots.Modules
 
             Globals.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
-            if (Globals.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.totvegsDisplayed != -1)
+            if (Globals.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
                 await Vegs.VegsRepopulate(); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
             Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);
