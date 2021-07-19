@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
 {
@@ -149,7 +148,7 @@ namespace DarwinBots.Modules
 
         public static Species SpeciesFromBot(robot rob)
         {
-            return SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
+            return SimOpt.SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
         }
 
         public static void Taste(robot rob, double x, double y, int value)

@@ -2,14 +2,12 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.Physics;
-using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
 {
     internal static class Ties
     {
-        public const int MAXTIES = 10;
+        private const int MaxTies = 10;
 
         public static void DeleteAllTies(robot rob)
         {
@@ -44,7 +42,7 @@ namespace DarwinBots.Modules
             {
                 robB.Ties.Remove(tieJ);
                 robB.mem[MemoryAddresses.numties] = robB.Ties.Count;
-                if (robB.mem[MemoryAddresses.TIEPRES] == tieK.Port)
+                if (robB.mem[MemoryAddresses.TIEPRES] == tieJ.Port)
                 {
                     var lastTie = robB.Ties.LastOrDefault();
 
@@ -53,28 +51,10 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void EraseTRefVars(robot rob)
-        {
-            // Zero the trefvars as all ties have gone.  Perf -> Could set a flag to not do this everytime
-            for (var counter = 456; counter < 465; counter++)
-                rob.mem[counter] = 0;
-
-            rob.mem[MemoryAddresses.trefbody] = 0;
-            rob.mem[475] = 0;
-            rob.mem[478] = 0;
-            rob.mem[479] = 0;
-            for (var counter = 0; counter < 10; counter++)
-                rob.mem[MemoryAddresses.trefxpos + counter] = 0;
-
-            //These are .tin trefvars
-            for (var counter = 420; counter < 429; counter++)
-                rob.mem[counter] = 0;
-        }
-
-        public static bool MakeTie(robot robA, robot robB, int length, int last, int mem)
+        public static void MakeTie(robot robA, robot robB, int length, int last, int mem)
         {
             if (robA.exist == false)
-                return false;
+                return;
 
             var distance = (robA.pos - robB.pos).Magnitude();
 
@@ -82,7 +62,7 @@ namespace DarwinBots.Modules
             {
                 DeleteTie(robA, robB);
 
-                if (robA.Ties.Count < MAXTIES && robB.Ties.Count < MAXTIES)
+                if (robA.Ties.Count < MaxTies && robB.Ties.Count < MaxTies)
                 {
                     var tieK = new Tie
                     {
@@ -125,8 +105,7 @@ namespace DarwinBots.Modules
             if (robB.Slime > 0)
                 robB.Slime -= Math.Min(20, robB.Slime);
 
-            robA.nrg -= SimOpts.Costs.TieFormationCost * SimOpts.Costs.CostMultiplier / (robA.Ties.Count + 1); //Tie cost to form tie
-            return true;
+            robA.nrg -= SimOpt.SimOpts.Costs.TieFormationCost * SimOpt.SimOpts.Costs.CostMultiplier / (robA.Ties.Count + 1); //Tie cost to form tie
         }
 
         public static void ReadTie(robot rob)
@@ -147,56 +126,6 @@ namespace DarwinBots.Modules
             EraseTRefVars(rob);
         }
 
-        public static void ReadTRefVars(robot rob, Tie tie)
-        {
-            if (tie.OtherBot.nrg < 32000 & tie.OtherBot.nrg > -32000)
-                rob.mem[MemoryAddresses.trefnrg] = (int)tie.OtherBot.nrg; //copies tied robot's energy into memory cell *trefnrg
-
-            if (tie.OtherBot.age < 32000)
-                rob.mem[465] = tie.OtherBot.age + 1; //copies age of tied robot into *refvar
-            else
-                rob.mem[465] = 32000;
-
-            if (tie.OtherBot.Body < 32000 & tie.OtherBot.Body > -32000)
-                rob.mem[MemoryAddresses.trefbody] = (int)tie.OtherBot.Body; //copies tied robot's body value
-            else
-                rob.mem[MemoryAddresses.trefbody] = 32000;
-
-            for (var l = 1; l < 8; l++)
-                rob.mem[455 + l] = tie.OtherBot.occurr[l];
-
-            if (rob.mem[476] > 0 & rob.mem[476] <= 1000)
-            {
-                //tmemval and tmemloc couple used to read a specific memory value from tied robot.
-                rob.mem[475] = tie.OtherBot.mem[rob.mem[476]];
-                if (rob.mem[479] > MemoryAddresses.EyeStart && rob.mem[479] < MemoryAddresses.EyeEnd)
-                    tie.OtherBot.View = true;
-            }
-
-            rob.mem[478] = tie.OtherBot.Fixed ? 1 : 0;
-            rob.mem[479] = tie.OtherBot.mem[MemoryAddresses.AimSys];
-            rob.mem[MemoryAddresses.trefxpos] = tie.OtherBot.mem[219];
-            rob.mem[MemoryAddresses.trefypos] = tie.OtherBot.mem[217];
-            rob.mem[MemoryAddresses.trefvelyourup] = tie.OtherBot.mem[MemoryAddresses.velup];
-            rob.mem[MemoryAddresses.trefvelyourdn] = tie.OtherBot.mem[MemoryAddresses.veldn];
-            rob.mem[MemoryAddresses.trefvelyoursx] = tie.OtherBot.mem[MemoryAddresses.velsx];
-            rob.mem[MemoryAddresses.trefvelyourdx] = tie.OtherBot.mem[MemoryAddresses.veldx];
-
-            //Botsareus 9/27/2014 I was thinking long and hard where to place this bug fix, probebly best to place it at the source
-            tie.OtherBot.vel = DoubleVector.Clamp(tie.OtherBot.vel, -16000, 16000);
-
-            rob.mem[MemoryAddresses.trefvelmyup] = (int)(tie.OtherBot.vel.X * Math.Cos(rob.aim) + Math.Sin(rob.aim) * tie.OtherBot.vel.Y * -1 - rob.mem[MemoryAddresses.velup]); //gives velocity from mybots frame of reference
-            rob.mem[MemoryAddresses.trefvelmydn] = rob.mem[MemoryAddresses.trefvelmyup] * -1;
-            rob.mem[MemoryAddresses.trefvelmydx] = (int)(tie.OtherBot.vel.Y * Math.Cos(rob.aim) + Math.Sin(rob.aim) * tie.OtherBot.vel.X - rob.mem[MemoryAddresses.veldx]);
-            rob.mem[MemoryAddresses.trefvelmysx] = rob.mem[MemoryAddresses.trefvelmydx] * -1;
-            rob.mem[MemoryAddresses.trefvelscalar] = tie.OtherBot.mem[MemoryAddresses.velscalar];
-            rob.mem[MemoryAddresses.trefshell] = (int)tie.OtherBot.shell;
-
-            //These are the tie in/pairs
-            for (var l = 410; l < 419; l++)
-                rob.mem[l + 10] = tie.OtherBot.mem[l];
-        }
-
         public static void Regang(robot rob, Tie tie)
         {
             rob.Multibot = true;
@@ -204,11 +133,11 @@ namespace DarwinBots.Modules
             tie.b = 0.1;
             tie.k = 0.05;
             tie.Type = TieType.AntiRope;
-            var angl = Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
+            var angl = Physics.Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
             var dist = (rob.pos - tie.OtherBot.pos).Magnitude();
             if (tie.BackTie == false)
             {
-                tie.Angle = NormaliseAngle(angl) - NormaliseAngle(rob.aim); // only fix the angle of the bot that created the tie
+                tie.Angle = Physics.NormaliseAngle(angl) - Physics.NormaliseAngle(rob.aim); // only fix the angle of the bot that created the tie
                 tie.FixedAngle = true;
             }
             tie.NaturalLength = dist;
@@ -262,13 +191,13 @@ namespace DarwinBots.Modules
 
             if (tie != null)
             {
-                var tieAngle = Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
+                var tieAngle = Physics.Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
                 var dist = (rob.pos - tie.OtherBot.pos).Magnitude();
                 //Overflow prevention.  Very long ties can happen for one cycle when bots wrap in torridal fields
                 if (dist > 32000)
                     dist = 32000;
 
-                rob.mem[MemoryAddresses.TIEANG] = (int)-(AngDiff(NormaliseAngle(tieAngle), NormaliseAngle(rob.aim)) * 200);
+                rob.mem[MemoryAddresses.TIEANG] = (int)-(Physics.AngDiff(Physics.NormaliseAngle(tieAngle), Physics.NormaliseAngle(rob.aim)) * 200);
                 rob.mem[MemoryAddresses.TIELEN] = (int)(dist - rob.Radius - tie.OtherBot.Radius);
             }
         }
@@ -278,7 +207,7 @@ namespace DarwinBots.Modules
             // this routine addresses all ties. not just ones that match .tienum
             rob.vbody = rob.Body;
 
-            var atleast1tie = false;
+            var atLeast1Tie = false;
             if (rob.Multibot)
             {
                 foreach (var tie in rob.Ties)
@@ -315,17 +244,16 @@ namespace DarwinBots.Modules
                     rob.vbody += tie.OtherBot.Body;
                     if (rob.FName == tie.OtherBot.FName)
                     {
-                        atleast1tie = true;
+                        atLeast1Tie = true;
                     }
                 }
             }
 
             if (rob.multibot_time > 0)
             {
-                if (atleast1tie)
+                if (atLeast1Tie)
                     rob.multibot_time++;
-
-                if (!atleast1tie)
+                else
                     rob.multibot_time--;
 
                 if (rob.multibot_time > 210)
@@ -374,7 +302,7 @@ namespace DarwinBots.Modules
                     {
                         if (rob.mem[MemoryAddresses.FIXANG] >= 0)
                         {
-                            tie.Angle = rob.mem[MemoryAddresses.FIXANG] % 1256 / 200;
+                            tie.Angle = Physics.IntToRadians(rob.mem[MemoryAddresses.FIXANG]);
                             tie.FixedAngle = true;
                         }
                         else
@@ -427,17 +355,17 @@ namespace DarwinBots.Modules
                         //input
                         if (rob.TieLenOverwrite[i - 1])
                         {
-                            var Length = (int)(rob.mem[483 + i] + rob.Radius + rob.Ties[i].OtherBot.Radius); // include the radius of the tied bots in the length
-                            if (Length > 32000)
+                            var length = (int)(rob.mem[483 + i] + rob.Radius + rob.Ties[i].OtherBot.Radius); // include the radius of the tied bots in the length
+                            if (length > 32000)
                             {
-                                Length = 32000; // Can happen for very big bots with very long ties.
+                                length = 32000; // Can happen for very big bots with very long ties.
                             }
-                            rob.Ties[i].NaturalLength = Length; //for first robot
-                            rob.Ties[i].ReverseTie.NaturalLength = Length; //for second robot. What a messed up formula
+                            rob.Ties[i].NaturalLength = length; //for first robot
+                            rob.Ties[i].ReverseTie.NaturalLength = length; //for second robot. What a messed up formula
                         }
                         if (rob.TieAngOverwrite[i - 1])
                         {
-                            rob.Ties[i].Angle = NormaliseAngle(rob.mem[479 + i] / 200);
+                            rob.Ties[i].Angle = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[479 + i]));
                             rob.Ties[i].FixedAngle = true; //EricL 4/24/2006
                         }
                         //clear input
@@ -445,13 +373,13 @@ namespace DarwinBots.Modules
                         rob.TieLenOverwrite[i - 1] = false;
                         //output
 
-                        var tieAngle = Angle(rob.pos.X, rob.pos.Y, rob.Ties[i].OtherBot.pos.X, rob.Ties[i].OtherBot.pos.Y);
+                        var tieAngle = Physics.Angle(rob.pos.X, rob.pos.Y, rob.Ties[i].OtherBot.pos.X, rob.Ties[i].OtherBot.pos.Y);
                         var dist = (rob.pos - rob.Ties[i].OtherBot.pos).Magnitude();
                         if (dist > 32000)
-                            dist = 32000; //Botsareus 1/24/2014 Bug fix here
+                            dist = 32000;
 
                         rob.mem[483 + i] = (int)(dist - rob.Radius - rob.Ties[i].OtherBot.Radius);
-                        rob.mem[479 + i] = (int)NormaliseAngle(NormaliseAngle(tieAngle) - NormaliseAngle(rob.aim)) * 200;
+                        rob.mem[479 + i] = (int)Physics.NormaliseAngle(Physics.NormaliseAngle(tieAngle) - Physics.NormaliseAngle(rob.aim)) * 200;
                     }
                 }
             }
@@ -541,7 +469,7 @@ namespace DarwinBots.Modules
                                         do
                                         {
                                             rob.Ploc = ThreadSafeRandom.Local.Next(1, 1000);
-                                        } while (!(rob.Ploc != 340));
+                                        } while (rob.Ploc != 340);
                                     }
 
                                     rob.Pval = tie.OtherBot.mem[839];
@@ -802,6 +730,73 @@ namespace DarwinBots.Modules
             }
 
             rob.mem[MemoryAddresses.tieport1 + 5] = 0; // .tienum should be reset every cycle
+        }
+
+        private static void EraseTRefVars(robot rob)
+        {
+            // Zero the trefvars as all ties have gone.  Perf -> Could set a flag to not do this everytime
+            for (var counter = 456; counter < 465; counter++)
+                rob.mem[counter] = 0;
+
+            rob.mem[MemoryAddresses.trefbody] = 0;
+            rob.mem[475] = 0;
+            rob.mem[478] = 0;
+            rob.mem[479] = 0;
+            for (var counter = 0; counter < 10; counter++)
+                rob.mem[MemoryAddresses.trefxpos + counter] = 0;
+
+            //These are .tin trefvars
+            for (var counter = 420; counter < 429; counter++)
+                rob.mem[counter] = 0;
+        }
+
+        private static void ReadTRefVars(robot rob, Tie tie)
+        {
+            if (tie.OtherBot.nrg < 32000 & tie.OtherBot.nrg > -32000)
+                rob.mem[MemoryAddresses.trefnrg] = (int)tie.OtherBot.nrg; //copies tied robot's energy into memory cell *trefnrg
+
+            if (tie.OtherBot.age < 32000)
+                rob.mem[465] = tie.OtherBot.age + 1; //copies age of tied robot into *refvar
+            else
+                rob.mem[465] = 32000;
+
+            if (tie.OtherBot.Body < 32000 & tie.OtherBot.Body > -32000)
+                rob.mem[MemoryAddresses.trefbody] = (int)tie.OtherBot.Body; //copies tied robot's body value
+            else
+                rob.mem[MemoryAddresses.trefbody] = 32000;
+
+            for (var l = 1; l < 8; l++)
+                rob.mem[455 + l] = tie.OtherBot.occurr[l];
+
+            if (rob.mem[476] > 0 & rob.mem[476] <= 1000)
+            {
+                //tmemval and tmemloc couple used to read a specific memory value from tied robot.
+                rob.mem[475] = tie.OtherBot.mem[rob.mem[476]];
+                if (rob.mem[479] > MemoryAddresses.EyeStart && rob.mem[479] < MemoryAddresses.EyeEnd)
+                    tie.OtherBot.View = true;
+            }
+
+            rob.mem[478] = tie.OtherBot.Fixed ? 1 : 0;
+            rob.mem[479] = tie.OtherBot.mem[MemoryAddresses.AimSys];
+            rob.mem[MemoryAddresses.trefxpos] = tie.OtherBot.mem[219];
+            rob.mem[MemoryAddresses.trefypos] = tie.OtherBot.mem[217];
+            rob.mem[MemoryAddresses.trefvelyourup] = tie.OtherBot.mem[MemoryAddresses.velup];
+            rob.mem[MemoryAddresses.trefvelyourdn] = tie.OtherBot.mem[MemoryAddresses.veldn];
+            rob.mem[MemoryAddresses.trefvelyoursx] = tie.OtherBot.mem[MemoryAddresses.velsx];
+            rob.mem[MemoryAddresses.trefvelyourdx] = tie.OtherBot.mem[MemoryAddresses.veldx];
+
+            tie.OtherBot.vel = DoubleVector.Clamp(tie.OtherBot.vel, -16000, 16000);
+
+            rob.mem[MemoryAddresses.trefvelmyup] = (int)(tie.OtherBot.vel.X * Math.Cos(rob.aim) + Math.Sin(rob.aim) * tie.OtherBot.vel.Y * -1 - rob.mem[MemoryAddresses.velup]); //gives velocity from mybots frame of reference
+            rob.mem[MemoryAddresses.trefvelmydn] = rob.mem[MemoryAddresses.trefvelmyup] * -1;
+            rob.mem[MemoryAddresses.trefvelmydx] = (int)(tie.OtherBot.vel.Y * Math.Cos(rob.aim) + Math.Sin(rob.aim) * tie.OtherBot.vel.X - rob.mem[MemoryAddresses.veldx]);
+            rob.mem[MemoryAddresses.trefvelmysx] = rob.mem[MemoryAddresses.trefvelmydx] * -1;
+            rob.mem[MemoryAddresses.trefvelscalar] = tie.OtherBot.mem[MemoryAddresses.velscalar];
+            rob.mem[MemoryAddresses.trefshell] = (int)tie.OtherBot.shell;
+
+            //These are the tie in/pairs
+            for (var l = 410; l < 419; l++)
+                rob.mem[l + 10] = tie.OtherBot.mem[l];
         }
     }
 }
