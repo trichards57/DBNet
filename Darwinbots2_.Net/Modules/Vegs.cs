@@ -303,21 +303,21 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static async Task VegsRepopulate()
+        public static async Task VegsRepopulate(IBucketManager bucketManager)
         {
             CoolDown++;
             if (CoolDown >= SimOpt.SimOpts.RepopCooldown)
             {
                 for (var t = 1; t < SimOpt.SimOpts.RepopAmount; t++)
                 {
-                    await aggiungirob();
+                    await aggiungirob(bucketManager);
                     TotalVegs++;
                 }
                 CoolDown -= SimOpt.SimOpts.RepopCooldown;
             }
         }
 
-        private static async Task aggiungirob()
+        private static async Task aggiungirob(IBucketManager bucketManager)
         {
             if (!SimOpt.SimOpts.Specie.Any(CheckVegStatus))
                 return;
@@ -335,7 +335,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].Path == "Invalid Path")
                 return;
 
-            var a = await DnaManipulations.RobScriptLoad(System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
+            var a = await DnaManipulations.RobScriptLoad(bucketManager, System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
                     SimOpt.SimOpts.Specie[r].Name));
 
             if (a == null)
@@ -383,7 +383,7 @@ namespace DarwinBots.Modules
             a.Memory[MemoryAddresses.SetAim] = (int)a.Aim * 200;
 
             //Bot is already in a bucket due to the prepare routine
-            Globals.BucketManager.UpdateBotBucket(a);
+            bucketManager.UpdateBotBucket(a);
             a.Energy = SimOpt.SimOpts.Specie[r].Stnrg;
             a.MutationProbabilities = SimOpt.SimOpts.Specie[r].Mutables;
 

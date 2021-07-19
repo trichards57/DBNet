@@ -34,7 +34,7 @@ namespace DarwinBots.Modules
             return Math.Atan2(y2 - y1, x2 - x1);
         }
 
-        public static void BorderCollision(Robot rob)
+        public static void BorderCollision(IBucketManager bucketManager, Robot rob)
         {
             const double b = 0.05;
 
@@ -53,9 +53,9 @@ namespace DarwinBots.Modules
                 if (SimOpt.SimOpts.DxSxConnected)
                 {
                     if (dist.X < 0)
-                        Multibots.ReSpawn(rob, smudge, rob.Position.Y);
+                        Multibots.ReSpawn(bucketManager, rob, smudge, rob.Position.Y);
                     else
-                        Multibots.ReSpawn(rob, SimOpt.SimOpts.FieldWidth - smudge, rob.Position.Y);
+                        Multibots.ReSpawn(bucketManager, rob, SimOpt.SimOpts.FieldWidth - smudge, rob.Position.Y);
                 }
                 else
                 {
@@ -76,9 +76,9 @@ namespace DarwinBots.Modules
                 if (SimOpt.SimOpts.UpDnConnected)
                 {
                     if (dist.Y < 0)
-                        Multibots.ReSpawn(rob, rob.Position.X, smudge);
+                        Multibots.ReSpawn(bucketManager, rob, rob.Position.X, smudge);
                     else
-                        Multibots.ReSpawn(rob, rob.Position.X, SimOpt.SimOpts.FieldHeight - smudge);
+                        Multibots.ReSpawn(bucketManager, rob, rob.Position.X, SimOpt.SimOpts.FieldHeight - smudge);
                 }
                 else
                 {

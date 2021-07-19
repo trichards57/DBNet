@@ -4,7 +4,16 @@ using System.Linq;
 
 namespace DarwinBots.Modules
 {
-    internal class BucketManager
+    internal interface IBucketManager
+    {
+        void BucketsCollision(Robot rob);
+
+        object BucketsProximity(Robot rob);
+
+        void UpdateBotBucket(Robot rob);
+    }
+
+    internal class BucketManager : IBucketManager
     {
         /// <summary>
         /// The width and height of each bucket.

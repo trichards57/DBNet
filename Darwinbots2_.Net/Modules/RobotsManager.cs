@@ -14,6 +14,13 @@ namespace DarwinBots.Modules
         public const int GeneticSensitivity = 75;
         public const int MaxMem = 1000;
         public const int RobSize = 120;
+        private readonly IBucketManager _bucketManager;
+
+        public RobotsManager(IBucketManager bucketManager)
+        {
+            _bucketManager = bucketManager;
+        }
+
         public List<Robot> Robots { get; } = new();
         public int TotalRobots => Robots.Count(r => r.Exists);
         private List<Robot> BotsToKill { get; } = new();
@@ -56,7 +63,7 @@ namespace DarwinBots.Modules
             robot.Age = 0;
             Ties.DeleteAllTies(robot);
             robot.Exists = false;
-            Globals.BucketManager.UpdateBotBucket(robot);
+            _bucketManager.UpdateBotBucket(robot);
 
             if (robot.VirusShot != null)
             {
@@ -198,7 +205,7 @@ namespace DarwinBots.Modules
                 if (Globals.ObstacleManager.Obstacles.Count > 0)
                     Globals.ObstacleManager.DoObstacleCollisions(rob);
 
-                Physics.BorderCollision(rob);
+                Physics.BorderCollision(_bucketManager, rob);
 
                 Physics.TieHooke(rob); // Handles tie lengths, tie hardening and compressive, elastic tie forces
 
@@ -208,7 +215,7 @@ namespace DarwinBots.Modules
                 if (!rob.IsFixed)
                     Physics.NetForces(rob); //calculate forces on all robots
 
-                Globals.BucketManager.BucketsCollision(rob);
+                _bucketManager.BucketsCollision(rob);
 
                 if (rob.StaticImpulse > 0 & (rob.IndependentImpulse.X != 0 || rob.IndependentImpulse.Y != 0))
                 {
@@ -277,7 +284,7 @@ namespace DarwinBots.Modules
                     ManageBouyancy(rob);
                     ManageReproduction(rob);
                     Shock(rob);
-                    Senses.WriteSenses(rob);
+                    Senses.WriteSenses(_bucketManager, rob);
                     FireTies(rob);
                 }
                 if (!rob.IsCorpse && rob.Exists)
@@ -828,7 +835,7 @@ namespace DarwinBots.Modules
             nuovo.Position = new DoubleVector(robot.Position.X + AbsX(robot.Aim, sondist, 0, 0, 0), robot.Position.Y + AbsY(robot.Aim, sondist, 0, 0, 0));
             nuovo.Exists = true;
             nuovo.BucketPosition = new IntVector(-2, -2);
-            Globals.BucketManager.UpdateBotBucket(nuovo);
+            _bucketManager.UpdateBotBucket(nuovo);
             nuovo.Velocity = robot.Velocity;
             nuovo.ActualVelocity = robot.ActualVelocity;
             nuovo.Color = robot.Color;
@@ -1157,7 +1164,7 @@ namespace DarwinBots.Modules
             nuovo.Position += new DoubleVector(AbsX(female.Aim, (int)sondist, 0, 0, 0), AbsY(female.Aim, (int)sondist, 0, 0, 0));
             nuovo.Exists = true;
             nuovo.BucketPosition = new IntVector(-2, -2);
-            Globals.BucketManager.UpdateBotBucket(nuovo);
+            _bucketManager.UpdateBotBucket(nuovo);
 
             nuovo.Velocity = female.Velocity;
             nuovo.ActualVelocity = female.ActualVelocity; //Botsareus 7/1/2016 Bugfix
@@ -1693,7 +1700,7 @@ namespace DarwinBots.Modules
                 }
 
                 rob.Position += rob.Velocity;
-                Globals.BucketManager.UpdateBotBucket(rob);
+                _bucketManager.UpdateBotBucket(rob);
             }
             else
                 rob.Velocity = new DoubleVector(0, 0);

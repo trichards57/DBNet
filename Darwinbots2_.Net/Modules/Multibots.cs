@@ -7,7 +7,7 @@ namespace DarwinBots.Modules
 {
     internal static class Multibots
     {
-        public static void ReSpawn(Robot rob, double x, double y)
+        public static void ReSpawn(IBucketManager bucketManager, Robot rob, double x, double y)
         {
             var cellList = ListCells(rob).ToList();
             var min = 999999999999.0;
@@ -33,7 +33,7 @@ namespace DarwinBots.Modules
             {
                 cell.Position += distance;
                 cell.OldPosition = cell.Position;
-                Globals.BucketManager.UpdateBotBucket(cell);
+                bucketManager.UpdateBotBucket(cell);
             }
         }
 

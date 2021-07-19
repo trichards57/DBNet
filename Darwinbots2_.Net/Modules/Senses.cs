@@ -191,14 +191,14 @@ namespace DarwinBots.Modules
             rob.Memory[MemoryAddresses.hit] = 1;
         }
 
-        public static void WriteSenses(Robot rob)
+        public static void WriteSenses(IBucketManager bucketManager, Robot rob)
         {
             LandMark(rob);
 
             rob.Memory[MemoryAddresses.TotalBots] = Globals.RobotsManager.TotalRobots;
             rob.Memory[MemoryAddresses.TOTALMYSPECIES] = SpeciesFromBot(rob).Population;
 
-            if (!rob.CantSee && !rob.IsCorpse && Globals.BucketManager.BucketsProximity(rob) != null)
+            if (!rob.CantSee && !rob.IsCorpse && bucketManager.BucketsProximity(rob) != null)
             {
                 switch (rob.LastSeenObject)
                 {

@@ -314,10 +314,9 @@ namespace DarwinBots.Modules
                 _shotsManager = new ShotsManager();
                 _bucketManager = new BucketManager(SimOpt.SimOpts);
                 _obstacleManager = new ObstaclesManager();
-                _robotsManager = new RobotsManager();
+                _robotsManager = new RobotsManager(_bucketManager);
             }
 
-            Globals.BucketManager = _bucketManager;
             Globals.ObstacleManager = _obstacleManager;
             Globals.ShotsManager = _shotsManager;
             Globals.RobotsManager = _robotsManager;
@@ -348,7 +347,7 @@ namespace DarwinBots.Modules
             {
                 for (var t = 1; t < species.Quantity; t++)
                 {
-                    var rob = await DnaManipulations.RobScriptLoad(Path.Join(species.Path, species.Name));
+                    var rob = await DnaManipulations.RobScriptLoad(_bucketManager, Path.Join(species.Path, species.Name));
 
                     if (rob == null)
                     {
@@ -540,7 +539,7 @@ namespace DarwinBots.Modules
             TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
             if (TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
-                await Vegs.VegsRepopulate(); //Will be -1 first cycle after loading a sim.  Prevents spikes.
+                await Vegs.VegsRepopulate(_bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
             Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);
 

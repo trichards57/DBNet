@@ -142,10 +142,10 @@ namespace DarwinBots.Modules
             rob.Variables.Add(new Variable(parts[0], cValid ? cVal : 0));
         }
 
-        public static async Task<Robot> RobScriptLoad(string path)
+        public static async Task<Robot> RobScriptLoad(IBucketManager bucketManager, string path)
         {
             var rob = Globals.RobotsManager.GetNewBot();
-            PrepareRob(rob, path); // prepares structure
+            PrepareRob(bucketManager, rob, path); // prepares structure
             if (await DnaTokenizing.LoadDna(path, rob))
             {
                 // loads and parses dna
@@ -158,18 +158,18 @@ namespace DarwinBots.Modules
 
             rob.Exists = false;
             Globals.RobotsManager.Robots.Remove(rob);
-            Globals.BucketManager.UpdateBotBucket(rob);
+            bucketManager.UpdateBotBucket(rob);
             return null;
         }
 
-        private static void PrepareRob(Robot rob, string path)
+        private static void PrepareRob(IBucketManager bucketManager, Robot rob, string path)
         {
             //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
             //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
             rob.Aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
             rob.Exists = true;
             rob.BucketPosition = new IntVector(-2, -2);
-            Globals.BucketManager.UpdateBotBucket(rob);
+            bucketManager.UpdateBotBucket(rob);
 
             rob.Color = Color.FromRgb((byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255));
             rob.Variables.Clear();
