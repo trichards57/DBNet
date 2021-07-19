@@ -22,6 +22,9 @@ namespace DarwinBots.Modules
         private ShotsManager _shotsManager;
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
+        public int TotalChlr { get; set; }
+        public int TotalNotVegs { get; set; }
+
         // TODO : Save last run settings
         // TODO : Graphing statistics
         // TODO : Handle showing data for the selected robot
@@ -318,25 +321,15 @@ namespace DarwinBots.Modules
             Globals.ObstacleManager = _obstacleManager;
             Globals.ShotsManager = _shotsManager;
             Globals.RobotsManager = _robotsManager;
+            Globals.MainEngine = this;
 
             if (!startLoaded)
                 await LoadRobots();
-
-            if (!startLoaded)
-            {
-                foreach (var o in Globals.XObstacle)
-                {
-                    var newO = _obstacleManager.NewObstacle(o.Position.X, o.Position.Y, o.Width, o.Height);
-                    newO.Color = o.Color;
-                    newO.Velocity = o.Velocity;
-                }
-            }
             else
             {
                 Vegs.CoolDown = -SimOpt.SimOpts.RepopCooldown;
-                Globals.TotalNotVegsDisplayed = -1;
                 Vegs.TotalVegs = -1;
-                Globals.TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
+                TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
             }
 
             _active = true;
@@ -381,7 +374,7 @@ namespace DarwinBots.Modules
 
                     rob.Memory[MemoryAddresses.SetAim] = Physics.RadiansToInt(rob.Aim * 200);
                     if (rob.IsVegetable)
-                        rob.Chloroplasts = Globals.StartChlr;
+                        rob.Chloroplasts = SimOpt.SimOpts.StartChlr;
 
                     rob.IsDead = false;
 
@@ -458,7 +451,7 @@ namespace DarwinBots.Modules
             Vegs.CurrentEnergyCycle = SimOpt.SimOpts.TotRunCycle % 100;
             Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] = 0;
 
-            var currentPopulation = Globals.TotalNotVegsDisplayed;
+            var currentPopulation = TotalNotVegs;
 
             if (SimOpt.SimOpts.Costs.DynamicCostsIncludePlants)
                 currentPopulation += Vegs.TotalVegsDisplayed; //Include Plants in target population
@@ -544,9 +537,9 @@ namespace DarwinBots.Modules
 
             var allChlr = (int)_robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Chloroplasts);
 
-            Globals.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
+            TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
-            if (Globals.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
+            if (TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
                 await Vegs.VegsRepopulate(); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
             Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);

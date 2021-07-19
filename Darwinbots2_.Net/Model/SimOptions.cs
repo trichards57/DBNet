@@ -68,6 +68,7 @@ namespace DarwinBots.Model
         public int SpeciationForkInterval { get; set; }
         public int SpeciationGeneticDistance { get; set; }
         public List<Species> Specie { get; } = new();
+        public int StartChlr => 32000;
         public bool SunDown { get; set; }
         public int SunDownThreshold { get; set; }
         public bool SunOnRnd { get; set; }

@@ -158,8 +158,7 @@ namespace DarwinBots.Modules
             BotsToKill.Clear();
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
-            Globals.TotalNotVegsDisplayed = Globals.TotalNotVegs;
-            Globals.TotalNotVegs = 0;
+            Globals.MainEngine.TotalNotVegs = 0;
             Vegs.TotalVegsDisplayed = Vegs.TotalVegs;
             Vegs.TotalVegs = 0;
 
@@ -399,7 +398,7 @@ namespace DarwinBots.Modules
             {
                 var newnrg = rob.Energy - (rob.Chloroplasts - tmpchlr) * SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier;
 
-                if (Globals.TotalChlr > SimOpt.SimOpts.MaxPopulation && rob.IsVegetable || newnrg < 100)
+                if (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation && rob.IsVegetable || newnrg < 100)
                     rob.Chloroplasts = tmpchlr;
                 else
                     rob.Energy = newnrg; //Botsareus 8/24/2013 only charge energy for adding chloroplasts to prevent robots from cheating by adding and subtracting there chlroplasts in 3 cycles
@@ -738,7 +737,7 @@ namespace DarwinBots.Modules
                 }
             }
 
-            rob.Memory[837] = (int)rob.ParalyzedCountdown;
+            rob.Memory[837] = rob.ParalyzedCountdown;
 
             if (rob.IsPoisoned)
                 rob.Memory[rob.PoisonLocation] = rob.PoisonValue;
@@ -775,14 +774,14 @@ namespace DarwinBots.Modules
                 return;
 
             // Attempt to stop veg overpopulation but will it work?
-            if (robot.IsVegetable && (Globals.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (robot.IsVegetable && (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and it's a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
             // so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
             // so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
             // then let them all reproduce.
-            if (robot.IsVegetable && ThreadSafeRandom.Local.Next(0, 10) != 5 && Globals.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
+            if (robot.IsVegetable && ThreadSafeRandom.Local.Next(0, 10) != 5 && Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
             if (Vegs.TotalVegsDisplayed == -1)
                 return;
@@ -1065,14 +1064,14 @@ namespace DarwinBots.Modules
             //we let male veggies fertilize nonveggie females all they want since the offspring's "species" and thus vegginess
             //will be determined by their mother.  Perhaps a strategy will emerge where plants compete to reproduce
             //with nonveggies so as to bypass the popualtion limtis?  Who knows.
-            if (female.IsVegetable && (Globals.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (female.IsVegetable && (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and the female is a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
             // so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
             // so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
             // then let them all reproduce.
-            if (female.IsVegetable && ThreadSafeRandom.Local.Next(0, 9) != 5 && Globals.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
+            if (female.IsVegetable && ThreadSafeRandom.Local.Next(0, 9) != 5 && Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
 
             if (Vegs.TotalVegsDisplayed == -1)
@@ -1671,7 +1670,7 @@ namespace DarwinBots.Modules
                     await KillRobot(rob);
             }
             else
-                Globals.TotalNotVegs++;
+                Globals.MainEngine.TotalNotVegs++;
         }
 
         private void UpdatePosition(Robot rob)
