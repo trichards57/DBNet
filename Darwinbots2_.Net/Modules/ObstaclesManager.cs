@@ -98,41 +98,41 @@ namespace DarwinBots.Modules
                 }
 
                 //Push the bot the closest edge
-                var distUp = rob.pos.Y + rob.radius - o.pos.Y;
-                var distDown = o.pos.Y + o.Height - (rob.pos.Y - rob.radius);
-                var distLeft = rob.pos.X + rob.radius - o.pos.X;
-                var distRight = o.pos.X + o.Width - (rob.pos.X - rob.radius);
+                var distUp = rob.pos.Y + rob.Radius - o.pos.Y;
+                var distDown = o.pos.Y + o.Height - (rob.pos.Y - rob.Radius);
+                var distLeft = rob.pos.X + rob.Radius - o.pos.X;
+                var distRight = o.pos.X + o.Width - (rob.pos.X - rob.Radius);
 
                 if (Math.Min(distLeft, distRight) < Math.Min(distUp, distDown) && lastPush != 1 && lastPush != 2 || lastPush is 3 or 4)
                 {
                     //Push left or right
                     if ((distLeft <= distRight || o.pos.X + o.Width >= SimOpt.SimOpts.FieldWidth) && o.pos.X > 0)
                     {
-                        if (rob.pos.X - rob.radius < o.pos.X)
+                        if (rob.pos.X - rob.Radius < o.pos.X)
                         {
-                            rob.pos = rob.pos with { X = o.pos.X - rob.radius };
+                            rob.pos = rob.pos with { X = o.pos.X - rob.Radius };
                             rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
-                            Senses.Touch(rob, rob.pos.X + rob.radius, rob.pos.Y); // Update hit senses, right side
+                            Senses.Touch(rob, rob.pos.X + rob.Radius, rob.pos.Y); // Update hit senses, right side
                         }
                         else
                         {
                             rob.ImpulseRes += new DoubleVector(distLeft * k, 0);
-                            rob.pos = rob.pos with { X = o.pos.X - rob.radius };
+                            rob.pos = rob.pos with { X = o.pos.X - rob.Radius };
                         }
                         lastPush = 1;
                     }
                     else
                     {
-                        if (rob.pos.X + rob.radius > o.pos.X + o.Width)
+                        if (rob.pos.X + rob.Radius > o.pos.X + o.Width)
                         {
-                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.radius };
+                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.Radius };
                             rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
-                            Senses.Touch(rob, rob.pos.X - rob.radius, rob.pos.Y); // Update hit senses, left side
+                            Senses.Touch(rob, rob.pos.X - rob.Radius, rob.pos.Y); // Update hit senses, left side
                         }
                         else
                         {
                             rob.ImpulseRes -= new DoubleVector(distRight * k, 0);
-                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.radius };
+                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.Radius };
                         }
                         lastPush = 2;
                     }
@@ -142,39 +142,39 @@ namespace DarwinBots.Modules
                     //Push up or down
                     if ((distUp <= distDown || o.pos.Y + o.Height >= SimOpt.SimOpts.FieldHeight) && o.pos.Y > 0)
                     {
-                        if (rob.pos.Y - rob.radius < o.pos.Y)
+                        if (rob.pos.Y - rob.Radius < o.pos.Y)
                         {
-                            rob.pos = rob.pos with { Y = o.pos.Y - rob.radius };
+                            rob.pos = rob.pos with { Y = o.pos.Y - rob.Radius };
                             rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
-                            Senses.Touch(rob, rob.pos.X, rob.pos.Y + rob.radius); // Update hit senses, bottom
+                            Senses.Touch(rob, rob.pos.X, rob.pos.Y + rob.Radius); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ImpulseRes += new DoubleVector(0, distUp * k);
-                            rob.pos = rob.pos with { Y = o.pos.Y - rob.radius };
+                            rob.pos = rob.pos with { Y = o.pos.Y - rob.Radius };
                         }
                         lastPush = 3;
                     }
                     else
                     {
-                        if (rob.pos.Y + rob.radius > o.pos.Y + o.Height)
+                        if (rob.pos.Y + rob.Radius > o.pos.Y + o.Height)
                         {
-                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.radius };
+                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.Radius };
                             rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
-                            Senses.Touch(rob, rob.pos.X, rob.pos.Y - rob.radius); // Update hit senses, bottom
+                            Senses.Touch(rob, rob.pos.X, rob.pos.Y - rob.Radius); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ImpulseRes -= new DoubleVector(0, distDown * k);
-                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.radius };
+                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.Radius };
                         }
 
                         lastPush = 4;
                     }
                 }
 
-                if (rob.mem[Robots.EYEF] == 0)
-                    rob.mem[Robots.REFTYPE] = 1;
+                if (rob.mem[MemoryAddresses.EYEF] == 0)
+                    rob.mem[MemoryAddresses.REFTYPE] = 1;
             }
         }
 
@@ -391,10 +391,10 @@ namespace DarwinBots.Modules
 
         private static bool ObstacleCollision(robot rob, Obstacle o)
         {
-            var botRightEdge = rob.pos.X + rob.radius;
-            var botLeftEdge = rob.pos.X - rob.radius;
-            var botTopEdge = rob.pos.Y - rob.radius;
-            var botBottomEdge = rob.pos.Y + rob.radius;
+            var botRightEdge = rob.pos.X + rob.Radius;
+            var botLeftEdge = rob.pos.X - rob.Radius;
+            var botTopEdge = rob.pos.Y - rob.Radius;
+            var botBottomEdge = rob.pos.Y + rob.Radius;
 
             return botRightEdge > o.pos.X && botLeftEdge < o.pos.X + o.Width && botBottomEdge > o.pos.Y && botTopEdge < o.pos.Y + o.Height;
         }

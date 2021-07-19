@@ -96,7 +96,7 @@ namespace DarwinBots.ViewModels
 
         public void SaveToAllRobs()
         {
-            foreach (var rob in Robots.rob.Where(r => r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist))
             {
                 if (rob.Veg)
                 {

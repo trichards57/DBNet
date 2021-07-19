@@ -145,20 +145,20 @@ namespace DarwinBots.Modules
 
         public static async Task<robot> RobScriptLoad(string path)
         {
-            var rob = Robots.GetNewBot();
+            var rob = Globals.RobotsManager.GetNewBot();
             PrepareRob(rob, path); // prepares structure
             if (await DnaTokenizing.LoadDna(path, rob))
             {
                 // loads and parses dna
                 Senses.MakeOccurrList(rob); // creates the ref* array
                 rob.genenum = CountGenes(rob.dna);
-                rob.mem[Robots.DnaLenSys] = rob.dna.Count;
-                rob.mem[Robots.GenesSys] = rob.genenum;
+                rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
+                rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
                 return rob; // returns the index of the created rob
             }
 
             rob.exist = false;
-            Robots.rob.Remove(rob);
+            Globals.RobotsManager.Robots.Remove(rob);
             Globals.BucketManager.UpdateBotBucket(rob);
             return null;
         }

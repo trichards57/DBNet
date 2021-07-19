@@ -79,7 +79,7 @@ namespace DarwinBots.Modules
                 }
             }
 
-            foreach (var rob in Robots.rob.Where(r => r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist))
             {
                 rob.BucketPos = new IntVector(-2, -2);
                 UpdateBotBucket(rob);
@@ -108,9 +108,9 @@ namespace DarwinBots.Modules
         public object BucketsProximity(robot rob)
         {
             rob.lastopp = 0;
-            rob.mem[Robots.EYEF] = 0;
+            rob.mem[MemoryAddresses.EYEF] = 0;
 
-            for (var x = Robots.EyeStart + 1; x < Robots.EyeEnd; x++)
+            for (var x = MemoryAddresses.EyeStart + 1; x < MemoryAddresses.EyeEnd; x++)
                 rob.mem[x] = 0;
 
             CheckBotBucketForVision(rob, rob.BucketPos);
@@ -240,7 +240,7 @@ namespace DarwinBots.Modules
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && i.AbsNum > rob.AbsNum))
             {
                 var distvector = rob.pos - r.pos;
-                var dist = rob.radius + r.radius;
+                var dist = rob.Radius + r.Radius;
                 if (distvector.MagnitudeSquare() < dist * dist)
                     Physics.Repel(rob, r);
             }
@@ -255,10 +255,10 @@ namespace DarwinBots.Modules
         private void CompareRobots(robot rob1, robot rob2)
         {
             var ab = rob2.pos - rob1.pos;
-            var edgeToEdgeDistance = ab.Magnitude() - rob1.radius - rob2.radius;
+            var edgeToEdgeDistance = ab.Magnitude() - rob1.Radius - rob2.Radius;
 
             var sightDistances = Enumerable.Range(0, 8)
-                .Select(a => EyeSightDistance(rob1.mem[Robots.EYE1WIDTH + a], rob1))
+                .Select(a => EyeSightDistance(rob1.mem[MemoryAddresses.EYE1WIDTH + a], rob1))
                 .ToArray();
 
             var maxSightDistance = sightDistances.Max();
@@ -279,11 +279,11 @@ namespace DarwinBots.Modules
             var ac = ab.Unit();
 
             var ad = new DoubleVector(ac.Y, -ac.X);
-            ad *= rob2.radius;
+            ad *= rob2.Radius;
             ad += ab;
 
             ac = new DoubleVector(-ac.Y, ac.X);
-            ac *= rob2.radius;
+            ac *= rob2.Radius;
             ac += ab;
 
             // Coordinates are in the 4th quadrant, so make the y values negative so the math works
@@ -301,9 +301,9 @@ namespace DarwinBots.Modules
 
                 if (!(edgeToEdgeDistance <= eyeDistance)) continue;
 
-                var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob1.mem[Robots.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob1.aim);
+                var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob1.mem[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob1.aim);
 
-                var halfEyeWidth = Physics.IntToRadians(rob1.mem[Robots.EYE1WIDTH + a]) / 2;
+                var halfEyeWidth = Physics.IntToRadians(rob1.mem[MemoryAddresses.EYE1WIDTH + a]) / 2;
 
                 while (halfEyeWidth > Math.PI - Math.PI / 36)
                     halfEyeWidth -= Math.PI;
@@ -340,19 +340,19 @@ namespace DarwinBots.Modules
                 }
 
                 // Check to see if it is closer than other bots we may have seen
-                if (!(rob1.mem[Robots.EyeStart + 1 + a] < eyeValue)) continue;
+                if (!(rob1.mem[MemoryAddresses.EyeStart + 1 + a] < eyeValue)) continue;
 
                 // It is closer than other bots we may have seen.
                 // Check to see if this eye has the focus
-                if (a == Math.Abs(rob1.mem[Robots.FOCUSEYE] + 4) % 9)
+                if (a == Math.Abs(rob1.mem[MemoryAddresses.FOCUSEYE] + 4) % 9)
                 {
                     // This eye does have the focus
                     // Set the EYEF value and also lastopp so the lookoccur list will get populated later
                     rob1.lastopp = rob2;
-                    rob1.mem[Robots.EYEF] = (int)eyeValue;
+                    rob1.mem[MemoryAddresses.EYEF] = (int)eyeValue;
                 }
                 // Set the distance for the eye
-                rob1.mem[Robots.EyeStart + 1 + a] = (int)eyeValue;
+                rob1.mem[MemoryAddresses.EyeStart + 1 + a] = (int)eyeValue;
             }
         }
 
@@ -364,7 +364,7 @@ namespace DarwinBots.Modules
             DoubleVector lastopppos = null;
 
             var sightDistances = Enumerable.Range(0, 8)
-                .Select(a => EyeSightDistance(rob.mem[Robots.EYE1WIDTH + a], rob))
+                .Select(a => EyeSightDistance(rob.mem[MemoryAddresses.EYE1WIDTH + a], rob))
                 .ToArray();
 
             var maxSightDistance = sightDistances.Max();
@@ -379,7 +379,7 @@ namespace DarwinBots.Modules
                 {
                     // Bot is inside shape
                     for (var i = 0; i < 8; i++)
-                        rob.mem[Robots.EyeStart + 1 + i] = 32000;
+                        rob.mem[MemoryAddresses.EyeStart + 1 + i] = 32000;
 
                     rob.lastopp = o;
                     return;
@@ -462,10 +462,10 @@ namespace DarwinBots.Modules
                     // We have to mod the value and divide by 200 to get radians
                     // then since the eyedir values are offsets from their defaults, eye 1 is off from .aim by 4 eye field widths,
                     // three for eye2, and so on.
-                    var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[Robots.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob.aim);
+                    var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob.aim);
 
                     //These are the left and right sides of the field of view for the eye
-                    var halfEyeWidth = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[Robots.EYE1WIDTH + a] + 35)) / 2;
+                    var halfEyeWidth = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[MemoryAddresses.EYE1WIDTH + a] + 35)) / 2;
 
                     var eyeAimLeft = eyeAim + halfEyeWidth;
                     var eyeAimRight = eyeAim - halfEyeWidth;
@@ -619,27 +619,27 @@ namespace DarwinBots.Modules
 
                     if (lowestDist >= 32000) continue;
 
-                    var percentDistance = (lowestDist - rob.radius + 10) / sightDistance;
+                    var percentDistance = (lowestDist - rob.Radius + 10) / sightDistance;
                     var eyeValue = percentDistance <= 0 ? 32000 : (int)(1 / (percentDistance * percentDistance));
 
                     if (eyeValue > 32000)
                         eyeValue = 32000;
 
-                    if (rob.mem[Robots.EyeStart + 1 + a] >= eyeValue) continue;
+                    if (rob.mem[MemoryAddresses.EyeStart + 1 + a] >= eyeValue) continue;
 
                     // It is closer than other bots we may have seen.
                     // Check to see if this eye has the focus
-                    if (a == Math.Abs(rob.mem[Robots.FOCUSEYE] + 4) % 9)
+                    if (a == Math.Abs(rob.mem[MemoryAddresses.FOCUSEYE] + 4) % 9)
                     {
                         //This eye does have the focus
                         //Set the EYEF value and also lastopp so the lookoccur list will get populated later
                         rob.lastopp = o;
-                        rob.mem[Robots.EYEF] = eyeValue;
+                        rob.mem[MemoryAddresses.EYEF] = eyeValue;
                         rob.lastopppos = lastopppos;
                     }
 
                     //Set the distance for the eye
-                    rob.mem[Robots.EyeStart + 1 + a] = eyeValue;
+                    rob.mem[MemoryAddresses.EyeStart + 1 + a] = eyeValue;
                 }
             }
         }

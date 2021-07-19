@@ -18,6 +18,7 @@ namespace DarwinBots.Modules
         private bool _costsWereZeroed;
         private int _dynamicCountdown;
         private ObstaclesManager _obstacleManager;
+        private RobotsManager _robotsManager;
         private ShotsManager _shotsManager;
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
@@ -78,10 +79,8 @@ namespace DarwinBots.Modules
             if (savedFile == null)
                 return;
 
-            Robots.MaxRobs = savedFile.Robots.Count();
-
-            Robots.rob.Clear();
-            Robots.rob.AddRange(savedFile.Robots);
+            _robotsManager.Robots.Clear();
+            _robotsManager.Robots.AddRange(savedFile.Robots);
             SimOpt.Species.Clear();
             SimOpt.Species.AddRange(savedFile.Species);
             _obstacleManager.Obstacles.Clear();
@@ -176,14 +175,14 @@ namespace DarwinBots.Modules
 
         public robot RobotAtPoint(DoubleVector point)
         {
-            return Robots.rob
+            return _robotsManager.Robots
                  .Where(r => r.exist)
                  .Select(r => new
                  {
                      Robot = r,
                      Distance = (r.pos - r.vel + r.actvel - point).MagnitudeSquare()
                  })
-                 .Where(r => r.Distance < r.Robot.radius * r.Robot.radius)
+                 .Where(r => r.Distance < r.Robot.Radius * r.Robot.Radius)
                  .OrderByDescending(r => r.Distance)
                  .FirstOrDefault()?.Robot;
         }
@@ -246,7 +245,7 @@ namespace DarwinBots.Modules
                 Pondmode = SimOpt.SimOpts.PondMode,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
-                Robots = Robots.rob.Where(r => r.exist),
+                Robots = _robotsManager.Robots.Where(r => r.exist),
                 ShapeDriftRate = SimOpt.SimOpts.ShapeDriftRate,
                 ShapesAbsorbShots = SimOpt.SimOpts.ShapesAbsorbShots,
                 ShapesAreSeeThrough = SimOpt.SimOpts.ShapesAreSeeThrough,
@@ -307,20 +306,21 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
-            _shotsManager.MaxBotShotSeparation = Math.Pow(Robots.FindRadius(null, -1), 2) +
-                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robots.RobSize / 3.0, 2);
+            _shotsManager.MaxBotShotSeparation = Math.Pow(robot.StandardRadius, 2) +
+                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + RobotsManager.RobSize / 3.0, 2);
 
             if (!startLoaded)
             {
                 _shotsManager = new ShotsManager();
                 _bucketManager = new BucketManager(SimOpt.SimOpts);
                 _obstacleManager = new ObstaclesManager();
-                Robots.rob.Clear();
+                _robotsManager = new RobotsManager();
             }
 
             Globals.BucketManager = _bucketManager;
             Globals.ObstacleManager = _obstacleManager;
             Globals.ShotsManager = _shotsManager;
+            Globals.RobotsManager = _robotsManager;
 
             if (!startLoaded)
                 await LoadRobots();
@@ -380,11 +380,9 @@ namespace DarwinBots.Modules
                     rob.pos = new DoubleVector(ThreadSafeRandom.Local.Next((int)(species.Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(species.Posrg * (SimOpt.SimOpts.FieldWidth - 60))), ThreadSafeRandom.Local.Next((int)(species.Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(species.Posdn * (SimOpt.SimOpts.FieldHeight - 60))));
 
                     rob.nrg = species.Stnrg;
-                    rob.body = 1000;
+                    rob.Body = 1000;
 
-                    rob.radius = Robots.FindRadius(rob);
-
-                    rob.mem[Robots.SetAim] = Physics.RadiansToInt(rob.aim * 200);
+                    rob.mem[MemoryAddresses.SetAim] = Physics.RadiansToInt(rob.aim * 200);
                     if (rob.Veg)
                         rob.chloroplasts = Globals.StartChlr;
 
@@ -398,7 +396,7 @@ namespace DarwinBots.Modules
                     }
 
                     rob.color = species.color;
-                    rob.mem[Robots.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
+                    rob.mem[MemoryAddresses.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
                     rob.CantSee = species.CantSee;
                     rob.DisableDNA = species.DisableDNA;
                     rob.DisableMovementSysvars = species.DisableMovementSysvars;
@@ -408,10 +406,10 @@ namespace DarwinBots.Modules
                     rob.Vtimer = 0;
                     rob.genenum = DnaManipulations.CountGenes(rob.dna);
 
-                    rob.GenMut = (double)rob.dna.Count / Robots.GeneticSensitivity; //Botsareus 4/9/2013 automatically apply genetic to inserted robots
+                    rob.GenMut = (double)rob.dna.Count / RobotsManager.GeneticSensitivity; //Botsareus 4/9/2013 automatically apply genetic to inserted robots
 
-                    rob.mem[Robots.DnaLenSys] = rob.dna.Count;
-                    rob.mem[Robots.GenesSys] = rob.genenum;
+                    rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
+                    rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
                 }
             }
         }
@@ -526,28 +524,28 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.Costs = SimOpt.SimOpts.Costs with { CostMultiplier = SimOpt.SimOpts.OldCostX };
             }
 
-            DnaEngine.ExecRobs(SimOpt.SimOpts.Costs, Robots.rob);
+            DnaEngine.ExecRobs(SimOpt.SimOpts.Costs, _robotsManager.Robots);
 
             //updateshots can write to bot sense, so we need to clear bot senses before updating shots
-            foreach (var rob in Robots.rob.Where(r => r.exist && r.DisableDNA == false))
+            foreach (var rob in _robotsManager.Robots.Where(r => r.exist && r.DisableDNA == false))
                 Senses.EraseSenses(rob);
 
             _shotsManager.UpdateShots();
 
             //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in Robots.rob.Where(r => r.exist))
+            foreach (var rob in _robotsManager.Robots.Where(r => r.exist))
                 rob.opos = rob.pos;
 
-            await Robots.UpdateBots();
+            await _robotsManager.UpdateBots();
 
             //to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in Robots.rob.Where(r => r.exist && !(r.opos.X == 0 & r.opos.Y == 0)))
+            foreach (var rob in _robotsManager.Robots.Where(r => r.exist && !(r.opos.X == 0 & r.opos.Y == 0)))
                 rob.actvel = rob.pos - rob.opos;
 
             if (_obstacleManager.Obstacles.Count > 0)
                 _obstacleManager.MoveObstacles();
 
-            var allChlr = (int)Robots.rob.Where(r => r.exist).Sum(r => r.chloroplasts);
+            var allChlr = (int)_robotsManager.Robots.Where(r => r.exist).Sum(r => r.chloroplasts);
 
             Globals.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
@@ -557,18 +555,18 @@ namespace DarwinBots.Modules
             Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);
 
             //Kill some robots to prevent of memory
-            var totlen = Robots.rob.Where(r => r.exist).Sum(r => r.dna.Count);
+            var totlen = _robotsManager.Robots.Where(r => r.exist).Sum(r => r.dna.Count);
 
             if (totlen > 4000000)
             {
-                var maxdel = 1500 * (Robots.TotalRobotsDisplayed * 425 / totlen);
+                var maxdel = 1500 * (_robotsManager.TotalRobots * 425 / totlen);
 
-                foreach (var rob in Robots.rob.Where(r => r.exist).OrderByDescending(r => r.nrg + r.body * 10).Take(maxdel).ToArray())
-                    await Robots.KillRobot(rob);
+                foreach (var rob in _robotsManager.Robots.Where(r => r.exist).OrderByDescending(r => r.nrg + r.Body * 10).Take(maxdel).ToArray())
+                    await _robotsManager.KillRobot(rob);
             }
             if (totlen > 3000000)
             {
-                foreach (var rob in Robots.rob)
+                foreach (var rob in _robotsManager.Robots)
                     rob.LastMutDetail = "";
             }
         }

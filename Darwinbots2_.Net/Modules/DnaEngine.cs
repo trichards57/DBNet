@@ -327,7 +327,7 @@ namespace DarwinBots.Modules
 
         private static int NormaliseMemoryAddress(int a)
         {
-            a = Math.Abs(a) % Robots.MaxMem;
+            a = Math.Abs(a) % RobotsManager.MaxMem;
             if (a == 0)
                 a = 1000;
 
@@ -733,7 +733,7 @@ namespace DarwinBots.Modules
                     case 9:
                         if (!ExecuteFlowCommands(rob, block.Value))
                             rob.condnum++;
-                        rob.mem[Robots.thisgene] = _currentGene;
+                        rob.mem[MemoryAddresses.thisgene] = _currentGene;
                         break;
                 }
             }

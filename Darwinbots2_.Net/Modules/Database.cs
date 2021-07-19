@@ -37,7 +37,7 @@ namespace DarwinBots.Modules
 
             await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
 
-            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.Body * 10},{rob.chloroplasts}");
             await deadRobotsFile.WriteLineAsync(DnaTokenizing.DetokenizeDna(rob).Trim());
         }
 
@@ -75,12 +75,12 @@ namespace DarwinBots.Modules
                 }
 
                 // Records a snapshot of all living robots in a snapshot database
-                foreach (var rob in Robots.rob.Where(r => r.exist && r.dna.Count > 1))
+                foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist && r.dna.Count > 1))
                 {
                     if (mutationsFiles != null)
                         await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
 
-                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.body * 10},{rob.chloroplasts}");
+                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.Body * 10},{rob.chloroplasts}");
                     await snapFile.WriteLineAsync(DnaTokenizing.DetokenizeDna(rob).Trim());
                 }
 

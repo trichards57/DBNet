@@ -41,9 +41,9 @@ namespace DarwinBots.Modules
 
                 if (rob.Waste > 0)
                 {
-                    if (rob.body + body < 32000)
+                    if (rob.Body + body < 32000)
                     {
-                        rob.body += body;
+                        rob.Body += body;
                         rob.Waste -= rob.chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
                     }
 
@@ -55,9 +55,9 @@ namespace DarwinBots.Modules
             {
                 if (rob.Waste > 0)
                 {
-                    if (rob.body + body < 32000)
+                    if (rob.Body + body < 32000)
                     {
-                        rob.body += body;
+                        rob.Body += body;
                         rob.Waste -= rob.chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
                     }
 
@@ -202,7 +202,7 @@ namespace DarwinBots.Modules
             }
 
             //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
-            foreach (var rob in Robots.rob.Where(r => r.nrg > 0 && r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.nrg > 0 && r.exist))
             {
                 rob.mem[218] = 0;
             }
@@ -214,7 +214,7 @@ namespace DarwinBots.Modules
 
             ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
 
-            var TotalRobotArea = Robots.rob.Where(r => r.exist).Sum(r => Math.Pow(r.radius, 2) * Math.PI);
+            var TotalRobotArea = Globals.RobotsManager.Robots.Where(r => r.exist).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
 
             if (ScreenArea < 1)
             {
@@ -244,7 +244,7 @@ namespace DarwinBots.Modules
                 sunstart2 = 0;
             }
 
-            foreach (var rob in Robots.rob.Where(r => r.nrg > 0 && r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.nrg > 0 && r.exist))
             {
                 double acttok = 0;
                 //Botsareus 8/16/2014 Allow robots to share chloroplasts again
@@ -284,26 +284,22 @@ namespace DarwinBots.Modules
                 }
                 rob.mem[218] = 1; //Botsareus 8/16/2014 Now it is time view the sun
 
-                if (rob.chloroplasts > 0)
-                {
-                    acttok -= rob.age * rob.chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
+                if (!(rob.chloroplasts > 0))
+                    continue;
 
-                    if (SimOpt.TmpOpts.Tides > 0)
-                    {
-                        acttok *= (1 - Physics.BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
-                    }
+                acttok -= rob.age * rob.chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
 
-                    rob.nrg += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);
-                    rob.body += acttok * SimOpt.SimOpts.VegFeedingToBody / 10;
+                if (SimOpt.TmpOpts.Tides > 0)
+                    acttok *= (1 - Physics.BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
 
-                    if (rob.nrg > 32000)
-                        rob.nrg = 32000;
+                rob.nrg += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);
+                rob.Body += acttok * SimOpt.SimOpts.VegFeedingToBody / 10;
 
-                    if (rob.body > 32000)
-                        rob.body = 32000;
+                if (rob.nrg > 32000)
+                    rob.nrg = 32000;
 
-                    rob.radius = Robots.FindRadius(rob);
-                }
+                if (rob.Body > 32000)
+                    rob.Body = 32000;
             }
         }
 
@@ -369,8 +365,7 @@ namespace DarwinBots.Modules
             a.VirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
             a.Corpse = false;
             a.Dead = false;
-            a.body = 1000;
-            a.radius = Robots.FindRadius(a);
+            a.Body = 1000;
             a.Mutations = 0;
             a.OldMutations = 0;
             a.LastMut = 0;
@@ -385,7 +380,7 @@ namespace DarwinBots.Modules
             a.pos = new DoubleVector(x, y);
 
             a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
-            a.mem[Robots.SetAim] = (int)a.aim * 200;
+            a.mem[MemoryAddresses.SetAim] = (int)a.aim * 200;
 
             //Bot is already in a bucket due to the prepare routine
             Globals.BucketManager.UpdateBotBucket(a);
@@ -396,10 +391,10 @@ namespace DarwinBots.Modules
             a.virusshot = null;
             a.genenum = DnaManipulations.CountGenes(a.dna);
 
-            a.GenMut = (double)a.dna.Count / Robots.GeneticSensitivity;
+            a.GenMut = (double)a.dna.Count / RobotsManager.GeneticSensitivity;
 
-            a.mem[Robots.DnaLenSys] = a.dna.Count;
-            a.mem[Robots.GenesSys] = a.genenum;
+            a.mem[MemoryAddresses.DnaLenSys] = a.dna.Count;
+            a.mem[MemoryAddresses.GenesSys] = a.genenum;
 
             a.multibot_time = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
             a.NoChlr = SimOpt.SimOpts.Specie[r].NoChlr;
@@ -417,7 +412,7 @@ namespace DarwinBots.Modules
                 return false;
 
             //see if any active robots have chloroplasts
-            if (Robots.rob.Where(r => r.exist && r.chloroplasts > 0)
+            if (Globals.RobotsManager.Robots.Where(r => r.exist && r.chloroplasts > 0)
                 .Select(rob => new { rob, splitname = rob.FName.Split(")") })
                 .Select(t =>
                     t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
@@ -428,7 +423,7 @@ namespace DarwinBots.Modules
             }
 
             //If there is no robots at all with chlr then repop everything
-            return !Robots.rob.Any(r => r.exist && r.Veg && r.age > 0);
+            return !Globals.RobotsManager.Robots.Any(r => r.exist && r.Veg && r.age > 0);
         }
     }
 }

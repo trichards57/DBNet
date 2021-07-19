@@ -13,7 +13,7 @@ namespace DarwinBots.Modules
 
         public static void AddedMass(robot rob)
         {
-            rob.AddedMass = AddedMassCoefficientForASphere * SimOpt.SimOpts.Density * (Math.PI * 4 / 3) * Math.Pow(rob.radius, 3);
+            rob.AddedMass = AddedMassCoefficientForASphere * SimOpt.SimOpts.Density * (Math.PI * 4 / 3) * Math.Pow(rob.Radius, 3);
         }
 
         public static double AngDiff(double a1, double a2)
@@ -38,12 +38,12 @@ namespace DarwinBots.Modules
         {
             const double b = 0.05;
 
-            if (rob.pos.X > rob.radius && rob.pos.X < SimOpt.SimOpts.FieldWidth - rob.radius && rob.pos.Y > rob.radius && rob.pos.Y < SimOpt.SimOpts.FieldHeight - rob.radius)
+            if (rob.pos.X > rob.Radius && rob.pos.X < SimOpt.SimOpts.FieldWidth - rob.Radius && rob.pos.Y > rob.Radius && rob.pos.Y < SimOpt.SimOpts.FieldHeight - rob.Radius)
                 return;
 
             rob.mem[214] = 0;
 
-            var smudge = rob.radius + SmudgeFactor;
+            var smudge = rob.Radius + SmudgeFactor;
 
             var dif = DoubleVector.Min(DoubleVector.Max(rob.pos, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpt.SimOpts.FieldWidth - smudge, SimOpt.SimOpts.FieldHeight - smudge));
             var dist = dif - rob.pos;
@@ -61,11 +61,11 @@ namespace DarwinBots.Modules
                 {
                     rob.mem[214] = 1;
 
-                    if (rob.pos.X - rob.radius < 0)
-                        rob.pos = rob.pos with { X = rob.radius };
+                    if (rob.pos.X - rob.Radius < 0)
+                        rob.pos = rob.pos with { X = rob.Radius };
 
-                    if (rob.pos.X + rob.radius > SimOpt.SimOpts.FieldWidth)
-                        rob.pos = rob.pos with { X = SimOpt.SimOpts.FieldWidth - rob.radius };
+                    if (rob.pos.X + rob.Radius > SimOpt.SimOpts.FieldWidth)
+                        rob.pos = rob.pos with { X = SimOpt.SimOpts.FieldWidth - rob.Radius };
 
                     rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
                 }
@@ -84,11 +84,11 @@ namespace DarwinBots.Modules
                 {
                     rob.mem[214] = 1;
 
-                    if (rob.pos.Y - rob.radius < 0)
-                        rob.pos = rob.pos with { Y = rob.radius };
+                    if (rob.pos.Y - rob.Radius < 0)
+                        rob.pos = rob.pos with { Y = rob.Radius };
 
-                    if (rob.pos.Y + rob.radius > SimOpt.SimOpts.FieldHeight)
-                        rob.pos = rob.pos with { Y = SimOpt.SimOpts.FieldHeight - rob.radius };
+                    if (rob.pos.Y + rob.Radius > SimOpt.SimOpts.FieldHeight)
+                        rob.pos = rob.pos with { Y = SimOpt.SimOpts.FieldHeight - rob.Radius };
 
                     rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
                 }
@@ -97,7 +97,7 @@ namespace DarwinBots.Modules
 
         public static void CalcMass(robot rob)
         {
-            rob.mass = Math.Clamp(rob.body / 1000 + rob.shell / 200 + rob.chloroplasts / 32000 * 31680, 1, 32000);
+            rob.mass = Math.Clamp(rob.Body / 1000 + rob.shell / 200 + rob.chloroplasts / 32000 * 31680, 1, 32000);
         }
 
         public static double IntToRadians(int angle)
@@ -152,7 +152,7 @@ namespace DarwinBots.Modules
             //mass or size.
             if (rob1.Fixed && rob2.Fixed || rob1.vel.Magnitude() < 0.0001 && rob2.vel.Magnitude() < 0.0001)
             {
-                fixedSep = (rob1.radius + rob2.radius - currDist) / 2;
+                fixedSep = (rob1.Radius + rob2.Radius - currDist) / 2;
                 fixedSepVector = normal.Unit() * fixedSep;
                 rob1.pos -= fixedSepVector;
                 rob2.pos += fixedSepVector;
@@ -160,7 +160,7 @@ namespace DarwinBots.Modules
             else
             {
                 var totalMass = rob1.mass + rob2.mass;
-                fixedSep = rob1.radius + rob2.radius - currDist;
+                fixedSep = rob1.Radius + rob2.Radius - currDist;
                 fixedSepVector = normal.Unit() * (fixedSep / (1 + Math.Pow(55, 0.3 - e)));
                 rob1.pos -= fixedSepVector * (rob2.mass / totalMass);
                 rob2.pos -= fixedSepVector * (rob1.mass / totalMass);
@@ -251,7 +251,7 @@ namespace DarwinBots.Modules
 
                 //delete tie if length > 1000
                 //remember length is inverse squareroot
-                if (length - rob.radius - tie.OtherBot.radius > 1000)
+                if (length - rob.Radius - tie.OtherBot.Radius > 1000)
                 {
                     Ties.DeleteTie(rob, tie.OtherBot);
                 }
@@ -398,7 +398,7 @@ namespace DarwinBots.Modules
             if (!SimOpt.SimOpts.PlanetEaters || rob.mass == 0)
                 return;
 
-            foreach (var r in Robots.rob.Where(r => r.mass > 0 && r.exist))
+            foreach (var r in Globals.RobotsManager.Robots.Where(r => r.mass > 0 && r.exist))
             {
                 var posDiff = r.pos - rob.pos;
                 var mag = posDiff.Magnitude();
@@ -469,7 +469,7 @@ namespace DarwinBots.Modules
             if (mag < 0.0000001)
                 return;
 
-            var impulse = 0.5 * SphereCd(mag, rob.radius) * SimOpt.SimOpts.Density * mag * mag * (Math.PI * Math.Pow(rob.radius, 2));
+            var impulse = 0.5 * SphereCd(mag, rob.Radius) * SimOpt.SimOpts.Density * mag * mag * (Math.PI * Math.Pow(rob.Radius, 2));
 
             if (impulse > mag)
                 impulse = mag * 0.99; // Prevents the resistance force from exceeding the velocity!
@@ -480,13 +480,13 @@ namespace DarwinBots.Modules
         private static void VoluntaryForces(robot rob)
         {
             //corpses are dead, they don't move around of their own volition
-            if (rob.Corpse || rob.DisableMovementSysvars || rob.DisableDNA || !rob.exist || rob.mem[Robots.dirup] == 0 && rob.mem[Robots.dirdn] == 0 && rob.mem[Robots.dirsx] == 0 && rob.mem[Robots.dirdx] == 0)
+            if (rob.Corpse || rob.DisableMovementSysvars || rob.DisableDNA || !rob.exist || rob.mem[MemoryAddresses.dirup] == 0 && rob.mem[MemoryAddresses.dirdn] == 0 && rob.mem[MemoryAddresses.dirsx] == 0 && rob.mem[MemoryAddresses.dirdx] == 0)
                 return;
 
             var mult = rob.NewMove == false ? rob.mass : 1;
 
             //yes it's backwards, that's on purpose
-            var dir = new DoubleVector(rob.mem[Robots.dirup] - rob.mem[Robots.dirdn], rob.mem[Robots.dirsx] - rob.mem[Robots.dirdx]) * mult;
+            var dir = new DoubleVector(rob.mem[MemoryAddresses.dirup] - rob.mem[MemoryAddresses.dirdn], rob.mem[MemoryAddresses.dirsx] - rob.mem[MemoryAddresses.dirdx]) * mult;
 
             var newAccel = new DoubleVector(DoubleVector.Dot(rob.aimvector, dir), DoubleVector.Cross(rob.aimvector, dir));
 

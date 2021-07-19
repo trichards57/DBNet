@@ -17,8 +17,8 @@ namespace DarwinBots.Modules
 
             DeleteSpecificGene(rob.dna, g);
             rob.genenum = DnaManipulations.CountGenes(rob.dna);
-            rob.mem[Robots.DnaLenSys] = rob.dna.Count;
-            rob.mem[Robots.GenesSys] = rob.genenum;
+            rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
+            rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
             Senses.MakeOccurrList(rob);
         }
 
@@ -27,7 +27,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.TotRunCycle == 0)
                 return;
 
-            if (rob.LastMutDetail.Length > 100000000 / Robots.TotalRobotsDisplayed)
+            if (rob.LastMutDetail.Length > 100000000 / Globals.RobotsManager.TotalRobots)
                 rob.LastMutDetail = "";
 
             rob.LastMutDetail = $"{strmut}\n{rob.LastMutDetail}";
@@ -106,8 +106,8 @@ namespace DarwinBots.Modules
             MutateColours(rob, delta);
             rob.SubSpecies = NewSubSpecies(rob);
             rob.genenum = DnaManipulations.CountGenes(rob.dna);
-            rob.mem[Robots.DnaLenSys] = rob.dna.Count;
-            rob.mem[Robots.GenesSys] = rob.genenum;
+            rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
+            rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
         }
 
         public static int NewSubSpecies(robot rob)

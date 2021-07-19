@@ -7,6 +7,7 @@ namespace DarwinBots.Modules
     {
         public static BucketManager BucketManager { get; set; }
         public static ObstaclesManager ObstacleManager { get; set; }
+        public static RobotsManager RobotsManager { get; set; }
         public static ShotsManager ShotsManager { get; set; }
         public static int StartChlr => 32000;
         public static int TotalChlr { get; set; }

@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using System;
 using System.Linq;
-using static DarwinBots.Modules.Robots;
 using static DarwinBots.Modules.SimOpt;
 
 namespace DarwinBots.Modules
@@ -11,17 +10,17 @@ namespace DarwinBots.Modules
         public static void EraseSenses(robot rob)
         {
             rob.lasttch = null; //Botsareus 11/26/2013 Erase lasttch here
-            rob.mem[hitup] = 0;
-            rob.mem[hitdn] = 0;
-            rob.mem[hitdx] = 0;
-            rob.mem[hitsx] = 0;
-            rob.mem[hit] = 0;
-            rob.mem[shflav] = 0;
-            rob.mem[209] = 0; //.shang
-            rob.mem[shup] = 0;
-            rob.mem[shdn] = 0;
-            rob.mem[shdx] = 0;
-            rob.mem[shsx] = 0;
+            rob.mem[MemoryAddresses.hitup] = 0;
+            rob.mem[MemoryAddresses.hitdn] = 0;
+            rob.mem[MemoryAddresses.hitdx] = 0;
+            rob.mem[MemoryAddresses.hitsx] = 0;
+            rob.mem[MemoryAddresses.hit] = 0;
+            rob.mem[MemoryAddresses.shflav] = 0;
+            rob.mem[MemoryAddresses.shang] = 0; //.shang
+            rob.mem[MemoryAddresses.shup] = 0;
+            rob.mem[MemoryAddresses.shdn] = 0;
+            rob.mem[MemoryAddresses.shdx] = 0;
+            rob.mem[MemoryAddresses.shsx] = 0;
             rob.mem[214] = 0; //edge collision detection
             EraseLookOccurr(rob);
         }
@@ -31,60 +30,60 @@ namespace DarwinBots.Modules
             if (rob1.Corpse)
                 return;
 
-            rob1.mem[REFTYPE] = 0;
+            rob1.mem[MemoryAddresses.REFTYPE] = 0;
 
             for (var t = 1; t < 8; t++)
-                rob1.mem[occurrstart + t] = rob2.occurr[t];
+                rob1.mem[MemoryAddresses.occurrstart + t] = rob2.occurr[t];
 
-            rob1.mem[occurrstart + 9] = (int)Math.Clamp(rob2.nrg, 0, 32000);
+            rob1.mem[MemoryAddresses.occurrstart + 9] = (int)Math.Clamp(rob2.nrg, 0, 32000);
 
             if (rob2.age < 32001)
-                rob1.mem[occurrstart + 10] = rob2.age; //.refage
+                rob1.mem[MemoryAddresses.occurrstart + 10] = rob2.age; //.refage
             else
-                rob1.mem[occurrstart + 10] = 32000;
+                rob1.mem[MemoryAddresses.occurrstart + 10] = 32000;
 
-            rob1.mem[in1] = rob2.mem[out1];
-            rob1.mem[in2] = rob2.mem[out2];
-            rob1.mem[in3] = rob2.mem[out3];
-            rob1.mem[in4] = rob2.mem[out4];
-            rob1.mem[in5] = rob2.mem[out5];
-            rob1.mem[in6] = rob2.mem[out6];
-            rob1.mem[in7] = rob2.mem[out7];
-            rob1.mem[in8] = rob2.mem[out8];
-            rob1.mem[in9] = rob2.mem[out9];
-            rob1.mem[in10] = rob2.mem[out10];
+            rob1.mem[MemoryAddresses.in1] = rob2.mem[MemoryAddresses.out1];
+            rob1.mem[MemoryAddresses.in2] = rob2.mem[MemoryAddresses.out2];
+            rob1.mem[MemoryAddresses.in3] = rob2.mem[MemoryAddresses.out3];
+            rob1.mem[MemoryAddresses.in4] = rob2.mem[MemoryAddresses.out4];
+            rob1.mem[MemoryAddresses.in5] = rob2.mem[MemoryAddresses.out5];
+            rob1.mem[MemoryAddresses.in6] = rob2.mem[MemoryAddresses.out6];
+            rob1.mem[MemoryAddresses.in7] = rob2.mem[MemoryAddresses.out7];
+            rob1.mem[MemoryAddresses.in8] = rob2.mem[MemoryAddresses.out8];
+            rob1.mem[MemoryAddresses.in9] = rob2.mem[MemoryAddresses.out9];
+            rob1.mem[MemoryAddresses.in10] = rob2.mem[MemoryAddresses.out10];
 
-            rob1.mem[711] = rob2.mem[18]; //refaim
-            rob1.mem[712] = rob2.occurr[9]; //reftie
+            rob1.mem[MemoryAddresses.refaim] = rob2.mem[18]; //refaim
+            rob1.mem[MemoryAddresses.reftie] = rob2.occurr[9]; //reftie
 
-            rob1.mem[refshell] = (int)rob2.shell;
-            rob1.mem[refbody] = (int)rob2.body;
-            rob1.mem[refypos] = rob2.mem[217];
-            rob1.mem[refxpos] = rob2.mem[219];
+            rob1.mem[MemoryAddresses.refshell] = (int)rob2.shell;
+            rob1.mem[MemoryAddresses.refbody] = (int)rob2.Body;
+            rob1.mem[MemoryAddresses.refypos] = rob2.mem[MemoryAddresses.ypos];
+            rob1.mem[MemoryAddresses.refxpos] = rob2.mem[MemoryAddresses.xpos];
             //give reference variables from the bots frame of reference
-            var x = Math.Clamp(rob2.vel.X * Math.Cos(rob1.aim) + rob2.vel.Y * Math.Sin(rob1.aim) * -1 - rob1.mem[velup], -32000, 32000);
-            var y = Math.Clamp(rob2.vel.Y * Math.Cos(rob1.aim) + rob2.vel.X * Math.Sin(rob1.aim) - rob1.mem[veldx], -32000, 32000);
+            var x = Math.Clamp(rob2.vel.X * Math.Cos(rob1.aim) + rob2.vel.Y * Math.Sin(rob1.aim) * -1 - rob1.mem[MemoryAddresses.velup], -32000, 32000);
+            var y = Math.Clamp(rob2.vel.Y * Math.Cos(rob1.aim) + rob2.vel.X * Math.Sin(rob1.aim) - rob1.mem[MemoryAddresses.veldx], -32000, 32000);
 
-            rob1.mem[refvelup] = (int)x;
-            rob1.mem[refveldn] = rob1.mem[refvelup] * -1;
-            rob1.mem[refveldx] = (int)y;
-            rob1.mem[refvelsx] = rob1.mem[refvelsx] * -1;
+            rob1.mem[MemoryAddresses.refvelup] = (int)x;
+            rob1.mem[MemoryAddresses.refveldn] = rob1.mem[MemoryAddresses.refvelup] * -1;
+            rob1.mem[MemoryAddresses.refveldx] = (int)y;
+            rob1.mem[MemoryAddresses.refvelsx] = rob1.mem[MemoryAddresses.refvelsx] * -1;
 
-            var temp = Math.Sqrt(Math.Pow(rob1.mem[refvelup], 2) + Math.Pow(rob1.mem[refveldx], 2)); // how fast is this robot moving compared to me?
+            var temp = Math.Sqrt(Math.Pow(rob1.mem[MemoryAddresses.refvelup], 2) + Math.Pow(rob1.mem[MemoryAddresses.refveldx], 2)); // how fast is this robot moving compared to me?
             if (temp > 32000)
                 temp = 32000;
 
-            rob1.mem[refvelscalar] = (int)temp;
+            rob1.mem[MemoryAddresses.refvelscalar] = (int)temp;
             rob1.mem[713] = rob2.mem[827]; //refpoison. current value of poison. not poison commands
             rob1.mem[714] = rob2.mem[825]; //refvenom (as with poison)
             rob1.mem[715] = rob2.Kills; //refkills
-            rob1.mem[refmulti] = rob2.Multibot ? 1 : 0;
+            rob1.mem[MemoryAddresses.refmulti] = rob2.Multibot ? 1 : 0;
 
             if (rob1.mem[474] > 0 & rob1.mem[474] <= 1000)
             {
                 //readmem and memloc couple used to read a specified memory location of the target robot
                 rob1.mem[473] = rob2.mem[rob1.mem[474]];
-                if (rob1.mem[474] > EyeStart && rob1.mem[474] < EyeEnd)
+                if (rob1.mem[474] > MemoryAddresses.EyeStart && rob1.mem[474] < MemoryAddresses.EyeEnd)
                     rob2.View = true;
             }
 
@@ -164,15 +163,15 @@ namespace DarwinBots.Modules
             var dang = Physics.NormaliseAngle(ang - aim);
             var addr = dang switch
             {
-                > 5.49 or <= 0.78 => shup,
-                > 0.78 and <= 2.36 => shdx,
-                > 2.36 and <= 3.92 => shdn,
-                _ => shsx,
+                > 5.49 or <= 0.78 => MemoryAddresses.shup,
+                > 0.78 and <= 2.36 => MemoryAddresses.shdx,
+                > 2.36 and <= 3.92 => MemoryAddresses.shdn,
+                _ => MemoryAddresses.shsx,
             };
 
             rob.mem[addr] = value;
             rob.mem[209] = (int)(dang * 200);
-            rob.mem[shflav] = value;
+            rob.mem[MemoryAddresses.shflav] = value;
         }
 
         public static void Touch(robot rob, double x, double y)
@@ -186,21 +185,21 @@ namespace DarwinBots.Modules
             var dang = Physics.NormaliseAngle(ang - aim);
             var addr = dang switch
             {
-                > 5.49 or <= 0.78 => hitup,
-                > 0.78 and <= 2.36 => hitdn,
-                > 2.36 and <= 3.92 => hitdx,
-                _ => hitsx,
+                > 5.49 or <= 0.78 => MemoryAddresses.hitup,
+                > 0.78 and <= 2.36 => MemoryAddresses.hitdn,
+                > 2.36 and <= 3.92 => MemoryAddresses.hitdx,
+                _ => MemoryAddresses.hitsx,
             };
             rob.mem[addr] = 1;
-            rob.mem[hit] = 1;
+            rob.mem[MemoryAddresses.hit] = 1;
         }
 
         public static void WriteSenses(robot rob)
         {
             LandMark(rob);
 
-            rob.mem[TotalBots] = TotalRobots;
-            rob.mem[TOTALMYSPECIES] = SpeciesFromBot(rob).population;
+            rob.mem[MemoryAddresses.TotalBots] = Globals.RobotsManager.TotalRobots;
+            rob.mem[MemoryAddresses.TOTALMYSPECIES] = SpeciesFromBot(rob).population;
 
             if (!rob.CantSee && !rob.Corpse && Globals.BucketManager.BucketsProximity(rob) != null)
             {
@@ -228,17 +227,17 @@ namespace DarwinBots.Modules
             if (rob.nrg < 0)
                 rob.nrg = 0;
 
-            rob.mem[pain] = (int)(rob.onrg - rob.nrg);
-            rob.mem[pleas] = -rob.mem[pain];
-            rob.mem[bodloss] = (int)(rob.obody - rob.body);
-            rob.mem[bodgain] = -rob.mem[bodloss];
+            rob.mem[MemoryAddresses.pain] = (int)(rob.onrg - rob.nrg);
+            rob.mem[MemoryAddresses.pleas] = -rob.mem[MemoryAddresses.pain];
+            rob.mem[MemoryAddresses.bodloss] = (int)(rob.obody - rob.Body);
+            rob.mem[MemoryAddresses.bodgain] = -rob.mem[MemoryAddresses.bodloss];
 
             rob.onrg = rob.nrg;
-            rob.obody = rob.body;
-            rob.mem[Energy] = (int)rob.nrg;
+            rob.obody = rob.Body;
+            rob.mem[MemoryAddresses.Energy] = (int)rob.nrg;
 
-            if (rob.age == 0 & rob.mem[body] == 0)
-                rob.mem[body] = (int)rob.body;
+            if (rob.age == 0 & rob.mem[MemoryAddresses.body] == 0)
+                rob.mem[MemoryAddresses.body] = (int)rob.Body;
 
             rob.mem[215] = rob.Fixed ? 1 : 0;
 
@@ -256,49 +255,49 @@ namespace DarwinBots.Modules
             if (rob.Corpse)
                 return;
 
-            rob.mem[REFTYPE] = 0;
+            rob.mem[MemoryAddresses.REFTYPE] = 0;
 
             for (var t = 1; t < 10; t++)
             {
-                rob.mem[occurrstart + t] = 0;
+                rob.mem[MemoryAddresses.occurrstart + t] = 0;
             }
 
-            rob.mem[in1] = 0;
-            rob.mem[in2] = 0;
-            rob.mem[in3] = 0;
-            rob.mem[in4] = 0;
-            rob.mem[in5] = 0;
-            rob.mem[in6] = 0;
-            rob.mem[in7] = 0;
-            rob.mem[in8] = 0;
-            rob.mem[in9] = 0;
-            rob.mem[in10] = 0;
+            rob.mem[MemoryAddresses.in1] = 0;
+            rob.mem[MemoryAddresses.in2] = 0;
+            rob.mem[MemoryAddresses.in3] = 0;
+            rob.mem[MemoryAddresses.in4] = 0;
+            rob.mem[MemoryAddresses.in5] = 0;
+            rob.mem[MemoryAddresses.in6] = 0;
+            rob.mem[MemoryAddresses.in7] = 0;
+            rob.mem[MemoryAddresses.in8] = 0;
+            rob.mem[MemoryAddresses.in9] = 0;
+            rob.mem[MemoryAddresses.in10] = 0;
 
             rob.mem[711] = 0;
             rob.mem[712] = 0;
-            rob.mem[refshell] = 0;
-            rob.mem[refbody] = 0;
-            rob.mem[refypos] = 0;
-            rob.mem[refxpos] = 0;
-            rob.mem[refvelup] = 0;
-            rob.mem[refveldn] = 0;
-            rob.mem[refveldx] = 0;
-            rob.mem[refvelsx] = 0;
-            rob.mem[refvelscalar] = 0;
+            rob.mem[MemoryAddresses.refshell] = 0;
+            rob.mem[MemoryAddresses.refbody] = 0;
+            rob.mem[MemoryAddresses.refypos] = 0;
+            rob.mem[MemoryAddresses.refxpos] = 0;
+            rob.mem[MemoryAddresses.refvelup] = 0;
+            rob.mem[MemoryAddresses.refveldn] = 0;
+            rob.mem[MemoryAddresses.refveldx] = 0;
+            rob.mem[MemoryAddresses.refvelsx] = 0;
+            rob.mem[MemoryAddresses.refvelscalar] = 0;
             rob.mem[713] = 0;
             rob.mem[714] = 0;
             rob.mem[715] = 0;
-            rob.mem[refmulti] = 0;
+            rob.mem[MemoryAddresses.refmulti] = 0;
             rob.mem[473] = 0;
             rob.mem[477] = 0;
         }
 
         private static void LandMark(robot rob)
         {
-            rob.mem[LandM] = 0;
+            rob.mem[MemoryAddresses.LandM] = 0;
             if (rob.aim is > 1.39 and < 1.75)
             {
-                rob.mem[LandM] = 1;
+                rob.mem[MemoryAddresses.LandM] = 1;
             }
         }
 
@@ -307,48 +306,48 @@ namespace DarwinBots.Modules
             if (rob.Corpse)
                 return;
 
-            rob.mem[REFTYPE] = 1;
+            rob.mem[MemoryAddresses.REFTYPE] = 1;
 
             for (var t = 1; t < 8; t++)
-                rob.mem[occurrstart + t] = 0;
+                rob.mem[MemoryAddresses.occurrstart + t] = 0;
 
-            rob.mem[occurrstart + 9] = 0; // refnrg
-            rob.mem[occurrstart + 10] = 0; //refage
+            rob.mem[MemoryAddresses.occurrstart + 9] = 0; // refnrg
+            rob.mem[MemoryAddresses.occurrstart + 10] = 0; //refage
 
-            rob.mem[in1] = 0;
-            rob.mem[in2] = 0;
-            rob.mem[in3] = 0;
-            rob.mem[in4] = 0;
-            rob.mem[in5] = 0;
-            rob.mem[in6] = 0;
-            rob.mem[in7] = 0;
-            rob.mem[in8] = 0;
-            rob.mem[in9] = 0;
-            rob.mem[in10] = 0;
+            rob.mem[MemoryAddresses.in1] = 0;
+            rob.mem[MemoryAddresses.in2] = 0;
+            rob.mem[MemoryAddresses.in3] = 0;
+            rob.mem[MemoryAddresses.in4] = 0;
+            rob.mem[MemoryAddresses.in5] = 0;
+            rob.mem[MemoryAddresses.in6] = 0;
+            rob.mem[MemoryAddresses.in7] = 0;
+            rob.mem[MemoryAddresses.in8] = 0;
+            rob.mem[MemoryAddresses.in9] = 0;
+            rob.mem[MemoryAddresses.in10] = 0;
 
             rob.mem[711] = 0; //refaim
             rob.mem[712] = 0; //reftie
-            rob.mem[refshell] = 0;
-            rob.mem[refbody] = 0;
+            rob.mem[MemoryAddresses.refshell] = 0;
+            rob.mem[MemoryAddresses.refbody] = 0;
 
-            rob.mem[refxpos] = (int)rob.lastopppos.X % 32000;
-            rob.mem[refypos] = (int)rob.lastopppos.Y % 32000;
+            rob.mem[MemoryAddresses.refxpos] = (int)rob.lastopppos.X % 32000;
+            rob.mem[MemoryAddresses.refypos] = (int)rob.lastopppos.Y % 32000;
 
             //give reference variables from the bots frame of reference
-            rob.mem[refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[velup];
-            rob.mem[refveldn] = rob.mem[refvelup] * -1;
-            rob.mem[refveldx] = (int)(obstacle.vel.Y * Math.Cos(rob.aim) + obstacle.vel.X * Math.Sin(rob.aim)) - rob.mem[veldx];
-            rob.mem[refvelsx] = rob.mem[refvelsx] * -1;
+            rob.mem[MemoryAddresses.refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[MemoryAddresses.velup];
+            rob.mem[MemoryAddresses.refveldn] = rob.mem[MemoryAddresses.refvelup] * -1;
+            rob.mem[MemoryAddresses.refveldx] = (int)(obstacle.vel.Y * Math.Cos(rob.aim) + obstacle.vel.X * Math.Sin(rob.aim)) - rob.mem[MemoryAddresses.veldx];
+            rob.mem[MemoryAddresses.refvelsx] = rob.mem[MemoryAddresses.refvelsx] * -1;
 
-            var temp = Math.Sqrt(Math.Pow(rob.mem[refvelup], 2) + Math.Pow(rob.mem[refveldx], 2)); // how fast is this shape moving compared to me?
+            var temp = Math.Sqrt(Math.Pow(rob.mem[MemoryAddresses.refvelup], 2) + Math.Pow(rob.mem[MemoryAddresses.refveldx], 2)); // how fast is this shape moving compared to me?
             if (temp > 32000)
                 temp = 32000;
 
-            rob.mem[refvelscalar] = (int)temp;
+            rob.mem[MemoryAddresses.refvelscalar] = (int)temp;
             rob.mem[713] = 0; //refpoison. current value of poison. not poison commands
             rob.mem[714] = 0; //refvenom (as with poison)
             rob.mem[715] = 0; //refkills
-            rob.mem[refmulti] = 0;
+            rob.mem[MemoryAddresses.refmulti] = 0;
 
             rob.mem[473] = 0;
             rob.mem[477] = obstacle.vel.X == 0 && obstacle.vel.Y == 0 ? 1 : 0;
