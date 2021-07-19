@@ -44,7 +44,7 @@ namespace DarwinBots.ViewModels
             DisableVision = species.CantSee;
             EnableRepopulation = species.Veg;
             InitialEnergy = species.Stnrg;
-            InitialIndividuals = species.qty;
+            InitialIndividuals = species.Quantity;
             IsFixedInPlace = species.Fixed;
             IsVirusImmune = species.VirusImmune;
             KillNonMultibot = species.kill_mb;
@@ -129,9 +129,8 @@ namespace DarwinBots.ViewModels
                 Postp = _species.Postp,
                 Veg = _species.Veg,
                 Stnrg = _species.Stnrg,
-                qty = _species.qty,
+                Quantity = _species.Quantity,
                 Fixed = _species.Fixed,
-                Colind = _species.Colind,
                 CantSee = _species.CantSee,
                 DisableMovementSysvars = _species.DisableMovementSysvars,
                 DisableDna = _species.DisableDna,
@@ -146,7 +145,7 @@ namespace DarwinBots.ViewModels
 
         public async Task LoadComment()
         {
-            var lines = await File.ReadAllLinesAsync(Path.Combine(_species.path, _species.Name));
+            var lines = await File.ReadAllLinesAsync(Path.Combine(_species.Path, _species.Name));
 
             var topComment = lines.Select(s => s.Trim()).TakeWhile(s => s.StartsWith("'") || s.StartsWith("/"));
 
@@ -164,7 +163,7 @@ namespace DarwinBots.ViewModels
             _species.CantSee = DisableVision;
             _species.Veg = EnableRepopulation;
             _species.Stnrg = InitialEnergy;
-            _species.qty = InitialIndividuals;
+            _species.Quantity = InitialIndividuals;
             _species.Fixed = IsFixedInPlace;
             _species.VirusImmune = IsVirusImmune;
             _species.kill_mb = KillNonMultibot;

@@ -11,7 +11,7 @@ namespace DarwinBots.Modules
     {
         private static string _snapName = "";
 
-        public static async Task AddRecord(robot rob)
+        public static async Task AddRecord(Robot rob)
         {
             const string folder = "Autosave";
 
@@ -32,12 +32,12 @@ namespace DarwinBots.Modules
             if (!deadRobotsMutationExists)
                 await deadRobotsMutationFile.WriteLineAsync("Rob id,Mutation History");
 
-            if (rob.dna.Count == 1)
+            if (rob.Dna.Count == 1)
                 return;
 
-            await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutDetail}");
+            await deadRobotsMutationFile.WriteLineAsync($"{rob.AbsNum}, {rob.LastMutationDetail}");
 
-            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.Body * 10},{rob.chloroplasts}");
+            await deadRobotsFile.WriteLineAsync($"{rob.AbsNum},{rob.Parent},{rob.FName},{rob.Generation},{rob.BirthCycle},{rob.Age},{rob.Mutations},{rob.LastMutation},{rob.Dna.Count},{rob.SonNumber},{rob.Kills},{rob.Energy + rob.Body * 10},{rob.Chloroplasts}");
             await deadRobotsFile.WriteLineAsync(DnaTokenizing.DetokenizeDna(rob).Trim());
         }
 
@@ -75,12 +75,12 @@ namespace DarwinBots.Modules
                 }
 
                 // Records a snapshot of all living robots in a snapshot database
-                foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist && r.dna.Count > 1))
+                foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists && r.Dna.Count > 1))
                 {
                     if (mutationsFiles != null)
-                        await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutDetail}");
+                        await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutationDetail}");
 
-                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.parent},{rob.FName},{rob.generation},{rob.BirthCycle},{rob.age},{rob.Mutations},{rob.LastMut},{rob.dna.Count},{rob.SonNumber},{rob.Kills},{rob.nrg + rob.Body * 10},{rob.chloroplasts}");
+                    await snapFile.WriteLineAsync($"{rob.AbsNum},{rob.Parent},{rob.FName},{rob.Generation},{rob.BirthCycle},{rob.Age},{rob.Mutations},{rob.LastMutation},{rob.Dna.Count},{rob.SonNumber},{rob.Kills},{rob.Energy + rob.Body * 10},{rob.Chloroplasts}");
                     await snapFile.WriteLineAsync(DnaTokenizing.DetokenizeDna(rob).Trim());
                 }
 

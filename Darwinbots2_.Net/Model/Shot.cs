@@ -16,7 +16,7 @@ namespace DarwinBots.Model
         public int MemoryLocation { get; init; }
         public int MemoryValue { get; set; }
         public DoubleVector OldPosition { get; set; }
-        public robot Parent { get; init; }
+        public Robot Parent { get; init; }
         public DoubleVector Position { get; set; }
         public double Range { get; set; }
         public int ShotType { get; set; }

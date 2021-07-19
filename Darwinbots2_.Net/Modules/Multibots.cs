@@ -7,7 +7,7 @@ namespace DarwinBots.Modules
 {
     internal static class Multibots
     {
-        public static void ReSpawn(robot rob, double x, double y)
+        public static void ReSpawn(Robot rob, double x, double y)
         {
             var cellList = ListCells(rob).ToList();
             var min = 999999999999.0;
@@ -15,7 +15,7 @@ namespace DarwinBots.Modules
 
             foreach (var cell in cellList)
             {
-                var mag = Math.Pow(cell.pos.X - x, 2) + Math.Pow(cell.pos.Y - y, 2);
+                var mag = Math.Pow(cell.Position.X - x, 2) + Math.Pow(cell.Position.Y - y, 2);
 
                 if (!(mag <= min)) continue;
 
@@ -23,7 +23,7 @@ namespace DarwinBots.Modules
                 robmin = cell;
             }
 
-            var distance = new DoubleVector(x, y) - robmin.pos;
+            var distance = new DoubleVector(x, y) - robmin.Position;
 
             var radiiDiff = rob.Radius - robmin.Radius;
 
@@ -31,15 +31,15 @@ namespace DarwinBots.Modules
 
             foreach (var cell in cellList)
             {
-                cell.pos += distance;
-                cell.opos = cell.pos;
+                cell.Position += distance;
+                cell.OldPosition = cell.Position;
                 Globals.BucketManager.UpdateBotBucket(cell);
             }
         }
 
-        private static IEnumerable<robot> ListCells(robot rob, HashSet<robot> checkedBots = null)
+        private static IEnumerable<Robot> ListCells(Robot rob, HashSet<Robot> checkedBots = null)
         {
-            checkedBots ??= new HashSet<robot>();
+            checkedBots ??= new HashSet<Robot>();
 
             if (checkedBots.Contains(rob))
                 return checkedBots;

@@ -10,67 +10,67 @@ namespace DarwinBots.Modules
     {
         private const double OverTime = 30; // Time correction across all mutations
 
-        public static void DeleteGene(robot rob, int g)
+        public static void DeleteGene(Robot rob, int g)
         {
-            if (g <= 0 || g > rob.genenum)
+            if (g <= 0 || g > rob.NumberOfGenes)
                 return;
 
-            DeleteSpecificGene(rob.dna, g);
-            rob.genenum = DnaManipulations.CountGenes(rob.dna);
-            rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
-            rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
+            DeleteSpecificGene(rob.Dna, g);
+            rob.NumberOfGenes = DnaManipulations.CountGenes(rob.Dna);
+            rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+            rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
             Senses.MakeOccurrList(rob);
         }
 
-        public static void LogMutation(robot rob, string strmut)
+        public static void LogMutation(Robot rob, string strmut)
         {
             if (SimOpt.SimOpts.TotRunCycle == 0)
                 return;
 
-            if (rob.LastMutDetail.Length > 100000000 / Globals.RobotsManager.TotalRobots)
-                rob.LastMutDetail = "";
+            if (rob.LastMutationDetail.Length > 100000000 / Globals.RobotsManager.TotalRobots)
+                rob.LastMutationDetail = "";
 
-            rob.LastMutDetail = $"{strmut}\n{rob.LastMutDetail}";
+            rob.LastMutationDetail = $"{strmut}\n{rob.LastMutationDetail}";
         }
 
-        public static void Mutate(robot rob, bool reproducing = false)
+        public static void Mutate(Robot rob, bool reproducing = false)
         {
-            if (!rob.Mutables.EnableMutations || SimOpt.SimOpts.DisableMutations)
+            if (!rob.MutationProbabilities.EnableMutations || SimOpt.SimOpts.DisableMutations)
                 return;
 
-            var delta = rob.LastMut;
+            var delta = rob.LastMutation;
 
             if (reproducing)
             {
-                if (rob.Mutables.CopyError.Probability > 0)
+                if (rob.MutationProbabilities.CopyError.Probability > 0)
                     CopyError(rob);
 
-                if (rob.Mutables.Insertion.Probability > 0)
+                if (rob.MutationProbabilities.Insertion.Probability > 0)
                     Insertion(rob);
 
-                if (rob.Mutables.Reversal.Probability > 0)
+                if (rob.MutationProbabilities.Reversal.Probability > 0)
                     Reversal(rob);
 
-                if (rob.Mutables.MajorDeletion.Probability > 0)
+                if (rob.MutationProbabilities.MajorDeletion.Probability > 0)
                     MajorDeletion(rob);
 
-                if (rob.Mutables.MinorDeletion.Probability > 0)
+                if (rob.MutationProbabilities.MinorDeletion.Probability > 0)
                     MinorDeletion(rob);
             }
             else
             {
-                if (rob.Mutables.PointMutation.Probability > 0)
+                if (rob.MutationProbabilities.PointMutation.Probability > 0)
                     PointMutation(rob);
 
-                if (rob.Mutables.Delta.Probability > 0)
+                if (rob.MutationProbabilities.Delta.Probability > 0)
                     DeltaMut(rob);
             }
 
-            delta = rob.LastMut - delta;
+            delta = rob.LastMutation - delta;
 
             if (SimOpt.SimOpts.EnableAutoSpeciation)
             {
-                if (rob.Mutations > rob.dna.Count * (double)SimOpt.SimOpts.SpeciationGeneticDistance / 100)
+                if (rob.Mutations > rob.Dna.Count * (double)SimOpt.SimOpts.SpeciationGeneticDistance / 100)
                 {
                     SimOpt.SimOpts.SpeciationForkInterval++;
                     var splitname = rob.FName.Split(")");
@@ -92,25 +92,25 @@ namespace DarwinBots.Modules
             if (rob.Mutations > 32000)
                 rob.Mutations = 32000;
 
-            if (rob.LastMut > 32000)
-                rob.LastMut = 32000;
+            if (rob.LastMutation > 32000)
+                rob.LastMutation = 32000;
 
             if (delta <= 0)
                 return;
 
             // The bot has mutated.
-            rob.GenMut -= rob.LastMut;
+            rob.GenMut -= rob.LastMutation;
             if (rob.GenMut < 0)
                 rob.GenMut = 0;
 
             MutateColours(rob, delta);
             rob.SubSpecies = NewSubSpecies(rob);
-            rob.genenum = DnaManipulations.CountGenes(rob.dna);
-            rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
-            rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
+            rob.NumberOfGenes = DnaManipulations.CountGenes(rob.Dna);
+            rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+            rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
         }
 
-        public static int NewSubSpecies(robot rob)
+        public static int NewSubSpecies(Robot rob)
         {
             var i = Senses.SpeciesFromBot(rob);
             i.SubSpeciesCounter++; // increment the counter
@@ -134,41 +134,41 @@ namespace DarwinBots.Modules
             changeme.PointWhatToChange = 80;
         }
 
-        private static void ChangeDna(robot rob, int nth, MutationType mutationType, int length = 1, int pointToChange = 50)
+        private static void ChangeDna(Robot rob, int nth, MutationType mutationType, int length = 1, int pointToChange = 50)
         {
             for (var t = nth; t < nth + length; t++)
             {
                 //if length is 1, it's only one bp we're mutating, remember?
-                if (t >= rob.dna.Count || rob.dna[t].Type == 10)
+                if (t >= rob.Dna.Count || rob.Dna[t].Type == 10)
                     return; //don't mutate end either
 
                 if (ThreadSafeRandom.Local.Next(0, 99) < pointToChange)
                 {
-                    if (rob.dna[t].Value != 0 && mutationType == MutationType.Insertion)
-                        rob.dna[t] = new DnaBlock(rob.dna[t].Type, (int)Common.Gauss(500));
+                    if (rob.Dna[t].Value != 0 && mutationType == MutationType.Insertion)
+                        rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, (int)Common.Gauss(500));
 
-                    var old = rob.dna[t].Value;
+                    var old = rob.Dna[t].Value;
 
-                    if (rob.dna[t].Type is 0 or 1)
+                    if (rob.Dna[t].Type is 0 or 1)
                     {
                         do
                         {
                             if (Math.Abs(old) <= 1000)
-                                rob.dna[t] = new DnaBlock(rob.dna[t].Type, ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Common.Gauss(94, rob.dna[t].Value) : (int)Common.Gauss(7, rob.dna[t].Value));
+                                rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Common.Gauss(94, rob.Dna[t].Value) : (int)Common.Gauss(7, rob.Dna[t].Value));
                             else
-                                rob.dna[t] = new DnaBlock(rob.dna[t].Type, (int)Common.Gauss(old / 10.0, rob.dna[t].Value)); //for very large numbers scale gauss
-                        } while (rob.dna[t].Value == old);
+                                rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, (int)Common.Gauss(old / 10.0, rob.Dna[t].Value)); //for very large numbers scale gauss
+                        } while (rob.Dna[t].Value == old);
 
                         rob.Mutations++;
-                        rob.LastMut++;
+                        rob.LastMutation++;
 
-                        LogMutation(rob, $"{MutationToString(mutationType)} changed {DnaTokenizing.TipoDetok(rob.dna[t].Type)} from {old} to {rob.dna[t].Value} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                        LogMutation(rob, $"{MutationToString(mutationType)} changed {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {old} to {rob.Dna[t].Value} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                     }
                     else
                     {
                         var bp = new DnaBlock
                         {
-                            Type = rob.dna[t].Type
+                            Type = rob.Dna[t].Type
                         };
 
                         var max = 0;
@@ -186,76 +186,76 @@ namespace DarwinBots.Modules
 
                         do
                         {
-                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, ThreadSafeRandom.Local.Next(1, max));
-                        } while (rob.dna[t].Value != old);
+                            rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, ThreadSafeRandom.Local.Next(1, max));
+                        } while (rob.Dna[t].Value != old);
 
-                        bp = new DnaBlock(rob.dna[t].Type, old);
+                        bp = new DnaBlock(rob.Dna[t].Type, old);
 
-                        var name = DnaTokenizing.Parse(rob.dna[t]);
+                        var name = DnaTokenizing.Parse(rob.Dna[t]);
                         var oldName = DnaTokenizing.Parse(bp);
 
                         rob.Mutations++;
-                        rob.LastMut++;
+                        rob.LastMutation++;
 
-                        LogMutation(rob, $"{MutationToString(mutationType)} changed value of {DnaTokenizing.TipoDetok(rob.dna[t].Type)} from {oldName} to {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                        LogMutation(rob, $"{MutationToString(mutationType)} changed value of {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {oldName} to {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                     }
                 }
                 else
                 {
                     var bp = new DnaBlock
                     {
-                        Type = rob.dna[t].Type,
-                        Value = rob.dna[t].Value
+                        Type = rob.Dna[t].Type,
+                        Value = rob.Dna[t].Value
                     };
                     do
                     {
-                        rob.dna[t] = new DnaBlock(ThreadSafeRandom.Local.Next(0, 20), rob.dna[t].Value);
-                    } while (rob.dna[t].Type == bp.Type || DnaTokenizing.TipoDetok(rob.dna[t].Type) == "");
+                        rob.Dna[t] = new DnaBlock(ThreadSafeRandom.Local.Next(0, 20), rob.Dna[t].Value);
+                    } while (rob.Dna[t].Type == bp.Type || DnaTokenizing.TipoDetok(rob.Dna[t].Type) == "");
 
                     var max = 0;
-                    if (rob.dna[t].Type >= 2)
+                    if (rob.Dna[t].Type >= 2)
                     {
                         do
                         {
                             max++;
-                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, max);
-                        } while (DnaTokenizing.Parse(rob.dna[t]) != "");
+                            rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, max);
+                        } while (DnaTokenizing.Parse(rob.Dna[t]) != "");
 
                         max--;
 
                         if (max <= 1)
                             return;
 
-                        rob.dna[t] = new DnaBlock(rob.dna[t].Type, (Math.Abs(bp.Value) - 1) % max + 1);
-                        if (rob.dna[t].Value == 0)
-                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, 1);
+                        rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, (Math.Abs(bp.Value) - 1) % max + 1);
+                        if (rob.Dna[t].Value == 0)
+                            rob.Dna[t] = new DnaBlock(rob.Dna[t].Type, 1);
                     }
 
-                    var name = DnaTokenizing.Parse(rob.dna[t]);
+                    var name = DnaTokenizing.Parse(rob.Dna[t]);
                     var oldName = DnaTokenizing.Parse(bp);
                     rob.Mutations++;
-                    rob.LastMut++;
+                    rob.LastMutation++;
 
-                    LogMutation(rob, $"{MutationToString(mutationType)} changed the {DnaTokenizing.TipoDetok(bp.Type)}: {oldName} to the {DnaTokenizing.TipoDetok(rob.dna[t].Type)} : {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                    LogMutation(rob, $"{MutationToString(mutationType)} changed the {DnaTokenizing.TipoDetok(bp.Type)}: {oldName} to the {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} : {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                 }
             }
         }
 
-        private static void CopyError(robot rob)
+        private static void CopyError(Robot rob)
         {
-            var floor = SimOpt.SimOpts.MutCurrMult * rob.dna.Count * (rob.Mutables.CopyError.Mean + rob.Mutables.CopyError.StandardDeviation) / (25 * OverTime);
+            var floor = SimOpt.SimOpts.MutCurrMult * rob.Dna.Count * (rob.MutationProbabilities.CopyError.Mean + rob.MutationProbabilities.CopyError.StandardDeviation) / (25 * OverTime);
 
-            if (rob.Mutables.CopyError.Probability < floor)
-                rob.Mutables.CopyError = rob.Mutables.CopyError with { Probability = floor };
+            if (rob.MutationProbabilities.CopyError.Probability < floor)
+                rob.MutationProbabilities.CopyError = rob.MutationProbabilities.CopyError with { Probability = floor };
 
-            for (var t = 0; t < rob.dna.Count - 1; t++)
+            for (var t = 0; t < rob.Dna.Count - 1; t++)
             {
-                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.Mutables.CopyError.Probability / SimOpt.SimOpts.MutCurrMult))
+                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.MutationProbabilities.CopyError.Probability / SimOpt.SimOpts.MutCurrMult))
                     continue;
 
-                var length = (int)Common.Gauss(rob.Mutables.CopyError.StandardDeviation, rob.Mutables.CopyError.Mean); //length
+                var length = (int)Common.Gauss(rob.MutationProbabilities.CopyError.StandardDeviation, rob.MutationProbabilities.CopyError.Mean); //length
 
-                ChangeDna(rob, t, MutationType.CopyError, length, rob.Mutables.CopyErrorWhatToChange);
+                ChangeDna(rob, t, MutationType.CopyError, length, rob.MutationProbabilities.CopyErrorWhatToChange);
             }
         }
 
@@ -269,63 +269,63 @@ namespace DarwinBots.Modules
             dna.RemoveRange(i, f - i); // EricL Added +1
         }
 
-        private static void DeltaMut(robot rob)
+        private static void DeltaMut(Robot rob)
         {
-            if (ThreadSafeRandom.Local.NextDouble() <= 1 - 1 / (100 * rob.Mutables.Delta.Probability / SimOpt.SimOpts.MutCurrMult))
+            if (ThreadSafeRandom.Local.NextDouble() <= 1 - 1 / (100 * rob.MutationProbabilities.Delta.Probability / SimOpt.SimOpts.MutCurrMult))
                 return;
 
-            if (rob.Mutables.Delta.StandardDeviation == 0)
-                rob.Mutables.Delta = rob.Mutables.Delta with { Mean = 50 };
-            else if (rob.Mutables.Delta.Mean == 0)
-                rob.Mutables.Delta = rob.Mutables.Delta with { Mean = 25 };
+            if (rob.MutationProbabilities.Delta.StandardDeviation == 0)
+                rob.MutationProbabilities.Delta = rob.MutationProbabilities.Delta with { Mean = 50 };
+            else if (rob.MutationProbabilities.Delta.Mean == 0)
+                rob.MutationProbabilities.Delta = rob.MutationProbabilities.Delta with { Mean = 25 };
 
             MutationType temp;
 
             do
             {
                 temp = (MutationType)ThreadSafeRandom.Local.Next(0, (int)MutationType.MaxType); //Botsareus 12/14/2013 Added new mutations
-            } while (rob.Mutables.GetProbability(temp) <= 0);
+            } while (rob.MutationProbabilities.GetProbability(temp) <= 0);
 
             double newval;
 
             do
             {
-                newval = Common.Gauss(rob.Mutables.Delta.Mean, rob.Mutables.Delta.Probability);
-            } while (Math.Abs(rob.Mutables.GetProbability(temp) - newval) < 0.1 || newval <= 0);
+                newval = Common.Gauss(rob.MutationProbabilities.Delta.Mean, rob.MutationProbabilities.Delta.Probability);
+            } while (Math.Abs(rob.MutationProbabilities.GetProbability(temp) - newval) < 0.1 || newval <= 0);
 
-            LogMutation(rob, $"Delta mutations changed {MutationToString(temp)} from 1 in {rob.Mutables.GetProbability(temp)} to 1 in {newval}");
+            LogMutation(rob, $"Delta mutations changed {MutationToString(temp)} from 1 in {rob.MutationProbabilities.GetProbability(temp)} to 1 in {newval}");
             rob.Mutations++;
-            rob.LastMut++;
-            rob.Mutables.SetProbability(temp, newval);
+            rob.LastMutation++;
+            rob.MutationProbabilities.SetProbability(temp, newval);
         }
 
-        private static void Insertion(robot rob)
+        private static void Insertion(Robot rob)
         {
-            var floor = rob.dna.Count * (rob.Mutables.Insertion.Mean + rob.Mutables.Insertion.StandardDeviation) / (5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
+            var floor = rob.Dna.Count * (rob.MutationProbabilities.Insertion.Mean + rob.MutationProbabilities.Insertion.StandardDeviation) / (5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
-            if (rob.Mutables.Insertion.Probability < floor)
-                rob.Mutables.Insertion = rob.Mutables.Insertion with { Probability = floor };
+            if (rob.MutationProbabilities.Insertion.Probability < floor)
+                rob.MutationProbabilities.Insertion = rob.MutationProbabilities.Insertion with { Probability = floor };
 
-            for (var t = 0; t < rob.dna.Count; t++)
+            for (var t = 0; t < rob.Dna.Count; t++)
             {
-                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.Mutables.Insertion.Probability / SimOpt.SimOpts.MutCurrMult))
+                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.MutationProbabilities.Insertion.Probability / SimOpt.SimOpts.MutCurrMult))
                     continue;
 
-                if (rob.Mutables.Insertion.Mean == 0)
-                    rob.Mutables.Insertion = rob.Mutables.Insertion with { Mean = 1 };
+                if (rob.MutationProbabilities.Insertion.Mean == 0)
+                    rob.MutationProbabilities.Insertion = rob.MutationProbabilities.Insertion with { Mean = 1 };
 
                 int length;
                 do
                 {
-                    length = (int)Common.Gauss(rob.Mutables.Insertion.StandardDeviation, rob.Mutables.Insertion.Mean);
+                    length = (int)Common.Gauss(rob.MutationProbabilities.Insertion.StandardDeviation, rob.MutationProbabilities.Insertion.Mean);
                 } while (length <= 0);
 
-                if (rob.dna.Count + length > 32000)
+                if (rob.Dna.Count + length > 32000)
                     return;
 
                 for (var i = 0; i < length; i++)
                 {
-                    rob.dna.Insert(t + 1 + i, new DnaBlock
+                    rob.Dna.Insert(t + 1 + i, new DnaBlock
                     {
                         Type = 0,
                         Value = 100
@@ -339,83 +339,83 @@ namespace DarwinBots.Modules
             }
         }
 
-        private static void MajorDeletion(robot rob)
+        private static void MajorDeletion(Robot rob)
         {
-            var floor = rob.dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
+            var floor = rob.Dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
-            if (rob.Mutables.MajorDeletion.Probability < floor)
-                rob.Mutables.MajorDeletion = rob.Mutables.MajorDeletion with { Probability = floor };
+            if (rob.MutationProbabilities.MajorDeletion.Probability < floor)
+                rob.MutationProbabilities.MajorDeletion = rob.MutationProbabilities.MajorDeletion with { Probability = floor };
 
-            if (rob.Mutables.MajorDeletion.Mean < 1)
-                rob.Mutables.MajorDeletion = rob.Mutables.MajorDeletion with { Mean = 1 };
+            if (rob.MutationProbabilities.MajorDeletion.Mean < 1)
+                rob.MutationProbabilities.MajorDeletion = rob.MutationProbabilities.MajorDeletion with { Mean = 1 };
 
-            for (var t = 0; t < rob.dna.Count; t++)
+            for (var t = 0; t < rob.Dna.Count; t++)
             {
-                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.Mutables.MajorDeletion.Probability / SimOpt.SimOpts.MutCurrMult))
+                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.MutationProbabilities.MajorDeletion.Probability / SimOpt.SimOpts.MutCurrMult))
                     continue;
 
                 int length;
 
                 do
                 {
-                    length = (int)Common.Gauss(rob.Mutables.MajorDeletion.StandardDeviation, rob.Mutables.MajorDeletion.Mean);
+                    length = (int)Common.Gauss(rob.MutationProbabilities.MajorDeletion.StandardDeviation, rob.MutationProbabilities.MajorDeletion.Mean);
                 } while (length <= 0);
 
-                if (t + length > rob.dna.Count)
-                    length = rob.dna.Count - t;
+                if (t + length > rob.Dna.Count)
+                    length = rob.Dna.Count - t;
 
                 if (length <= 0)
                     return;
 
-                rob.dna.RemoveRange(t, length);
+                rob.Dna.RemoveRange(t, length);
 
                 rob.Mutations++;
-                rob.LastMut++;
+                rob.LastMutation++;
                 LogMutation(rob, $"Major Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }
         }
 
-        private static void MinorDeletion(robot rob)
+        private static void MinorDeletion(Robot rob)
         {
-            var floor = rob.dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
+            var floor = rob.Dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
-            if (rob.Mutables.MinorDeletion.Probability < floor)
-                rob.Mutables.MinorDeletion = rob.Mutables.MinorDeletion with { Probability = floor };
+            if (rob.MutationProbabilities.MinorDeletion.Probability < floor)
+                rob.MutationProbabilities.MinorDeletion = rob.MutationProbabilities.MinorDeletion with { Probability = floor };
 
-            if (rob.Mutables.MinorDeletion.Mean < 1)
-                rob.Mutables.MinorDeletion = rob.Mutables.MajorDeletion with { Mean = 1 };
+            if (rob.MutationProbabilities.MinorDeletion.Mean < 1)
+                rob.MutationProbabilities.MinorDeletion = rob.MutationProbabilities.MajorDeletion with { Mean = 1 };
 
-            for (var t = 0; t < rob.dna.Count; t++)
+            for (var t = 0; t < rob.Dna.Count; t++)
             {
-                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.Mutables.MinorDeletion.Probability / SimOpt.SimOpts.MutCurrMult))
+                if (ThreadSafeRandom.Local.NextDouble() >= 1 / (rob.MutationProbabilities.MinorDeletion.Probability / SimOpt.SimOpts.MutCurrMult))
                     continue;
 
                 int length;
 
                 do
                 {
-                    length = (int)Common.Gauss(rob.Mutables.MinorDeletion.StandardDeviation, rob.Mutables.MinorDeletion.Mean);
+                    length = (int)Common.Gauss(rob.MutationProbabilities.MinorDeletion.StandardDeviation, rob.MutationProbabilities.MinorDeletion.Mean);
                 } while (length <= 0);
 
-                if (t + length > rob.dna.Count)
-                    length = rob.dna.Count - t;
+                if (t + length > rob.Dna.Count)
+                    length = rob.Dna.Count - t;
 
                 if (length <= 0)
                     return;
 
-                rob.dna.RemoveRange(t, length);
+                rob.Dna.RemoveRange(t, length);
 
                 rob.Mutations++;
-                rob.LastMut++;
+                rob.LastMutation++;
                 LogMutation(rob, $"Minor Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }
         }
 
-        private static void MutateColours(robot rob, int a)
+        private static void MutateColours(Robot rob, int a)
         {
-            var b = (int)rob.color.R;
-            var g = (int)rob.color.G;
-            var r = (int)rob.color.B;
+            var b = (int)rob.Color.R;
+            var g = (int)rob.Color.G;
+            var r = (int)rob.Color.B;
 
             for (var counter = 1; counter < a; counter++)
             {
@@ -439,7 +439,7 @@ namespace DarwinBots.Modules
                 b = Math.Clamp(b, 0, 255);
             }
 
-            rob.color = Color.FromRgb((byte)r, (byte)g, (byte)b);
+            rob.Color = Color.FromRgb((byte)r, (byte)g, (byte)b);
         }
 
         private static string MutationToString(MutationType thing)
@@ -457,32 +457,32 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static void PointMutation(robot rob)
+        private static void PointMutation(Robot rob)
         {
             //assume the bot has a positive (>0) mutarray value for this
 
-            var floor = rob.dna.Count * (rob.Mutables.PointMutation.Mean + rob.Mutables.PointMutation.StandardDeviation) / (400 * OverTime) * SimOpt.SimOpts.MutCurrMult;
+            var floor = rob.Dna.Count * (rob.MutationProbabilities.PointMutation.Mean + rob.MutationProbabilities.PointMutation.StandardDeviation) / (400 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
-            if (rob.Mutables.PointMutation.Probability < floor)
-                rob.Mutables.PointMutation = rob.Mutables.PointMutation with { Probability = floor };
+            if (rob.MutationProbabilities.PointMutation.Probability < floor)
+                rob.MutationProbabilities.PointMutation = rob.MutationProbabilities.PointMutation with { Probability = floor };
 
-            if (rob.age == 0 || rob.PointMutCycle < rob.age)
+            if (rob.Age == 0 || rob.PointMutationCycle < rob.Age)
                 PointMutWhereAndWhen(ThreadSafeRandom.Local.NextDouble(), rob);
 
             //Do it again in case we get two point mutations in a single cycle
-            while (rob.age == rob.PointMutCycle && rob.age > 0 & rob.dna.Count > 1)
+            while (rob.Age == rob.PointMutationCycle && rob.Age > 0 & rob.Dna.Count > 1)
             {
-                ChangeDna(rob, rob.PointMutBP, (MutationType)(Common.Gauss(rob.Mutables.PointMutation.StandardDeviation, rob.Mutables.PointMutation.Mean) % 32000), rob.Mutables.PointWhatToChange);
+                ChangeDna(rob, rob.PointMutationBasePair, (MutationType)(Common.Gauss(rob.MutationProbabilities.PointMutation.StandardDeviation, rob.MutationProbabilities.PointMutation.Mean) % 32000), rob.MutationProbabilities.PointWhatToChange);
                 PointMutWhereAndWhen(ThreadSafeRandom.Local.NextDouble(), rob);
             }
         }
 
-        private static void PointMutWhereAndWhen(double randVal, robot rob)
+        private static void PointMutWhereAndWhen(double randVal, Robot rob)
         {
-            if (rob.dna.Count == 1)
+            if (rob.Dna.Count == 1)
                 return;
 
-            var mutationRate = rob.Mutables.PointMutation.Probability / SimOpt.SimOpts.MutCurrMult;
+            var mutationRate = rob.MutationProbabilities.PointMutation.Probability / SimOpt.SimOpts.MutCurrMult;
 
             //Here we test to make sure the probability of a point mutation isn't crazy high.
             //A value of 1 is the probability of mutating every base pair every 1000 cycles
@@ -495,30 +495,30 @@ namespace DarwinBots.Modules
             while (result > 1800000000)
                 result -= 1800000000;
 
-            rob.PointMutBP = (int)(result % (rob.dna.Count - 1)) + 1;
-            rob.PointMutCycle = rob.age + (int)result / (rob.dna.Count - 1);
+            rob.PointMutationBasePair = (int)(result % (rob.Dna.Count - 1)) + 1;
+            rob.PointMutationCycle = rob.Age + (int)result / (rob.Dna.Count - 1);
         }
 
-        private static void Reversal(robot rob)
+        private static void Reversal(Robot rob)
         {
-            var floor = rob.dna.Count * (rob.Mutables.Reversal.Mean + rob.Mutables.Reversal.StandardDeviation) / (105 * OverTime) * SimOpt.SimOpts.MutCurrMult;
+            var floor = rob.Dna.Count * (rob.MutationProbabilities.Reversal.Mean + rob.MutationProbabilities.Reversal.StandardDeviation) / (105 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
-            if (rob.Mutables.Reversal.Probability < floor)
-                rob.Mutables.Reversal = rob.Mutables.Reversal with { Probability = floor };
+            if (rob.MutationProbabilities.Reversal.Probability < floor)
+                rob.MutationProbabilities.Reversal = rob.MutationProbabilities.Reversal with { Probability = floor };
 
-            for (var t = 0; t < rob.dna.Count - 1; t++)
+            for (var t = 0; t < rob.Dna.Count - 1; t++)
             {
-                if (!(ThreadSafeRandom.Local.NextDouble() < 1 / (rob.Mutables.Reversal.Probability / SimOpt.SimOpts.MutCurrMult)))
+                if (!(ThreadSafeRandom.Local.NextDouble() < 1 / (rob.MutationProbabilities.Reversal.Probability / SimOpt.SimOpts.MutCurrMult)))
                     continue;
 
-                if (rob.Mutables.Reversal.Mean < 2)
-                    rob.Mutables.Reversal = rob.Mutables.Reversal with { Mean = 2 };
+                if (rob.MutationProbabilities.Reversal.Mean < 2)
+                    rob.MutationProbabilities.Reversal = rob.MutationProbabilities.Reversal with { Mean = 2 };
 
                 int length;
 
                 do
                 {
-                    length = (int)Common.Gauss(rob.Mutables.Reversal.StandardDeviation, rob.Mutables.Reversal.Mean);
+                    length = (int)Common.Gauss(rob.MutationProbabilities.Reversal.StandardDeviation, rob.MutationProbabilities.Reversal.Mean);
                 } while (length <= 0);
 
                 length /= 2; //be sure we go an even amount to either side
@@ -526,8 +526,8 @@ namespace DarwinBots.Modules
                 if (t - length < 1)
                     length = t - 1;
 
-                if (t + length > rob.dna.Count - 1)
-                    length = rob.dna.Count - 1 - t;
+                if (t + length > rob.Dna.Count - 1)
+                    length = rob.Dna.Count - 1 - t;
 
                 if (length <= 0)
                     continue;
@@ -536,14 +536,14 @@ namespace DarwinBots.Modules
 
                 for (var counter = t - length; counter < t - 1; counter++)
                 {
-                    var tempBlock = rob.dna[counter];
-                    rob.dna[counter] = rob.dna[t + length - second];
-                    rob.dna[t + length - second] = tempBlock;
+                    var tempBlock = rob.Dna[counter];
+                    rob.Dna[counter] = rob.Dna[t + length - second];
+                    rob.Dna[t + length - second] = tempBlock;
                     second++;
                 }
 
                 rob.Mutations++;
-                rob.LastMut++;
+                rob.LastMutation++;
 
                 LogMutation(rob, $"Reversal of {length * 2 + 1} bps centered at {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }

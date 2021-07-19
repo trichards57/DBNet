@@ -52,7 +52,6 @@
     <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
     <PackageReference Include="PostSharp" Version="6.9.6" />
     <PackageReference Include="PostSharp.Patterns.Model" Version="6.9.6" />
-    <PackageReference Include="stdole" Version="16.9.31023.347" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml" />

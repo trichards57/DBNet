@@ -2,9 +2,9 @@
 
 namespace DarwinBots.Support
 {
-    internal class ThreadSafeRandom
+    internal static class ThreadSafeRandom
     {
-        private static Random _global = new();
+        private static readonly Random Global = new();
 
         [ThreadStatic]
         private static Random _local;
@@ -17,7 +17,7 @@ namespace DarwinBots.Support
                 if (inst == null)
                 {
                     int seed;
-                    lock (_global) seed = _global.Next();
+                    lock (Global) seed = Global.Next();
                     _local = inst = new Random(seed);
                 }
                 return inst;

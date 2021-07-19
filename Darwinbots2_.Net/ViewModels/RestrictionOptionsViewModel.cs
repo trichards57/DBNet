@@ -96,43 +96,43 @@ namespace DarwinBots.ViewModels
 
         public void SaveToAllRobs()
         {
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists))
             {
-                if (rob.Veg)
+                if (rob.IsVegetable)
                 {
-                    rob.multibot_time = KillNonMultibotVeg ? 210 : 0;
-                    rob.Fixed = FixedInPlaceVeg;
+                    rob.MultibotTimer = KillNonMultibotVeg ? 210 : 0;
+                    rob.IsFixed = FixedInPlaceVeg;
 
-                    if (rob.Fixed)
+                    if (rob.IsFixed)
                     {
-                        rob.mem[216] = 1;
-                        rob.vel = new DoubleVector(0, 0);
+                        rob.Memory[216] = 1;
+                        rob.Velocity = new DoubleVector(0, 0);
                     }
 
                     rob.CantSee = DisableVisionVeg;
-                    rob.DisableDNA = DisableDnaVeg;
+                    rob.DnaDisabled = DisableDnaVeg;
                     rob.CantReproduce = DisableReproductionVeg;
-                    rob.VirusImmune = VirusImmuneVeg;
-                    rob.Mutables.EnableMutations = !DisableMutationsVeg;
-                    rob.DisableMovementSysvars = DisableMotionVeg;
+                    rob.IsVirusImmune = VirusImmuneVeg;
+                    rob.MutationProbabilities.EnableMutations = !DisableMutationsVeg;
+                    rob.MovementSysvarsDisabled = DisableMotionVeg;
                 }
                 else
                 {
-                    rob.multibot_time = KillNonMultibotNonVeg ? 210 : 0;
-                    rob.Fixed = FixedInPlaceNonVeg;
+                    rob.MultibotTimer = KillNonMultibotNonVeg ? 210 : 0;
+                    rob.IsFixed = FixedInPlaceNonVeg;
 
-                    if (rob.Fixed)
+                    if (rob.IsFixed)
                     {
-                        rob.mem[216] = 1;
-                        rob.vel = new DoubleVector(0, 0);
+                        rob.Memory[216] = 1;
+                        rob.Velocity = new DoubleVector(0, 0);
                     }
 
                     rob.CantSee = DisableVisionNonVeg;
-                    rob.DisableDNA = DisableDnaNonVeg;
+                    rob.DnaDisabled = DisableDnaNonVeg;
                     rob.CantReproduce = DisableReproductionNonVeg;
-                    rob.VirusImmune = VirusImmuneNonVeg;
-                    rob.Mutables.EnableMutations = !DisableMutationsNonVeg;
-                    rob.DisableMovementSysvars = DisableMotionNonVeg;
+                    rob.IsVirusImmune = VirusImmuneNonVeg;
+                    rob.MutationProbabilities.EnableMutations = !DisableMutationsNonVeg;
+                    rob.MovementSysvarsDisabled = DisableMotionNonVeg;
                 }
             }
         }

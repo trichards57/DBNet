@@ -33,11 +33,11 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static string DetokenizeDna(robot rob)
+        public static string DetokenizeDna(Robot rob)
         {
             var result = new StringBuilder();
             var geneEnd = false;
-            var dna = rob.dna;
+            var dna = rob.Dna;
             var inGene = false;
             var coding = false;
             var t = 1;
@@ -148,11 +148,11 @@ namespace DarwinBots.Modules
             return Convert.ToHexString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(s)));
         }
 
-        public static async Task<bool> LoadDna(string path, robot rob)
+        public static async Task<bool> LoadDna(string path, Robot rob)
         {
             var hold = new StringBuilder();
 
-            rob.dna.Clear();
+            rob.Dna.Clear();
 
             if (path == "")
                 return false;
@@ -183,18 +183,18 @@ namespace DarwinBots.Modules
                         var parts = processedLine.Split(" ", StringSplitOptions.RemoveEmptyEntries);
 
                         foreach (var b in parts)
-                            rob.dna.Add(Parse(b, rob));
+                            rob.Dna.Add(Parse(b, rob));
                     }
                 }
                 hold.AppendLine(a);
             }
 
-            rob.dna.Add(new DnaBlock { Type = 10, Value = 1 });
+            rob.Dna.Add(new DnaBlock { Type = 10, Value = 1 });
 
             return true;
         }
 
-        public static string Parse(DnaBlock bp, robot rob = null, bool convertToSystemVariable = true)
+        public static string Parse(DnaBlock bp, Robot rob = null, bool convertToSystemVariable = true)
         {
             return bp.Type switch
             {
@@ -214,11 +214,11 @@ namespace DarwinBots.Modules
             };
         }
 
-        public static string SaveRobHeader(robot rob)
+        public static string SaveRobHeader(Robot rob)
         {
             var totalMutations = Math.Min(rob.Mutations + rob.OldMutations, DnaEngine.MaxIntValue);
 
-            return $"'#generation: {rob.generation}\n'#mutations: {totalMutations}\n";
+            return $"'#generation: {rob.Generation}\n'#mutations: {totalMutations}\n";
         }
 
         public static string TipoDetok(int tipo)
@@ -441,7 +441,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static void GetVals(robot rob, string a, string hold)
+        private static void GetVals(Robot rob, string a, string hold)
         {
             var parts = a.Split(":", 2);
             var name = parts[0].Trim()[3..];
@@ -450,7 +450,7 @@ namespace DarwinBots.Modules
             if (name == "generation")
             {
                 var valValid = int.TryParse(value, out var val);
-                rob.generation = valValid ? val : 0;
+                rob.Generation = valValid ? val : 0;
             }
 
             if (name == "mutations")
@@ -459,15 +459,12 @@ namespace DarwinBots.Modules
                 rob.OldMutations = valValid ? val : 0;
             }
 
-            if (name == "tag")
-                rob.tag = value.Substring(0, 45);
-
             if (name == "hash")
             {
                 var value2 = Hash(hold);
                 if (value2 != value)
                 {
-                    rob.generation = 0;
+                    rob.Generation = 0;
                     rob.OldMutations = 0;
                 }
             }
@@ -537,7 +534,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DnaBlock Parse(string command, robot rob = null)
+        private static DnaBlock Parse(string command, Robot rob = null)
         {
             command = command.ToLowerInvariant();
 
@@ -624,7 +621,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static string SystemVariableDetokenize(int n, robot rob = null, bool savingToFile = false)
+        private static string SystemVariableDetokenize(int n, Robot rob = null, bool savingToFile = false)
         {
             var s = DnaEngine.SystemVariables.FirstOrDefault(t => t.Value == n);
 
@@ -636,12 +633,12 @@ namespace DarwinBots.Modules
 
             if (!(rob != null & n != 0)) return n.ToString();
 
-            var v = rob.vars.FirstOrDefault(u => u.Value == n);
+            var v = rob.Variables.FirstOrDefault(u => u.Value == n);
 
             return v != null ? $".{v.Name}" : n.ToString();
         }
 
-        private static int SystemVariableTokenize(string a, robot rob)
+        private static int SystemVariableTokenize(string a, Robot rob)
         {
             if (a.StartsWith("."))
             {
@@ -652,7 +649,7 @@ namespace DarwinBots.Modules
                 if (s != null)
                     return s.Value;
 
-                var v = rob.vars.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
+                var v = rob.Variables.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
 
                 if (v != null)
                     return v.Value;

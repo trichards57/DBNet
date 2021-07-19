@@ -61,7 +61,7 @@ namespace DarwinBots.DataModel
         public bool Pondmode { get; internal set; }
         public int RepopAmount { get; internal set; }
         public int RepopCooldown { get; internal set; }
-        public IEnumerable<robot> Robots { get; set; }
+        public IEnumerable<Robot> Robots { get; set; }
         public int ShapeDriftRate { get; internal set; }
         public bool ShapesAbsorbShots { get; internal set; }
         public bool ShapesAreSeeThrough { get; internal set; }

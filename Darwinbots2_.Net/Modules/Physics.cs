@@ -11,7 +11,7 @@ namespace DarwinBots.Modules
         private const double AddedMassCoefficientForASphere = 0.5;
         public static double BouyancyScaling { get; set; }
 
-        public static void AddedMass(robot rob)
+        public static void AddedMass(Robot rob)
         {
             rob.AddedMass = AddedMassCoefficientForASphere * SimOpt.SimOpts.Density * (Math.PI * 4 / 3) * Math.Pow(rob.Radius, 3);
         }
@@ -34,40 +34,40 @@ namespace DarwinBots.Modules
             return Math.Atan2(y2 - y1, x2 - x1);
         }
 
-        public static void BorderCollision(robot rob)
+        public static void BorderCollision(Robot rob)
         {
             const double b = 0.05;
 
-            if (rob.pos.X > rob.Radius && rob.pos.X < SimOpt.SimOpts.FieldWidth - rob.Radius && rob.pos.Y > rob.Radius && rob.pos.Y < SimOpt.SimOpts.FieldHeight - rob.Radius)
+            if (rob.Position.X > rob.Radius && rob.Position.X < SimOpt.SimOpts.FieldWidth - rob.Radius && rob.Position.Y > rob.Radius && rob.Position.Y < SimOpt.SimOpts.FieldHeight - rob.Radius)
                 return;
 
-            rob.mem[214] = 0;
+            rob.Memory[214] = 0;
 
             var smudge = rob.Radius + SmudgeFactor;
 
-            var dif = DoubleVector.Min(DoubleVector.Max(rob.pos, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpt.SimOpts.FieldWidth - smudge, SimOpt.SimOpts.FieldHeight - smudge));
-            var dist = dif - rob.pos;
+            var dif = DoubleVector.Min(DoubleVector.Max(rob.Position, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpt.SimOpts.FieldWidth - smudge, SimOpt.SimOpts.FieldHeight - smudge));
+            var dist = dif - rob.Position;
 
             if (dist.X != 0)
             {
                 if (SimOpt.SimOpts.DxSxConnected)
                 {
                     if (dist.X < 0)
-                        Multibots.ReSpawn(rob, smudge, rob.pos.Y);
+                        Multibots.ReSpawn(rob, smudge, rob.Position.Y);
                     else
-                        Multibots.ReSpawn(rob, SimOpt.SimOpts.FieldWidth - smudge, rob.pos.Y);
+                        Multibots.ReSpawn(rob, SimOpt.SimOpts.FieldWidth - smudge, rob.Position.Y);
                 }
                 else
                 {
-                    rob.mem[214] = 1;
+                    rob.Memory[214] = 1;
 
-                    if (rob.pos.X - rob.Radius < 0)
-                        rob.pos = new DoubleVector(rob.Radius, rob.pos.Y);
+                    if (rob.Position.X - rob.Radius < 0)
+                        rob.Position = new DoubleVector(rob.Radius, rob.Position.Y);
 
-                    if (rob.pos.X + rob.Radius > SimOpt.SimOpts.FieldWidth)
-                        rob.pos = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.Radius, rob.pos.Y);
+                    if (rob.Position.X + rob.Radius > SimOpt.SimOpts.FieldWidth)
+                        rob.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.Radius, rob.Position.Y);
 
-                    rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
+                    rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
                 }
             }
 
@@ -76,28 +76,28 @@ namespace DarwinBots.Modules
                 if (SimOpt.SimOpts.UpDnConnected)
                 {
                     if (dist.Y < 0)
-                        Multibots.ReSpawn(rob, rob.pos.X, smudge);
+                        Multibots.ReSpawn(rob, rob.Position.X, smudge);
                     else
-                        Multibots.ReSpawn(rob, rob.pos.X, SimOpt.SimOpts.FieldHeight - smudge);
+                        Multibots.ReSpawn(rob, rob.Position.X, SimOpt.SimOpts.FieldHeight - smudge);
                 }
                 else
                 {
-                    rob.mem[214] = 1;
+                    rob.Memory[214] = 1;
 
-                    if (rob.pos.Y - rob.Radius < 0)
-                        rob.pos = new DoubleVector(rob.pos.X, rob.Radius);
+                    if (rob.Position.Y - rob.Radius < 0)
+                        rob.Position = new DoubleVector(rob.Position.X, rob.Radius);
 
-                    if (rob.pos.Y + rob.Radius > SimOpt.SimOpts.FieldHeight)
-                        rob.pos = new DoubleVector(rob.pos.X, SimOpt.SimOpts.FieldHeight - rob.Radius);
+                    if (rob.Position.Y + rob.Radius > SimOpt.SimOpts.FieldHeight)
+                        rob.Position = new DoubleVector(rob.Position.X, SimOpt.SimOpts.FieldHeight - rob.Radius);
 
-                    rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
+                    rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
                 }
             }
         }
 
-        public static void CalcMass(robot rob)
+        public static void CalcMass(Robot rob)
         {
-            rob.mass = Math.Clamp(rob.Body / 1000 + rob.shell / 200 + rob.chloroplasts / 32000 * 31680, 1, 32000);
+            rob.Mass = Math.Clamp(rob.Body / 1000 + rob.Shell / 200 + rob.Chloroplasts / 32000 * 31680, 1, 32000);
         }
 
         public static double IntToRadians(int angle)
@@ -105,13 +105,13 @@ namespace DarwinBots.Modules
             return NormaliseAngle((double)angle / 200);
         }
 
-        public static void NetForces(robot rob)
+        public static void NetForces(Robot rob)
         {
-            if (Math.Abs(rob.vel.X) < 0.0000001)
-                rob.vel = new DoubleVector(0, rob.vel.Y);
+            if (Math.Abs(rob.Velocity.X) < 0.0000001)
+                rob.Velocity = new DoubleVector(0, rob.Velocity.Y);
 
-            if (Math.Abs(rob.vel.Y) < 0.0000001)
-                rob.vel = new DoubleVector(rob.vel.X, 0);
+            if (Math.Abs(rob.Velocity.Y) < 0.0000001)
+                rob.Velocity = new DoubleVector(rob.Velocity.X, 0);
 
             PlanetEaters(rob);
             FrictionForces(rob);
@@ -137,52 +137,52 @@ namespace DarwinBots.Modules
             return (int)(NormaliseAngle(angle) * 200);
         }
 
-        public static void Repel(robot rob1, robot rob2)
+        public static void Repel(Robot rob1, Robot rob2)
         {
             double fixedSep;
             DoubleVector fixedSepVector;
             var e = SimOpt.SimOpts.CoefficientElasticity;
 
-            var normal = rob2.pos - rob1.pos;
+            var normal = rob2.Position - rob1.Position;
             var currDist = normal.Magnitude();
 
             //If both bots are fixed or not moving and they overlap, move their positions directly.  Fixed bots can overlap when shapes sweep them together
             //or when they teleport or materialize on top of each other.  We move them directly apart as they are assumed to have no velocity
             //by scaling the normal vector by the amount they need to be separated.  Each bot is moved half of the needed distance without taking into consideration
             //mass or size.
-            if (rob1.Fixed && rob2.Fixed || rob1.vel.Magnitude() < 0.0001 && rob2.vel.Magnitude() < 0.0001)
+            if (rob1.IsFixed && rob2.IsFixed || rob1.Velocity.Magnitude() < 0.0001 && rob2.Velocity.Magnitude() < 0.0001)
             {
                 fixedSep = (rob1.Radius + rob2.Radius - currDist) / 2;
                 fixedSepVector = normal.Unit() * fixedSep;
-                rob1.pos -= fixedSepVector;
-                rob2.pos += fixedSepVector;
+                rob1.Position -= fixedSepVector;
+                rob2.Position += fixedSepVector;
             }
             else
             {
-                var totalMass = rob1.mass + rob2.mass;
+                var totalMass = rob1.Mass + rob2.Mass;
                 fixedSep = rob1.Radius + rob2.Radius - currDist;
                 fixedSepVector = normal.Unit() * (fixedSep / (1 + Math.Pow(55, 0.3 - e)));
-                rob1.pos -= fixedSepVector * (rob2.mass / totalMass);
-                rob2.pos -= fixedSepVector * (rob1.mass / totalMass);
+                rob1.Position -= fixedSepVector * (rob2.Mass / totalMass);
+                rob2.Position -= fixedSepVector * (rob1.Mass / totalMass);
             }
 
             if (!double.IsFinite(1.0 / normal.Magnitude()))
                 return;
 
-            var m1 = rob1.mass;
-            var m2 = rob2.mass;
+            var m1 = rob1.Mass;
+            var m2 = rob2.Mass;
 
             //If a bot is fixed, all the collision energy should be translated to the non-fixed bot so for
             //the purposes of calculating the force applied to the non-fixed bot, treat the fixed one as if it is very massive
-            if (rob1.Fixed)
+            if (rob1.IsFixed)
                 m1 = 32000;
 
-            if (rob2.Fixed)
+            if (rob2.IsFixed)
                 m2 = 32000;
 
             var unit = normal.Unit();
-            var vel1 = rob1.vel;
-            var vel2 = rob2.vel;
+            var vel1 = rob1.Velocity;
+            var vel2 = rob2.Velocity;
 
             //Project the bot's direction vector onto the unit vector and scale by velocity
             //These represent vectors we subtract from the bot's velocity to push the bot in a direction
@@ -211,26 +211,26 @@ namespace DarwinBots.Modules
             var v2F = (v1 * (e + 1) * m1 + v2 * (m2 - e * m1)) * (1 / (m1 + m2));
 
             //No reason to try to try to accelerate fixed bots
-            if (!rob1.Fixed)
-                rob1.vel -= v1 + v1F;
+            if (!rob1.IsFixed)
+                rob1.Velocity -= v1 + v1F;
 
-            if (!rob2.Fixed)
-                rob2.vel -= v2 + v2F;
+            if (!rob2.IsFixed)
+                rob2.Velocity -= v2 + v2F;
 
             //Update the touch senses
-            Senses.Touch(rob1, rob2.pos.X, rob2.pos.Y);
-            Senses.Touch(rob2, rob1.pos.X, rob1.pos.Y);
+            Senses.Touch(rob1, rob2.Position.X, rob2.Position.Y);
+            Senses.Touch(rob2, rob1.Position.X, rob1.Position.Y);
 
             //Update last touch variables
-            rob1.lasttch = rob2;
-            rob2.lasttch = rob1;
+            rob1.LastTouched = rob2;
+            rob2.LastTouched = rob1;
 
             //Update the refvars to reflect touching bots.
             Senses.LookOccurr(rob1, rob2);
             Senses.LookOccurr(rob2, rob1);
         }
 
-        public static void TieHooke(robot rob)
+        public static void TieHooke(Robot rob)
         {
             const double deformation = 20.0; // Tie can stretch or contract this much and no forces are applied.
 
@@ -239,13 +239,13 @@ namespace DarwinBots.Modules
 
             foreach (var tie in rob.Ties.ToArray())
             {
-                if (!tie.OtherBot.exist)
+                if (!tie.OtherBot.Exists)
                 {
                     rob.Ties.Remove(tie);
                     continue;
                 }
 
-                var uv = rob.pos - tie.OtherBot.pos;
+                var uv = rob.Position - tie.OtherBot.Position;
 
                 var length = uv.Magnitude();
 
@@ -287,18 +287,18 @@ namespace DarwinBots.Modules
 
                         displacement = Math.Sign(displacement) * (Math.Abs(displacement) - deformation);
                         var impulse = tie.k * displacement;
-                        rob.ImpulseInd += uv * impulse;
+                        rob.IndependentImpulse += uv * impulse;
 
                         //next -bv
-                        var vy = rob.vel - tie.OtherBot.vel;
+                        var vy = rob.Velocity - tie.OtherBot.Velocity;
                         impulse = DoubleVector.Dot(vy, uv) * -tie.b;
-                        rob.ImpulseInd += uv * impulse;
+                        rob.IndependentImpulse += uv * impulse;
                     }
                 }
             }
         }
 
-        public static void TieTorque(robot rob)
+        public static void TieTorque(Robot rob)
         {
             const double angleslack = 5 * 2 * Math.PI / 360; // 5 degrees
 
@@ -306,8 +306,8 @@ namespace DarwinBots.Modules
 
             foreach (var tie in rob.Ties.Where(t => t.FixedAngle))
             {
-                var anl = Angle(rob.pos.X, rob.pos.Y, tie.OtherBot.pos.X, tie.OtherBot.pos.Y);
-                var dlo = AngDiff(anl, rob.aim); //difference of angle of tie and direction of robot
+                var anl = Angle(rob.Position.X, rob.Position.Y, tie.OtherBot.Position.X, tie.OtherBot.Position.Y);
+                var dlo = AngDiff(anl, rob.Aim); //difference of angle of tie and direction of robot
                 var mm = AngDiff(dlo, tie.Angle + tie.Bend);
 
                 tie.Bend = 0;
@@ -317,22 +317,22 @@ namespace DarwinBots.Modules
 
                 mm = (Math.Abs(mm) - angleslack) * Math.Sign(mm);
                 var m = mm * 0.1;
-                var dx = tie.OtherBot.pos.X - rob.pos.X;
-                var dy = rob.pos.Y - tie.OtherBot.pos.Y;
+                var dx = tie.OtherBot.Position.X - rob.Position.X;
+                var dy = rob.Position.Y - tie.OtherBot.Position.Y;
                 var dist = Math.Sqrt(dx * dx + dy * dy);
 
                 var torqueVector = new DoubleVector(-Math.Sin(anl) * m * dist / 10, -Math.Cos(anl) * m * dist / 10);
 
-                tie.OtherBot.ImpulseInd -= torqueVector;
-                rob.ImpulseInd += torqueVector;
+                tie.OtherBot.IndependentImpulse -= torqueVector;
+                rob.IndependentImpulse += torqueVector;
                 mt += mm;
             }
 
             if (mt != 0)
-                rob.ma = Math.Clamp(mt, -Math.PI / 4, Math.PI / 4);
+                rob.AngularMomentum = Math.Clamp(mt, -Math.PI / 4, Math.PI / 4);
         }
 
-        private static void BrownianForces(robot rob)
+        private static void BrownianForces(Robot rob)
         {
             if (SimOpt.SimOpts.PhysBrown == 0)
                 return;
@@ -340,78 +340,78 @@ namespace DarwinBots.Modules
             var impulse = SimOpt.SimOpts.PhysBrown * 0.5 * ThreadSafeRandom.Local.NextDouble();
             var randomAngle = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
 
-            rob.ImpulseInd += new DoubleVector(Math.Cos(randomAngle) * impulse, Math.Sin(randomAngle) * impulse);
-            rob.ma += impulse / 100 * (ThreadSafeRandom.Local.NextDouble() - 0.5); // turning motion due to brownian motion
+            rob.IndependentImpulse += new DoubleVector(Math.Cos(randomAngle) * impulse, Math.Sin(randomAngle) * impulse);
+            rob.AngularMomentum += impulse / 100 * (ThreadSafeRandom.Local.NextDouble() - 0.5); // turning motion due to brownian motion
         }
 
-        private static void FrictionForces(robot rob)
+        private static void FrictionForces(Robot rob)
         {
             if (SimOpt.SimOpts.ZGravity == 0)
                 return;
 
-            rob.ImpulseStatic = rob.mass * SimOpt.SimOpts.ZGravity * SimOpt.SimOpts.CoefficientStatic; // * 1 cycle (timestep = 1)
+            rob.StaticImpulse = rob.Mass * SimOpt.SimOpts.ZGravity * SimOpt.SimOpts.CoefficientStatic; // * 1 cycle (timestep = 1)
 
-            var impulse = rob.mass * SimOpt.SimOpts.ZGravity * SimOpt.SimOpts.CoefficientKinetic; // * 1 cycle (timestep = 1)
+            var impulse = rob.Mass * SimOpt.SimOpts.ZGravity * SimOpt.SimOpts.CoefficientKinetic; // * 1 cycle (timestep = 1)
 
             //Here we calculate the reduction in angular momentum due to friction
-            if (Math.Abs(rob.ma) > 0)
+            if (Math.Abs(rob.AngularMomentum) > 0)
             {
                 if (impulse < 48)
-                    rob.ma *= (48 - impulse) / 48;
+                    rob.AngularMomentum *= (48 - impulse) / 48;
                 else
-                    rob.ma = 0;
+                    rob.AngularMomentum = 0;
 
-                if (Math.Abs(rob.ma) < 0.0000001)
-                    rob.ma = 0;
+                if (Math.Abs(rob.AngularMomentum) < 0.0000001)
+                    rob.AngularMomentum = 0;
             }
 
-            if (impulse > rob.vel.Magnitude())
-                impulse = rob.vel.Magnitude(); // EricL 5/3/2006 Added to insure friction only counteracts
+            if (impulse > rob.Velocity.Magnitude())
+                impulse = rob.Velocity.Magnitude(); // EricL 5/3/2006 Added to insure friction only counteracts
 
             if (impulse < 0.0000001)
                 return;
 
             //EricL 5/7/2006 Changed to operate directly on velocity
-            rob.vel -= rob.vel.Unit() * impulse; //kinetic friction points in opposite direction of velocity
+            rob.Velocity -= rob.Velocity.Unit() * impulse; //kinetic friction points in opposite direction of velocity
         }
 
-        private static void GravityForces(robot rob)
+        private static void GravityForces(Robot rob)
         {
             if (SimOpt.SimOpts.YGravity == 0 || !SimOpt.SimOpts.PondMode || SimOpt.SimOpts.UpDnConnected)
             {
-                rob.ImpulseInd += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.mass);
+                rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
             }
             else
             {
                 if (rob.Bouyancy > 0)
-                    rob.nrg -= SimOpt.SimOpts.YGravity / SimOpt.SimOpts.PhysMoving * (rob.mass > 192 ? 192 : rob.mass) * SimOpt.SimOpts.Costs.VoluntaryMovementCost * SimOpt.SimOpts.Costs.CostMultiplier * rob.Bouyancy;
+                    rob.Energy -= SimOpt.SimOpts.YGravity / SimOpt.SimOpts.PhysMoving * (rob.Mass > 192 ? 192 : rob.Mass) * SimOpt.SimOpts.Costs.VoluntaryMovementCost * SimOpt.SimOpts.Costs.CostMultiplier * rob.Bouyancy;
 
-                if (1 / BouyancyScaling - rob.pos.Y / SimOpt.SimOpts.FieldHeight > rob.Bouyancy)
-                    rob.ImpulseInd += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.mass);
+                if (1 / BouyancyScaling - rob.Position.Y / SimOpt.SimOpts.FieldHeight > rob.Bouyancy)
+                    rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
                 else
-                    rob.ImpulseInd += new DoubleVector(0, -SimOpt.SimOpts.YGravity * rob.mass);
+                    rob.IndependentImpulse += new DoubleVector(0, -SimOpt.SimOpts.YGravity * rob.Mass);
             }
         }
 
-        private static void PlanetEaters(robot rob)
+        private static void PlanetEaters(Robot rob)
         {
-            if (!SimOpt.SimOpts.PlanetEaters || rob.mass == 0)
+            if (!SimOpt.SimOpts.PlanetEaters || rob.Mass == 0)
                 return;
 
-            foreach (var r in Globals.RobotsManager.Robots.Where(r => r.mass > 0 && r.exist))
+            foreach (var r in Globals.RobotsManager.Robots.Where(r => r.Mass > 0 && r.Exists))
             {
-                var posDiff = r.pos - rob.pos;
+                var posDiff = r.Position - rob.Position;
                 var mag = posDiff.Magnitude();
 
                 if (mag == 0)
                     continue;
 
-                var force = SimOpt.SimOpts.PlanetEatersG * (rob.mass > 192 ? 192 : rob.mass) * (r.mass > 192 ? 192 : r.mass) / (mag * mag);
+                var force = SimOpt.SimOpts.PlanetEatersG * (rob.Mass > 192 ? 192 : rob.Mass) * (r.Mass > 192 ? 192 : r.Mass) / (mag * mag);
 
                 posDiff *= 1 / mag;
                 posDiff *= force;
 
-                rob.ImpulseInd += posDiff;
+                rob.IndependentImpulse += posDiff;
             }
         }
 
@@ -445,26 +445,26 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static void SphereDragForces(robot rob)
+        private static void SphereDragForces(Robot rob)
         {
             //No Drag if no velocity or no density
-            if (rob.vel.X == 0 && rob.vel.Y == 0 || SimOpt.SimOpts.Density == 0)
+            if (rob.Velocity.X == 0 && rob.Velocity.Y == 0 || SimOpt.SimOpts.Density == 0)
                 return;
 
             //Here we calculate the reduction in angular momentum due to fluid density
             //I'm sure there there is a better calculation
-            if (Math.Abs(rob.ma) > 0)
+            if (Math.Abs(rob.AngularMomentum) > 0)
             {
                 if (SimOpt.SimOpts.Density < 0.000001)
-                    rob.ma *= 1 - SimOpt.SimOpts.Density * 1000000;
+                    rob.AngularMomentum *= 1 - SimOpt.SimOpts.Density * 1000000;
                 else
-                    rob.ma = 0;
+                    rob.AngularMomentum = 0;
 
-                if (Math.Abs(rob.ma) < 0.0000001)
-                    rob.ma = 0;
+                if (Math.Abs(rob.AngularMomentum) < 0.0000001)
+                    rob.AngularMomentum = 0;
             }
 
-            var mag = rob.vel.Magnitude();
+            var mag = rob.Velocity.Magnitude();
 
             if (mag < 0.0000001)
                 return;
@@ -474,21 +474,21 @@ namespace DarwinBots.Modules
             if (impulse > mag)
                 impulse = mag * 0.99; // Prevents the resistance force from exceeding the velocity!
 
-            rob.vel -= rob.vel.Unit() * impulse;
+            rob.Velocity -= rob.Velocity.Unit() * impulse;
         }
 
-        private static void VoluntaryForces(robot rob)
+        private static void VoluntaryForces(Robot rob)
         {
             //corpses are dead, they don't move around of their own volition
-            if (rob.Corpse || rob.DisableMovementSysvars || rob.DisableDNA || !rob.exist || rob.mem[MemoryAddresses.dirup] == 0 && rob.mem[MemoryAddresses.dirdn] == 0 && rob.mem[MemoryAddresses.dirsx] == 0 && rob.mem[MemoryAddresses.dirdx] == 0)
+            if (rob.IsCorpse || rob.MovementSysvarsDisabled || rob.DnaDisabled || !rob.Exists || rob.Memory[MemoryAddresses.dirup] == 0 && rob.Memory[MemoryAddresses.dirdn] == 0 && rob.Memory[MemoryAddresses.dirsx] == 0 && rob.Memory[MemoryAddresses.dirdx] == 0)
                 return;
 
-            var mult = rob.NewMove == false ? rob.mass : 1;
+            var mult = rob.Mass;
 
             //yes it's backwards, that's on purpose
-            var dir = new DoubleVector(rob.mem[MemoryAddresses.dirup] - rob.mem[MemoryAddresses.dirdn], rob.mem[MemoryAddresses.dirsx] - rob.mem[MemoryAddresses.dirdx]) * mult;
+            var dir = new DoubleVector(rob.Memory[MemoryAddresses.dirup] - rob.Memory[MemoryAddresses.dirdn], rob.Memory[MemoryAddresses.dirsx] - rob.Memory[MemoryAddresses.dirdx]) * mult;
 
-            var newAccel = new DoubleVector(DoubleVector.Dot(rob.aimvector, dir), DoubleVector.Cross(rob.aimvector, dir));
+            var newAccel = new DoubleVector(DoubleVector.Dot(rob.AimVector, dir), DoubleVector.Cross(rob.AimVector, dir));
 
             //EricL 4/2/2006 Clip the magnitude of the acceleration vector to avoid an overflow crash
             //Its possible to get some really high accelerations here when altzheimers sets in or if a mutation
@@ -502,7 +502,7 @@ namespace DarwinBots.Modules
             //NewAccel is the impulse vector formed by the robot's internal "engine".
             //Impulse is the integral of Force over time.
 
-            rob.ImpulseInd += newAccel * SimOpt.SimOpts.PhysMoving;
+            rob.IndependentImpulse += newAccel * SimOpt.SimOpts.PhysMoving;
 
             //calculates new acceleration and energy values from robot's
             //.up/.dn/.sx/.dx vars
@@ -511,13 +511,13 @@ namespace DarwinBots.Modules
             //EricL 4/4/2006 Clip the energy loss due to voluntary forces.  The total energy loss per cycle could be
             //higher then this due to other nrg losses and this may be redundent with the magnitude clip above, but it
             //helps keep things sane down the road and avoid crashing problems when .nrg goes hugely negative.
-            if (energyCost > rob.nrg)
-                energyCost = rob.nrg;
+            if (energyCost > rob.Energy)
+                energyCost = rob.Energy;
 
             if (energyCost < -1000)
                 energyCost = -1000;
 
-            rob.nrg -= energyCost;
+            rob.Energy -= energyCost;
         }
     }
 }

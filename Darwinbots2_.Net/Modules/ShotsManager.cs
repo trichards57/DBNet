@@ -18,7 +18,7 @@ namespace DarwinBots.Modules
         public double MaxBotShotSeparation { get; set; }
         public List<Shot> Shots { get; } = new();
 
-        public void Decay(robot rob)
+        public void Decay(Robot rob)
         {
             rob.DecayTimer++;
 
@@ -27,8 +27,7 @@ namespace DarwinBots.Modules
 
             rob.DecayTimer = 0;
 
-            rob.aim = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
-            rob.aimvector = new DoubleVector(Math.Cos(rob.aim), Math.Sin(rob.aim));
+            rob.Aim = ThreadSafeRandom.Local.NextDouble() * 2 * Math.PI;
 
             var va = Math.Clamp(rob.Body, 0, SimOpt.SimOpts.Decay / 10);
 
@@ -49,7 +48,7 @@ namespace DarwinBots.Modules
             rob.Body -= SimOpt.SimOpts.Decay / 10;
         }
 
-        public void Defecate(robot rob)
+        public void Defecate(Robot rob)
         {
             var va = 200.0;
 
@@ -64,18 +63,18 @@ namespace DarwinBots.Modules
             }
 
             rob.Waste -= va;
-            rob.nrg -= SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier / ((rob.Ties.Count < 0 ? 0 : rob.Ties.Count) + 1);
+            rob.Energy -= SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier / ((rob.Ties.Count < 0 ? 0 : rob.Ties.Count) + 1);
             NewShot(rob, -4, va, 1, true);
-            rob.Pwaste += va / 1000;
+            rob.PermanentWaste += va / 1000;
         }
 
-        public bool MakeVirus(robot rob, int gene)
+        public bool MakeVirus(Robot rob, int gene)
         {
-            rob.virusshot = NewShot(rob, -7, gene, 1);
-            return rob.virusshot != null;
+            rob.VirusShot = NewShot(rob, -7, gene, 1);
+            return rob.VirusShot != null;
         }
 
-        public Shot NewShot(robot rob, int shotType, double val, double rangeMultiplier, bool offset = false)
+        public Shot NewShot(Robot rob, int shotType, double val, double rangeMultiplier, bool offset = false)
         {
             if (val > 32000)
                 val = 32000;
@@ -86,10 +85,10 @@ namespace DarwinBots.Modules
                 Age = 0,
                 Parent = rob,
                 FromSpecie = rob.FName, //Which species fired the shot
-                Color = rob.color,
+                Color = rob.Color,
                 Value = (int)val,
-                MemoryLocation = rob.mem[835],
-                MemoryValue = rob.mem[836]
+                MemoryLocation = rob.Memory[835],
+                MemoryValue = rob.Memory[836]
             };
 
             if (shotType is > 0 or -100)
@@ -107,33 +106,33 @@ namespace DarwinBots.Modules
 
             double shotAngle;
 
-            if (rob.mem[MemoryAddresses.backshot] == 0)
-                shotAngle = rob.aim; //forward shots
+            if (rob.Memory[MemoryAddresses.backshot] == 0)
+                shotAngle = rob.Aim; //forward shots
             else
             {
-                shotAngle = Physics.NormaliseAngle(rob.aim - Math.PI); //backward shots
-                rob.mem[MemoryAddresses.backshot] = 0;
+                shotAngle = Physics.NormaliseAngle(rob.Aim - Math.PI); //backward shots
+                rob.Memory[MemoryAddresses.backshot] = 0;
             }
 
-            if (rob.mem[MemoryAddresses.aimshoot] != 0)
+            if (rob.Memory[MemoryAddresses.aimshoot] != 0)
             {
-                shotAngle = rob.aim - rob.mem[MemoryAddresses.aimshoot] % 1256 / 200.0;
-                rob.mem[MemoryAddresses.aimshoot] = 0;
+                shotAngle = rob.Aim - rob.Memory[MemoryAddresses.aimshoot] % 1256 / 200.0;
+                rob.Memory[MemoryAddresses.aimshoot] = 0;
             }
 
             shotAngle += (ThreadSafeRandom.Local.NextDouble() - .5) * 0.2;
 
             var angle = new DoubleVector(Math.Cos(shotAngle), -Math.Sin(shotAngle));
 
-            shot.Position = rob.pos + angle * rob.Radius;
+            shot.Position = rob.Position + angle * rob.Radius;
 
             if (offset)
             {
-                shot.Position -= rob.vel;
-                shot.Position += rob.actvel;
+                shot.Position -= rob.Velocity;
+                shot.Position += rob.ActualVelocity;
             }
 
-            shot.Velocity = rob.actvel + angle * 40;
+            shot.Velocity = rob.ActualVelocity + angle * 40;
 
             shot.OldPosition = shot.Position - shot.Velocity;
 
@@ -170,7 +169,7 @@ namespace DarwinBots.Modules
                     break;
 
                 case -8:
-                    shot.Dna = rob.dna;
+                    shot.Dna = rob.Dna;
                     break;
             }
 
@@ -179,7 +178,7 @@ namespace DarwinBots.Modules
             return shot;
         }
 
-        public void ShootVirus(robot rob, Shot shot)
+        public void ShootVirus(Robot rob, Shot shot)
         {
             if (!shot.Exist)
                 return;
@@ -187,21 +186,21 @@ namespace DarwinBots.Modules
             if (!shot.Stored)
                 return;
 
-            if (rob.mem[MemoryAddresses.VshootSys] < 0)
-                rob.mem[MemoryAddresses.VshootSys] = 1;
+            if (rob.Memory[MemoryAddresses.VshootSys] < 0)
+                rob.Memory[MemoryAddresses.VshootSys] = 1;
 
-            var energy = Math.Clamp(rob.mem[MemoryAddresses.VshootSys] * 20, 0, 32000); //.vshoot * 20
+            var energy = Math.Clamp(rob.Memory[MemoryAddresses.VshootSys] * 20, 0, 32000); //.vshoot * 20
 
             shot.Energy = energy;
-            rob.nrg -= energy / 20.0 - SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier;
+            rob.Energy -= energy / 20.0 - SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier;
 
-            shot.Range = 11 + rob.mem[MemoryAddresses.VshootSys] / 2;
-            rob.nrg -= rob.mem[MemoryAddresses.VshootSys] - SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier;
+            shot.Range = 11 + rob.Memory[MemoryAddresses.VshootSys] / 2;
+            rob.Energy -= rob.Memory[MemoryAddresses.VshootSys] - SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier;
 
             var shotAngle = (double)ThreadSafeRandom.Local.Next(1, 1256) / 200;
             shot.Stored = false;
             shot.Position += new DoubleVector(Math.Cos(shotAngle) * rob.Radius, -Math.Sin(shotAngle) * rob.Radius);
-            shot.Velocity = new DoubleVector(RobotsManager.AbsX(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0), RobotsManager.AbsY(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0)) + rob.actvel;
+            shot.Velocity = new DoubleVector(RobotsManager.AbsX(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0), RobotsManager.AbsY(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0)) + rob.ActualVelocity;
 
             shot.OldPosition = shot.Position - shot.Velocity;
         }
@@ -226,14 +225,14 @@ namespace DarwinBots.Modules
                 if (shot.ShotType == -2)
                     Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] += (int)shot.Energy;
 
-                robot rob = null;
+                Robot rob = null;
                 if (shot.ShotType != -100 && !shot.Stored)
                     rob = NewShotCollision(shot); // go off and check for collisions with bots.
 
                 //babies born into a stream of shots from its parent shouldn't die
                 //from those shots.  I can't imagine this temporary imunity can be
                 //exploited, so it should be safe
-                if (rob != null && (shot.Parent != rob.parent || rob.age > 1))
+                if (rob != null && (shot.Parent != rob.Parent || rob.Age > 1))
                 {
                     //this below is horribly complicated:  allow me to explain:
                     //nrg dissipates in a non-linear fashion.  Very little nrg disappears until you
@@ -254,20 +253,20 @@ namespace DarwinBots.Modules
 
                         if (shot.ShotType != MemoryAddresses.DelgeneSys)
                         {
-                            if (shot.Energy / 2 > rob.poison || rob.poison == 0)
+                            if (shot.Energy / 2 > rob.Poison || rob.Poison == 0)
                             {
-                                rob.mem[shot.ShotType] = shot.Value;
+                                rob.Memory[shot.ShotType] = shot.Value;
                             }
                             else
                             {
                                 CreateShot(shot.Position.X, shot.Position.Y, -shot.Velocity.X, -shot.Velocity.Y, -5, rob, shot.Energy / 2, shot.Range * 40, Colors.Yellow);
-                                rob.poison -= shot.Energy / 2 * 0.9;
+                                rob.Poison -= shot.Energy / 2 * 0.9;
                                 rob.Waste += shot.Energy / 2 * 0.1;
-                                if (rob.poison < 0)
+                                if (rob.Poison < 0)
                                 {
-                                    rob.poison = 0;
+                                    rob.Poison = 0;
                                 }
-                                rob.mem[MemoryAddresses.poison] = (int)rob.poison;
+                                rob.Memory[MemoryAddresses.poison] = (int)rob.Poison;
                             }
                         }
                     }
@@ -335,10 +334,10 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void AddGene(robot rob, Shot shot)
+        private void AddGene(Robot rob, Shot shot)
         {
             //Dead bodies and virus immune bots can't catch a virus
-            if (rob.Corpse || rob.VirusImmune)
+            if (rob.IsCorpse || rob.IsVirusImmune)
                 return;
 
             var power = shot.Energy / (shot.Range * RobotsManager.RobSize / 3) * shot.Value;
@@ -355,53 +354,53 @@ namespace DarwinBots.Modules
                 rob.Slime = 0;
             }
 
-            var position = ThreadSafeRandom.Local.Next(0, rob.genenum);//gene position to insert the virus
+            var position = ThreadSafeRandom.Local.Next(0, rob.NumberOfGenes);//gene position to insert the virus
 
             int insert;
             if (position == 0)
                 insert = 0;
             else
             {
-                insert = DnaManipulations.GeneEnd(rob.dna, DnaManipulations.GenePosition(rob.dna, position));
-                if (insert == rob.dna.Count)
+                insert = DnaManipulations.GeneEnd(rob.Dna, DnaManipulations.GenePosition(rob.Dna, position));
+                if (insert == rob.Dna.Count)
                 {
-                    insert = rob.dna.Count;
+                    insert = rob.Dna.Count;
                 }
             }
 
-            rob.dna.InsertRange(insert, shot.Dna);
+            rob.Dna.InsertRange(insert, shot.Dna);
 
             Senses.MakeOccurrList(rob);
-            rob.genenum = DnaManipulations.CountGenes(rob.dna);
-            rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
-            rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
+            rob.NumberOfGenes = DnaManipulations.CountGenes(rob.Dna);
+            rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+            rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
 
             rob.SubSpecies = NeoMutations.NewSubSpecies(rob); // Infection with a virus counts as a new subspecies
 
             NeoMutations.LogMutation(rob, $"Infected with virus during cycle {SimOpt.SimOpts.TotRunCycle} at pos {insert}");
             rob.Mutations++;
-            rob.LastMut++;
+            rob.LastMutation++;
         }
 
         private bool CopyGene(Shot shot, int p)
         {
-            if (p > shot.Parent.genenum || p < 1)
+            if (p > shot.Parent.NumberOfGenes || p < 1)
                 return false;
 
-            var geneStart = DnaManipulations.GenePosition(shot.Parent.dna, p);
-            var geneEnding = DnaManipulations.GeneEnd(shot.Parent.dna, geneStart);
+            var geneStart = DnaManipulations.GenePosition(shot.Parent.Dna, p);
+            var geneEnding = DnaManipulations.GeneEnd(shot.Parent.Dna, geneStart);
             var genelen = geneEnding - geneStart + 1;
 
             if (genelen < 1)
                 return false;
 
             shot.Dna.Clear();
-            shot.Dna.AddRange(shot.Parent.dna.Skip(geneStart).Take(genelen));
+            shot.Dna.AddRange(shot.Parent.Dna.Skip(geneStart).Take(genelen));
 
             return true;
         }
 
-        private void CreateShot(double x, double y, double vx, double vy, int loc, robot par, double val, double range, Color col)
+        private void CreateShot(double x, double y, double vx, double vy, int loc, Robot par, double val, double range, Color col)
         {
             if (val > 32000)
                 val = 32000; // Overflow protection
@@ -420,7 +419,7 @@ namespace DarwinBots.Modules
                 Value = (int)val,
                 Energy = loc == -2 ? val : range + 40 + 1,
                 Range = (int)((range + 40 + 1) / 40),
-                MemoryLocation = par.mem[834]
+                MemoryLocation = par.Memory[834]
             };
 
             if (loc is > 0 or -100)
@@ -433,12 +432,12 @@ namespace DarwinBots.Modules
             }
 
             if (shot.ShotType == -5)
-                shot.MemoryValue = shot.Parent.mem[839];
+                shot.MemoryValue = shot.Parent.Memory[839];
 
             Shots.Add(shot);
         }
 
-        private robot NewShotCollision(Shot shot)
+        private Robot NewShotCollision(Shot shot)
         {
             // Check for collisions with the field edges
             if (SimOpt.SimOpts.UpDnConnected)
@@ -483,16 +482,16 @@ namespace DarwinBots.Modules
                 }
             }
 
-            robot newShotCollision = null;
+            Robot newShotCollision = null;
 
             double earliestCollision = 100;//Used to find which bot was hit earliest in the cycle.
 
             foreach (var rob in Globals.RobotsManager.Robots)
             {
-                if (!rob.exist || shot.Parent == rob || Math.Abs(shot.OldPosition.X - rob.pos.X) >= MaxBotShotSeparation || Math.Abs(shot.OldPosition.Y - rob.pos.Y) >= MaxBotShotSeparation)
+                if (!rob.Exists || shot.Parent == rob || Math.Abs(shot.OldPosition.X - rob.Position.X) >= MaxBotShotSeparation || Math.Abs(shot.OldPosition.Y - rob.Position.Y) >= MaxBotShotSeparation)
                     continue;
 
-                var b0 = rob.pos - rob.vel + rob.actvel;
+                var b0 = rob.Position - rob.Velocity + rob.ActualVelocity;
                 var p = shot.Position - b0;
 
                 if (p.Magnitude() < rob.Radius)
@@ -503,7 +502,7 @@ namespace DarwinBots.Modules
                     break;
                 }
 
-                var d = shot.Velocity - rob.actvel;
+                var d = shot.Velocity - rob.ActualVelocity;
                 var p2 = p.MagnitudeSquare();
                 var d2 = d.MagnitudeSquare();
 
@@ -552,12 +551,12 @@ namespace DarwinBots.Modules
             return newShotCollision;
         }
 
-        private void ReleaseBody(robot rob, Shot shot)
+        private void ReleaseBody(Robot rob, Shot shot)
         {
             if (rob.Body <= 0)
                 return;
 
-            var vel = rob.actvel - shot.Velocity + rob.actvel * 0.5;
+            var vel = rob.ActualVelocity - shot.Velocity + rob.ActualVelocity * 0.5;
 
             var power = SimOpt.SimOpts.EnergyExType == ShotMode.Proportional
                         ? shot.Range == 0 ? 0 : shot.Value * shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * SimOpt.SimOpts.EnergyProp
@@ -566,28 +565,28 @@ namespace DarwinBots.Modules
             if (power > 32000)
                 power = 32000;
 
-            var shell = rob.shell * ShellEffectiveness;
+            var shell = rob.Shell * ShellEffectiveness;
 
             if (power > rob.Body * 10 / 0.8 + shell)
                 power = rob.Body * 10 / 0.8 + shell;
 
             if (power < shell)
             {
-                rob.shell -= power / ShellEffectiveness;
+                rob.Shell -= power / ShellEffectiveness;
 
-                if (rob.shell < 0)
-                    rob.shell = 0;
+                if (rob.Shell < 0)
+                    rob.Shell = 0;
 
-                rob.mem[823] = (int)rob.shell;
+                rob.Memory[823] = (int)rob.Shell;
                 return;
             }
 
-            rob.shell -= power / ShellEffectiveness;
-            if (rob.shell < 0)
+            rob.Shell -= power / ShellEffectiveness;
+            if (rob.Shell < 0)
             {
-                rob.shell = 0;
+                rob.Shell = 0;
             }
-            rob.mem[823] = (int)rob.shell;
+            rob.Memory[823] = (int)rob.Shell;
             power -= shell;
 
             if (power <= 0)
@@ -596,7 +595,7 @@ namespace DarwinBots.Modules
             var range = shot.Range * 2;
 
             // create energy shot
-            if (rob.Corpse)
+            if (rob.IsCorpse)
             {
                 power *= 4;
                 if (power > rob.Body * 10)
@@ -608,13 +607,13 @@ namespace DarwinBots.Modules
             {
                 var leftover = 0.0;
                 var energyLost = power * 0.2;
-                if (energyLost > rob.nrg)
+                if (energyLost > rob.Energy)
                 {
-                    leftover = energyLost - rob.nrg;
-                    rob.nrg = 0;
+                    leftover = energyLost - rob.Energy;
+                    rob.Energy = 0;
                 }
                 else
-                    rob.nrg -= energyLost;
+                    rob.Energy -= energyLost;
 
                 energyLost = power * 0.08;
                 if (energyLost > rob.Body)
@@ -627,15 +626,15 @@ namespace DarwinBots.Modules
 
                 if (leftover > 0)
                 {
-                    if (rob.nrg > 0 & rob.nrg > leftover)
+                    if (rob.Energy > 0 & rob.Energy > leftover)
                     {
-                        rob.nrg -= leftover;
+                        rob.Energy -= leftover;
                         leftover = 0;
                     }
-                    else if (rob.nrg > 0 & rob.nrg < leftover)
+                    else if (rob.Energy > 0 & rob.Energy < leftover)
                     {
-                        leftover -= rob.nrg;
-                        rob.nrg = 0;
+                        leftover -= rob.Energy;
+                        rob.Energy = 0;
                     }
 
                     if (rob.Body > 0 & rob.Body * 10 > leftover)
@@ -647,23 +646,23 @@ namespace DarwinBots.Modules
                 }
             }
 
-            if (rob.Body <= 0.5 || rob.nrg <= 0.5)
+            if (rob.Body <= 0.5 || rob.Energy <= 0.5)
             {
-                rob.Dead = true;
+                rob.IsDead = true;
                 shot.Parent.Kills = shot.Parent.Kills + 1;
-                shot.Parent.mem[220] = shot.Parent.Kills;
+                shot.Parent.Memory[220] = shot.Parent.Kills;
             }
 
             CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.White);
         }
 
-        private void ReleaseEnergy(robot rob, Shot shot)
+        private void ReleaseEnergy(Robot rob, Shot shot)
         {
-            if (rob.nrg <= 0.5)
+            if (rob.Energy <= 0.5)
                 return;
 
-            var vel = rob.actvel - shot.Velocity;
-            vel += rob.actvel * 0.5;
+            var vel = rob.ActualVelocity - shot.Velocity;
+            vel += rob.ActualVelocity * 0.5;
 
             double power;
             if (SimOpt.SimOpts.EnergyExType == ShotMode.Proportional)
@@ -675,33 +674,33 @@ namespace DarwinBots.Modules
             else
                 power = SimOpt.SimOpts.EnergyFix;
 
-            if (rob.Corpse)
+            if (rob.IsCorpse)
                 power *= 0.5;
 
             var range = shot.Range * 2;
 
-            if (rob.poison > power)
+            if (rob.Poison > power)
             {
                 //create poison shot
                 CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -5, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.Yellow);
-                rob.poison -= power * 0.9;
-                if (rob.poison < 0)
+                rob.Poison -= power * 0.9;
+                if (rob.Poison < 0)
                 {
-                    rob.poison = 0;
+                    rob.Poison = 0;
                 }
-                rob.mem[MemoryAddresses.poison] = (int)rob.poison;
+                rob.Memory[MemoryAddresses.poison] = (int)rob.Poison;
             }
             else
             { // create energy shot
                 var energyLost = power * 0.9;
-                if (energyLost > rob.nrg)
+                if (energyLost > rob.Energy)
                 {
-                    power = rob.nrg;
-                    rob.nrg = 0;
+                    power = rob.Energy;
+                    rob.Energy = 0;
                 }
                 else
                 {
-                    rob.nrg -= energyLost;
+                    rob.Energy -= energyLost;
                 }
 
                 energyLost = power * 0.01;
@@ -710,29 +709,29 @@ namespace DarwinBots.Modules
                 CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.White);
             }
 
-            if (!(rob.Body <= 0.5) && !(rob.nrg <= 0.5)) return;
+            if (!(rob.Body <= 0.5) && !(rob.Energy <= 0.5)) return;
 
-            rob.Dead = true;
+            rob.IsDead = true;
             shot.Parent.Kills++;
-            shot.Parent.mem[220] = shot.Parent.Kills;
+            shot.Parent.Memory[220] = shot.Parent.Kills;
         }
 
-        private void TakeEnergy(robot rob, Shot shot)
+        private void TakeEnergy(Robot rob, Shot shot)
         {
             double overflow = 0;
 
-            if (rob.Corpse)
+            if (rob.IsCorpse)
                 return;
 
             var partial = shot.Range < 0.00001 ? 0 : shot.Energy;
 
-            if (rob.nrg + partial * 0.95 > 32000)
+            if (rob.Energy + partial * 0.95 > 32000)
             {
-                overflow = rob.nrg + partial * 0.95 - 32000;
-                rob.nrg = 32000;
+                overflow = rob.Energy + partial * 0.95 - 32000;
+                rob.Energy = 32000;
             }
             else
-                rob.nrg += partial * 0.95; // 95% of energy goes to nrg
+                rob.Energy += partial * 0.95; // 95% of energy goes to nrg
 
             if (rob.Body + partial * 0.004 + overflow * 0.1 > 32000)
                 rob.Body = 32000;
@@ -742,9 +741,9 @@ namespace DarwinBots.Modules
             rob.Waste += partial * 0.01; // 1% goes to waste
         }
 
-        private void TakePoison(robot rob, Shot shot)
+        private void TakePoison(Robot rob, Shot shot)
         {
-            if (rob.Corpse)
+            if (rob.IsCorpse)
                 return;
 
             var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
@@ -755,53 +754,53 @@ namespace DarwinBots.Modules
             if (shot.FromSpecie == rob.FName)
             {
                 //Robot is immune to poison from his own species
-                rob.poison += power; //Robot absorbs poison fired by conspecs
+                rob.Poison += power; //Robot absorbs poison fired by conspecs
 
-                if (rob.poison > 32000)
-                    rob.poison = 32000;
+                if (rob.Poison > 32000)
+                    rob.Poison = 32000;
 
-                rob.mem[827] = (int)rob.poison;
+                rob.Memory[827] = (int)rob.Poison;
             }
             else
             {
-                rob.Poisoned = true;
-                rob.Poisoncount += power / 1.5;
-                if (rob.Poisoncount > 32000)
-                    rob.Poisoncount = 32000;
+                rob.IsPoisoned = true;
+                rob.PoisonCountdown += power / 1.5;
+                if (rob.PoisonCountdown > 32000)
+                    rob.PoisonCountdown = 32000;
 
                 if (shot.MemoryLocation > 0)
                 {
-                    rob.Ploc = (shot.MemoryLocation - 1) % 1000 + 1;
-                    if (rob.Ploc == 340)
-                        rob.Ploc = 0;
+                    rob.PoisonLocation = (shot.MemoryLocation - 1) % 1000 + 1;
+                    if (rob.PoisonLocation == 340)
+                        rob.PoisonLocation = 0;
                 }
                 else
                 {
                     do
                     {
-                        rob.Ploc = ThreadSafeRandom.Local.Next(1, 1000);
-                    } while (rob.Ploc == 340);
+                        rob.PoisonLocation = ThreadSafeRandom.Local.Next(1, 1000);
+                    } while (rob.PoisonLocation == 340);
                 }
-                rob.Pval = shot.MemoryValue;
+                rob.PoisonValue = shot.MemoryValue;
             }
         }
 
-        private void TakeSperm(robot rob, Shot shot)
+        private void TakeSperm(Robot rob, Shot shot)
         {
-            if (rob.fertilized < -10)
+            if (rob.Fertilized < -10)
                 return;//block sex repro when necessary
 
             if (shot.Dna.Count == 0)
                 return;
 
-            rob.fertilized = 10; // bots stay fertilized for 10 cycles currently
-            rob.mem[MemoryAddresses.SYSFERTILIZED] = 10;
-            rob.spermDNA = shot.Dna;
+            rob.Fertilized = 10; // bots stay fertilized for 10 cycles currently
+            rob.Memory[MemoryAddresses.SYSFERTILIZED] = 10;
+            rob.SpermDna = shot.Dna;
         }
 
-        private void TakeVenom(robot rob, Shot shot)
+        private void TakeVenom(Robot rob, Shot shot)
         {
-            if (rob.Corpse)
+            if (rob.IsCorpse)
                 return;
 
             var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
@@ -812,63 +811,63 @@ namespace DarwinBots.Modules
             if (shot.FromSpecie == rob.FName)
             {
                 //Robot is immune to venom from his own species
-                rob.venom += power; //Robot absorbs venom fired by conspec
+                rob.Venom += power; //Robot absorbs venom fired by conspec
 
-                if (rob.venom > 32000)
+                if (rob.Venom > 32000)
                 {
-                    rob.venom = 32000;
+                    rob.Venom = 32000;
                 }
 
-                rob.mem[825] = (int)rob.venom;
+                rob.Memory[825] = (int)rob.Venom;
             }
             else
             {
                 power *= VenomEffectivenessVsShell; //Botsareus 3/6/2013 max power for venum is capped at 100 so I multiply to get an average
-                if (power < rob.shell * ShellEffectiveness)
+                if (power < rob.Shell * ShellEffectiveness)
                 {
-                    rob.shell -= power / ShellEffectiveness;
-                    rob.mem[823] = (int)rob.shell;
+                    rob.Shell -= power / ShellEffectiveness;
+                    rob.Memory[823] = (int)rob.Shell;
                     return;
                 }
 
                 var temp = power;
-                power -= rob.shell * ShellEffectiveness;
-                rob.shell -= temp / ShellEffectiveness;
-                if (rob.shell < 0)
-                    rob.shell = 0;
+                power -= rob.Shell * ShellEffectiveness;
+                rob.Shell -= temp / ShellEffectiveness;
+                if (rob.Shell < 0)
+                    rob.Shell = 0;
 
-                rob.mem[823] = (int)rob.shell;
+                rob.Memory[823] = (int)rob.Shell;
                 power /= VenomEffectivenessVsShell; // Botsareus 3/6/2013 after shell conversion divide
 
                 if (power < 1)
                     return;
 
-                rob.Paralyzed = true;
+                rob.IsParalyzed = true;
 
-                if (rob.Paracount + power > 32000)
-                    rob.Paracount = 32000;
+                if (rob.ParalyzedCountdown + power > 32000)
+                    rob.ParalyzedCountdown = 32000;
                 else
-                    rob.Paracount += power;
+                    rob.ParalyzedCountdown += (int)power;
 
                 if (shot.MemoryLocation > 0)
                 {
-                    rob.Vloc = (shot.MemoryLocation - 1) % 1000 + 1;
-                    if (rob.Vloc == 340)
-                        rob.Vloc = 0;
+                    rob.VirusLocation = (shot.MemoryLocation - 1) % 1000 + 1;
+                    if (rob.VirusLocation == 340)
+                        rob.VirusLocation = 0;
                 }
                 else
                 {
                     do
                     {
-                        rob.Vloc = ThreadSafeRandom.Local.Next(1, 1000);
-                    } while (rob.Vloc == 340);
+                        rob.VirusLocation = ThreadSafeRandom.Local.Next(1, 1000);
+                    } while (rob.VirusLocation == 340);
                 }
 
-                rob.Vval = shot.MemoryValue;
+                rob.VirusValue = shot.MemoryValue;
             }
         }
 
-        private void TakeWaste(robot rob, Shot shot)
+        private void TakeWaste(Robot rob, Shot shot)
         {
             var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
 

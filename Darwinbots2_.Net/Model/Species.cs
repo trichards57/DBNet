@@ -1,6 +1,5 @@
 ﻿using DarwinBots.Modules;
 using DarwinBots.Support;
-using System.IO;
 
 namespace DarwinBots.Model
 {
@@ -12,13 +11,12 @@ namespace DarwinBots.Model
 
         public Species(string fileName)
         {
-            Name = Path.GetFileName(fileName);
-            Colind = 8;
+            Name = System.IO.Path.GetFileName(fileName);
             Posrg = 1;
             Posdn = 1;
             Poslf = 0;
             Postp = 0;
-            path = Path.GetDirectoryName(fileName);
+            Path = System.IO.Path.GetDirectoryName(fileName);
             Veg = false;
             CantSee = false;
             DisableMovementSysvars = false;
@@ -26,26 +24,15 @@ namespace DarwinBots.Model
             CantReproduce = false;
             VirusImmune = false;
 
-            var nameLower = Name.ToLowerInvariant();
-
-            Color = nameLower switch
-            {
-                "base.txt" => System.Windows.Media.Colors.Blue,
-                "mutate.txt" => System.Windows.Media.Colors.Red,
-                "robota.txt" => System.Windows.Media.Colors.Red,
-                "robotb.txt" => System.Windows.Media.Colors.Red,
-                "test.txt" => System.Windows.Media.Colors.Red,
-                _ => System.Windows.Media.Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256)),
-            };
+            Color = System.Windows.Media.Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256),
+                (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
         }
 
         public bool CantReproduce { get; set; }
 
         public bool CantSee { get; set; }
 
-        public int Colind { get; set; }
-
-        public System.Windows.Media.Color Color { get; set; }
+        public System.Windows.Media.Color Color { get; init; }
 
         public string Comment { get; set; }
 
@@ -57,7 +44,7 @@ namespace DarwinBots.Model
 
         public bool kill_mb { get; set; }
 
-        public MutationProbabilities Mutables { get; set; }
+        public MutationProbabilities Mutables { get; init; }
 
         public string Name { get; set; }
 
@@ -65,21 +52,21 @@ namespace DarwinBots.Model
 
         public bool NoChlr { get; set; }
 
-        public string path { get; set; }
+        public string Path { get; set; }
 
-        public int population { get; set; }
+        public int Population { get; set; }
 
-        public decimal Posdn { get; set; }
+        public decimal Posdn { get; init; }
 
-        public decimal Poslf { get; set; }
+        public decimal Poslf { get; init; }
 
-        public decimal Posrg { get; set; }
+        public decimal Posrg { get; init; }
 
-        public decimal Postp { get; set; }
+        public decimal Postp { get; init; }
 
-        public int qty { get; set; }
+        public int Quantity { get; set; }
 
-        public int[] Skin { get; set; } = new int[13];
+        public int[] Skin { get; } = new int[8];
 
         public int Stnrg { get; set; }
 
@@ -91,8 +78,6 @@ namespace DarwinBots.Model
 
         public void AssignSkin()
         {
-            Skin = new int[8];
-
             for (var i = 0; i < 8; i += 2)
             {
                 Skin[i] = ThreadSafeRandom.Local.Next(0, RobotsManager.RobSize / 2 + 1);

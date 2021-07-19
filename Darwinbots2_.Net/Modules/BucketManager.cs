@@ -78,9 +78,9 @@ namespace DarwinBots.Modules
                 }
             }
 
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists))
             {
-                rob.BucketPos = new IntVector(-2, -2);
+                rob.BucketPosition = new IntVector(-2, -2);
                 UpdateBotBucket(rob);
             }
         }
@@ -89,11 +89,11 @@ namespace DarwinBots.Modules
         /// Checks all the bots in the same bucket and surrounding buckets for collisions.
         /// </summary>
         /// <param name="rob">The robot to check.</param>
-        public void BucketsCollision(robot rob)
+        public void BucketsCollision(Robot rob)
         {
-            CheckBotBucketForCollision(rob, rob.BucketPos);
+            CheckBotBucketForCollision(rob, rob.BucketPosition);
 
-            foreach (var adjBucket in _buckets[rob.BucketPos.X, rob.BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+            foreach (var adjBucket in _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].AdjacentBuckets.Where(b => b.X != -1))
                 CheckBotBucketForCollision(rob, adjBucket);
         }
 
@@ -104,48 +104,48 @@ namespace DarwinBots.Modules
         /// The last viewed object.
         /// </returns>
         /// <param name="rob">The robot to check.</param>
-        public object BucketsProximity(robot rob)
+        public object BucketsProximity(Robot rob)
         {
-            rob.lastopp = 0;
-            rob.mem[MemoryAddresses.EYEF] = 0;
+            rob.LastSeenObject = null;
+            rob.Memory[MemoryAddresses.EYEF] = 0;
 
             for (var x = MemoryAddresses.EyeStart + 1; x < MemoryAddresses.EyeEnd; x++)
-                rob.mem[x] = 0;
+                rob.Memory[x] = 0;
 
-            CheckBotBucketForVision(rob, rob.BucketPos);
+            CheckBotBucketForVision(rob, rob.BucketPosition);
 
-            foreach (var adjBucket in _buckets[rob.BucketPos.X, rob.BucketPos.Y].AdjacentBuckets.Where(b => b.X != -1))
+            foreach (var adjBucket in _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].AdjacentBuckets.Where(b => b.X != -1))
                 CheckBotBucketForVision(rob, adjBucket);
 
-            if (_options.ShapesAreVisable && rob.exist)
+            if (_options.ShapesAreVisable && rob.Exists)
                 CompareShapes(rob);
 
-            return rob.lastopp;
+            return rob.LastSeenObject;
         }
 
         /// <summary>
         /// Updates the bucket the bot is sat in.
         /// </summary>
         /// <param name="rob">The rob to place.</param>
-        public void UpdateBotBucket(robot rob)
+        public void UpdateBotBucket(Robot rob)
         {
-            if (!rob.exist)
+            if (!rob.Exists)
             {
-                _buckets[rob.BucketPos.X, rob.BucketPos.Y].Robots.Remove(rob);
+                _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
                 return;
             }
 
-            var current = rob.pos / BucketSize;
+            var current = rob.Position / BucketSize;
             current = DoubleVector.Floor(current);
             current = DoubleVector.Clamp(current, DoubleVector.Zero, _numBuckets);
 
             var newBucket = current.ToIntVector();
 
-            if (rob.BucketPos == newBucket) return;
+            if (rob.BucketPosition == newBucket) return;
 
-            _buckets[rob.BucketPos.X, rob.BucketPos.Y].Robots.Remove(rob);
+            _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
             _buckets[newBucket.X, newBucket.Y].Robots.Add(rob);
-            rob.BucketPos = newBucket;
+            rob.BucketPosition = newBucket;
         }
 
         private static double CheckDistance(DoubleVector botPosition, DoubleVector obstacleCorner, DoubleVector obstacleSide, DoubleVector eyeAimLeftVector, DoubleVector eyeAimRightVector, out double distRight, out double distLeft)
@@ -195,12 +195,12 @@ namespace DarwinBots.Modules
             return 0.0;
         }
 
-        private static bool ShapeBlocksBot(robot rob1, robot rob2, Obstacle o)
+        private static bool ShapeBlocksBot(Robot rob1, Robot rob2, Obstacle o)
         {
             var d1 = new DoubleVector[5];
             var p = new DoubleVector[5];
 
-            if (o.Position.X > Math.Max(rob1.pos.X, rob2.pos.X) || o.Position.X + o.Width < Math.Min(rob1.pos.X, rob2.pos.X) || o.Position.Y > Math.Max(rob1.pos.Y, rob2.pos.Y) || o.Position.Y + o.Height < Math.Min(rob1.pos.Y, rob2.pos.Y))
+            if (o.Position.X > Math.Max(rob1.Position.X, rob2.Position.X) || o.Position.X + o.Width < Math.Min(rob1.Position.X, rob2.Position.X) || o.Position.Y > Math.Max(rob1.Position.Y, rob2.Position.Y) || o.Position.Y + o.Height < Math.Min(rob1.Position.Y, rob2.Position.Y))
                 return false;
 
             d1[1] = new DoubleVector(0, o.Width); // top
@@ -213,8 +213,8 @@ namespace DarwinBots.Modules
             p[3] = p[1] + d1[2];
             p[4] = p[1] + d1[1];
 
-            var p0 = rob1.pos;
-            var d0 = rob2.pos - rob1.pos;
+            var p0 = rob1.Position;
+            var d0 = rob2.Position - rob1.Position;
 
             for (var i = 1; i < 4; i++)
             {
@@ -234,30 +234,30 @@ namespace DarwinBots.Modules
             return false;
         }
 
-        private void CheckBotBucketForCollision(robot rob, IntVector pos)
+        private void CheckBotBucketForCollision(Robot rob, IntVector pos)
         {
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && i.AbsNum > rob.AbsNum))
             {
-                var distvector = rob.pos - r.pos;
+                var distvector = rob.Position - r.Position;
                 var dist = rob.Radius + r.Radius;
                 if (distvector.MagnitudeSquare() < dist * dist)
                     Physics.Repel(rob, r);
             }
         }
 
-        private void CheckBotBucketForVision(robot rob, IntVector pos)
+        private void CheckBotBucketForVision(Robot rob, IntVector pos)
         {
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob))
                 CompareRobots(rob, r);
         }
 
-        private void CompareRobots(robot rob1, robot rob2)
+        private void CompareRobots(Robot rob1, Robot rob2)
         {
-            var ab = rob2.pos - rob1.pos;
+            var ab = rob2.Position - rob1.Position;
             var edgeToEdgeDistance = ab.Magnitude() - rob1.Radius - rob2.Radius;
 
             var sightDistances = Enumerable.Range(0, 8)
-                .Select(a => EyeSightDistance(rob1.mem[MemoryAddresses.EYE1WIDTH + a], rob1))
+                .Select(a => EyeSightDistance(rob1.Memory[MemoryAddresses.EYE1WIDTH + a], rob1))
                 .ToArray();
 
             var maxSightDistance = sightDistances.Max();
@@ -300,9 +300,9 @@ namespace DarwinBots.Modules
 
                 if (!(edgeToEdgeDistance <= eyeDistance)) continue;
 
-                var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob1.mem[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob1.aim);
+                var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob1.Memory[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob1.Aim);
 
-                var halfEyeWidth = Physics.IntToRadians(rob1.mem[MemoryAddresses.EYE1WIDTH + a]) / 2;
+                var halfEyeWidth = Physics.IntToRadians(rob1.Memory[MemoryAddresses.EYE1WIDTH + a]) / 2;
 
                 while (halfEyeWidth > Math.PI - Math.PI / 36)
                     halfEyeWidth -= Math.PI;
@@ -339,23 +339,23 @@ namespace DarwinBots.Modules
                 }
 
                 // Check to see if it is closer than other bots we may have seen
-                if (!(rob1.mem[MemoryAddresses.EyeStart + 1 + a] < eyeValue)) continue;
+                if (!(rob1.Memory[MemoryAddresses.EyeStart + 1 + a] < eyeValue)) continue;
 
                 // It is closer than other bots we may have seen.
                 // Check to see if this eye has the focus
-                if (a == Math.Abs(rob1.mem[MemoryAddresses.FOCUSEYE] + 4) % 9)
+                if (a == Math.Abs(rob1.Memory[MemoryAddresses.FOCUSEYE] + 4) % 9)
                 {
                     // This eye does have the focus
                     // Set the EYEF value and also lastopp so the lookoccur list will get populated later
-                    rob1.lastopp = rob2;
-                    rob1.mem[MemoryAddresses.EYEF] = (int)eyeValue;
+                    rob1.LastSeenObject = rob2;
+                    rob1.Memory[MemoryAddresses.EYEF] = (int)eyeValue;
                 }
                 // Set the distance for the eye
-                rob1.mem[MemoryAddresses.EyeStart + 1 + a] = (int)eyeValue;
+                rob1.Memory[MemoryAddresses.EyeStart + 1 + a] = (int)eyeValue;
             }
         }
 
-        private void CompareShapes(robot rob)
+        private void CompareShapes(Robot rob)
         {
             var d1 = new DoubleVector[5];
             var p = new DoubleVector[5];
@@ -363,7 +363,7 @@ namespace DarwinBots.Modules
             var lastopppos = DoubleVector.Zero;
 
             var sightDistances = Enumerable.Range(0, 8)
-                .Select(a => EyeSightDistance(rob.mem[MemoryAddresses.EYE1WIDTH + a], rob))
+                .Select(a => EyeSightDistance(rob.Memory[MemoryAddresses.EYE1WIDTH + a], rob))
                 .ToArray();
 
             var maxSightDistance = sightDistances.Max();
@@ -371,16 +371,16 @@ namespace DarwinBots.Modules
             foreach (var o in Globals.ObstacleManager.Obstacles.Where(o => o.Exist))
             {
                 // Check to see if shape is too far away to be seen
-                if (o.Position.X > rob.pos.X + maxSightDistance || o.Position.X + o.Width < rob.pos.X - maxSightDistance || o.Position.Y > rob.pos.Y + maxSightDistance || o.Position.Y + o.Height < rob.pos.Y - maxSightDistance)
+                if (o.Position.X > rob.Position.X + maxSightDistance || o.Position.X + o.Width < rob.Position.X - maxSightDistance || o.Position.Y > rob.Position.Y + maxSightDistance || o.Position.Y + o.Height < rob.Position.Y - maxSightDistance)
                     continue;
 
-                if (o.Position.X < rob.pos.X && o.Position.X + o.Width > rob.pos.X && o.Position.Y < rob.pos.Y && o.Position.Y + o.Height > rob.pos.Y)
+                if (o.Position.X < rob.Position.X && o.Position.X + o.Width > rob.Position.X && o.Position.Y < rob.Position.Y && o.Position.Y + o.Height > rob.Position.Y)
                 {
                     // Bot is inside shape
                     for (var i = 0; i < 8; i++)
-                        rob.mem[MemoryAddresses.EyeStart + 1 + i] = 32000;
+                        rob.Memory[MemoryAddresses.EyeStart + 1 + i] = 32000;
 
-                    rob.lastopp = o;
+                    rob.LastSeenObject = o;
                     return;
                 }
 
@@ -396,7 +396,7 @@ namespace DarwinBots.Modules
                 p[3] = p[1] + d1[1]; // NE Corner
                 p[4] = p[2] + d1[1]; // SE Corner
 
-                var p0 = rob.pos;
+                var p0 = rob.Position;
 
                 Direction botLocation;
                 // Bots can be in one of eight possible locations relative to a shape.
@@ -453,7 +453,7 @@ namespace DarwinBots.Modules
                     //Now we check to see if the sight distance for this specific eye is far enough to see this specific shape
                     var sightDistance = sightDistances[a];
 
-                    if (o.Position.X > rob.pos.X + sightDistance || o.Position.X + o.Width < rob.pos.X - sightDistance || o.Position.Y > rob.pos.Y + sightDistance || o.Position.Y + o.Height < rob.pos.Y - sightDistance)
+                    if (o.Position.X > rob.Position.X + sightDistance || o.Position.X + o.Width < rob.Position.X - sightDistance || o.Position.Y > rob.Position.Y + sightDistance || o.Position.Y + o.Height < rob.Position.Y - sightDistance)
                         continue;
 
                     // Check to see if the side is viewable in this eye
@@ -461,10 +461,10 @@ namespace DarwinBots.Modules
                     // We have to mod the value and divide by 200 to get radians
                     // then since the eyedir values are offsets from their defaults, eye 1 is off from .aim by 4 eye field widths,
                     // three for eye2, and so on.
-                    var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob.aim);
+                    var eyeAim = Physics.NormaliseAngle(Physics.IntToRadians(rob.Memory[MemoryAddresses.EYE1DIR + a]) - Math.PI / 18 * a + Math.PI / 18 * 4 + rob.Aim);
 
                     //These are the left and right sides of the field of view for the eye
-                    var halfEyeWidth = Physics.NormaliseAngle(Physics.IntToRadians(rob.mem[MemoryAddresses.EYE1WIDTH + a] + 35)) / 2;
+                    var halfEyeWidth = Physics.NormaliseAngle(Physics.IntToRadians(rob.Memory[MemoryAddresses.EYE1WIDTH + a] + 35)) / 2;
 
                     var eyeAimLeft = eyeAim + halfEyeWidth;
                     var eyeAimRight = eyeAim - halfEyeWidth;
@@ -536,8 +536,8 @@ namespace DarwinBots.Modules
                             if (a == 4)
                             {
                                 lastopppos = distLeft < distRight && distLeft > 0
-                                    ? rob.pos + eyeAimLeftVector.Unit() * dist
-                                    : rob.pos + eyeAimRightVector.Unit() * dist;
+                                    ? rob.Position + eyeAimLeftVector.Unit() * dist
+                                    : rob.Position + eyeAimRightVector.Unit() * dist;
                             }
                         }
                     }
@@ -553,8 +553,8 @@ namespace DarwinBots.Modules
                             if (a == 4)
                             {
                                 lastopppos = distLeft < distRight && distLeft > 0
-                                    ? rob.pos + eyeAimLeftVector.Unit() * dist
-                                    : rob.pos + eyeAimRightVector.Unit() * dist;
+                                    ? rob.Position + eyeAimLeftVector.Unit() * dist
+                                    : rob.Position + eyeAimRightVector.Unit() * dist;
                             }
                         }
                     }
@@ -570,8 +570,8 @@ namespace DarwinBots.Modules
                             if (a == 4)
                             {
                                 lastopppos = distLeft < distRight && distLeft > 0
-                                    ? rob.pos + eyeAimLeftVector.Unit() * dist
-                                    : rob.pos + eyeAimRightVector.Unit() * dist;
+                                    ? rob.Position + eyeAimLeftVector.Unit() * dist
+                                    : rob.Position + eyeAimRightVector.Unit() * dist;
                             }
                         }
                     }
@@ -587,8 +587,8 @@ namespace DarwinBots.Modules
                             if (a == 4)
                             {
                                 lastopppos = distLeft < distRight && distLeft > 0
-                                    ? rob.pos + eyeAimLeftVector.Unit() * dist
-                                    : rob.pos + eyeAimRightVector.Unit() * dist;
+                                    ? rob.Position + eyeAimLeftVector.Unit() * dist
+                                    : rob.Position + eyeAimRightVector.Unit() * dist;
                             }
                         }
                     }
@@ -601,21 +601,21 @@ namespace DarwinBots.Modules
                     if (eyeValue > 32000)
                         eyeValue = 32000;
 
-                    if (rob.mem[MemoryAddresses.EyeStart + 1 + a] >= eyeValue) continue;
+                    if (rob.Memory[MemoryAddresses.EyeStart + 1 + a] >= eyeValue) continue;
 
                     // It is closer than other bots we may have seen.
                     // Check to see if this eye has the focus
-                    if (a == Math.Abs(rob.mem[MemoryAddresses.FOCUSEYE] + 4) % 9)
+                    if (a == Math.Abs(rob.Memory[MemoryAddresses.FOCUSEYE] + 4) % 9)
                     {
                         //This eye does have the focus
                         //Set the EYEF value and also lastopp so the lookoccur list will get populated later
-                        rob.lastopp = o;
-                        rob.mem[MemoryAddresses.EYEF] = eyeValue;
-                        rob.lastopppos = lastopppos;
+                        rob.LastSeenObject = o;
+                        rob.Memory[MemoryAddresses.EYEF] = eyeValue;
+                        rob.LastSeenObjectPosition = lastopppos;
                     }
 
                     //Set the distance for the eye
-                    rob.mem[MemoryAddresses.EyeStart + 1 + a] = eyeValue;
+                    rob.Memory[MemoryAddresses.EyeStart + 1 + a] = eyeValue;
                 }
             }
         }
@@ -625,7 +625,7 @@ namespace DarwinBots.Modules
         /// </summary>
         /// <param name="eyeWidth">Width of the eye.</param>
         /// <param name="rob">The rob.</param>
-        private double EyeSightDistance(int eyeWidth, robot rob)
+        private double EyeSightDistance(int eyeWidth, Robot rob)
         {
             var width = eyeWidth % 1256 + 35;
 
@@ -638,12 +638,12 @@ namespace DarwinBots.Modules
             return 1440 * (1 - Math.Log((double)width / 35) / 4) * EyeStrength(rob);
         }
 
-        private double EyeStrength(robot rob)
+        private double EyeStrength(Robot rob)
         {
             double eyeStrength;
 
-            if (_options.PondMode && rob.pos.Y > 1)
-                eyeStrength = Math.Pow(Math.Pow(EyeEffectiveness / (rob.pos.Y / 2000), _options.Gradient), 6828.0 / _options.FieldHeight);
+            if (_options.PondMode && rob.Position.Y > 1)
+                eyeStrength = Math.Pow(Math.Pow(EyeEffectiveness / (rob.Position.Y / 2000), _options.Gradient), 6828.0 / _options.FieldHeight);
             else
                 eyeStrength = 1;
 

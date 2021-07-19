@@ -1,6 +1,5 @@
 using DarwinBots.Model;
 using DarwinBots.Support;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -134,16 +133,16 @@ namespace DarwinBots.Modules
             return genePos;
         }
 
-        public static void InsertVar(robot rob, string a)
+        public static void InsertVar(Robot rob, string a)
         {
             a = a[4..];
             var parts = a.Split(' ', 2);
             var cValid = int.TryParse(parts[1], out var cVal);
 
-            rob.vars.Add(new Variable(parts[0], cValid ? cVal : 0));
+            rob.Variables.Add(new Variable(parts[0], cValid ? cVal : 0));
         }
 
-        public static async Task<robot> RobScriptLoad(string path)
+        public static async Task<Robot> RobScriptLoad(string path)
         {
             var rob = Globals.RobotsManager.GetNewBot();
             PrepareRob(rob, path); // prepares structure
@@ -151,32 +150,31 @@ namespace DarwinBots.Modules
             {
                 // loads and parses dna
                 Senses.MakeOccurrList(rob); // creates the ref* array
-                rob.genenum = CountGenes(rob.dna);
-                rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
-                rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
+                rob.NumberOfGenes = CountGenes(rob.Dna);
+                rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+                rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
                 return rob; // returns the index of the created rob
             }
 
-            rob.exist = false;
+            rob.Exists = false;
             Globals.RobotsManager.Robots.Remove(rob);
             Globals.BucketManager.UpdateBotBucket(rob);
             return null;
         }
 
-        private static void PrepareRob(robot rob, string path)
+        private static void PrepareRob(Robot rob, string path)
         {
             //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
             //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
-            rob.aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
-            rob.aimvector = new DoubleVector(Math.Cos(rob.aim), Math.Sin(rob.aim));
-            rob.exist = true;
-            rob.BucketPos = new IntVector(-2, -2);
+            rob.Aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
+            rob.Exists = true;
+            rob.BucketPosition = new IntVector(-2, -2);
             Globals.BucketManager.UpdateBotBucket(rob);
 
-            rob.color = Color.FromRgb((byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255));
-            rob.vars.Clear();
-            rob.nrg = 20000;
-            rob.Veg = false;
+            rob.Color = Color.FromRgb((byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255), (byte)ThreadSafeRandom.Local.Next(50, 255));
+            rob.Variables.Clear();
+            rob.Energy = 20000;
+            rob.IsVegetable = false;
             rob.FName = System.IO.Path.GetFileName(path);
         }
     }

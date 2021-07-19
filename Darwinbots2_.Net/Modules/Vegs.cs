@@ -20,19 +20,19 @@ namespace DarwinBots.Modules
         public static int TotalVegs { get; set; }
         public static int TotalVegsDisplayed { get; set; }
 
-        public static void feedveg2(robot rob)
+        public static void feedveg2(Robot rob)
         {
-            var energy = rob.chloroplasts / 64000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
-            var body = (rob.chloroplasts / 64000 * SimOpt.SimOpts.VegFeedingToBody) / 10;
+            var energy = rob.Chloroplasts / 64000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
+            var body = (rob.Chloroplasts / 64000 * SimOpt.SimOpts.VegFeedingToBody) / 10;
 
             if (ThreadSafeRandom.Local.Next(0, 2) == 0)
             {
                 if (rob.Waste > 0)
                 {
-                    if (rob.nrg + energy < 32000)
+                    if (rob.Energy + energy < 32000)
                     {
-                        rob.nrg += energy;
-                        rob.Waste -= rob.chloroplasts / 32000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
+                        rob.Energy += energy;
+                        rob.Waste -= rob.Chloroplasts / 32000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
                     }
 
                     if (rob.Waste < 0)
@@ -44,7 +44,7 @@ namespace DarwinBots.Modules
                     if (rob.Body + body < 32000)
                     {
                         rob.Body += body;
-                        rob.Waste -= rob.chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
+                        rob.Waste -= rob.Chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
                     }
 
                     if (rob.Waste < 0)
@@ -58,7 +58,7 @@ namespace DarwinBots.Modules
                     if (rob.Body + body < 32000)
                     {
                         rob.Body += body;
-                        rob.Waste -= rob.chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
+                        rob.Waste -= rob.Chloroplasts / 32000 * SimOpt.SimOpts.VegFeedingToBody;
                     }
 
                     if (rob.Waste < 0)
@@ -67,10 +67,10 @@ namespace DarwinBots.Modules
 
                 if (rob.Waste > 0)
                 {
-                    if (rob.nrg + energy < 32000)
+                    if (rob.Energy + energy < 32000)
                     {
-                        rob.nrg += energy;
-                        rob.Waste -= rob.chloroplasts / 32000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
+                        rob.Energy += energy;
+                        rob.Waste -= rob.Chloroplasts / 32000 * (1 - SimOpt.SimOpts.VegFeedingToBody);
                     }
 
                     if (rob.Waste < 0)
@@ -202,9 +202,9 @@ namespace DarwinBots.Modules
             }
 
             //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.nrg > 0 && r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
-                rob.mem[218] = 0;
+                rob.Memory[218] = 0;
             }
 
             if (!FeedThisCycle)
@@ -214,7 +214,7 @@ namespace DarwinBots.Modules
 
             ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
 
-            var TotalRobotArea = Globals.RobotsManager.Robots.Where(r => r.exist).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
+            var TotalRobotArea = Globals.RobotsManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
 
             if (ScreenArea < 1)
             {
@@ -244,22 +244,22 @@ namespace DarwinBots.Modules
                 sunstart2 = 0;
             }
 
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.nrg > 0 && r.exist))
+            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
                 double acttok = 0;
                 //Botsareus 8/16/2014 Allow robots to share chloroplasts again
-                if (rob.chloroplasts > 0)
+                if (rob.Chloroplasts > 0)
                 {
-                    if (rob.Chlr_Share_Delay > 0)
-                        rob.Chlr_Share_Delay--;
+                    if (rob.ChloroplastsShareDelay > 0)
+                        rob.ChloroplastsShareDelay--;
 
-                    if ((rob.pos.X < sunstart2 || rob.pos.X > sunstop2) && (rob.pos.X < sunstart || rob.pos.X > sunstop))
+                    if ((rob.Position.X < sunstart2 || rob.Position.X > sunstop2) && (rob.Position.X < sunstart || rob.Position.X > sunstop))
                         continue;
 
                     double tok = 0;
                     if (SimOpt.SimOpts.PondMode)
                     {
-                        var depth = (rob.pos.Y / 2000) + 1;
+                        var depth = (rob.Position.Y / 2000) + 1;
                         if (depth < 1)
                             depth = 1;
 
@@ -276,27 +276,27 @@ namespace DarwinBots.Modules
                     tok /= 3.5; //Botsareus 2/25/2014 A little mod for PhinotPi
 
                     //Panda 8/14/2013 New chloroplast codez
-                    var ChloroplastCorrection = rob.chloroplasts / 16000;
+                    var ChloroplastCorrection = rob.Chloroplasts / 16000;
                     var AddEnergyRate = (AreaCorrection * ChloroplastCorrection) * 1.25;
-                    var SubtractEnergyRate = Math.Pow(rob.chloroplasts / 32000, 2);
+                    var SubtractEnergyRate = Math.Pow(rob.Chloroplasts / 32000, 2);
 
                     acttok = (AddEnergyRate - SubtractEnergyRate) * tok;
                 }
-                rob.mem[218] = 1; //Botsareus 8/16/2014 Now it is time view the sun
+                rob.Memory[218] = 1; //Botsareus 8/16/2014 Now it is time view the sun
 
-                if (!(rob.chloroplasts > 0))
+                if (!(rob.Chloroplasts > 0))
                     continue;
 
-                acttok -= rob.age * rob.chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
+                acttok -= rob.Age * rob.Chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
 
                 if (SimOpt.TmpOpts.Tides > 0)
                     acttok *= (1 - Physics.BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
 
-                rob.nrg += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);
+                rob.Energy += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);
                 rob.Body += acttok * SimOpt.SimOpts.VegFeedingToBody / 10;
 
-                if (rob.nrg > 32000)
-                    rob.nrg = 32000;
+                if (rob.Energy > 32000)
+                    rob.Energy = 32000;
 
                 if (rob.Body > 32000)
                     rob.Body = 32000;
@@ -332,10 +332,10 @@ namespace DarwinBots.Modules
             var x = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(SimOpt.SimOpts.Specie[r].Posrg * (SimOpt.SimOpts.FieldWidth - 60)));
             var y = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(SimOpt.SimOpts.Specie[r].Posdn * (SimOpt.SimOpts.FieldHeight - 60)));
 
-            if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].path == "Invalid Path")
+            if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].Path == "Invalid Path")
                 return;
 
-            var a = await DnaManipulations.RobScriptLoad(System.IO.Path.Join(SimOpt.SimOpts.Specie[r].path,
+            var a = await DnaManipulations.RobScriptLoad(System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
                     SimOpt.SimOpts.Specie[r].Name));
 
             if (a == null)
@@ -347,62 +347,62 @@ namespace DarwinBots.Modules
             //Check to see if we were able to load the bot.  If we can't, the path may be wrong, the sim may have
             //come from another machine with a different install path.  Set the species path to an empty string to
             //prevent endless looping of error dialogs.
-            if (!a.exist)
+            if (!a.Exists)
             {
-                SimOpt.SimOpts.Specie[r].path = "Invalid Path";
+                SimOpt.SimOpts.Specie[r].Path = "Invalid Path";
                 return;
             }
 
-            a.Veg = SimOpt.SimOpts.Specie[r].Veg;
-            if (a.Veg)
-                a.chloroplasts = Globals.StartChlr;
+            a.IsVegetable = SimOpt.SimOpts.Specie[r].Veg;
+            if (a.IsVegetable)
+                a.Chloroplasts = Globals.StartChlr;
 
-            a.Fixed = SimOpt.SimOpts.Specie[r].Fixed;
+            a.IsFixed = SimOpt.SimOpts.Specie[r].Fixed;
             a.CantSee = SimOpt.SimOpts.Specie[r].CantSee;
-            a.DisableDNA = SimOpt.SimOpts.Specie[r].DisableDna;
-            a.DisableMovementSysvars = SimOpt.SimOpts.Specie[r].DisableMovementSysvars;
+            a.DnaDisabled = SimOpt.SimOpts.Specie[r].DisableDna;
+            a.MovementSysvarsDisabled = SimOpt.SimOpts.Specie[r].DisableMovementSysvars;
             a.CantReproduce = SimOpt.SimOpts.Specie[r].CantReproduce;
-            a.VirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
-            a.Corpse = false;
-            a.Dead = false;
+            a.IsVirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
+            a.IsCorpse = false;
+            a.IsDead = false;
             a.Body = 1000;
             a.Mutations = 0;
             a.OldMutations = 0;
-            a.LastMut = 0;
-            a.generation = 0;
+            a.LastMutation = 0;
+            a.Generation = 0;
             a.SonNumber = 0;
-            a.parent = null;
-            Array.Clear(a.mem, 0, a.mem.Length);
+            a.Parent = null;
+            Array.Clear(a.Memory, 0, a.Memory.Length);
 
-            if (a.Fixed)
-                a.mem[216] = 1;
+            if (a.IsFixed)
+                a.Memory[216] = 1;
 
-            a.pos = new DoubleVector(x, y);
+            a.Position = new DoubleVector(x, y);
 
-            a.aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
-            a.mem[MemoryAddresses.SetAim] = (int)a.aim * 200;
+            a.Aim = ThreadSafeRandom.Local.NextDouble() * Math.PI * 2;
+            a.Memory[MemoryAddresses.SetAim] = (int)a.Aim * 200;
 
             //Bot is already in a bucket due to the prepare routine
             Globals.BucketManager.UpdateBotBucket(a);
-            a.nrg = SimOpt.SimOpts.Specie[r].Stnrg;
-            a.Mutables = SimOpt.SimOpts.Specie[r].Mutables;
+            a.Energy = SimOpt.SimOpts.Specie[r].Stnrg;
+            a.MutationProbabilities = SimOpt.SimOpts.Specie[r].Mutables;
 
-            a.Vtimer = 0;
-            a.virusshot = null;
-            a.genenum = DnaManipulations.CountGenes(a.dna);
+            a.VirusTimer = 0;
+            a.VirusShot = null;
+            a.NumberOfGenes = DnaManipulations.CountGenes(a.Dna);
 
-            a.GenMut = (double)a.dna.Count / RobotsManager.GeneticSensitivity;
+            a.GenMut = (double)a.Dna.Count / RobotsManager.GeneticSensitivity;
 
-            a.mem[MemoryAddresses.DnaLenSys] = a.dna.Count;
-            a.mem[MemoryAddresses.GenesSys] = a.genenum;
+            a.Memory[MemoryAddresses.DnaLenSys] = a.Dna.Count;
+            a.Memory[MemoryAddresses.GenesSys] = a.NumberOfGenes;
 
-            a.multibot_time = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
-            a.NoChlr = SimOpt.SimOpts.Specie[r].NoChlr;
+            a.MultibotTimer = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
+            a.ChloroplastsDisabled = SimOpt.SimOpts.Specie[r].NoChlr;
 
             for (var i = 0; i < 7; i++)
                 a.Skin[i] = SimOpt.SimOpts.Specie[r].Skin[i];
 
-            a.color = SimOpt.SimOpts.Specie[r].Color;
+            a.Color = SimOpt.SimOpts.Specie[r].Color;
             Senses.MakeOccurrList(a);
         }
 
@@ -412,7 +412,7 @@ namespace DarwinBots.Modules
                 return false;
 
             //see if any active robots have chloroplasts
-            if (Globals.RobotsManager.Robots.Where(r => r.exist && r.chloroplasts > 0)
+            if (Globals.RobotsManager.Robots.Where(r => r.Exists && r.Chloroplasts > 0)
                 .Select(rob => new { rob, splitname = rob.FName.Split(")") })
                 .Select(t =>
                     t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
@@ -423,7 +423,7 @@ namespace DarwinBots.Modules
             }
 
             //If there is no robots at all with chlr then repop everything
-            return !Globals.RobotsManager.Robots.Any(r => r.exist && r.Veg && r.age > 0);
+            return !Globals.RobotsManager.Robots.Any(r => r.Exists && r.IsVegetable && r.Age > 0);
         }
     }
 }

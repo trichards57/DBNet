@@ -34,9 +34,9 @@ namespace DarwinBots.Modules
         /// <summary>
         /// Adds a record to the species array when a bot with a new species is loaded or teleported in.
         /// </summary>
-        public static void AddSpecie(robot rob, bool isNative)
+        public static void AddSpecie(Robot rob, bool isNative)
         {
-            if (rob.Corpse || rob.FName == "Corpse" || rob.exist == false)
+            if (rob.IsCorpse || rob.FName == "Corpse" || rob.Exists == false)
                 return;
 
             if (SimOpt.SimOpts.Specie.Count >= SimOpt.MaxNativeSpecies)
@@ -45,28 +45,28 @@ namespace DarwinBots.Modules
             var d = new Species
             {
                 Name = rob.FName,
-                Veg = rob.Veg,
+                Veg = rob.IsVegetable,
                 CantSee = rob.CantSee,
-                DisableMovementSysvars = rob.DisableMovementSysvars,
-                DisableDna = rob.DisableDNA,
+                DisableMovementSysvars = rob.MovementSysvarsDisabled,
+                DisableDna = rob.DnaDisabled,
                 CantReproduce = rob.CantReproduce,
-                VirusImmune = rob.VirusImmune,
-                population = 1,
+                VirusImmune = rob.IsVirusImmune,
+                Population = 1,
                 SubSpeciesCounter = 0,
-                Color = rob.color,
+                Color = rob.Color,
                 Comment = "Species arrived from the Internet",
                 Posrg = 1,
                 Posdn = 1,
                 Poslf = 0,
                 Postp = 0,
-                qty = 5,
+                Quantity = 5,
                 Stnrg = 3000,
                 Native = isNative,
-                path = "robots",
+                Path = "robots",
             };
 
             d.Mutables.ResetToDefault();
-            d.Mutables.EnableMutations = rob.Mutables.EnableMutations;
+            d.Mutables.EnableMutations = rob.MutationProbabilities.EnableMutations;
 
             SimOpt.SimOpts.Specie.Add(d);
         }
@@ -173,14 +173,14 @@ namespace DarwinBots.Modules
             SimOpt.TmpOpts = SimOpt.SimOpts;
         }
 
-        public robot RobotAtPoint(DoubleVector point)
+        public Robot RobotAtPoint(DoubleVector point)
         {
             return _robotsManager.Robots
-                 .Where(r => r.exist)
+                 .Where(r => r.Exists)
                  .Select(r => new
                  {
                      Robot = r,
-                     Distance = (r.pos - r.vel + r.actvel - point).MagnitudeSquare()
+                     Distance = (r.Position - r.Velocity + r.ActualVelocity - point).MagnitudeSquare()
                  })
                  .Where(r => r.Distance < r.Robot.Radius * r.Robot.Radius)
                  .OrderByDescending(r => r.Distance)
@@ -245,7 +245,7 @@ namespace DarwinBots.Modules
                 Pondmode = SimOpt.SimOpts.PondMode,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
-                Robots = _robotsManager.Robots.Where(r => r.exist),
+                Robots = _robotsManager.Robots.Where(r => r.Exists),
                 ShapeDriftRate = SimOpt.SimOpts.ShapeDriftRate,
                 ShapesAbsorbShots = SimOpt.SimOpts.ShapesAbsorbShots,
                 ShapesAreSeeThrough = SimOpt.SimOpts.ShapesAreSeeThrough,
@@ -285,9 +285,6 @@ namespace DarwinBots.Modules
         {
             DnaEngine.LoadSysVars();
 
-            await AutoSaved.Save(false);
-            await SafeMode.Save(true);
-
             if (SimOpt.SimOpts.SunOnRnd)
             {
                 Vegs.SunRange = 0.5;
@@ -306,7 +303,7 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
-            _shotsManager.MaxBotShotSeparation = Math.Pow(robot.StandardRadius, 2) +
+            _shotsManager.MaxBotShotSeparation = Math.Pow(Robot.StandardRadius, 2) +
                                                  Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + RobotsManager.RobSize / 3.0, 2);
 
             if (!startLoaded)
@@ -356,9 +353,9 @@ namespace DarwinBots.Modules
         {
             foreach (var species in SimOpt.SimOpts.Specie)
             {
-                for (var t = 1; t < species.qty; t++)
+                for (var t = 1; t < species.Quantity; t++)
                 {
-                    var rob = await DnaManipulations.RobScriptLoad(Path.Join(species.path, species.Name));
+                    var rob = await DnaManipulations.RobScriptLoad(Path.Join(species.Path, species.Name));
 
                     if (rob == null)
                     {
@@ -368,48 +365,48 @@ namespace DarwinBots.Modules
 
                     species.Native = true;
 
-                    rob.Veg = species.Veg;
-                    rob.NoChlr = species.NoChlr;
-                    rob.Fixed = species.Fixed;
+                    rob.IsVegetable = species.Veg;
+                    rob.ChloroplastsDisabled = species.NoChlr;
+                    rob.IsFixed = species.Fixed;
 
-                    if (rob.Fixed)
+                    if (rob.IsFixed)
                     {
-                        rob.mem[216] = 1;
+                        rob.Memory[216] = 1;
                     }
 
-                    rob.pos = new DoubleVector(ThreadSafeRandom.Local.Next((int)(species.Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(species.Posrg * (SimOpt.SimOpts.FieldWidth - 60))), ThreadSafeRandom.Local.Next((int)(species.Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(species.Posdn * (SimOpt.SimOpts.FieldHeight - 60))));
+                    rob.Position = new DoubleVector(ThreadSafeRandom.Local.Next((int)(species.Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(species.Posrg * (SimOpt.SimOpts.FieldWidth - 60))), ThreadSafeRandom.Local.Next((int)(species.Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(species.Posdn * (SimOpt.SimOpts.FieldHeight - 60))));
 
-                    rob.nrg = species.Stnrg;
+                    rob.Energy = species.Stnrg;
                     rob.Body = 1000;
 
-                    rob.mem[MemoryAddresses.SetAim] = Physics.RadiansToInt(rob.aim * 200);
-                    if (rob.Veg)
-                        rob.chloroplasts = Globals.StartChlr;
+                    rob.Memory[MemoryAddresses.SetAim] = Physics.RadiansToInt(rob.Aim * 200);
+                    if (rob.IsVegetable)
+                        rob.Chloroplasts = Globals.StartChlr;
 
-                    rob.Dead = false;
+                    rob.IsDead = false;
 
-                    rob.Mutables = species.Mutables;
+                    rob.MutationProbabilities = species.Mutables;
 
                     for (var i = 0; i < 7; i++)
                     {
                         rob.Skin[i] = species.Skin[i];
                     }
 
-                    rob.color = species.Color;
-                    rob.mem[MemoryAddresses.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
+                    rob.Color = species.Color;
+                    rob.Memory[MemoryAddresses.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
                     rob.CantSee = species.CantSee;
-                    rob.DisableDNA = species.DisableDna;
-                    rob.DisableMovementSysvars = species.DisableMovementSysvars;
+                    rob.DnaDisabled = species.DisableDna;
+                    rob.MovementSysvarsDisabled = species.DisableMovementSysvars;
                     rob.CantReproduce = species.CantReproduce;
-                    rob.VirusImmune = species.VirusImmune;
-                    rob.virusshot = null;
-                    rob.Vtimer = 0;
-                    rob.genenum = DnaManipulations.CountGenes(rob.dna);
+                    rob.IsVirusImmune = species.VirusImmune;
+                    rob.VirusShot = null;
+                    rob.VirusTimer = 0;
+                    rob.NumberOfGenes = DnaManipulations.CountGenes(rob.Dna);
 
-                    rob.GenMut = (double)rob.dna.Count / RobotsManager.GeneticSensitivity; //Botsareus 4/9/2013 automatically apply genetic to inserted robots
+                    rob.GenMut = (double)rob.Dna.Count / RobotsManager.GeneticSensitivity; //Botsareus 4/9/2013 automatically apply genetic to inserted robots
 
-                    rob.mem[MemoryAddresses.DnaLenSys] = rob.dna.Count;
-                    rob.mem[MemoryAddresses.GenesSys] = rob.genenum;
+                    rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+                    rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
                 }
             }
         }
@@ -527,25 +524,25 @@ namespace DarwinBots.Modules
             DnaEngine.ExecRobs(SimOpt.SimOpts.Costs, _robotsManager.Robots);
 
             //updateshots can write to bot sense, so we need to clear bot senses before updating shots
-            foreach (var rob in _robotsManager.Robots.Where(r => r.exist && r.DisableDNA == false))
+            foreach (var rob in _robotsManager.Robots.Where(r => r.Exists && r.DnaDisabled == false))
                 Senses.EraseSenses(rob);
 
             _shotsManager.UpdateShots();
 
             //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in _robotsManager.Robots.Where(r => r.exist))
-                rob.opos = rob.pos;
+            foreach (var rob in _robotsManager.Robots.Where(r => r.Exists))
+                rob.OldPosition = rob.Position;
 
             await _robotsManager.UpdateBots();
 
             //to figure actual velocity of the bot incase there is a collision event
-            foreach (var rob in _robotsManager.Robots.Where(r => r.exist && !(r.opos.X == 0 & r.opos.Y == 0)))
-                rob.actvel = rob.pos - rob.opos;
+            foreach (var rob in _robotsManager.Robots.Where(r => r.Exists && !(r.OldPosition.X == 0 & r.OldPosition.Y == 0)))
+                rob.ActualVelocity = rob.Position - rob.OldPosition;
 
             if (_obstacleManager.Obstacles.Count > 0)
                 _obstacleManager.MoveObstacles();
 
-            var allChlr = (int)_robotsManager.Robots.Where(r => r.exist).Sum(r => r.chloroplasts);
+            var allChlr = (int)_robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Chloroplasts);
 
             Globals.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
@@ -555,19 +552,19 @@ namespace DarwinBots.Modules
             Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);
 
             //Kill some robots to prevent of memory
-            var totlen = _robotsManager.Robots.Where(r => r.exist).Sum(r => r.dna.Count);
+            var totlen = _robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Dna.Count);
 
             if (totlen > 4000000)
             {
                 var maxdel = 1500 * (_robotsManager.TotalRobots * 425 / totlen);
 
-                foreach (var rob in _robotsManager.Robots.Where(r => r.exist).OrderByDescending(r => r.nrg + r.Body * 10).Take(maxdel).ToArray())
+                foreach (var rob in _robotsManager.Robots.Where(r => r.Exists).OrderByDescending(r => r.Energy + r.Body * 10).Take(maxdel).ToArray())
                     await _robotsManager.KillRobot(rob);
             }
             if (totlen > 3000000)
             {
                 foreach (var rob in _robotsManager.Robots)
-                    rob.LastMutDetail = "";
+                    rob.LastMutationDetail = "";
             }
         }
     }

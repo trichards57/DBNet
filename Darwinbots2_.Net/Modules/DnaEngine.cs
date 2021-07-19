@@ -26,9 +26,9 @@ namespace DarwinBots.Modules
 
         public static IReadOnlyList<Variable> SystemVariables { get; private set; } = new List<Variable>();
 
-        public static void ExecRobs(Costs costs, IEnumerable<robot> robs)
+        public static void ExecRobs(Costs costs, IEnumerable<Robot> robs)
         {
-            foreach (var rob in robs.Where(r => r.exist && !r.Corpse && !r.DisableDNA))
+            foreach (var rob in robs.Where(r => r.Exists && !r.IsCorpse && !r.DnaDisabled))
             {
                 var engine = new DnaEngine(costs);
                 engine.ExecuteDna(rob);
@@ -291,14 +291,14 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static void CheckTieAngTieLenAddress(robot rob, int address)
+        private static void CheckTieAngTieLenAddress(Robot rob, int address)
         {
             for (var k = 0; k < 4; k++)
             {
                 if (address == 480 + k)
-                    rob.TieAngOverwrite[k] = true;
+                    rob.TieAngleOverwrite[k] = true;
                 if (address == 484 + k)
-                    rob.TieLenOverwrite[k] = true;
+                    rob.TieLengthOverwrite[k] = true;
             }
         }
 
@@ -347,7 +347,7 @@ namespace DarwinBots.Modules
             return res;
         }
 
-        private void ExecuteAdvancedCommand(robot rob, int n)
+        private void ExecuteAdvancedCommand(Robot rob, int n)
         {
             if (n is < 1 or > 12)
                 return;
@@ -355,15 +355,15 @@ namespace DarwinBots.Modules
             int a, b, e;
             double c, d;
 
-            rob.nrg -= _costs.AdvancedCommandCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.AdvancedCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
                 case 1: // findang
                     b = _intStack.Pop();
                     a = _intStack.Pop();
-                    c = rob.pos.X;
-                    d = rob.pos.Y;
+                    c = rob.Position.X;
+                    d = rob.Position.Y;
                     e = (int)Physics.NormaliseAngle(Physics.Angle(c, d, a, b)) * 200;
                     _intStack.Push(e);
                     break;
@@ -371,8 +371,8 @@ namespace DarwinBots.Modules
                 case 2: // finddist
                     b = _intStack.Pop();
                     a = _intStack.Pop();
-                    c = rob.pos.X;
-                    d = rob.pos.Y;
+                    c = rob.Position.X;
+                    d = rob.Position.Y;
                     e = Clamp((int)Math.Sqrt(Math.Pow(c - a, 2) + Math.Pow(d - b, 2)));
                     _intStack.Push(e);
                     break;
@@ -450,14 +450,14 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void ExecuteBasicCommand(robot rob, int n)
+        private void ExecuteBasicCommand(Robot rob, int n)
         {
             if (n < 1 || n > 14)
                 return;
 
             int a, b;
 
-            rob.nrg -= _costs.BasicCommandCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.BasicCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -492,7 +492,7 @@ namespace DarwinBots.Modules
 
                 case 6: // dereference AKA *
                     a = NormaliseMemoryAddress(_intStack.Pop());
-                    _intStack.Push(rob.mem[a]);
+                    _intStack.Push(rob.Memory[a]);
                     break;
 
                 case 7: // mod
@@ -532,14 +532,14 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void ExecuteBitwiseCommand(robot rob, int n)
+        private void ExecuteBitwiseCommand(Robot rob, int n)
         {
             if (n < 1 || n > 9)
                 return;
 
             int a, b;
 
-            rob.nrg -= _costs.BitwiseCommandCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.BitwiseCommandCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -593,14 +593,14 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void ExecuteConditions(robot rob, int n)
+        private void ExecuteConditions(Robot rob, int n)
         {
             if (n < 1 || n > 10)
                 return;
 
             int a, b, c, d;
 
-            rob.nrg -= _costs.ConditionCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.ConditionCost * _costs.CostMultiplier;
 
             switch (n)
             {
@@ -666,7 +666,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void ExecuteDna(robot rob)
+        private void ExecuteDna(Robot rob)
         {
             _currentGene = 0;
             _currentCondFlag = NextBody;
@@ -674,9 +674,7 @@ namespace DarwinBots.Modules
             _intStack.Clear();
             _boolStack.Clear();
 
-            rob.condnum = 0;
-
-            foreach (var block in rob.dna)
+            foreach (var block in rob.Dna)
             {
                 if (block.Type == 10 && block.Value == 1)
                     break;
@@ -688,7 +686,7 @@ namespace DarwinBots.Modules
                             break;
 
                         _intStack.Push(block.Value);
-                        rob.nrg -= _costs.NumberCost * _costs.CostMultiplier;
+                        rob.Energy -= _costs.NumberCost * _costs.CostMultiplier;
                         break;
 
                     case 1:
@@ -696,8 +694,8 @@ namespace DarwinBots.Modules
                             break;
 
                         var b = NormaliseMemoryAddress(block.Value);
-                        _intStack.Push(rob.mem[b]);
-                        rob.nrg -= _costs.DotNumberCost * _costs.CostMultiplier;
+                        _intStack.Push(rob.Memory[b]);
+                        rob.Energy -= _costs.DotNumberCost * _costs.CostMultiplier;
                         break;
 
                     case 2:
@@ -731,9 +729,8 @@ namespace DarwinBots.Modules
                         break;
 
                     case 9:
-                        if (!ExecuteFlowCommands(rob, block.Value))
-                            rob.condnum++;
-                        rob.mem[MemoryAddresses.thisgene] = _currentGene;
+                        ExecuteFlowCommands(rob, block.Value);
+                        rob.Memory[MemoryAddresses.thisgene] = _currentGene;
                         break;
                 }
             }
@@ -741,9 +738,9 @@ namespace DarwinBots.Modules
             _currentFlow = FlowState.Clear; // EricL 4/15/2006 Do this so next bot doesn't inherit the flow control
         }
 
-        private bool ExecuteFlowCommands(robot rob, int n)
+        private bool ExecuteFlowCommands(Robot rob, int n)
         {
-            rob.nrg -= _costs.FlowCommandCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.FlowCommandCost * _costs.CostMultiplier;
 
             var condFound = false;
 
@@ -797,9 +794,9 @@ namespace DarwinBots.Modules
             return condFound;
         }
 
-        private void ExecuteLogic(robot rob, int n)
+        private void ExecuteLogic(Robot rob, int n)
         {
-            rob.nrg -= _costs.LogicCost * _costs.CostMultiplier;
+            rob.Energy -= _costs.LogicCost * _costs.CostMultiplier;
 
             bool a, b;
 
@@ -861,7 +858,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void ExecuteStores(robot rob, int n)
+        private void ExecuteStores(Robot rob, int n)
         {
             if (n < 1 || n > 14)
                 return;
@@ -879,79 +876,79 @@ namespace DarwinBots.Modules
             switch (n)
             {
                 case 1:
-                    rob.mem[b] = Mod32000(_intStack.Pop());
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier;
+                    rob.Memory[b] = Mod32000(_intStack.Pop());
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier;
                     break;
 
                 case 2:
-                    rob.mem[b] = Mod32000(rob.mem[b] + 1);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 10;
+                    rob.Memory[b] = Mod32000(rob.Memory[b] + 1);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 10;
                     break;
 
                 case 3:
-                    rob.mem[b] = Mod32000(rob.mem[b] - 1);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 10;
+                    rob.Memory[b] = Mod32000(rob.Memory[b] - 1);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 10;
                     break;
 
                 case 4:
                     a = _intStack.Pop();
-                    rob.mem[b] = Mod32000(rob.mem[b] + a);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = Mod32000(rob.Memory[b] + a);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 5:
                     a = _intStack.Pop();
-                    rob.mem[b] = Mod32000(rob.mem[b] - a);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = Mod32000(rob.Memory[b] - a);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 6:
                     a = _intStack.Pop();
-                    rob.mem[b] = Mod32000(rob.mem[b] * Mod32000(a));
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = Mod32000(rob.Memory[b] * Mod32000(a));
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 7:
                     a = _intStack.Pop();
-                    rob.mem[b] = a == 0 ? 0 : rob.mem[b] / a;
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = a == 0 ? 0 : rob.Memory[b] / a;
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 8:
                     a = _intStack.Pop();
-                    rob.mem[b] = Mod32000(Math.Min(rob.mem[b], a));
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = Mod32000(Math.Min(rob.Memory[b], a));
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 9:
                     a = _intStack.Pop();
-                    rob.mem[b] = Mod32000(Math.Max(rob.mem[b], a));
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 5;
+                    rob.Memory[b] = Mod32000(Math.Max(rob.Memory[b], a));
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 5;
                     break;
 
                 case 10:
-                    rob.mem[b] = ThreadSafeRandom.Local.Next(0, Math.Abs(rob.mem[b])) * Math.Sign(rob.mem[b]);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
+                    rob.Memory[b] = ThreadSafeRandom.Local.Next(0, Math.Abs(rob.Memory[b])) * Math.Sign(rob.Memory[b]);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 11:
-                    rob.mem[b] = Math.Sign(rob.mem[b]);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
+                    rob.Memory[b] = Math.Sign(rob.Memory[b]);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 12:
-                    rob.mem[b] = Math.Abs(rob.mem[b]);
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 8;
+                    rob.Memory[b] = Math.Abs(rob.Memory[b]);
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 8;
                     break;
 
                 case 13:
-                    rob.mem[b] = rob.mem[b] > 0 ? (int)Math.Sqrt(rob.mem[b]) : 0;
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 7;
+                    rob.Memory[b] = rob.Memory[b] > 0 ? (int)Math.Sqrt(rob.Memory[b]) : 0;
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 7;
                     break;
 
                 case 14:
-                    rob.mem[b] = -rob.mem[b];
-                    rob.nrg -= _costs.StoresCost * _costs.CostMultiplier / 8;
+                    rob.Memory[b] = -rob.Memory[b];
+                    rob.Energy -= _costs.StoresCost * _costs.CostMultiplier / 8;
                     break;
             }
         }

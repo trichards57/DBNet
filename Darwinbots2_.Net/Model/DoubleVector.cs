@@ -99,6 +99,11 @@ namespace DarwinBots.Model
             };
         }
 
+        public static bool operator !=(DoubleVector left, DoubleVector right)
+        {
+            return !(left == right);
+        }
+
         public static DoubleVector operator *(DoubleVector v1, double k)
         {
             return new()
@@ -135,6 +140,11 @@ namespace DarwinBots.Model
             };
         }
 
+        public static bool operator ==(DoubleVector left, DoubleVector right)
+        {
+            return left.Equals(right);
+        }
+
         public static DoubleVector Sign(DoubleVector v)
         {
             return new()
@@ -142,6 +152,19 @@ namespace DarwinBots.Model
                 X = Math.Sign(v.X),
                 Y = Math.Sign(v.Y)
             };
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is IntVector vector)
+                return vector.X == X && vector.Y == Y;
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(X, Y);
         }
 
         public DoubleVector InvertX()
