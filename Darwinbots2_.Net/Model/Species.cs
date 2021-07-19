@@ -1,6 +1,5 @@
 ﻿using DarwinBots.Modules;
 using DarwinBots.Support;
-using System.Drawing;
 using System.IO;
 
 namespace DarwinBots.Model
@@ -23,13 +22,13 @@ namespace DarwinBots.Model
             Veg = false;
             CantSee = false;
             DisableMovementSysvars = false;
-            DisableDNA = false;
+            DisableDna = false;
             CantReproduce = false;
             VirusImmune = false;
 
             var nameLower = Name.ToLowerInvariant();
 
-            color = nameLower switch
+            Color = nameLower switch
             {
                 "base.txt" => System.Windows.Media.Colors.Blue,
                 "mutate.txt" => System.Windows.Media.Colors.Red,
@@ -46,23 +45,17 @@ namespace DarwinBots.Model
 
         public int Colind { get; set; }
 
-        public System.Windows.Media.Color color { get; set; }
+        public System.Windows.Media.Color Color { get; set; }
 
         public string Comment { get; set; }
 
-        public bool DisableDNA { get; set; }
+        public bool DisableDna { get; set; }
 
         public bool DisableMovementSysvars { get; set; }
-
-        public Image DisplayImage { get; set; }
-
-        public bool dq_kill { get; set; }
 
         public bool Fixed { get; set; }
 
         public bool kill_mb { get; set; }
-
-        public string Leaguefilecomment { get; set; }
 
         public MutationProbabilities Mutables { get; set; }
 

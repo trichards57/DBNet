@@ -10,13 +10,10 @@ namespace DarwinBots.DataModel
         public bool AllowHorizontalShapeDrift { get; internal set; }
         public bool AllowVerticalShapeDrift { get; internal set; }
         public int BadWastelevel { get; internal set; }
-        public bool BlockedVegs { get; internal set; }
-        public int ChartingInterval { get; internal set; }
         public double CoefficientElasticity { get; internal set; }
         public double CoefficientKinetic { get; internal set; }
         public double CoefficientStatic { get; internal set; }
         public bool CorpseEnabled { get; internal set; }
-        public double CostExecCond { get; internal set; }
         public Costs Costs { get; internal set; }
         public int CycleLength { get; internal set; }
         public bool DayNight { get; internal set; }
@@ -32,38 +29,22 @@ namespace DarwinBots.DataModel
         public bool DisableTies { get; internal set; }
         public bool DisableTypArepro { get; internal set; }
         public bool DxSxConnected { get; internal set; }
-        public bool EGridEnabled { get; internal set; }
-        public int EGridWidth { get; internal set; }
         public bool EnableAutoSpeciation { get; internal set; }
-        public double EnergyDif { get; internal set; }
-        public double EnergyDif2 { get; internal set; }
-        public double EnergyDifX { get; internal set; }
-        public double EnergyDifX2 { get; internal set; }
-        public double EnergyDifXP { get; internal set; }
-        public double EnergyDifXP2 { get; internal set; }
         public ShotMode EnergyExType { get; internal set; }
         public int EnergyFix { get; internal set; }
         public double EnergyProp { get; internal set; }
-        public bool F1 { get; internal set; }
         public int FieldHeight { get; internal set; }
-        public int FieldSize { get; internal set; }
         public int FieldWidth { get; internal set; }
         public bool FixedBotRadii { get; internal set; }
         public FieldMode FluidSolidCustom { get; internal set; }
         public double Gradient { get; internal set; }
-        public IEnumerable<SavedGraph> Graphs { get; internal set; }
-        public bool HidePred { get; internal set; }
-        public int HidePredOffset { get; internal set; }
-        public bool KillDistVegs { get; internal set; }
         public int LightIntensity { get; internal set; }
         public bool MakeAllShapesBlack { get; internal set; }
-        public bool MakeAllShapesTransparent { get; internal set; }
         public int MaxAbsNum { get; internal set; }
         public int MaxEnergy { get; internal set; }
         public int MaxPopulation { get; internal set; }
         public double MaxVelocity { get; internal set; }
         public int MinVegs { get; internal set; }
-        public int ModeChangeCycles { get; internal set; }
         public double MutCurrMult { get; internal set; }
         public int MutCycMax { get; internal set; }
         public int MutCycMin { get; internal set; }
@@ -75,33 +56,22 @@ namespace DarwinBots.DataModel
         public double OldCostX { get; internal set; }
         public double PhysBrown { get; internal set; }
         public double PhysMoving { get; internal set; }
-        public double PhysSwim { get; internal set; }
         public bool PlanetEaters { get; internal set; }
         public double PlanetEatersG { get; internal set; }
         public bool Pondmode { get; internal set; }
-        public int PopLimMethod { get; internal set; }
         public int RepopAmount { get; internal set; }
         public int RepopCooldown { get; internal set; }
-        public bool Restart { get; internal set; }
         public IEnumerable<robot> Robots { get; set; }
         public int ShapeDriftRate { get; internal set; }
         public bool ShapesAbsorbShots { get; internal set; }
         public bool ShapesAreSeeThrough { get; internal set; }
         public bool ShapesAreVisable { get; internal set; }
         public IEnumerable<Shot> Shots { get; set; }
-        public Guid SimGUID { get; internal set; }
-        public string SimName { get; internal set; }
+        public Guid SimGuid { get; internal set; }
         public bool SnpExcludeVegs { get; internal set; }
         public int SpeciationForkInterval { get; internal set; }
-        public int SpeciationGenerationalDistance { get; internal set; }
         public int SpeciationGeneticDistance { get; internal set; }
-        public int SpeciationMinimumPopulation { get; internal set; }
         public IEnumerable<Species> Species { get; internal set; }
-        public bool Stagnent { get; internal set; }
-        public string StrGraphQuery1 { get; internal set; }
-        public string StrGraphQuery2 { get; internal set; }
-        public string StrGraphQuery3 { get; internal set; }
-        public string StrSimStart { get; internal set; }
         public double SunChange { get; internal set; }
         public bool SunDown { get; internal set; }
         public int SunDownThreshold { get; internal set; }
@@ -113,12 +83,9 @@ namespace DarwinBots.DataModel
         public int SunUpThreshold { get; internal set; }
         public int Tides { get; internal set; }
         public int TidesOf { get; internal set; }
-        public bool Toroidal { get; internal set; }
         public int TotBorn { get; internal set; }
         public int TotRunCycle { get; internal set; }
-        public int TotRunTime { get; internal set; }
         public bool UpDnConnected { get; internal set; }
-        public int UserSeedNumber { get; internal set; }
         public double VegFeedingToBody { get; internal set; }
         public double Viscosity { get; internal set; }
         public double Ygravity { get; internal set; }

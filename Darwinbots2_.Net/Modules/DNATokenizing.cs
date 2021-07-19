@@ -20,7 +20,7 @@ namespace DarwinBots.Modules
             {
                 for (var value = 0; value < 14; value++)
                 {
-                    var y = new DNABlock
+                    var y = new DnaBlock
                     {
                         Type = type + 2,
                         Value = value + 1
@@ -189,12 +189,12 @@ namespace DarwinBots.Modules
                 hold.AppendLine(a);
             }
 
-            rob.dna.Add(new DNABlock { Type = 10, Value = 1 });
+            rob.dna.Add(new DnaBlock { Type = 10, Value = 1 });
 
             return true;
         }
 
-        public static string Parse(DNABlock bp, robot rob = null, bool convertToSystemVariable = true)
+        public static string Parse(DnaBlock bp, robot rob = null, bool convertToSystemVariable = true)
         {
             return bp.Type switch
             {
@@ -258,7 +258,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock AdvancedCommandTok(string s)
+        private static DnaBlock AdvancedCommandTok(string s)
         {
             return new()
             {
@@ -304,7 +304,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock BasicCommandTok(string s)
+        private static DnaBlock BasicCommandTok(string s)
         {
             return new()
             {
@@ -352,7 +352,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock BitwiseCommandTok(string s)
+        private static DnaBlock BitwiseCommandTok(string s)
         {
             return new()
             {
@@ -391,7 +391,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock ConditionsTok(string s)
+        private static DnaBlock ConditionsTok(string s)
         {
             return new()
             {
@@ -425,7 +425,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock FlowTok(string s)
+        private static DnaBlock FlowTok(string s)
         {
             return new()
             {
@@ -492,7 +492,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock LogicTok(string s)
+        private static DnaBlock LogicTok(string s)
         {
             return new()
             {
@@ -524,7 +524,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock MasterFlowTok(string s)
+        private static DnaBlock MasterFlowTok(string s)
         {
             return new()
             {
@@ -537,7 +537,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock Parse(string command, robot rob = null)
+        private static DnaBlock Parse(string command, robot rob = null)
         {
             command = command.ToLowerInvariant();
 
@@ -558,7 +558,7 @@ namespace DarwinBots.Modules
                 bp = MasterFlowTok(command);
             if (bp.Value == 0 & command.StartsWith('*'))
             {
-                bp = new DNABlock
+                bp = new DnaBlock
                 {
                     Type = 1,
                     Value = SystemVariableTokenize(command[1..], rob)
@@ -566,7 +566,7 @@ namespace DarwinBots.Modules
             }
             else if (bp.Value == 0)
             {
-                bp = new DNABlock
+                bp = new DnaBlock
                 {
                     Type = 0,
                     Value = SystemVariableTokenize(command, rob)
@@ -598,7 +598,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static DNABlock StoresTok(string s)
+        private static DnaBlock StoresTok(string s)
         {
             return new()
             {

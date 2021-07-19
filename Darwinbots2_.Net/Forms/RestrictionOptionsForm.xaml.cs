@@ -7,8 +7,6 @@ namespace DarwinBots.Forms
     {
         // TODO : Implement validation on apply.
 
-        public byte res_state = 0;
-
         public RestrictionOptionsForm()
         {
             InitializeComponent();

@@ -212,7 +212,7 @@ namespace DarwinBots.Modules
 
             double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
-            ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.exist).Sum(o => o.Width * o.Height);
+            ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
 
             var TotalRobotArea = Globals.RobotsManager.Robots.Where(r => r.exist).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
 
@@ -359,7 +359,7 @@ namespace DarwinBots.Modules
 
             a.Fixed = SimOpt.SimOpts.Specie[r].Fixed;
             a.CantSee = SimOpt.SimOpts.Specie[r].CantSee;
-            a.DisableDNA = SimOpt.SimOpts.Specie[r].DisableDNA;
+            a.DisableDNA = SimOpt.SimOpts.Specie[r].DisableDna;
             a.DisableMovementSysvars = SimOpt.SimOpts.Specie[r].DisableMovementSysvars;
             a.CantReproduce = SimOpt.SimOpts.Specie[r].CantReproduce;
             a.VirusImmune = SimOpt.SimOpts.Specie[r].VirusImmune;
@@ -402,7 +402,7 @@ namespace DarwinBots.Modules
             for (var i = 0; i < 7; i++)
                 a.Skin[i] = SimOpt.SimOpts.Specie[r].Skin[i];
 
-            a.color = SimOpt.SimOpts.Specie[r].color;
+            a.color = SimOpt.SimOpts.Specie[r].Color;
             Senses.MakeOccurrList(a);
         }
 

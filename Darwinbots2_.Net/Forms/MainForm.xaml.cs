@@ -1,11 +1,10 @@
 using DarwinBots.ViewModels;
-using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class MainForm : Window
+    public partial class MainForm
     {
-        private readonly MainViewModel _viewModel = new MainViewModel();
+        private readonly MainViewModel _viewModel = new();
 
         public MainForm()
         {

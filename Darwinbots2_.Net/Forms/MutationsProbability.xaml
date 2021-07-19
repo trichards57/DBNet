@@ -10,7 +10,6 @@
         <Style TargetType="TextBox">
             <Setter Property="MinWidth" Value="55" />
         </Style>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>

@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
-    <StartupObject>Iesera.App</StartupObject>
+    <StartupObject>DarwinBots.App</StartupObject>
     <RootNamespace>DarwinBots</RootNamespace>
     <AssemblyName>DarwinBots</AssemblyName>
   </PropertyGroup>

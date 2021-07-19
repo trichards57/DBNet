@@ -24,8 +24,8 @@ namespace DarwinBots.ViewModels
 
         private readonly Species _species;
         private bool _disableChloroplasts;
-        private bool enableRepopulation;
-        private int initialEnergy;
+        private bool _enableRepopulation;
+        private int _initialEnergy;
 
         public SpeciesViewModel(Species species)
         {
@@ -37,7 +37,7 @@ namespace DarwinBots.ViewModels
             SetInitialIndividualsCommand = new RelayCommand<int>(SetInitialIndividuals);
 
             DisableChloroplasts = _species.NoChlr;
-            DisableDna = _species.DisableDNA;
+            DisableDna = _species.DisableDna;
             DisableMovement = species.DisableMovementSysvars;
             DisableMutations = !species.Mutables.EnableMutations;
             DisableReproduction = species.CantReproduce;
@@ -84,12 +84,12 @@ namespace DarwinBots.ViewModels
 
         public bool EnableRepopulation
         {
-            get => enableRepopulation;
+            get => _enableRepopulation;
             set
             {
-                enableRepopulation = value;
+                _enableRepopulation = value;
 
-                if (enableRepopulation)
+                if (_enableRepopulation)
                     DisableChloroplasts = false;
 
                 RaisePropertyChanged();
@@ -98,10 +98,10 @@ namespace DarwinBots.ViewModels
 
         public int InitialEnergy
         {
-            get => initialEnergy;
+            get => _initialEnergy;
             set
             {
-                initialEnergy = value % 32000;
+                _initialEnergy = value % 32000;
                 RaisePropertyChanged();
             }
         }
@@ -134,7 +134,7 @@ namespace DarwinBots.ViewModels
                 Colind = _species.Colind,
                 CantSee = _species.CantSee,
                 DisableMovementSysvars = _species.DisableMovementSysvars,
-                DisableDNA = _species.DisableDNA,
+                DisableDna = _species.DisableDna,
                 CantReproduce = _species.CantReproduce,
                 VirusImmune = _species.VirusImmune,
                 Mutables = _species.Mutables,
@@ -157,7 +157,7 @@ namespace DarwinBots.ViewModels
         {
             _species.NoChlr = DisableChloroplasts;
 
-            _species.DisableDNA = DisableDna;
+            _species.DisableDna = DisableDna;
             _species.DisableMovementSysvars = DisableMovement;
             _species.Mutables.EnableMutations = !DisableMutations;
             _species.CantReproduce = DisableReproduction;

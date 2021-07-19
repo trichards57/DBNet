@@ -8,19 +8,19 @@ namespace DarwinBots.ViewModels
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
     public class EnergyViewModel : ViewModelBase
     {
-        private int dayNightCyclePeriod;
-        private bool thresholdAdvancesSun;
-        private bool thresholdSuspendsDayCycles;
-        private bool thresholdTogglesSunState;
-        private int tidesCyclesOff;
-        private int tidesCyclesOn;
+        private int _dayNightCyclePeriod;
+        private bool _thresholdAdvancesSun;
+        private bool _thresholdSuspendsDayCycles;
+        private bool _thresholdTogglesSunState;
+        private int _tidesCyclesOff;
+        private int _tidesCyclesOn;
 
         public int DayNightCyclePeriod
         {
-            get => dayNightCyclePeriod;
+            get => _dayNightCyclePeriod;
             set
             {
-                dayNightCyclePeriod = Math.Clamp(value, 0, 32000);
+                _dayNightCyclePeriod = Math.Clamp(value, 0, 32000);
                 RaisePropertyChanged();
             }
         }
@@ -34,11 +34,11 @@ namespace DarwinBots.ViewModels
 
         public bool ThresholdAdvancesSun
         {
-            get => thresholdAdvancesSun;
+            get => _thresholdAdvancesSun;
             set
             {
-                thresholdAdvancesSun = value;
-                if (thresholdAdvancesSun)
+                _thresholdAdvancesSun = value;
+                if (_thresholdAdvancesSun)
                 {
                     ThresholdSuspendsDayCycles = false;
                     ThresholdTogglesSunState = false;
@@ -49,11 +49,11 @@ namespace DarwinBots.ViewModels
 
         public bool ThresholdSuspendsDayCycles
         {
-            get => thresholdSuspendsDayCycles;
+            get => _thresholdSuspendsDayCycles;
             set
             {
-                thresholdSuspendsDayCycles = value;
-                if (thresholdSuspendsDayCycles)
+                _thresholdSuspendsDayCycles = value;
+                if (_thresholdSuspendsDayCycles)
                 {
                     ThresholdAdvancesSun = false;
                     ThresholdTogglesSunState = false;
@@ -64,14 +64,14 @@ namespace DarwinBots.ViewModels
 
         public bool ThresholdTogglesSunState
         {
-            get => thresholdTogglesSunState;
+            get => _thresholdTogglesSunState;
             set
             {
-                thresholdTogglesSunState = value;
-                if (thresholdTogglesSunState)
+                _thresholdTogglesSunState = value;
+                if (_thresholdTogglesSunState)
                 {
                     ThresholdAdvancesSun = false;
-                    thresholdSuspendsDayCycles = false;
+                    _thresholdSuspendsDayCycles = false;
                 }
                 RaisePropertyChanged();
             }
@@ -79,20 +79,20 @@ namespace DarwinBots.ViewModels
 
         public int TidesCyclesOff
         {
-            get => tidesCyclesOff;
+            get => _tidesCyclesOff;
             set
             {
-                tidesCyclesOff = Math.Clamp(value, 0, 32000);
+                _tidesCyclesOff = Math.Clamp(value, 0, 32000);
                 RaisePropertyChanged();
             }
         }
 
         public int TidesCyclesOn
         {
-            get => tidesCyclesOn;
+            get => _tidesCyclesOn;
             set
             {
-                tidesCyclesOn = Math.Clamp(value, 0, 32000);
+                _tidesCyclesOn = Math.Clamp(value, 0, 32000);
                 RaisePropertyChanged();
             }
         }

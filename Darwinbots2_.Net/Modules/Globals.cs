@@ -13,6 +13,6 @@ namespace DarwinBots.Modules
         public static int TotalChlr { get; set; }
         public static int TotalNotVegs { get; set; }
         public static int TotalNotVegsDisplayed { get; set; }
-        public static List<Obstacle> xObstacle { get; } = new();
+        public static List<Obstacle> XObstacle { get; } = new();
     }
 }

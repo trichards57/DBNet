@@ -18,24 +18,24 @@ namespace DarwinBots.ViewModels
     [NotifyPropertyChanged]
     internal class RestrictionOptionsViewModel : ViewModelBase
     {
-        private RestrictionOptionsDialogState _dialogState;
+        private readonly RestrictionOptionsDialogState _dialogState;
         private string _speciesName;
 
         public RestrictionOptionsViewModel()
         {
-            LoadPresetCommand = new AsyncCommand(LoadPreset, o => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
-            SavePresetCommand = new AsyncCommand(SavePreset, o => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
+            LoadPresetCommand = new AsyncCommand(LoadPreset, _ => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
+            SavePresetCommand = new AsyncCommand(SavePreset, _ => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
         }
 
         public RestrictionOptionsDialogState DialogState
         {
             get => _dialogState;
-            set
+            init
             {
                 _dialogState = value;
 
-                (LoadPresetCommand as AsyncCommand).RaiseCanExecuteChanged();
-                (SavePresetCommand as AsyncCommand).RaiseCanExecuteChanged();
+                (LoadPresetCommand as AsyncCommand)?.RaiseCanExecuteChanged();
+                (SavePresetCommand as AsyncCommand)?.RaiseCanExecuteChanged();
 
                 UpdateDisplay();
             }
@@ -171,6 +171,9 @@ namespace DarwinBots.ViewModels
                     var fileContent = await File.ReadAllTextAsync(dialog.FileName);
                     var file = JsonSerializer.Deserialize<RestrictionsPresetFile>(fileContent);
 
+                    if (file == null)
+                        return;
+
                     DisableChloroplastsNonVeg = file.DisableChloroplastsNonVeg;
                     DisableDnaNonVeg = file.DisableDnaNonVeg;
                     DisableDnaVeg = file.DisableDnaVeg;
@@ -270,7 +273,7 @@ namespace DarwinBots.ViewModels
                     break;
 
                 case RestrictionOptionsDialogState.ActiveSimulation:
-                    Title = $"Restriction Options: Active Simulation";
+                    Title = "Restriction Options: Active Simulation";
                     break;
             }
         }

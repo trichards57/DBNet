@@ -48,12 +48,12 @@ namespace DarwinBots.Modules
                 Veg = rob.Veg,
                 CantSee = rob.CantSee,
                 DisableMovementSysvars = rob.DisableMovementSysvars,
-                DisableDNA = rob.DisableDNA,
+                DisableDna = rob.DisableDNA,
                 CantReproduce = rob.CantReproduce,
                 VirusImmune = rob.VirusImmune,
                 population = 1,
                 SubSpeciesCounter = 0,
-                color = rob.color,
+                Color = rob.color,
                 Comment = "Species arrived from the Internet",
                 Posrg = 1,
                 Posdn = 1,
@@ -155,7 +155,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
             SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
-            SimOpt.SimOpts.SimGuid = savedFile.SimGUID;
+            SimOpt.SimOpts.SimGuid = savedFile.SimGuid;
             SimOpt.SimOpts.SpeciationGeneticDistance = savedFile.SpeciationGeneticDistance;
             SimOpt.SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
             SimOpt.SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
@@ -251,7 +251,7 @@ namespace DarwinBots.Modules
                 ShapesAreSeeThrough = SimOpt.SimOpts.ShapesAreSeeThrough,
                 ShapesAreVisable = SimOpt.SimOpts.ShapesAreVisable,
                 Shots = _shotsManager.Shots,
-                SimGUID = SimOpt.SimOpts.SimGuid,
+                SimGuid = SimOpt.SimOpts.SimGuid,
                 SnpExcludeVegs = SimOpt.SimOpts.SnpExcludeVegs,
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
@@ -327,11 +327,11 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                foreach (var o in Globals.xObstacle)
+                foreach (var o in Globals.XObstacle)
                 {
-                    var newO = _obstacleManager.NewObstacle(o.pos.X, o.pos.Y, o.Width, o.Height);
-                    newO.color = o.color;
-                    newO.vel = o.vel;
+                    var newO = _obstacleManager.NewObstacle(o.Position.X, o.Position.Y, o.Width, o.Height);
+                    newO.Color = o.Color;
+                    newO.Velocity = o.Velocity;
                 }
             }
             else
@@ -395,10 +395,10 @@ namespace DarwinBots.Modules
                         rob.Skin[i] = species.Skin[i];
                     }
 
-                    rob.color = species.color;
+                    rob.color = species.Color;
                     rob.mem[MemoryAddresses.timersys] = ThreadSafeRandom.Local.Next(-32000, 32000);
                     rob.CantSee = species.CantSee;
-                    rob.DisableDNA = species.DisableDNA;
+                    rob.DisableDNA = species.DisableDna;
                     rob.DisableMovementSysvars = species.DisableMovementSysvars;
                     rob.CantReproduce = species.CantReproduce;
                     rob.VirusImmune = species.VirusImmune;

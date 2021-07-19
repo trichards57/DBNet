@@ -116,7 +116,7 @@ namespace DarwinBots.Modules
             if (rob.Ties.Any())
             {
                 // If there is a value in .readtie then get the trefvars from that tie else read the trefvars from the last tie created
-                var tn = rob.mem[MemoryAddresses.readtiesys] != 0 ? rob.mem[MemoryAddresses.readtiesys] : rob.mem[MemoryAddresses.readtiesys];
+                var tn = rob.mem[MemoryAddresses.readtiesys] != 0 ? rob.mem[MemoryAddresses.readtiesys] : rob.mem[MemoryAddresses.TIEPRES];
 
                 var tie = rob.Ties.LastOrDefault(t => t.Port == tn);
 

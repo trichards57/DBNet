@@ -412,7 +412,7 @@ namespace DarwinBots.Modules
             rob.mem[MemoryAddresses.rmchlr] = 0;
         }
 
-        private List<DNABlock> Crossover(List<block2> dna1, List<block2> dna2)
+        private List<DnaBlock> Crossover(List<block2> dna1, List<block2> dna2)
         {
             var nn = 0;
             var res1 = 0;//result1
@@ -429,7 +429,7 @@ namespace DarwinBots.Modules
 
                 //presets
 
-                var outDna = new List<DNABlock>();
+                var outDna = new List<DnaBlock>();
 
                 var temp = 0;
                 res1 = ScanFromN(dna1, n1, ref temp);
@@ -440,12 +440,12 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DNABlock { Type = dna1[a].tipo, Value = dna1[a].value });
+                            outDna.Add(new DnaBlock { Type = dna1[a].tipo, Value = dna1[a].value });
                     }
                     else
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DNABlock { Type = dna2[a].tipo, Value = dna2[a].value });
+                            outDna.Add(new DnaBlock { Type = dna2[a].tipo, Value = dna2[a].value });
                     }
                 }
                 else if (res1 - n1 > 0)
@@ -453,7 +453,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DNABlock { Type = dna1[a].tipo, Value = dna1[a].value });
+                            outDna.Add(new DnaBlock { Type = dna1[a].tipo, Value = dna1[a].value });
                     }
                 }
                 else if (res2 - n2 > 0)
@@ -461,7 +461,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DNABlock { Type = dna2[a].tipo, Value = dna2[a].value });
+                            outDna.Add(new DnaBlock { Type = dna2[a].tipo, Value = dna2[a].value });
                     }
                 }
 
@@ -477,7 +477,7 @@ namespace DarwinBots.Modules
 
                 for (var a = nn; a < resn - 1; a++)
                 {
-                    var block = new DNABlock
+                    var block = new DnaBlock
                     {
                         Type = whatside ? dna1[a].tipo : dna2[a - nn + res2].tipo,
                         Value = (dna1[a].tipo == dna2[a - nn + res2].tipo && Math.Abs(dna2[a].value) > 999 && Math.Abs(dna2[a - nn + res2].value) > 999 ? ThreadSafeRandom.Local.Next(0, 2) == 0 : whatside) ? dna1[a].value : dna2[a - nn + res2].value
@@ -1494,7 +1494,7 @@ namespace DarwinBots.Modules
             if (Robots.Any(r => r.exist && r != rob && Math.Abs(r.pos.X - x) < r.Radius + rob.Radius && Math.Abs(r.pos.Y - y) < r.Radius + rob.Radius))
                 return true;
 
-            if (Globals.ObstacleManager.Obstacles.Any(o => o.pos.X <= Math.Max(rob.pos.X, x) && o.pos.X + o.Width >= Math.Min(rob.pos.X, x) && o.pos.Y <= Math.Max(rob.pos.Y, y) && o.pos.Y + o.Height >= Math.Min(rob.pos.Y, y)))
+            if (Globals.ObstacleManager.Obstacles.Any(o => o.Position.X <= Math.Max(rob.pos.X, x) && o.Position.X + o.Width >= Math.Min(rob.pos.X, x) && o.Position.Y <= Math.Max(rob.pos.Y, y) && o.Position.Y + o.Height >= Math.Min(rob.pos.Y, y)))
                 return true;
 
             if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.Radius + Physics.SmudgeFactor || x + rob.Radius + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))

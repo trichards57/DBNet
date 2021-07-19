@@ -27,13 +27,13 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <Button Command="{Binding LoadPresetCommand}" Margin="5,5,2.5,5">Load Preset...</Button>
-            <Button Command="{Binding SavePresetCommand}" Margin="2.5,5,2.5,5" Grid.Column="1">Save Preset...</Button>
+            <Button Command="{Binding SavePresetCommand}" Margin="2.5,5,2.5,5">Save Preset...</Button>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Click="ApplyClick" HorizontalAlignment="Left" Margin="5,5,2.5,5" IsDefault="True">Apply</Button>
             <Button Click="CancelClick" HorizontalAlignment="Left" Margin="2.5,5,5,5" IsCancel="True">Cancel</Button>
         </StackPanel>
-        <GroupBox Grid.Row="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Margin="10,10,5,10" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="For Non-Repopulating Robots">
+        <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Margin="10,10,5,10" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="For Non-Repopulating Robots">
             <StackPanel>
                 <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
                     <StackPanel>
@@ -58,7 +58,7 @@
             <StackPanel>
                 <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
                     <StackPanel>
-                        <CheckBox IsChecked="{Binding KillNonMultibotVeg}" x:Name="chkMBKillChlr">Kill robot if robot not MB for 150 cycles</CheckBox>
+                        <CheckBox IsChecked="{Binding KillNonMultibotVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Margin="10,5,10,10" HorizontalAlignment="Stretch" Header="Property Applied Restrictions">

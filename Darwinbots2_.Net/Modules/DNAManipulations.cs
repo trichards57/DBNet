@@ -10,7 +10,7 @@ namespace DarwinBots.Modules
 {
     internal static class DnaManipulations
     {
-        public static int CountGenes(IEnumerable<DNABlock> dna)
+        public static int CountGenes(IEnumerable<DnaBlock> dna)
         {
             var genesCount = 0;
             var inGene = false;
@@ -47,12 +47,12 @@ namespace DarwinBots.Modules
             return genesCount;
         }
 
-        public static int DnaLen(IEnumerable<DNABlock> dna)
+        public static int DnaLen(IEnumerable<DnaBlock> dna)
         {
             return dna.TakeWhile(d => !(d.Type == 10 & d.Value == 1)).Count();
         }
 
-        public static int GeneEnd(IList<DNABlock> dna, int position)
+        public static int GeneEnd(IList<DnaBlock> dna, int position)
         {
             var condGene = dna[position].Type == 9 && dna[position].Value == 1;
 
@@ -83,7 +83,7 @@ namespace DarwinBots.Modules
             return dna.Count - 1;
         }
 
-        public static int GenePosition(IList<DNABlock> dna, int n)
+        public static int GenePosition(IList<DnaBlock> dna, int n)
         {
             var k = 1;
             var geneNum = 0;

@@ -54,21 +54,21 @@ namespace DarwinBots.Modules
         public void ChangeAllObstacleColor(Color? color)
         {
             foreach (var o in Obstacles)
-                o.color = color ?? Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
+                o.Color = color ?? Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
         }
 
         public void DeleteAllObstacles()
         {
             foreach (var o in Obstacles.ToArray())
             {
-                o.exist = false;
+                o.Exist = false;
                 Obstacles.Remove(o);
             }
         }
 
         public void DeleteObstacle(Obstacle o)
         {
-            o.exist = false;
+            o.Exist = false;
             Obstacles.Remove(o);
         }
 
@@ -87,7 +87,7 @@ namespace DarwinBots.Modules
             var numofcollisions = 0;
             var lastPush = 0;
 
-            foreach (var o in Obstacles.Where(o => o.exist && ObstacleCollision(rob, o)))
+            foreach (var o in Obstacles.Where(o => o.Exist && ObstacleCollision(rob, o)))
             {
                 numofcollisions++;
                 if (numofcollisions >= 3)
@@ -98,41 +98,41 @@ namespace DarwinBots.Modules
                 }
 
                 //Push the bot the closest edge
-                var distUp = rob.pos.Y + rob.Radius - o.pos.Y;
-                var distDown = o.pos.Y + o.Height - (rob.pos.Y - rob.Radius);
-                var distLeft = rob.pos.X + rob.Radius - o.pos.X;
-                var distRight = o.pos.X + o.Width - (rob.pos.X - rob.Radius);
+                var distUp = rob.pos.Y + rob.Radius - o.Position.Y;
+                var distDown = o.Position.Y + o.Height - (rob.pos.Y - rob.Radius);
+                var distLeft = rob.pos.X + rob.Radius - o.Position.X;
+                var distRight = o.Position.X + o.Width - (rob.pos.X - rob.Radius);
 
                 if (Math.Min(distLeft, distRight) < Math.Min(distUp, distDown) && lastPush != 1 && lastPush != 2 || lastPush is 3 or 4)
                 {
                     //Push left or right
-                    if ((distLeft <= distRight || o.pos.X + o.Width >= SimOpt.SimOpts.FieldWidth) && o.pos.X > 0)
+                    if ((distLeft <= distRight || o.Position.X + o.Width >= SimOpt.SimOpts.FieldWidth) && o.Position.X > 0)
                     {
-                        if (rob.pos.X - rob.Radius < o.pos.X)
+                        if (rob.pos.X - rob.Radius < o.Position.X)
                         {
-                            rob.pos = rob.pos with { X = o.pos.X - rob.Radius };
+                            rob.pos = new DoubleVector(o.Position.X - rob.Radius, rob.pos.Y);
                             rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
                             Senses.Touch(rob, rob.pos.X + rob.Radius, rob.pos.Y); // Update hit senses, right side
                         }
                         else
                         {
                             rob.ImpulseRes += new DoubleVector(distLeft * k, 0);
-                            rob.pos = rob.pos with { X = o.pos.X - rob.Radius };
+                            rob.pos = new DoubleVector(o.Position.X - rob.Radius, rob.pos.Y);
                         }
                         lastPush = 1;
                     }
                     else
                     {
-                        if (rob.pos.X + rob.Radius > o.pos.X + o.Width)
+                        if (rob.pos.X + rob.Radius > o.Position.X + o.Width)
                         {
-                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.Radius };
+                            rob.pos = new DoubleVector(o.Position.X + o.Width + rob.Radius, rob.pos.Y);
                             rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
                             Senses.Touch(rob, rob.pos.X - rob.Radius, rob.pos.Y); // Update hit senses, left side
                         }
                         else
                         {
                             rob.ImpulseRes -= new DoubleVector(distRight * k, 0);
-                            rob.pos = rob.pos with { X = o.pos.X + o.Width + rob.Radius };
+                            rob.pos = new DoubleVector(o.Position.X + o.Width + rob.Radius, rob.pos.Y);
                         }
                         lastPush = 2;
                     }
@@ -140,33 +140,33 @@ namespace DarwinBots.Modules
                 else
                 {
                     //Push up or down
-                    if ((distUp <= distDown || o.pos.Y + o.Height >= SimOpt.SimOpts.FieldHeight) && o.pos.Y > 0)
+                    if ((distUp <= distDown || o.Position.Y + o.Height >= SimOpt.SimOpts.FieldHeight) && o.Position.Y > 0)
                     {
-                        if (rob.pos.Y - rob.Radius < o.pos.Y)
+                        if (rob.pos.Y - rob.Radius < o.Position.Y)
                         {
-                            rob.pos = rob.pos with { Y = o.pos.Y - rob.Radius };
+                            rob.pos = new DoubleVector(rob.pos.X, o.Position.Y - rob.Radius);
                             rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
                             Senses.Touch(rob, rob.pos.X, rob.pos.Y + rob.Radius); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ImpulseRes += new DoubleVector(0, distUp * k);
-                            rob.pos = rob.pos with { Y = o.pos.Y - rob.Radius };
+                            rob.pos = new DoubleVector(rob.pos.X, o.Position.Y - rob.Radius);
                         }
                         lastPush = 3;
                     }
                     else
                     {
-                        if (rob.pos.Y + rob.Radius > o.pos.Y + o.Height)
+                        if (rob.pos.Y + rob.Radius > o.Position.Y + o.Height)
                         {
-                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.Radius };
+                            rob.pos = new DoubleVector(rob.pos.X, o.Position.Y + o.Height + rob.Radius);
                             rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
                             Senses.Touch(rob, rob.pos.X, rob.pos.Y - rob.Radius); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ImpulseRes -= new DoubleVector(0, distDown * k);
-                            rob.pos = rob.pos with { Y = o.pos.Y + o.Height + rob.Radius };
+                            rob.pos = new DoubleVector(rob.pos.X, o.Position.Y + o.Height + rob.Radius);
                         }
 
                         lastPush = 4;
@@ -180,7 +180,7 @@ namespace DarwinBots.Modules
 
         public void DoShotObstacleCollisions(Shot shot)
         {
-            foreach (var o in Obstacles.Where(o => o.exist).Where(o => shot.Position.X >= o.pos.X && shot.Position.X <= o.pos.X + o.Width && shot.Position.Y >= o.pos.Y && shot.Position.Y <= o.pos.Y + o.Height))
+            foreach (var o in Obstacles.Where(o => o.Exist).Where(o => shot.Position.X >= o.Position.X && shot.Position.X <= o.Position.X + o.Width && shot.Position.Y >= o.Position.Y && shot.Position.Y <= o.Position.Y + o.Height))
             {
                 if (SimOpt.SimOpts.ShapesAbsorbShots)
                 {
@@ -188,11 +188,11 @@ namespace DarwinBots.Modules
                     Globals.ShotsManager.Shots.Remove(shot);
                 }
 
-                if (shot.OldPosition.X < o.pos.X || shot.OldPosition.X > o.pos.X + o.Width)
-                    shot.Velocity = shot.Velocity with { X = -shot.Velocity.X };
+                if (shot.OldPosition.X < o.Position.X || shot.OldPosition.X > o.Position.X + o.Width)
+                    shot.Velocity = shot.Velocity.InvertX();
 
-                if (shot.OldPosition.Y < o.pos.Y || shot.OldPosition.Y > o.pos.Y + o.Height)
-                    shot.Velocity = shot.Velocity with { Y = -shot.Velocity.Y };
+                if (shot.OldPosition.Y < o.Position.Y || shot.OldPosition.Y > o.Position.Y + o.Height)
+                    shot.Velocity = shot.Velocity.InvertY();
             }
         }
 
@@ -312,8 +312,8 @@ namespace DarwinBots.Modules
             LeftCompactor = NewObstacle(-blockWidth + 1, SimOpt.SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
             RightCompactor = NewObstacle(SimOpt.SimOpts.FieldWidth - 1, SimOpt.SimOpts.FieldHeight * -0.1, blockWidth, blockHeight);
 
-            LeftCompactor.vel = LeftCompactor.vel with { X = SimOpt.SimOpts.ShapeDriftRate * 0.1 };
-            RightCompactor.vel = RightCompactor.vel with { X = -SimOpt.SimOpts.ShapeDriftRate * 0.1 };
+            LeftCompactor.Velocity = new DoubleVector(SimOpt.SimOpts.ShapeDriftRate * 0.1, 0);
+            RightCompactor.Velocity = LeftCompactor.Velocity.InvertX();
         }
 
         public void MoveObstacles()
@@ -324,29 +324,29 @@ namespace DarwinBots.Modules
             if (LeftCompactor != null || RightCompactor != null)
                 TrashCompactorMove();
 
-            foreach (var o in Obstacles.Where(o => o.exist))
+            foreach (var o in Obstacles.Where(o => o.Exist))
             {
-                o.pos += o.vel;
+                o.Position += o.Velocity;
 
-                if (o.pos.X < -o.Width)
+                if (o.Position.X < -o.Width)
                 {
-                    o.pos = o.pos with { X = -o.Width };
-                    o.vel = o.vel with { X = SimOpt.SimOpts.ShapeDriftRate * 0.01 };
+                    o.Position = new DoubleVector(-o.Width, o.Position.Y);
+                    o.Velocity = new DoubleVector(SimOpt.SimOpts.ShapeDriftRate * 0.01, o.Velocity.Y);
                 }
-                if (o.pos.Y < -o.Height)
+                if (o.Position.Y < -o.Height)
                 {
-                    o.pos = o.pos with { Y = -o.Height };
-                    o.vel = o.vel with { Y = SimOpt.SimOpts.ShapeDriftRate * 0.01 };
+                    o.Position = new DoubleVector(o.Position.X, -o.Height);
+                    o.Velocity = new DoubleVector(o.Velocity.X, SimOpt.SimOpts.ShapeDriftRate * 0.01);
                 }
-                if (o.pos.X > SimOpt.SimOpts.FieldWidth)
+                if (o.Position.X > SimOpt.SimOpts.FieldWidth)
                 {
-                    o.pos = o.pos with { X = SimOpt.SimOpts.FieldWidth };
-                    o.vel = o.vel with { X = -SimOpt.SimOpts.ShapeDriftRate * 0.01 };
+                    o.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth, o.Position.Y);
+                    o.Velocity = new DoubleVector(-SimOpt.SimOpts.ShapeDriftRate * 0.01, o.Velocity.Y);
                 }
-                if (o.pos.Y > SimOpt.SimOpts.FieldHeight)
+                if (o.Position.Y > SimOpt.SimOpts.FieldHeight)
                 {
-                    o.pos = o.pos with { Y = SimOpt.SimOpts.FieldHeight };
-                    o.vel = o.vel with { Y = -SimOpt.SimOpts.ShapeDriftRate * 0.01 };
+                    o.Position = new DoubleVector(o.Position.X, SimOpt.SimOpts.FieldHeight);
+                    o.Velocity = new DoubleVector(o.Velocity.X, -SimOpt.SimOpts.ShapeDriftRate * 0.01);
                 }
             }
         }
@@ -358,12 +358,12 @@ namespace DarwinBots.Modules
 
             var obstacle = new Obstacle
             {
-                exist = true,
-                pos = new DoubleVector(x, y),
+                Exist = true,
+                Position = new DoubleVector(x, y),
                 Width = width,
                 Height = height,
-                vel = new DoubleVector(0, 0),
-                color = SimOpt.SimOpts.MakeAllShapesBlack
+                Velocity = new DoubleVector(0, 0),
+                Color = SimOpt.SimOpts.MakeAllShapesBlack
                     ? Colors.Black
                     : Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256),
                         (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256))
@@ -374,19 +374,19 @@ namespace DarwinBots.Modules
 
         public void StopAllHorizontalObstacleMovement()
         {
-            foreach (var o in Obstacles.Where(o => o.exist))
-                o.vel = o.vel with { X = 0 };
+            foreach (var o in Obstacles.Where(o => o.Exist))
+                o.Velocity = new DoubleVector(0, o.Velocity.Y);
         }
 
         public void StopAllVerticalObstacleMovement()
         {
-            foreach (var o in Obstacles.Where(o => o.exist))
-                o.vel = o.vel with { Y = 0 };
+            foreach (var o in Obstacles.Where(o => o.Exist))
+                o.Velocity = new DoubleVector(o.Velocity.X, 0);
         }
 
         public Obstacle WhichObstacle(double x, double y)
         {
-            return Obstacles.FirstOrDefault(o => o.exist && x >= o.pos.X && x <= o.pos.X + o.Width && y >= o.pos.Y && y <= o.pos.Y + o.Height);
+            return Obstacles.FirstOrDefault(o => o.Exist && x >= o.Position.X && x <= o.Position.X + o.Width && y >= o.Position.Y && y <= o.Position.Y + o.Height);
         }
 
         private static bool ObstacleCollision(robot rob, Obstacle o)
@@ -396,35 +396,35 @@ namespace DarwinBots.Modules
             var botTopEdge = rob.pos.Y - rob.Radius;
             var botBottomEdge = rob.pos.Y + rob.Radius;
 
-            return botRightEdge > o.pos.X && botLeftEdge < o.pos.X + o.Width && botBottomEdge > o.pos.Y && botTopEdge < o.pos.Y + o.Height;
+            return botRightEdge > o.Position.X && botLeftEdge < o.Position.X + o.Width && botBottomEdge > o.Position.Y && botTopEdge < o.Position.Y + o.Height;
         }
 
         private void DriftObstacles()
         {
-            foreach (var o in Obstacles.Where(o => o.exist && o != LeftCompactor && o != RightCompactor))
+            foreach (var o in Obstacles.Where(o => o.Exist && o != LeftCompactor && o != RightCompactor))
             {
                 if (SimOpt.SimOpts.AllowHorizontalShapeDrift)
-                    o.vel += new DoubleVector(ThreadSafeRandom.Local.Next(-SimOpt.SimOpts.ShapeDriftRate, SimOpt.SimOpts.ShapeDriftRate) * ThreadSafeRandom.Local.NextDouble() * 0.01, 0);
+                    o.Velocity += new DoubleVector(ThreadSafeRandom.Local.Next(-SimOpt.SimOpts.ShapeDriftRate, SimOpt.SimOpts.ShapeDriftRate) * ThreadSafeRandom.Local.NextDouble() * 0.01, 0);
 
                 if (SimOpt.SimOpts.AllowVerticalShapeDrift)
-                    o.vel += new DoubleVector(0, ThreadSafeRandom.Local.Next(-SimOpt.SimOpts.ShapeDriftRate, SimOpt.SimOpts.ShapeDriftRate) * ThreadSafeRandom.Local.NextDouble() * 0.01);
+                    o.Velocity += new DoubleVector(0, ThreadSafeRandom.Local.Next(-SimOpt.SimOpts.ShapeDriftRate, SimOpt.SimOpts.ShapeDriftRate) * ThreadSafeRandom.Local.NextDouble() * 0.01);
 
-                if (o.vel.Magnitude() > SimOpt.SimOpts.MaxVelocity)
-                    o.vel *= o.vel.Magnitude() / SimOpt.SimOpts.MaxVelocity;
+                if (o.Velocity.Magnitude() > SimOpt.SimOpts.MaxVelocity)
+                    o.Velocity *= o.Velocity.Magnitude() / SimOpt.SimOpts.MaxVelocity;
             }
         }
 
         private void TrashCompactorMove()
         {
-            if (LeftCompactor.pos.X > RightCompactor.pos.X + 400)
+            if (LeftCompactor.Position.X > RightCompactor.Position.X + 400)
             {
-                LeftCompactor.vel = LeftCompactor.vel.InvertX();
-                RightCompactor.vel = RightCompactor.vel.InvertX();
+                LeftCompactor.Velocity = LeftCompactor.Velocity.InvertX();
+                RightCompactor.Velocity = RightCompactor.Velocity.InvertX();
             }
-            if (LeftCompactor.pos.X <= -LeftCompactor.Width)
+            if (LeftCompactor.Position.X <= -LeftCompactor.Width)
             {
-                LeftCompactor.vel = LeftCompactor.vel with { X = SimOpt.SimOpts.ShapeDriftRate * 0.1 };
-                RightCompactor.vel = RightCompactor.vel with { X = -SimOpt.SimOpts.ShapeDriftRate * 0.1 };
+                LeftCompactor.Velocity = new DoubleVector(SimOpt.SimOpts.ShapeDriftRate * 0.1, 0);
+                RightCompactor.Velocity = LeftCompactor.Velocity.InvertX();
             }
         }
     }

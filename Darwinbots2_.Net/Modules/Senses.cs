@@ -333,9 +333,9 @@ namespace DarwinBots.Modules
             rob.mem[MemoryAddresses.refypos] = (int)rob.lastopppos.Y % 32000;
 
             //give reference variables from the bots frame of reference
-            rob.mem[MemoryAddresses.refvelup] = (int)(obstacle.vel.X * Math.Cos(rob.aim) + obstacle.vel.Y * Math.Sin(rob.aim) * -1) - rob.mem[MemoryAddresses.velup];
+            rob.mem[MemoryAddresses.refvelup] = (int)(obstacle.Velocity.X * Math.Cos(rob.aim) + obstacle.Velocity.Y * Math.Sin(rob.aim) * -1) - rob.mem[MemoryAddresses.velup];
             rob.mem[MemoryAddresses.refveldn] = rob.mem[MemoryAddresses.refvelup] * -1;
-            rob.mem[MemoryAddresses.refveldx] = (int)(obstacle.vel.Y * Math.Cos(rob.aim) + obstacle.vel.X * Math.Sin(rob.aim)) - rob.mem[MemoryAddresses.veldx];
+            rob.mem[MemoryAddresses.refveldx] = (int)(obstacle.Velocity.Y * Math.Cos(rob.aim) + obstacle.Velocity.X * Math.Sin(rob.aim)) - rob.mem[MemoryAddresses.veldx];
             rob.mem[MemoryAddresses.refvelsx] = rob.mem[MemoryAddresses.refvelsx] * -1;
 
             var temp = Math.Sqrt(Math.Pow(rob.mem[MemoryAddresses.refvelup], 2) + Math.Pow(rob.mem[MemoryAddresses.refveldx], 2)); // how fast is this shape moving compared to me?
@@ -349,7 +349,7 @@ namespace DarwinBots.Modules
             rob.mem[MemoryAddresses.refmulti] = 0;
 
             rob.mem[473] = 0;
-            rob.mem[477] = obstacle.vel.X == 0 && obstacle.vel.Y == 0 ? 1 : 0;
+            rob.mem[477] = obstacle.Velocity.X == 0 && obstacle.Velocity.Y == 0 ? 1 : 0;
         }
     }
 }

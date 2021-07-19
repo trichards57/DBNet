@@ -452,13 +452,13 @@ namespace DarwinBots.Modules
             {
                 if (shot.Position.Y > SimOpt.SimOpts.FieldHeight)
                 {
-                    shot.Position = shot.Position with { Y = SimOpt.SimOpts.FieldHeight };
-                    shot.Velocity = shot.Velocity with { Y = -1 * Math.Abs(shot.Velocity.Y) };
+                    shot.Position = new DoubleVector(shot.Position.X, SimOpt.SimOpts.FieldHeight);
+                    shot.Velocity = new DoubleVector(shot.Velocity.X, -1 * Math.Abs(shot.Velocity.Y));
                 }
                 else if (shot.Position.Y < 0)
                 {
-                    shot.Position = shot.Position with { Y = 0 };
-                    shot.Velocity = shot.Velocity with { Y = Math.Abs(shot.Velocity.Y) };
+                    shot.Position = new DoubleVector(shot.Position.X, 0);
+                    shot.Velocity = new DoubleVector(shot.Velocity.X, Math.Abs(shot.Velocity.Y));
                 }
             }
 
@@ -473,13 +473,13 @@ namespace DarwinBots.Modules
             {
                 if (shot.Position.X > SimOpt.SimOpts.FieldWidth)
                 {
-                    shot.Position = shot.Position with { X = SimOpt.SimOpts.FieldWidth };
-                    shot.Velocity = shot.Velocity with { X = -1 * Math.Abs(shot.Velocity.X) };
+                    shot.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth, shot.Position.Y);
+                    shot.Velocity = new DoubleVector(-1 * Math.Abs(shot.Velocity.X), shot.Velocity.Y);
                 }
                 else if (shot.Position.X < 0)
                 {
-                    shot.Position = shot.Position with { X = 0 };
-                    shot.Velocity = shot.Velocity with { X = Math.Abs(shot.Velocity.X) };
+                    shot.Position = new DoubleVector(0, shot.Position.Y);
+                    shot.Velocity = new DoubleVector(Math.Abs(shot.Velocity.X), shot.Velocity.Y);
                 }
             }
 

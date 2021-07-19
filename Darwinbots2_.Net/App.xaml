@@ -1,4 +1,4 @@
-<Application x:Class="Iesera.App"
+<Application x:Class="DarwinBots.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="Forms\MainForm.xaml">

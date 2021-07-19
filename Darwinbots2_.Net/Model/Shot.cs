@@ -7,7 +7,7 @@ namespace DarwinBots.Model
     {
         public int Age { get; set; }
         public Color Color { get; set; }
-        public List<DNABlock> Dna { get; set; } = new();
+        public List<DnaBlock> Dna { get; set; } = new();
         public double Energy { get; set; }
         public bool Exist { get; set; }
         public bool Flash { get; set; }

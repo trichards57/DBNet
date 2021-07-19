@@ -62,10 +62,10 @@ namespace DarwinBots.Modules
                     rob.mem[214] = 1;
 
                     if (rob.pos.X - rob.Radius < 0)
-                        rob.pos = rob.pos with { X = rob.Radius };
+                        rob.pos = new DoubleVector(rob.Radius, rob.pos.Y);
 
                     if (rob.pos.X + rob.Radius > SimOpt.SimOpts.FieldWidth)
-                        rob.pos = rob.pos with { X = SimOpt.SimOpts.FieldWidth - rob.Radius };
+                        rob.pos = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.Radius, rob.pos.Y);
 
                     rob.ImpulseRes += new DoubleVector(rob.vel.X * b, 0);
                 }
@@ -85,10 +85,10 @@ namespace DarwinBots.Modules
                     rob.mem[214] = 1;
 
                     if (rob.pos.Y - rob.Radius < 0)
-                        rob.pos = rob.pos with { Y = rob.Radius };
+                        rob.pos = new DoubleVector(rob.pos.X, rob.Radius);
 
                     if (rob.pos.Y + rob.Radius > SimOpt.SimOpts.FieldHeight)
-                        rob.pos = rob.pos with { Y = SimOpt.SimOpts.FieldHeight - rob.Radius };
+                        rob.pos = new DoubleVector(rob.pos.X, SimOpt.SimOpts.FieldHeight - rob.Radius);
 
                     rob.ImpulseRes += new DoubleVector(0, rob.vel.Y * b);
                 }
@@ -108,10 +108,10 @@ namespace DarwinBots.Modules
         public static void NetForces(robot rob)
         {
             if (Math.Abs(rob.vel.X) < 0.0000001)
-                rob.vel = rob.vel with { X = 0 };
+                rob.vel = new DoubleVector(0, rob.vel.Y);
 
             if (Math.Abs(rob.vel.Y) < 0.0000001)
-                rob.vel = rob.vel with { Y = 0 };
+                rob.vel = new DoubleVector(rob.vel.X, 0);
 
             PlanetEaters(rob);
             FrictionForces(rob);

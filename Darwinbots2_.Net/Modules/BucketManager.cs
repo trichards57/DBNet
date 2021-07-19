@@ -1,6 +1,5 @@
 using DarwinBots.Model;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DarwinBots.Modules
@@ -51,7 +50,7 @@ namespace DarwinBots.Modules
             {
                 for (var x = 0; x < _numBuckets.X - 1; x++)
                 {
-                    _buckets[x, y].Robots = new List<robot>();
+                    _buckets[x, y] = new Bucket();
 
                     if (x > 0)
                         _buckets[x, y].AdjacentBuckets.Add(new IntVector(x - 1, y));
@@ -201,7 +200,7 @@ namespace DarwinBots.Modules
             var d1 = new DoubleVector[5];
             var p = new DoubleVector[5];
 
-            if (o.pos.X > Math.Max(rob1.pos.X, rob2.pos.X) || o.pos.X + o.Width < Math.Min(rob1.pos.X, rob2.pos.X) || o.pos.Y > Math.Max(rob1.pos.Y, rob2.pos.Y) || o.pos.Y + o.Height < Math.Min(rob1.pos.Y, rob2.pos.Y))
+            if (o.Position.X > Math.Max(rob1.pos.X, rob2.pos.X) || o.Position.X + o.Width < Math.Min(rob1.pos.X, rob2.pos.X) || o.Position.Y > Math.Max(rob1.pos.Y, rob2.pos.Y) || o.Position.Y + o.Height < Math.Min(rob1.pos.Y, rob2.pos.Y))
                 return false;
 
             d1[1] = new DoubleVector(0, o.Width); // top
@@ -209,7 +208,7 @@ namespace DarwinBots.Modules
             d1[3] = d1[1]; // bottom
             d1[4] = d1[2]; // right side
 
-            p[1] = o.pos;
+            p[1] = o.Position;
             p[2] = p[1];
             p[3] = p[1] + d1[2];
             p[4] = p[1] + d1[1];
@@ -270,7 +269,7 @@ namespace DarwinBots.Modules
             // If Shapes are see through, then there is no reason to check if a shape blocks a bot
             if (!_options.ShapesAreSeeThrough)
             {
-                if (Globals.ObstacleManager.Obstacles.Where(o => o.exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
+                if (Globals.ObstacleManager.Obstacles.Where(o => o.Exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
                     return;
             }
 
@@ -287,8 +286,8 @@ namespace DarwinBots.Modules
             ac += ab;
 
             // Coordinates are in the 4th quadrant, so make the y values negative so the math works
-            ad = ad with { Y = -ad.Y };
-            ac = ad with { Y = -ac.Y };
+            ad = ad.InvertY();
+            ac = ac.InvertY();
 
             var theta = Physics.NormaliseAngle(Math.Atan2(ad.Y, ad.X));
             var beta = Physics.NormaliseAngle(Math.Atan2(ac.Y, ac.X));
@@ -361,7 +360,7 @@ namespace DarwinBots.Modules
             var d1 = new DoubleVector[5];
             var p = new DoubleVector[5];
 
-            DoubleVector lastopppos = null;
+            var lastopppos = DoubleVector.Zero;
 
             var sightDistances = Enumerable.Range(0, 8)
                 .Select(a => EyeSightDistance(rob.mem[MemoryAddresses.EYE1WIDTH + a], rob))
@@ -369,13 +368,13 @@ namespace DarwinBots.Modules
 
             var maxSightDistance = sightDistances.Max();
 
-            foreach (var o in Globals.ObstacleManager.Obstacles.Where(o => o.exist))
+            foreach (var o in Globals.ObstacleManager.Obstacles.Where(o => o.Exist))
             {
                 // Check to see if shape is too far away to be seen
-                if (o.pos.X > rob.pos.X + maxSightDistance || o.pos.X + o.Width < rob.pos.X - maxSightDistance || o.pos.Y > rob.pos.Y + maxSightDistance || o.pos.Y + o.Height < rob.pos.Y - maxSightDistance)
+                if (o.Position.X > rob.pos.X + maxSightDistance || o.Position.X + o.Width < rob.pos.X - maxSightDistance || o.Position.Y > rob.pos.Y + maxSightDistance || o.Position.Y + o.Height < rob.pos.Y - maxSightDistance)
                     continue;
 
-                if (o.pos.X < rob.pos.X && o.pos.X + o.Width > rob.pos.X && o.pos.Y < rob.pos.Y && o.pos.Y + o.Height > rob.pos.Y)
+                if (o.Position.X < rob.pos.X && o.Position.X + o.Width > rob.pos.X && o.Position.Y < rob.pos.Y && o.Position.Y + o.Height > rob.pos.Y)
                 {
                     // Bot is inside shape
                     for (var i = 0; i < 8; i++)
@@ -392,8 +391,8 @@ namespace DarwinBots.Modules
                 d1[4] = d1[2]; // right side
 
                 // Here are the four corners
-                p[1] = o.pos; // NW corner
-                p[2] = p[1] with { Y = p[1].Y + o.Height }; // SW Corner
+                p[1] = o.Position; // NW corner
+                p[2] = p[1] + new DoubleVector(0, o.Height); // SW Corner
                 p[3] = p[1] + d1[1]; // NE Corner
                 p[4] = p[2] + d1[1]; // SE Corner
 
@@ -454,7 +453,7 @@ namespace DarwinBots.Modules
                     //Now we check to see if the sight distance for this specific eye is far enough to see this specific shape
                     var sightDistance = sightDistances[a];
 
-                    if (o.pos.X > rob.pos.X + sightDistance || o.pos.X + o.Width < rob.pos.X - sightDistance || o.pos.Y > rob.pos.Y + sightDistance || o.pos.Y + o.Height < rob.pos.Y - sightDistance)
+                    if (o.Position.X > rob.pos.X + sightDistance || o.Position.X + o.Width < rob.pos.X - sightDistance || o.Position.Y > rob.pos.Y + sightDistance || o.Position.Y + o.Height < rob.pos.Y - sightDistance)
                         continue;
 
                     // Check to see if the side is viewable in this eye
@@ -487,56 +486,33 @@ namespace DarwinBots.Modules
                     var eyeAimRightVector = new DoubleVector(Math.Cos(eyeAimRight), Math.Sin(eyeAimRight));
                     eyeAimRightVector = eyeAimRightVector.Unit() * sightDistance;
 
-                    eyeAimLeftVector = eyeAimLeftVector with { Y = -eyeAimLeftVector.Y };
-                    eyeAimRightVector = eyeAimRightVector with { Y = -eyeAimRightVector.Y };
+                    eyeAimLeftVector = eyeAimLeftVector.InvertY();
+                    eyeAimRightVector = eyeAimRightVector.InvertY();
 
                     var lowestDist = 32000.0; // set to something impossibly big
 
-                    DoubleVector closestPoint = null;
                     //First, check here for parts of the shape that may be in the eye and closer than either side of the eye width.
                     //There are two major cases here:  either the bot is off a corner and the eye spanes the corner or the bot is off a side
                     //and the bot eye spans the point on the shape closest to the bot.  For both these cases, we find out what is the closest point
                     //be it a corner or the point on the edge perpendicular to the bot and see if that point is inside the span of the eye.  If
                     //it is, it is closer then either eye edge.
                     //Perhaps do this before edges and not do edges if found?
-                    switch (botLocation)
+                    var closestPoint = botLocation switch
                     {
-                        case Direction.North:
-                            closestPoint = p0 with { Y = p[1].Y };
-                            break;
-
-                        case Direction.East:
-                            closestPoint = p0 with { X = p[4].X };
-                            break;
-
-                        case Direction.South:
-                            closestPoint = p0 with { Y = p[4].Y };
-                            break;
-
-                        case Direction.West:
-                            closestPoint = p0 with { X = p[1].X };
-                            break;
-
-                        case Direction.NorthEast:
-                            closestPoint = p[3];
-                            break;
-
-                        case Direction.SouthEast:
-                            closestPoint = p[4];
-                            break;
-
-                        case Direction.SouthWest:
-                            closestPoint = p[2];
-                            break;
-
-                        case Direction.NorthWest:
-                            closestPoint = p[1];
-                            break;
-                    }
+                        Direction.North => new DoubleVector(p0.X, p[1].Y),
+                        Direction.East => new DoubleVector(p[4].X, p0.Y),
+                        Direction.South => new DoubleVector(p0.X, p[4].Y),
+                        Direction.West => new DoubleVector(p[1].X, p0.Y),
+                        Direction.NorthEast => p[3],
+                        Direction.SouthEast => p[4],
+                        Direction.SouthWest => p[2],
+                        Direction.NorthWest => p[1],
+                        _ => throw new InvalidOperationException()
+                    };
 
                     var ab = closestPoint - p0;
                     //Coordinates are in the 4th quadrant, so make the y values negative so the math works
-                    ab = ab with { Y = -ab.Y };
+                    ab = ab.InvertY();
 
                     var theta = Physics.NormaliseAngle(Math.Atan2(ab.Y, ab.X));
 

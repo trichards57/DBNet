@@ -7,16 +7,15 @@ namespace DarwinBots.Modules
 {
     internal static class Multibots
     {
-        public static void ReSpawn(robot rob, double X, double Y)
+        public static void ReSpawn(robot rob, double x, double y)
         {
-            robot robmin = null;
-
             var cellList = ListCells(rob).ToList();
             var min = 999999999999.0;
+            var robmin = cellList.First();
 
             foreach (var cell in cellList)
             {
-                var mag = Math.Pow(cell.pos.X - X, 2) + Math.Pow(cell.pos.Y - Y, 2);
+                var mag = Math.Pow(cell.pos.X - x, 2) + Math.Pow(cell.pos.Y - y, 2);
 
                 if (!(mag <= min)) continue;
 
@@ -24,11 +23,11 @@ namespace DarwinBots.Modules
                 robmin = cell;
             }
 
-            var distance = new DoubleVector(X, Y) - robmin.pos;
+            var distance = new DoubleVector(x, y) - robmin.pos;
 
-            var radiidif = rob.Radius - robmin.Radius;
+            var radiiDiff = rob.Radius - robmin.Radius;
 
-            distance += DoubleVector.Sign(distance) * (radiidif - 1);
+            distance += DoubleVector.Sign(distance) * (radiiDiff - 1);
 
             foreach (var cell in cellList)
             {

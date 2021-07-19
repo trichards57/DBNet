@@ -76,7 +76,7 @@ namespace DarwinBots.Model
 
         public bool DisableMovementSysvars { get; set; }
 
-        public List<DNABlock> dna { get; set; } = new();
+        public List<DnaBlock> dna { get; set; } = new();
 
         public int[] epimem { get; set; } = new int[14];
 
@@ -210,7 +210,7 @@ namespace DarwinBots.Model
 
         public int SonNumber { get; set; }
 
-        public List<DNABlock> spermDNA { get; set; } = new();
+        public List<DnaBlock> spermDNA { get; set; } = new();
 
         public int SubSpecies { get; set; }
 

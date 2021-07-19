@@ -145,7 +145,7 @@ namespace DarwinBots.Modules
                 if (ThreadSafeRandom.Local.Next(0, 99) < pointToChange)
                 {
                     if (rob.dna[t].Value != 0 && mutationType == MutationType.Insertion)
-                        rob.dna[t] = rob.dna[t] with { Value = (int)Common.Gauss(500) };
+                        rob.dna[t] = new DnaBlock(rob.dna[t].Type, (int)Common.Gauss(500));
 
                     var old = rob.dna[t].Value;
 
@@ -154,9 +154,9 @@ namespace DarwinBots.Modules
                         do
                         {
                             if (Math.Abs(old) <= 1000)
-                                rob.dna[t] = rob.dna[t] with { Value = ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Common.Gauss(94, rob.dna[t].Value) : (int)Common.Gauss(7, rob.dna[t].Value) };
+                                rob.dna[t] = new DnaBlock(rob.dna[t].Type, ThreadSafeRandom.Local.Next(0, 2) == 0 ? (int)Common.Gauss(94, rob.dna[t].Value) : (int)Common.Gauss(7, rob.dna[t].Value));
                             else
-                                rob.dna[t] = rob.dna[t] with { Value = (int)Common.Gauss(old / 10.0, rob.dna[t].Value) }; //for very large numbers scale gauss
+                                rob.dna[t] = new DnaBlock(rob.dna[t].Type, (int)Common.Gauss(old / 10.0, rob.dna[t].Value)); //for very large numbers scale gauss
                         } while (rob.dna[t].Value == old);
 
                         rob.Mutations++;
@@ -166,7 +166,7 @@ namespace DarwinBots.Modules
                     }
                     else
                     {
-                        var bp = new DNABlock
+                        var bp = new DnaBlock
                         {
                             Type = rob.dna[t].Type
                         };
@@ -176,7 +176,7 @@ namespace DarwinBots.Modules
                         do
                         {
                             max++;
-                            bp = bp with { Value = max };
+                            bp = new DnaBlock(bp.Type, max);
                         } while (DnaTokenizing.Parse(bp) != "");
 
                         max--;
@@ -186,11 +186,10 @@ namespace DarwinBots.Modules
 
                         do
                         {
-                            rob.dna[t] = rob.dna[t] with { Value = ThreadSafeRandom.Local.Next(1, max) };
-                        } while (rob.dna[t].Value == old);
+                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, ThreadSafeRandom.Local.Next(1, max));
+                        } while (rob.dna[t].Value != old);
 
-                        bp = bp with { Type = rob.dna[t].Type };
-                        bp = bp with { Value = old };
+                        bp = new DnaBlock(rob.dna[t].Type, old);
 
                         var name = DnaTokenizing.Parse(rob.dna[t]);
                         var oldName = DnaTokenizing.Parse(bp);
@@ -203,14 +202,14 @@ namespace DarwinBots.Modules
                 }
                 else
                 {
-                    var bp = new DNABlock
+                    var bp = new DnaBlock
                     {
                         Type = rob.dna[t].Type,
                         Value = rob.dna[t].Value
                     };
                     do
                     {
-                        rob.dna[t] = rob.dna[t] with { Type = ThreadSafeRandom.Local.Next(0, 20) };
+                        rob.dna[t] = new DnaBlock(ThreadSafeRandom.Local.Next(0, 20), rob.dna[t].Value);
                     } while (rob.dna[t].Type == bp.Type || DnaTokenizing.TipoDetok(rob.dna[t].Type) == "");
 
                     var max = 0;
@@ -219,7 +218,7 @@ namespace DarwinBots.Modules
                         do
                         {
                             max++;
-                            rob.dna[t] = rob.dna[t] with { Value = max };
+                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, max);
                         } while (DnaTokenizing.Parse(rob.dna[t]) != "");
 
                         max--;
@@ -227,9 +226,9 @@ namespace DarwinBots.Modules
                         if (max <= 1)
                             return;
 
-                        rob.dna[t] = rob.dna[t] with { Value = ((Math.Abs(bp.Value) - 1) % max) + 1 };
+                        rob.dna[t] = new DnaBlock(rob.dna[t].Type, (Math.Abs(bp.Value) - 1) % max + 1);
                         if (rob.dna[t].Value == 0)
-                            rob.dna[t] = rob.dna[t] with { Value = 1 };
+                            rob.dna[t] = new DnaBlock(rob.dna[t].Type, 1);
                     }
 
                     var name = DnaTokenizing.Parse(rob.dna[t]);
@@ -260,7 +259,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        private static void DeleteSpecificGene(List<DNABlock> dna, int k)
+        private static void DeleteSpecificGene(List<DnaBlock> dna, int k)
         {
             var i = DnaManipulations.GenePosition(dna, k);
             if (i < 0)
@@ -326,7 +325,7 @@ namespace DarwinBots.Modules
 
                 for (var i = 0; i < length; i++)
                 {
-                    rob.dna.Insert(t + 1 + i, new DNABlock
+                    rob.dna.Insert(t + 1 + i, new DnaBlock
                     {
                         Type = 0,
                         Value = 100
