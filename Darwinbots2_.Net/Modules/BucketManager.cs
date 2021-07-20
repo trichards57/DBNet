@@ -38,6 +38,8 @@ namespace DarwinBots.Modules
         /// </remarks>
         private readonly IntVector _numBuckets;
 
+        private readonly IObstacleManager _obstacleManager;
+
         /// <summary>
         /// A reference to the simulations options
         /// </summary>
@@ -47,9 +49,10 @@ namespace DarwinBots.Modules
         /// Initializes a new instance of the <see cref="BucketManager"/> class.
         /// </summary>
         /// <param name="opts">The simulation options.</param>
-        public BucketManager(SimOptions opts)
+        public BucketManager(SimOptions opts, IObstacleManager obstacleManager)
         {
             _options = opts;
+            _obstacleManager = obstacleManager;
 
             _numBuckets = new IntVector(opts.FieldWidth / BucketSize, opts.FieldHeight / BucketSize);
 
@@ -85,12 +88,6 @@ namespace DarwinBots.Modules
                     if (x < _numBuckets.X - 1 && y < _numBuckets.Y - 1)
                         _buckets[x, y].AdjacentBuckets.Add(new IntVector(x + 1, y + 1));
                 }
-            }
-
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists))
-            {
-                rob.BucketPosition = new IntVector(-2, -2);
-                UpdateBotBucket(rob);
             }
         }
 
@@ -278,7 +275,7 @@ namespace DarwinBots.Modules
             // If Shapes are see through, then there is no reason to check if a shape blocks a bot
             if (!_options.ShapesAreSeeThrough)
             {
-                if (Globals.ObstacleManager.Obstacles.Where(o => o.Exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
+                if (_obstacleManager.Obstacles.Where(o => o.Exist).Any(o => ShapeBlocksBot(rob1, rob2, o)))
                     return;
             }
 
@@ -377,7 +374,7 @@ namespace DarwinBots.Modules
 
             var maxSightDistance = sightDistances.Max();
 
-            foreach (var o in Globals.ObstacleManager.Obstacles.Where(o => o.Exist))
+            foreach (var o in _obstacleManager.Obstacles.Where(o => o.Exist))
             {
                 // Check to see if shape is too far away to be seen
                 if (o.Position.X > rob.Position.X + maxSightDistance || o.Position.X + o.Width < rob.Position.X - maxSightDistance || o.Position.Y > rob.Position.Y + maxSightDistance || o.Position.Y + o.Height < rob.Position.Y - maxSightDistance)

@@ -105,7 +105,7 @@ namespace DarwinBots.Modules
             return NormaliseAngle((double)angle / 200);
         }
 
-        public static void NetForces(Robot rob)
+        public static void NetForces(IRobotManager robotManager, Robot rob)
         {
             if (Math.Abs(rob.Velocity.X) < 0.0000001)
                 rob.Velocity = new DoubleVector(0, rob.Velocity.Y);
@@ -113,7 +113,7 @@ namespace DarwinBots.Modules
             if (Math.Abs(rob.Velocity.Y) < 0.0000001)
                 rob.Velocity = new DoubleVector(rob.Velocity.X, 0);
 
-            PlanetEaters(rob);
+            PlanetEaters(robotManager, rob);
             FrictionForces(rob);
             SphereDragForces(rob);
             BrownianForces(rob);
@@ -393,12 +393,12 @@ namespace DarwinBots.Modules
             }
         }
 
-        private static void PlanetEaters(Robot rob)
+        private static void PlanetEaters(IRobotManager robotManager, Robot rob)
         {
             if (!SimOpt.SimOpts.PlanetEaters || rob.Mass == 0)
                 return;
 
-            foreach (var r in Globals.RobotsManager.Robots.Where(r => r.Mass > 0 && r.Exists))
+            foreach (var r in robotManager.Robots.Where(r => r.Mass > 0 && r.Exists))
             {
                 var posDiff = r.Position - rob.Position;
                 var mag = posDiff.Magnitude();

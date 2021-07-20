@@ -142,9 +142,9 @@ namespace DarwinBots.Modules
             rob.Variables.Add(new Variable(parts[0], cValid ? cVal : 0));
         }
 
-        public static async Task<Robot> RobScriptLoad(IBucketManager bucketManager, string path)
+        public static async Task<Robot> RobScriptLoad(IRobotManager robotManager, IBucketManager bucketManager, string path)
         {
-            var rob = Globals.RobotsManager.GetNewBot();
+            var rob = robotManager.GetNewBot();
             PrepareRob(bucketManager, rob, path); // prepares structure
             if (await DnaTokenizing.LoadDna(path, rob))
             {
@@ -157,7 +157,7 @@ namespace DarwinBots.Modules
             }
 
             rob.Exists = false;
-            Globals.RobotsManager.Robots.Remove(rob);
+            robotManager.Robots.Remove(rob);
             bucketManager.UpdateBotBucket(rob);
             return null;
         }

@@ -79,7 +79,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void feedvegs(int totnrg)
+        public static void feedvegs(IRobotManager robotManager, IObstacleManager obstacleManager, int totnrg)
         {
             if (SimOpt.SimOpts.SunOnRnd)
             {
@@ -202,7 +202,7 @@ namespace DarwinBots.Modules
             }
 
             //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Energy > 0 && r.Exists))
+            foreach (var rob in robotManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
                 rob.Memory[218] = 0;
             }
@@ -212,9 +212,9 @@ namespace DarwinBots.Modules
 
             double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
-            ScreenArea -= Globals.ObstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
+            ScreenArea -= obstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
 
-            var TotalRobotArea = Globals.RobotsManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
+            var TotalRobotArea = robotManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
 
             if (ScreenArea < 1)
             {
@@ -244,7 +244,7 @@ namespace DarwinBots.Modules
                 sunstart2 = 0;
             }
 
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Energy > 0 && r.Exists))
+            foreach (var rob in robotManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
                 double acttok = 0;
                 //Botsareus 8/16/2014 Allow robots to share chloroplasts again
@@ -303,23 +303,23 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static async Task VegsRepopulate(IBucketManager bucketManager)
+        public static async Task VegsRepopulate(IRobotManager robotManager, IBucketManager bucketManager)
         {
             CoolDown++;
             if (CoolDown >= SimOpt.SimOpts.RepopCooldown)
             {
                 for (var t = 1; t < SimOpt.SimOpts.RepopAmount; t++)
                 {
-                    await aggiungirob(bucketManager);
+                    await aggiungirob(robotManager, bucketManager);
                     TotalVegs++;
                 }
                 CoolDown -= SimOpt.SimOpts.RepopCooldown;
             }
         }
 
-        private static async Task aggiungirob(IBucketManager bucketManager)
+        private static async Task aggiungirob(IRobotManager robotManager, IBucketManager bucketManager)
         {
-            if (!SimOpt.SimOpts.Specie.Any(CheckVegStatus))
+            if (!SimOpt.SimOpts.Specie.Any(s => CheckVegStatus(robotManager, s)))
                 return;
 
             int r;
@@ -327,7 +327,7 @@ namespace DarwinBots.Modules
             do
             {
                 r = ThreadSafeRandom.Local.Next(0, SimOpt.SimOpts.Specie.Count); // start randomly in the list of species
-            } while (!CheckVegStatus(SimOpt.SimOpts.Specie[r]));
+            } while (!CheckVegStatus(robotManager, SimOpt.SimOpts.Specie[r]));
 
             var x = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(SimOpt.SimOpts.Specie[r].Posrg * (SimOpt.SimOpts.FieldWidth - 60)));
             var y = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(SimOpt.SimOpts.Specie[r].Posdn * (SimOpt.SimOpts.FieldHeight - 60)));
@@ -335,7 +335,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].Path == "Invalid Path")
                 return;
 
-            var a = await DnaManipulations.RobScriptLoad(bucketManager, System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
+            var a = await DnaManipulations.RobScriptLoad(robotManager, bucketManager, System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
                     SimOpt.SimOpts.Specie[r].Name));
 
             if (a == null)
@@ -406,13 +406,13 @@ namespace DarwinBots.Modules
             Senses.MakeOccurrList(a);
         }
 
-        private static bool CheckVegStatus(Species species)
+        private static bool CheckVegStatus(IRobotManager robotManager, Species species)
         {
             if (!species.Veg || !species.Native)
                 return false;
 
             //see if any active robots have chloroplasts
-            if (Globals.RobotsManager.Robots.Where(r => r.Exists && r.Chloroplasts > 0)
+            if (robotManager.Robots.Where(r => r.Exists && r.Chloroplasts > 0)
                 .Select(rob => new { rob, splitname = rob.FName.Split(")") })
                 .Select(t =>
                     t.splitname[0].StartsWith("(") && int.TryParse(t.splitname[0][1..], out _)
@@ -423,7 +423,7 @@ namespace DarwinBots.Modules
             }
 
             //If there is no robots at all with chlr then repop everything
-            return !Globals.RobotsManager.Robots.Any(r => r.Exists && r.IsVegetable && r.Age > 0);
+            return !robotManager.Robots.Any(r => r.Exists && r.IsVegetable && r.Age > 0);
         }
     }
 }

@@ -8,20 +8,45 @@ using System.Windows.Media;
 
 namespace DarwinBots.Modules
 {
-    internal class RobotsManager
+    internal interface IRobotManager
+    {
+        List<Robot> Robots { get; }
+
+        int TotalRobots => Robots.Count(r => r.Exists);
+
+        Robot GetNewBot();
+
+        void ShareChloroplasts(Robot robot, Tie tie);
+
+        void ShareEnergy(Robot robot, Tie tie);
+
+        void ShareShell(Robot rob, Tie tie);
+
+        void ShareSlime(Robot rob, Tie tie);
+
+        void ShareWaste(Robot rob, Tie tie);
+    }
+
+    internal class RobotsManager : IRobotManager
     {
         public const int CubicTwipPerBody = 905;
         public const int GeneticSensitivity = 75;
         public const int MaxMem = 1000;
         public const int RobSize = 120;
         private readonly IBucketManager _bucketManager;
+        private readonly IObstacleManager _obstacleManager;
+        private readonly IShotManager _shotManager;
 
-        public RobotsManager(IBucketManager bucketManager)
+        public RobotsManager(IBucketManager bucketManager, IObstacleManager obstacleManager, IShotManager shotManager)
         {
             _bucketManager = bucketManager;
+            _obstacleManager = obstacleManager;
+            _shotManager = shotManager;
         }
 
         public List<Robot> Robots { get; } = new();
+        public int TotalChlr { get; set; }
+        public int TotalNotVegs { get; set; }
         public int TotalRobots => Robots.Count(r => r.Exists);
         private List<Robot> BotsToKill { get; } = new();
         private List<Robot> BotsToReproduce { get; } = new();
@@ -68,7 +93,7 @@ namespace DarwinBots.Modules
             if (robot.VirusShot != null)
             {
                 robot.VirusShot.Exist = false;
-                Globals.ShotsManager.Shots.Remove(robot.VirusShot);
+                _shotManager.Shots.Remove(robot.VirusShot);
                 robot.VirusShot = null;
             }
 
@@ -165,7 +190,7 @@ namespace DarwinBots.Modules
             BotsToKill.Clear();
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
-            Globals.MainEngine.TotalNotVegs = 0;
+            TotalNotVegs = 0;
             Vegs.TotalVegsDisplayed = Vegs.TotalVegs;
             Vegs.TotalVegs = 0;
 
@@ -202,8 +227,8 @@ namespace DarwinBots.Modules
 
                 Physics.CalcMass(rob);
 
-                if (Globals.ObstacleManager.Obstacles.Count > 0)
-                    Globals.ObstacleManager.DoObstacleCollisions(rob);
+                if (_obstacleManager.Obstacles.Count > 0)
+                    _obstacleManager.DoObstacleCollisions(rob);
 
                 Physics.BorderCollision(_bucketManager, rob);
 
@@ -213,7 +238,7 @@ namespace DarwinBots.Modules
                     Physics.TieTorque(rob);
 
                 if (!rob.IsFixed)
-                    Physics.NetForces(rob); //calculate forces on all robots
+                    Physics.NetForces(this, rob); //calculate forces on all robots
 
                 _bucketManager.BucketsCollision(rob);
 
@@ -245,7 +270,7 @@ namespace DarwinBots.Modules
 
             foreach (var rob in Robots.Where(r => r.Exists))
             {
-                Ties.UpdateTies(rob); // Carries all tie routines
+                Ties.UpdateTies(this, rob); // Carries all tie routines
 
                 //EricL Transfer genetic meomory locations for newborns through the birth tie during their first 15 cycles
                 if (rob.Age < 15)
@@ -272,7 +297,7 @@ namespace DarwinBots.Modules
 
                 if (!rob.IsCorpse && !rob.DnaDisabled && rob.Exists)
                 {
-                    NeoMutations.Mutate(rob);
+                    NeoMutations.Mutate(this, rob);
                     MakeStuff(rob);
                     HandleWaste(rob);
                     Shooting(rob);
@@ -284,7 +309,7 @@ namespace DarwinBots.Modules
                     ManageBouyancy(rob);
                     ManageReproduction(rob);
                     Shock(rob);
-                    Senses.WriteSenses(_bucketManager, rob);
+                    Senses.WriteSenses(this, _bucketManager, rob);
                     FireTies(rob);
                 }
                 if (!rob.IsCorpse && rob.Exists)
@@ -348,7 +373,7 @@ namespace DarwinBots.Modules
             {
                 if (rob.Chloroplasts == 0)
                 {
-                    if (Globals.ShotsManager.MakeVirus(rob, rob.Memory[MemoryAddresses.mkvirus]))
+                    if (_shotManager.MakeVirus(rob, rob.Memory[MemoryAddresses.mkvirus]))
                     {
                         var length = GeneLength(rob, rob.Memory[MemoryAddresses.mkvirus]) * 2;
                         rob.Energy -= length / 2.0 * SimOpt.SimOpts.Costs.DnaCopyCost * SimOpt.SimOpts.Costs.CostMultiplier;
@@ -370,7 +395,7 @@ namespace DarwinBots.Modules
             if (rob.Memory[MemoryAddresses.VshootSys] != 0 & rob.VirusTimer == 1)
             {
                 // Botsareus 10/5/2015 Bugfix for negative values in vshoot
-                Globals.ShotsManager.ShootVirus(rob, rob.VirusShot);
+                _shotManager.ShootVirus(rob, rob.VirusShot);
 
                 rob.Memory[MemoryAddresses.VshootSys] = 0;
                 rob.Memory[MemoryAddresses.Vtimer] = 0;
@@ -405,7 +430,7 @@ namespace DarwinBots.Modules
             {
                 var newnrg = rob.Energy - (rob.Chloroplasts - tmpchlr) * SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier;
 
-                if (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation && rob.IsVegetable || newnrg < 100)
+                if (TotalChlr > SimOpt.SimOpts.MaxPopulation && rob.IsVegetable || newnrg < 100)
                     rob.Chloroplasts = tmpchlr;
                 else
                     rob.Energy = newnrg; //Botsareus 8/24/2013 only charge energy for adding chloroplasts to prevent robots from cheating by adding and subtracting there chlroplasts in 3 cycles
@@ -570,7 +595,7 @@ namespace DarwinBots.Modules
                 Altzheimer(rob);
 
             if (rob.Waste > 32000)
-                Globals.ShotsManager.Defecate(rob);
+                _shotManager.Defecate(rob);
 
             if (rob.PermanentWaste > 32000)
                 rob.PermanentWaste = 32000;
@@ -781,14 +806,14 @@ namespace DarwinBots.Modules
                 return;
 
             // Attempt to stop veg overpopulation but will it work?
-            if (robot.IsVegetable && (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (robot.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and it's a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
             // so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
             // so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
             // then let them all reproduce.
-            if (robot.IsVegetable && ThreadSafeRandom.Local.Next(0, 10) != 5 && Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
+            if (robot.IsVegetable && ThreadSafeRandom.Local.Next(0, 10) != 5 && TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
             if (Vegs.TotalVegsDisplayed == -1)
                 return;
@@ -928,12 +953,12 @@ namespace DarwinBots.Modules
                 nuovo.MutationProbabilities.PointMutation = MutateProbability(nuovo.MutationProbabilities.PointMutation);
                 nuovo.MutationProbabilities.Reversal = MutateProbability(nuovo.MutationProbabilities.Reversal);
 
-                NeoMutations.Mutate(nuovo, true);
+                NeoMutations.Mutate(this, nuovo, true);
 
                 nuovo.MutationProbabilities = temp;
             }
             else
-                NeoMutations.Mutate(nuovo, true);
+                NeoMutations.Mutate(this, nuovo, true);
 
             Senses.MakeOccurrList(nuovo);
             nuovo.NumberOfGenes = DnaManipulations.CountGenes(nuovo.Dna);
@@ -1071,14 +1096,14 @@ namespace DarwinBots.Modules
             //we let male veggies fertilize nonveggie females all they want since the offspring's "species" and thus vegginess
             //will be determined by their mother.  Perhaps a strategy will emerge where plants compete to reproduce
             //with nonveggies so as to bypass the popualtion limtis?  Who knows.
-            if (female.IsVegetable && (Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (female.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
                 return;
 
             // If we got here and the female is a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
             // so as to avoid all the veggies reproducing on the same cycle.  This adds some randomness
             // so as to avoid giving preference to veggies with lower bot array numbers.  If the veggy population is below 90% of the threshold
             // then let them all reproduce.
-            if (female.IsVegetable && ThreadSafeRandom.Local.Next(0, 9) != 5 && Globals.MainEngine.TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
+            if (female.IsVegetable && ThreadSafeRandom.Local.Next(0, 9) != 5 && TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
 
             if (Vegs.TotalVegsDisplayed == -1)
@@ -1243,9 +1268,9 @@ namespace DarwinBots.Modules
             for (var i = 0; i < 14; i++)
                 female.EpigeneticMemory[i] = 0;
 
-            NeoMutations.LogMutation(nuovo, $"Female DNA len {female.Dna.Count} and male DNA len {female.SpermDna.Count} had offspring DNA len {nuovo.Dna.Count} during cycle {SimOpt.SimOpts.TotRunCycle}");
+            NeoMutations.LogMutation(this, nuovo, $"Female DNA len {female.Dna.Count} and male DNA len {female.SpermDna.Count} had offspring DNA len {nuovo.Dna.Count} during cycle {SimOpt.SimOpts.TotRunCycle}");
 
-            NeoMutations.Mutate(nuovo, true);
+            NeoMutations.Mutate(this, nuovo, true);
 
             Senses.MakeOccurrList(nuovo);
             nuovo.NumberOfGenes = DnaManipulations.CountGenes(nuovo.Dna);
@@ -1381,7 +1406,7 @@ namespace DarwinBots.Modules
                         cost = rob.Energy;
 
                     rob.Energy -= cost; // EricL - postive shots should cost the shotcost
-                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
+                    _shotManager.NewShot(rob, shtype, value, 1, true);
 
                     break;// Nrg request Feeding Shot
                 case -1:
@@ -1395,7 +1420,7 @@ namespace DarwinBots.Modules
                         cost = rob.Energy;
 
                     rob.Energy -= cost;
-                    Globals.ShotsManager.NewShot(rob, shtype, value, rngmultiplier, true);
+                    _shotManager.NewShot(rob, shtype, value, rngmultiplier, true);
                     break;// Nrg shot
                 case -2:
                     value = Math.Abs(value);
@@ -1411,7 +1436,7 @@ namespace DarwinBots.Modules
                     else
                         rob.Energy -= energyLost;
 
-                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
+                    _shotManager.NewShot(rob, shtype, value, 1, true);
                     break;//shoot venom
                 case -3:
                     value = Math.Abs(value);
@@ -1427,7 +1452,7 @@ namespace DarwinBots.Modules
 
                     rob.Energy = energyLost > rob.Energy ? 0 : rob.Energy - energyLost;
 
-                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
+                    _shotManager.NewShot(rob, shtype, value, 1, true);
                     break;//shoot waste 'Botsareus 4/22/2016 Bugfix
                 case -4:
                     value = Math.Abs(value);
@@ -1442,7 +1467,7 @@ namespace DarwinBots.Modules
                     energyLost = SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier / (rob.Ties.Count + 1);
                     rob.Energy = energyLost > rob.Energy ? 0 : rob.Energy - energyLost;
 
-                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
+                    _shotManager.NewShot(rob, shtype, value, 1, true);
                     // no -5 shot here as poison can only be shot in response to an attack
                     break;//shoot body
                 case -6:
@@ -1456,7 +1481,7 @@ namespace DarwinBots.Modules
 
                     rob.Energy -= cost;
                     value *= multiplier;
-                    Globals.ShotsManager.NewShot(rob, shtype, value, rngmultiplier, true);
+                    _shotManager.NewShot(rob, shtype, value, rngmultiplier, true);
                     break;// shoot sperm
                 case -8:
                     cost = SimOpt.SimOpts.Costs.ShotFormationCost * SimOpt.SimOpts.Costs.CostMultiplier;
@@ -1465,7 +1490,7 @@ namespace DarwinBots.Modules
                         cost = rob.Energy;
 
                     rob.Energy -= cost; // EricL - postive shots should cost the shotcost
-                    Globals.ShotsManager.NewShot(rob, shtype, value, 1, true);
+                    _shotManager.NewShot(rob, shtype, value, 1, true);
                     break;
             }
             rob.Memory[MemoryAddresses.shoot] = 0;
@@ -1485,7 +1510,7 @@ namespace DarwinBots.Modules
             if (Robots.Any(r => r.Exists && r != rob && Math.Abs(r.Position.X - x) < r.Radius + rob.Radius && Math.Abs(r.Position.Y - y) < r.Radius + rob.Radius))
                 return true;
 
-            if (Globals.ObstacleManager.Obstacles.Any(o => o.Position.X <= Math.Max(rob.Position.X, x) && o.Position.X + o.Width >= Math.Min(rob.Position.X, x) && o.Position.Y <= Math.Max(rob.Position.Y, y) && o.Position.Y + o.Height >= Math.Min(rob.Position.Y, y)))
+            if (_obstacleManager.Obstacles.Any(o => o.Position.X <= Math.Max(rob.Position.X, x) && o.Position.X + o.Width >= Math.Min(rob.Position.X, x) && o.Position.Y <= Math.Max(rob.Position.Y, y) && o.Position.Y + o.Height >= Math.Min(rob.Position.Y, y)))
                 return true;
 
             if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.Radius + Physics.SmudgeFactor || x + rob.Radius + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))
@@ -1672,12 +1697,12 @@ namespace DarwinBots.Modules
             else if (rob.IsCorpse)
             {
                 if (rob.Body > 0)
-                    Globals.ShotsManager.Decay(rob);
+                    _shotManager.Decay(rob);
                 else
                     await KillRobot(rob);
             }
             else
-                Globals.MainEngine.TotalNotVegs++;
+                TotalNotVegs++;
         }
 
         private void UpdatePosition(Robot rob)

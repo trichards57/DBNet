@@ -22,8 +22,6 @@ namespace DarwinBots.Modules
         private ShotsManager _shotsManager;
         private Thread _simThread;
         private CancellationTokenSource _simThreadCancel;
-        public int TotalChlr { get; set; }
-        public int TotalNotVegs { get; set; }
 
         // TODO : Save last run settings
         // TODO : Graphing statistics
@@ -239,7 +237,7 @@ namespace DarwinBots.Modules
                 MutOscillSine = SimOpt.SimOpts.MutOscillSine,
                 NoShotDecay = SimOpt.SimOpts.NoShotDecay,
                 NoWShotDecay = SimOpt.SimOpts.NoWShotDecay,
-                Obstacles = Globals.ObstacleManager.Obstacles,
+                Obstacles = _obstacleManager.Obstacles,
                 OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
@@ -311,16 +309,11 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                _shotsManager = new ShotsManager();
-                _bucketManager = new BucketManager(SimOpt.SimOpts);
                 _obstacleManager = new ObstaclesManager();
-                _robotsManager = new RobotsManager(_bucketManager);
+                _shotsManager = new ShotsManager(_obstacleManager);
+                _bucketManager = new BucketManager(SimOpt.SimOpts, _obstacleManager);
+                _robotsManager = new RobotsManager(_bucketManager, _obstacleManager, _shotsManager);
             }
-
-            Globals.ObstacleManager = _obstacleManager;
-            Globals.ShotsManager = _shotsManager;
-            Globals.RobotsManager = _robotsManager;
-            Globals.MainEngine = this;
 
             if (!startLoaded)
                 await LoadRobots();
@@ -328,7 +321,7 @@ namespace DarwinBots.Modules
             {
                 Vegs.CoolDown = -SimOpt.SimOpts.RepopCooldown;
                 Vegs.TotalVegs = -1;
-                TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
+                _robotsManager.TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
             }
 
             _active = true;
@@ -347,7 +340,7 @@ namespace DarwinBots.Modules
             {
                 for (var t = 1; t < species.Quantity; t++)
                 {
-                    var rob = await DnaManipulations.RobScriptLoad(_bucketManager, Path.Join(species.Path, species.Name));
+                    var rob = await DnaManipulations.RobScriptLoad(_robotsManager, _bucketManager, Path.Join(species.Path, species.Name));
 
                     if (rob == null)
                     {
@@ -450,7 +443,7 @@ namespace DarwinBots.Modules
             Vegs.CurrentEnergyCycle = SimOpt.SimOpts.TotRunCycle % 100;
             Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] = 0;
 
-            var currentPopulation = TotalNotVegs;
+            var currentPopulation = _robotsManager.TotalNotVegs;
 
             if (SimOpt.SimOpts.Costs.DynamicCostsIncludePlants)
                 currentPopulation += Vegs.TotalVegsDisplayed; //Include Plants in target population
@@ -519,7 +512,7 @@ namespace DarwinBots.Modules
             foreach (var rob in _robotsManager.Robots.Where(r => r.Exists && r.DnaDisabled == false))
                 Senses.EraseSenses(rob);
 
-            _shotsManager.UpdateShots();
+            _shotsManager.UpdateShots(_robotsManager);
 
             //Botsareus 6/22/2016 to figure actual velocity of the bot incase there is a collision event
             foreach (var rob in _robotsManager.Robots.Where(r => r.Exists))
@@ -536,12 +529,12 @@ namespace DarwinBots.Modules
 
             var allChlr = (int)_robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Chloroplasts);
 
-            TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
+            _robotsManager.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
-            if (TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
-                await Vegs.VegsRepopulate(_bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
+            if (_robotsManager.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
+                await Vegs.VegsRepopulate(_robotsManager, _bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
-            Vegs.feedvegs(SimOpt.SimOpts.MaxEnergy);
+            Vegs.feedvegs(_robotsManager, _obstacleManager, SimOpt.SimOpts.MaxEnergy);
 
             //Kill some robots to prevent of memory
             var totlen = _robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Dna.Count);

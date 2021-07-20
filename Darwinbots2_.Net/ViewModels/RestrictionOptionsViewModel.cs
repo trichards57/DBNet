@@ -94,9 +94,9 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public void SaveToAllRobs()
+        public void SaveToAllRobs(IRobotManager robotManager)
         {
-            foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists))
+            foreach (var rob in robotManager.Robots.Where(r => r.Exists))
             {
                 if (rob.IsVegetable)
                 {

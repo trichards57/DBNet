@@ -41,7 +41,7 @@ namespace DarwinBots.Modules
             await deadRobotsFile.WriteLineAsync(DnaTokenizing.DetokenizeDna(rob).Trim());
         }
 
-        public static async Task Snapshot()
+        public static async Task Snapshot(IRobotManager robotsManager)
         {
             var dialog = new SaveFileDialog
             {
@@ -75,7 +75,7 @@ namespace DarwinBots.Modules
                 }
 
                 // Records a snapshot of all living robots in a snapshot database
-                foreach (var rob in Globals.RobotsManager.Robots.Where(r => r.Exists && r.Dna.Count > 1))
+                foreach (var rob in robotsManager.Robots.Where(r => r.Exists && r.Dna.Count > 1))
                 {
                     if (mutationsFiles != null)
                         await mutationsFiles.WriteLineAsync($"{rob.AbsNum},{rob.LastMutationDetail}");

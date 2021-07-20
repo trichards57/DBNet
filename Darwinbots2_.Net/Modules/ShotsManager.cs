@@ -7,13 +7,34 @@ using System.Windows.Media;
 
 namespace DarwinBots.Modules
 {
-    internal class ShotsManager
+    internal interface IShotManager
+    {
+        List<Shot> Shots { get; }
+
+        void Decay(Robot rob);
+
+        void Defecate(Robot rob);
+
+        bool MakeVirus(Robot rob, int gene);
+
+        Shot NewShot(Robot rob, int shotType, double val, double rangeMultiplier, bool offset = false);
+
+        void ShootVirus(Robot rob, Shot shot);
+    }
+
+    internal class ShotsManager : IShotManager
     {
         private const double MinBotRadius = 0.2;
         private const int ShellEffectiveness = 20;
         private const int ShotDecay = 40;
         private const double SlimeEffectiveness = 1.0 / 20;
         private const int VenomEffectivenessVsShell = 25;
+        private readonly IObstacleManager _obstacleManager;
+
+        public ShotsManager(IObstacleManager obstacleManager)
+        {
+            _obstacleManager = obstacleManager;
+        }
 
         public double MaxBotShotSeparation { get; set; }
         public List<Shot> Shots { get; } = new();
@@ -205,7 +226,7 @@ namespace DarwinBots.Modules
             shot.OldPosition = shot.Position - shot.Velocity;
         }
 
-        public void UpdateShots()
+        public void UpdateShots(IRobotManager robotManager)
         {
             foreach (var shot in Shots.ToArray())
             {
@@ -227,7 +248,7 @@ namespace DarwinBots.Modules
 
                 Robot rob = null;
                 if (shot.ShotType != -100 && !shot.Stored)
-                    rob = NewShotCollision(shot); // go off and check for collisions with bots.
+                    rob = NewShotCollision(robotManager, shot); // go off and check for collisions with bots.
 
                 //babies born into a stream of shots from its parent shouldn't die
                 //from those shots.  I can't imagine this temporary imunity can be
@@ -299,7 +320,7 @@ namespace DarwinBots.Modules
                                 break;
 
                             case -7:
-                                AddGene(rob, shot);
+                                AddGene(robotManager, rob, shot);
                                 break;
 
                             case -8:
@@ -311,8 +332,8 @@ namespace DarwinBots.Modules
                     shot.Flash = true;
                 }
 
-                if (Globals.ObstacleManager.Obstacles.Count > 0)
-                    Globals.ObstacleManager.DoShotObstacleCollisions(shot);
+                if (_obstacleManager.Obstacles.Count > 0)
+                    _obstacleManager.DoShotObstacleCollisions(this, shot);
 
                 shot.OldPosition = shot.Position;
                 shot.Position += shot.Velocity; //Euler integration
@@ -334,7 +355,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void AddGene(Robot rob, Shot shot)
+        private void AddGene(IRobotManager robotManager, Robot rob, Shot shot)
         {
             //Dead bodies and virus immune bots can't catch a virus
             if (rob.IsCorpse || rob.IsVirusImmune)
@@ -377,7 +398,7 @@ namespace DarwinBots.Modules
 
             rob.SubSpecies = NeoMutations.NewSubSpecies(rob); // Infection with a virus counts as a new subspecies
 
-            NeoMutations.LogMutation(rob, $"Infected with virus during cycle {SimOpt.SimOpts.TotRunCycle} at pos {insert}");
+            NeoMutations.LogMutation(robotManager, rob, $"Infected with virus during cycle {SimOpt.SimOpts.TotRunCycle} at pos {insert}");
             rob.Mutations++;
             rob.LastMutation++;
         }
@@ -437,7 +458,7 @@ namespace DarwinBots.Modules
             Shots.Add(shot);
         }
 
-        private Robot NewShotCollision(Shot shot)
+        private Robot NewShotCollision(IRobotManager robotManager, Shot shot)
         {
             // Check for collisions with the field edges
             if (SimOpt.SimOpts.UpDnConnected)
@@ -486,7 +507,7 @@ namespace DarwinBots.Modules
 
             double earliestCollision = 100;//Used to find which bot was hit earliest in the cycle.
 
-            foreach (var rob in Globals.RobotsManager.Robots)
+            foreach (var rob in robotManager.Robots)
             {
                 if (!rob.Exists || shot.Parent == rob || Math.Abs(shot.OldPosition.X - rob.Position.X) >= MaxBotShotSeparation || Math.Abs(shot.OldPosition.Y - rob.Position.Y) >= MaxBotShotSeparation)
                     continue;

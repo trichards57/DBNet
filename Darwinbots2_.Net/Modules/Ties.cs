@@ -202,7 +202,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void UpdateTies(Robot rob)
+        public static void UpdateTies(IRobotManager robotManager, Robot rob)
         {
             // this routine addresses all ties. not just ones that match .tienum
             rob.vbody = rob.Body;
@@ -217,27 +217,27 @@ namespace DarwinBots.Modules
                     {
                         if (rob.Memory[830] > 0)
                         {
-                            Globals.RobotsManager.ShareEnergy(rob, tie);
+                            robotManager.ShareEnergy(rob, tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[831] > 0)
                         {
-                            Globals.RobotsManager.ShareWaste(rob, tie);
+                            robotManager.ShareWaste(rob, tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[832] > 0)
                         {
-                            Globals.RobotsManager.ShareShell(rob, tie);
+                            robotManager.ShareShell(rob, tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[833] > 0)
                         {
-                            Globals.RobotsManager.ShareSlime(rob, tie);
+                            robotManager.ShareSlime(rob, tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[MemoryAddresses.sharechlr] > 0 & rob.ChloroplastsShareDelay == 0 & !rob.ChloroplastsDisabled)
                         { //Panda 8/31/2013 code to share chloroplasts 'Botsareus 8/16/2014 chloroplast sharing disable
-                            Globals.RobotsManager.ShareChloroplasts(rob, tie);
+                            robotManager.ShareChloroplasts(rob, tie);
                             tie.Sharing = true; //yellow ties
                         }
                     }

@@ -7,7 +7,16 @@ using System.Windows.Media;
 
 namespace DarwinBots.Modules
 {
-    internal class ObstaclesManager
+    internal interface IObstacleManager
+    {
+        List<Obstacle> Obstacles { get; }
+
+        void DoObstacleCollisions(Robot rob);
+
+        void DoShotObstacleCollisions(IShotManager shotManager, Shot shot);
+    }
+
+    internal class ObstaclesManager : IObstacleManager
     {
         private const int MaxObstacles = 1000;
         public List<Obstacle> Obstacles { get; } = new();
@@ -178,14 +187,14 @@ namespace DarwinBots.Modules
             }
         }
 
-        public void DoShotObstacleCollisions(Shot shot)
+        public void DoShotObstacleCollisions(IShotManager shotManager, Shot shot)
         {
             foreach (var o in Obstacles.Where(o => o.Exist).Where(o => shot.Position.X >= o.Position.X && shot.Position.X <= o.Position.X + o.Width && shot.Position.Y >= o.Position.Y && shot.Position.Y <= o.Position.Y + o.Height))
             {
                 if (SimOpt.SimOpts.ShapesAbsorbShots)
                 {
                     shot.Exist = false;
-                    Globals.ShotsManager.Shots.Remove(shot);
+                    shotManager.Shots.Remove(shot);
                 }
 
                 if (shot.OldPosition.X < o.Position.X || shot.OldPosition.X > o.Position.X + o.Width)
