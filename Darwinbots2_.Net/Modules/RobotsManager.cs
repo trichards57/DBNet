@@ -15,16 +15,6 @@ namespace DarwinBots.Modules
         int TotalRobots => Robots.Count(r => r.Exists);
 
         Robot GetNewBot();
-
-        void ShareChloroplasts(Robot robot, Tie tie);
-
-        void ShareEnergy(Robot robot, Tie tie);
-
-        void ShareShell(Robot rob, Tie tie);
-
-        void ShareSlime(Robot rob, Tie tie);
-
-        void ShareWaste(Robot rob, Tie tie);
     }
 
     internal class RobotsManager : IRobotManager
@@ -32,7 +22,6 @@ namespace DarwinBots.Modules
         public const int CubicTwipPerBody = 905;
         public const int GeneticSensitivity = 75;
         public const int MaxMem = 1000;
-        public const int RobSize = 120;
         private readonly IBucketManager _bucketManager;
         private readonly IObstacleManager _obstacleManager;
         private readonly IShotManager _shotManager;
@@ -46,8 +35,10 @@ namespace DarwinBots.Modules
 
         public List<Robot> Robots { get; } = new();
         public int TotalChlr { get; set; }
-        public int TotalNotVegs { get; set; }
+
+        public int TotalNotVegs => Robots.Count(r => r.Exists && !r.IsCorpse && !r.IsVegetable);
         public int TotalRobots => Robots.Count(r => r.Exists);
+
         private List<Robot> BotsToKill { get; } = new();
         private List<Robot> BotsToReproduce { get; } = new();
         private List<Robot> BotsToReproduceSexually { get; } = new();
@@ -70,7 +61,7 @@ namespace DarwinBots.Modules
 
         public Robot GetNewBot()
         {
-            var robot = new Robot();
+            var robot = new Robot(_bucketManager);
 
             Robots.Add(robot);
 
@@ -104,102 +95,13 @@ namespace DarwinBots.Modules
             Robots.Remove(robot);
         }
 
-        public void ShareChloroplasts(Robot robot, Tie tie)
-        {
-            ShareResource(robot, tie, MemoryAddresses.sharechlr, r => r.Chloroplasts, (r, s) => r.Chloroplasts = s);
-        }
-
-        public void ShareEnergy(Robot robot, Tie tie)
-        {
-            //This is an order of operation thing.  A bot earlier in the rob array might have taken all your nrg, taking your
-            //nrg to 0.  You should still be able to take some back.
-            if (robot.Energy < 0 || tie.OtherBot.Energy < 0)
-                return;
-
-            //.mem(830) is the percentage of the total nrg this bot wants to receive
-            //has to be positive to come here, so no worries about changing the .mem location here
-            if (robot.Memory[830] <= 0)
-                robot.Memory[830] = 0;
-            else
-            {
-                robot.Memory[830] = robot.Memory[830] % 100;
-                if (robot.Memory[830] == 0)
-                    robot.Memory[830] = 100;
-            }
-
-            //Total nrg of both bots combined
-            var totnrg = robot.Energy + tie.OtherBot.Energy;
-
-            var portionThatsMine = totnrg * ((double)robot.Memory[830] / 100); // This is what the bot wants to have of the total
-            if (portionThatsMine > 32000)
-                portionThatsMine = 32000; // Can't want more than the max a bot can have
-
-            var myChangeInNrg = portionThatsMine - robot.Energy; // This is what the bot's change in nrg would be
-
-            //If the bot is taking nrg, then he can't take more than that represented by his own body.  If giving nrg away, same thing.  The bot
-            //can't give away more than that represented by his body.  Should make it so that larger bots win tie feeding battles.
-            if (Math.Abs(myChangeInNrg) > robot.Body)
-                myChangeInNrg = Math.Sign(myChangeInNrg) * robot.Body;
-
-            if (robot.Energy + myChangeInNrg > 32000)
-                myChangeInNrg = 32000 - robot.Energy; //Limit change if it would put bot over the limit
-
-            if (robot.Energy + myChangeInNrg < 0)
-                myChangeInNrg = -robot.Energy; // Limit change if it would take the bot below 0
-
-            //Now we have to check the limits on the other bot
-            //sign is negative since the negative of myChangeinNrg is what the other bot is going to get/recevie
-            if (tie.OtherBot.Energy - myChangeInNrg > 32000)
-                myChangeInNrg = -(32000 - tie.OtherBot.Energy); //Limit change if it would put bot over the limit
-
-            if (tie.OtherBot.Energy - myChangeInNrg < 0)
-                myChangeInNrg = tie.OtherBot.Energy; // limit change if it would take the bot below 0
-
-            //Do the actual nrg exchange
-            robot.Energy += myChangeInNrg;
-            tie.OtherBot.Energy -= myChangeInNrg;
-
-            //Transferring nrg costs nrg.  1% of the transfer gets deducted from the bot iniating the transfer
-            robot.Energy -= Math.Abs(myChangeInNrg) * 0.01;
-
-            //Bots with 32000 nrg can still take or receive nrg, but everything over 32000 disappears
-            if (robot.Energy > 32000)
-                robot.Energy = 32000;
-
-            if (tie.OtherBot.Energy > 32000)
-                tie.OtherBot.Energy = 32000;
-        }
-
-        public void ShareShell(Robot rob, Tie tie)
-        {
-            ShareResource(rob, tie, 832, r => r.Shell, (r, s) => r.Shell = s);
-        }
-
-        public void ShareSlime(Robot rob, Tie tie)
-        {
-            ShareResource(rob, tie, 833, r => r.Slime, (r, s) => r.Slime = s);
-        }
-
-        public void ShareWaste(Robot rob, Tie tie)
-        {
-            ShareResource(rob, tie, 831, r => r.Waste, (r, s) => r.Waste = s);
-        }
-
         public async Task UpdateBots()
         {
             BotsToKill.Clear();
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
-            TotalNotVegs = 0;
             Vegs.TotalVegsDisplayed = Vegs.TotalVegs;
             Vegs.TotalVegs = 0;
-
-            // Only calculate mass due to fluid displacement if the sim medium has density.
-            if (SimOpt.SimOpts.Density != 0)
-            {
-                foreach (var rob in Robots.Where(r => r.Exists))
-                    Physics.AddedMass(rob);
-            }
 
             if (SimOpt.TmpOpts.Tides == 0)
             {
@@ -216,16 +118,11 @@ namespace DarwinBots.Modules
             //this loops is for pre update
             foreach (var rob in Robots.Where(r => r.Exists))
             {
-                if (!rob.IsCorpse)
-                    Upkeep(rob); // No upkeep costs if you are dead!
-
-                if (!rob.IsCorpse && !rob.DnaDisabled)
-                    Poisons(rob);
-
+                rob.Upkeep(SimOpt.SimOpts.Costs);
+                rob.Poisons();
                 if (!SimOpt.SimOpts.DisableFixing)
-                    ManageFixed(rob);
-
-                Physics.CalcMass(rob);
+                    rob.ManageFixed();
+                rob.UpdateMass();
 
                 if (_obstacleManager.Obstacles.Count > 0)
                     _obstacleManager.DoObstacleCollisions(rob);
@@ -270,25 +167,17 @@ namespace DarwinBots.Modules
 
             foreach (var rob in Robots.Where(r => r.Exists))
             {
-                Ties.UpdateTies(this, rob); // Carries all tie routines
+                Ties.UpdateTies(rob); // Carries all tie routines
 
-                //EricL Transfer genetic meomory locations for newborns through the birth tie during their first 15 cycles
-                if (rob.Age < 15)
-                    DoGeneticMemory(rob);
+                rob.DoGeneticMemory();
 
                 if (!rob.IsCorpse && !rob.DnaDisabled)
                 {
-                    SetAimFunc(rob); //Setup aiming
+                    rob.SetAim(); //Setup aiming
                     BotDnaManipulation(rob);
                 }
 
-                UpdatePosition(rob); //updates robot's position
-                                     //EricL 4/9/2006 Got rid of a loop below by moving these inside this loop.  Should speed things up a little.
-
-                rob.Energy = Math.Clamp(rob.Energy, -32000, 32000);
-                rob.Poison = Math.Clamp(rob.Poison, -32000, 32000);
-                rob.Venom = Math.Clamp(rob.Venom, -32000, 32000);
-                rob.Waste = Math.Clamp(rob.Waste, -32000, 32000);
+                rob.UpdatePosition(SimOpt.SimOpts.MaxVelocity, SimOpt.SimOpts.ZeroMomentum, SimOpt.SimOpts.Density, SimOpt.SimOpts.FixedBotRadii);
             }
 
             foreach (var rob in Robots)
@@ -298,23 +187,21 @@ namespace DarwinBots.Modules
                 if (!rob.IsCorpse && !rob.DnaDisabled && rob.Exists)
                 {
                     NeoMutations.Mutate(this, rob);
-                    MakeStuff(rob);
+                    rob.MakeStuff(SimOpt.SimOpts.Costs);
                     HandleWaste(rob);
                     Shooting(rob);
-
-                    if (!rob.ChloroplastsDisabled)
-                        ManageChlr(rob);
-
-                    ManageBody(rob);
-                    ManageBouyancy(rob);
+                    rob.ManageChlr(TotalChlr, SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier, SimOpt.SimOpts.MaxPopulation);
+                    rob.ManageBody();
+                    rob.ManageBouyancy();
                     ManageReproduction(rob);
-                    Shock(rob);
+                    rob.Shock();
                     Senses.WriteSenses(this, _bucketManager, rob);
-                    FireTies(rob);
+                    rob.FireTies();
                 }
+                rob.Ageing(); // Even bots with disabled DNA age...
+
                 if (!rob.IsCorpse && rob.Exists)
                 {
-                    Ageing(rob); // Even bots with disabled DNA age...
                     ManageDeath(rob); // Even bots with disabled DNA can die...
                 }
                 if (rob.Exists)
@@ -325,39 +212,6 @@ namespace DarwinBots.Modules
 
             await ReproduceAndKill();
             RemoveExtinctSpecies();
-        }
-
-        private void Ageing(Robot rob)
-        {
-            //aging
-            rob.Age++;
-            rob.NewAge++; //Age this simulation to be used by tie code
-            var tempAge = rob.Age;
-            if (tempAge > 32000)
-                tempAge = 32000;
-
-            rob.Memory[MemoryAddresses.robage] = tempAge; //line added to copy robots age into a memory location
-            rob.Memory[MemoryAddresses.timersys] += 1; //update epigenetic timer
-
-            if (rob.Memory[MemoryAddresses.timersys] > 32000)
-                rob.Memory[MemoryAddresses.timersys] = -32000;
-        }
-
-        private void Altzheimer(Robot rob)
-        {
-            // Makes robots with high waste act in a bizarre fashion.
-            var loops = (rob.PermanentWaste + rob.Waste - SimOpt.SimOpts.BadWasteLevel) / 4;
-
-            for (var t = 0; t < loops; t++)
-            {
-                int loc;
-                do
-                {
-                    loc = ThreadSafeRandom.Local.Next(1, 1000);
-                } while (!(loc != MemoryAddresses.mkchlr && loc != MemoryAddresses.rmchlr));
-                var val = ThreadSafeRandom.Local.Next(-32000, 32000);
-                rob.Memory[loc] = val;
-            }
         }
 
         private void BotDnaManipulation(Robot rob)
@@ -414,30 +268,6 @@ namespace DarwinBots.Modules
 
             rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
             rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
-        }
-
-        private void ChangeChlr(Robot rob)
-        {
-            var tmpchlr = rob.Chloroplasts;
-
-            // add chloroplasts
-            rob.Chloroplasts += rob.Memory[MemoryAddresses.mkchlr];
-
-            // remove chloroplasts
-            rob.Chloroplasts -= rob.Memory[MemoryAddresses.rmchlr];
-
-            if (tmpchlr < rob.Chloroplasts)
-            {
-                var newnrg = rob.Energy - (rob.Chloroplasts - tmpchlr) * SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier;
-
-                if (TotalChlr > SimOpt.SimOpts.MaxPopulation && rob.IsVegetable || newnrg < 100)
-                    rob.Chloroplasts = tmpchlr;
-                else
-                    rob.Energy = newnrg; //Botsareus 8/24/2013 only charge energy for adding chloroplasts to prevent robots from cheating by adding and subtracting there chlroplasts in 3 cycles
-            }
-
-            rob.Memory[MemoryAddresses.mkchlr] = 0;
-            rob.Memory[MemoryAddresses.rmchlr] = 0;
         }
 
         private List<DnaBlock> Crossover(List<block2> dna1, List<block2> dna2)
@@ -515,63 +345,6 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void DoGeneticMemory(Robot rob)
-        {
-            if (rob.Ties.Count <= 0 || rob.Ties[0].Last <= 0)
-                return;
-
-            var loc = 976 + rob.Age;
-            if (rob.Memory[loc] == 0 & rob.EpigeneticMemory[rob.Age] != 0)
-            {
-                rob.Memory[loc] = rob.EpigeneticMemory[rob.Age];
-            }
-        }
-
-        private void FeedBody(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.fdbody] > 100)
-                rob.Memory[MemoryAddresses.fdbody] = 100;
-
-            rob.Energy += rob.Memory[MemoryAddresses.fdbody];
-            rob.Body -= (double)rob.Memory[MemoryAddresses.fdbody] / 10;
-
-            if (rob.Energy > 32000)
-                rob.Energy = 32000;
-
-            rob.Memory[MemoryAddresses.fdbody] = 0;
-        }
-
-        private void FireTies(Robot rob)
-        {
-            var resetlastopp = false;
-
-            if (rob.LastSeenObject == null & rob.Age < 2 && rob.Parent is { Exists: true })
-            {
-                rob.LastSeenObject = rob.Parent;
-                resetlastopp = true;
-            }
-
-            if (rob.LastSeenObject == null & rob.LastTouched != null && rob.LastTouched.Exists)
-            {
-                rob.LastSeenObject = rob.LastTouched;
-                resetlastopp = true;
-            }
-
-            if (rob.Memory[MemoryAddresses.mtie] != 0 && rob.LastSeenObject != null & !SimOpt.SimOpts.DisableTies && rob.LastSeenObject is Robot lastOpp)
-            {
-                var length = (lastOpp.Position - rob.Position).Magnitude();
-                var maxLength = RobSize * 4 + rob.Radius + lastOpp.Radius;
-
-                if (length <= maxLength)
-                    Ties.MakeTie(rob, lastOpp, (int)(rob.Radius + lastOpp.Radius + RobSize * 2), -20, rob.Memory[MemoryAddresses.mtie]);
-
-                rob.Memory[MemoryAddresses.mtie] = 0;
-            }
-
-            if (resetlastopp)
-                rob.LastSeenObject = null;
-        }
-
         private int GeneLength(Robot rob, int p)
         {
             var pos = DnaManipulations.GenePosition(rob.Dna, p);
@@ -591,8 +364,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.BadWasteLevel == 0)
                 SimOpt.SimOpts.BadWasteLevel = 400;
 
-            if (SimOpt.SimOpts.BadWasteLevel > 0 & rob.PermanentWaste + rob.Waste > SimOpt.SimOpts.BadWasteLevel)
-                Altzheimer(rob);
+            rob.Alzheimer(SimOpt.SimOpts.BadWasteLevel);
 
             if (rob.Waste > 32000)
                 _shotManager.Defecate(rob);
@@ -605,73 +377,6 @@ namespace DarwinBots.Modules
 
             rob.Memory[828] = (int)rob.Waste;
             rob.Memory[829] = (int)rob.PermanentWaste;
-        }
-
-        private void MakeShell(Robot rob)
-        {
-            const double shellNrgConvRate = 0.1;
-
-            StoreResource(rob, 822, 823, shellNrgConvRate, SimOpt.SimOpts.Costs.ShellCost, r => r.Shell, (r, s) => r.Shell = s, true);
-        }
-
-        private void MakeSlime(Robot rob)
-        {
-            const double slimeNrgConvRate = 0.1;
-
-            StoreResource(rob, 820, 821, slimeNrgConvRate, SimOpt.SimOpts.Costs.SlimeCost, r => r.Slime, (r, s) => r.Slime = s, true);
-        }
-
-        private void MakeStuff(Robot rob)
-        {
-            if (rob.Memory[824] != 0)
-                StoreVenom(rob);
-
-            if (rob.Memory[826] != 0)
-                StorePoison(rob);
-
-            if (rob.Memory[822] != 0)
-                MakeShell(rob);
-
-            if (rob.Memory[820] != 0)
-                MakeSlime(rob);
-        }
-
-        private void ManageBody(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.strbody] > 0)
-                StoreBody(rob);
-
-            if (rob.Memory[MemoryAddresses.fdbody] > 0)
-                FeedBody(rob);
-
-            rob.Body = Math.Clamp(rob.Body, 0, 32000);
-
-            rob.Memory[MemoryAddresses.body] = (int)rob.Body;
-        }
-
-        private void ManageBouyancy(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.setboy] == 0)
-                return;
-
-            rob.Bouyancy += (double)rob.Memory[MemoryAddresses.setboy] / 32000;
-            rob.Bouyancy = Math.Clamp(rob.Bouyancy, 0, 1);
-
-            rob.Memory[MemoryAddresses.rdboy] = (int)(rob.Bouyancy * 32000);
-            rob.Memory[MemoryAddresses.setboy] = 0;
-        }
-
-        private void ManageChlr(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.mkchlr] > 0 || rob.Memory[MemoryAddresses.rmchlr] > 0)
-                ChangeChlr(rob);
-
-            rob.Chloroplasts -= 0.5 / Math.Pow(100, rob.Chloroplasts / 16000);
-
-            rob.Chloroplasts = Math.Clamp(rob.Chloroplasts, 0, 32000);
-
-            rob.Memory[MemoryAddresses.chlr] = (int)rob.Chloroplasts;
-            rob.Memory[MemoryAddresses.light] = (int)(32000 - Vegs.LightAval * 32000);
         }
 
         private void ManageDeath(Robot rob)
@@ -706,11 +411,6 @@ namespace DarwinBots.Modules
 
             if (rob.IsDead)
                 BotsToKill.Add(rob);
-        }
-
-        private void ManageFixed(Robot rob)
-        {
-            rob.IsFixed = rob.Memory[216] > 0;
         }
 
         private void ManageReproduction(Robot rob)
@@ -752,42 +452,6 @@ namespace DarwinBots.Modules
             return probability with { Probability = p };
         }
 
-        private void Poisons(Robot rob)
-        {
-            if (rob.IsParalyzed)
-                rob.Memory[rob.VirusLocation] = rob.VirusValue;
-
-            if (rob.IsParalyzed)
-            {
-                rob.ParalyzedCountdown--;
-
-                if (rob.ParalyzedCountdown < 1)
-                {
-                    rob.IsParalyzed = false;
-                    rob.VirusLocation = 0;
-                    rob.VirusValue = 0;
-                }
-            }
-
-            rob.Memory[837] = rob.ParalyzedCountdown;
-
-            if (rob.IsPoisoned)
-                rob.Memory[rob.PoisonLocation] = rob.PoisonValue;
-
-            if (rob.IsPoisoned)
-            {
-                rob.PoisonCountdown--;
-                if (rob.PoisonCountdown < 1)
-                {
-                    rob.IsPoisoned = false;
-                    rob.PoisonLocation = 0;
-                    rob.PoisonValue = 0;
-                }
-            }
-
-            rob.Memory[838] = (int)rob.PoisonCountdown;
-        }
-
         private void RemoveExtinctSpecies()
         {
             foreach (var s in SimOpt.SimOpts.Specie.Where(s => s.Population == 0 && !s.Native).ToArray())
@@ -823,7 +487,7 @@ namespace DarwinBots.Modules
             if (per <= 0)
                 return;
 
-            var sondist = (int)robot.Radius;
+            var sondist = (int)robot.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             if (robot.Energy <= 0)
                 return;
@@ -1026,63 +690,6 @@ namespace DarwinBots.Modules
             return rob.Count;
         }
 
-        private void SetAimFunc(Robot rob)
-        {
-            double aim;
-            double diff2 = 0;
-            double diff = rob.Memory[MemoryAddresses.aimsx] - rob.Memory[MemoryAddresses.aimdx];
-
-            if (rob.Memory[MemoryAddresses.SetAim] == Physics.RadiansToInt(rob.Aim))
-            {
-                aim = rob.Aim * 200 + diff;
-            }
-            else
-            {
-                // .setaim overrides .aimsx and .aimdx
-                aim = rob.Memory[MemoryAddresses.SetAim]; // this is where .aim needs to be
-                diff = -Physics.AngDiff(rob.Aim, Physics.NormaliseAngle((double)rob.Memory[MemoryAddresses.SetAim] / 200)) * 200; // this is the diff to get there 'Botsareus 6/18/2016 Added angnorm
-                diff2 = Math.Abs(Math.Round((rob.Aim * 200 - rob.Memory[MemoryAddresses.SetAim]) / 1256, 0) * 1256) * Math.Sign(diff); // this is how much we add to momentum
-            }
-
-            //diff + diff2 is now the amount, positive or negative to turn.
-            rob.Energy -= Math.Abs(Math.Round((diff + diff2) / 200, 3) * SimOpt.SimOpts.Costs.RotationCost * SimOpt.SimOpts.Costs.CostMultiplier);
-
-            aim %= 1256;
-            if (aim < 0)
-                aim += 1256;
-
-            aim /= 200;
-
-            //Overflow Protection
-            while (rob.AngularMomentum > 2 * Math.PI)
-                rob.AngularMomentum -= 2 * Math.PI;
-
-            while (rob.AngularMomentum < -2 * Math.PI)
-                rob.AngularMomentum += 2 * Math.PI;
-
-            rob.Aim = aim + rob.AngularMomentum; // Add in the angular momentum
-
-            //Voluntary rotation can reduce angular momentum but does not add to it.
-
-            if (rob.AngularMomentum > 0 & diff < 0)
-            {
-                rob.AngularMomentum += (diff + diff2) / 200;
-                if (rob.AngularMomentum < 0)
-                    rob.AngularMomentum = 0;
-            }
-            if (rob.AngularMomentum < 0 & diff > 0)
-            {
-                rob.AngularMomentum += (diff + diff2) / 200;
-                if (rob.AngularMomentum > 0)
-                    rob.AngularMomentum = 0;
-            }
-
-            rob.Memory[MemoryAddresses.aimsx] = 0;
-            rob.Memory[MemoryAddresses.aimdx] = 0;
-            rob.Memory[MemoryAddresses.AimSys] = (int)(rob.Aim * 200);
-            rob.Memory[MemoryAddresses.SetAim] = rob.Memory[MemoryAddresses.AimSys];
-        }
-
         private void SexReproduce(Robot female)
         {
             if (female.Body < 5 || !female.Exists || female.IsCorpse || female.CantReproduce || female.Body <= 2 || !female.SpermDna.Any())
@@ -1114,7 +721,7 @@ namespace DarwinBots.Modules
             if (per <= 0)
                 return;
 
-            var sondist = female.Radius;
+            var sondist = female.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             var tempnrg = female.Energy;
 
@@ -1290,39 +897,6 @@ namespace DarwinBots.Modules
 
             if (female.Energy < 0)
                 female.Energy = 0;
-        }
-
-        private void ShareResource(Robot rob, Tie tie, int address, Func<Robot, double> getValue, Action<Robot, double> setValue)
-        {
-            if (rob.Memory[address] > 99)
-                rob.Memory[address] = 99;
-            if (rob.Memory[address] < 0)
-                rob.Memory[address] = 0;
-
-            var total = getValue(rob) + getValue(tie.OtherBot);
-
-            setValue(tie.OtherBot, Math.Min(total * ((100 - (double)rob.Memory[address]) / 100), 32000));
-            setValue(rob, Math.Min(total * ((double)rob.Memory[address] / 100), 32000));
-
-            rob.Memory[address] = (int)getValue(rob); // update the .shell sysvar
-            tie.OtherBot.Memory[address] = (int)getValue(tie.OtherBot);
-        }
-
-        private void Shock(Robot rob)
-        {
-            if (rob.IsVegetable || rob.Energy <= 3000)
-                return;
-
-            var temp = rob.OldEnergy - rob.Energy;
-
-            if (!(temp > rob.OldEnergy / 2))
-                return;
-
-            rob.Energy = 0;
-            rob.Body += rob.Energy / 10;
-
-            if (rob.Body > 32000)
-                rob.Body = 32000;
         }
 
         private void Shoot(Robot rob)
@@ -1507,16 +1081,16 @@ namespace DarwinBots.Modules
 
         private bool SimpleCollision(int x, int y, Robot rob)
         {
-            if (Robots.Any(r => r.Exists && r != rob && Math.Abs(r.Position.X - x) < r.Radius + rob.Radius && Math.Abs(r.Position.Y - y) < r.Radius + rob.Radius))
+            if (Robots.Any(r => r.Exists && r != rob && Math.Abs(r.Position.X - x) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && Math.Abs(r.Position.Y - y) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)))
                 return true;
 
             if (_obstacleManager.Obstacles.Any(o => o.Position.X <= Math.Max(rob.Position.X, x) && o.Position.X + o.Width >= Math.Min(rob.Position.X, x) && o.Position.Y <= Math.Max(rob.Position.Y, y) && o.Position.Y + o.Height >= Math.Min(rob.Position.Y, y)))
                 return true;
 
-            if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.Radius + Physics.SmudgeFactor || x + rob.Radius + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))
+            if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || x + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))
                 return true;
 
-            if (SimOpt.SimOpts.UpDnConnected == false && (y < rob.Radius + Physics.SmudgeFactor || y + rob.Radius + Physics.SmudgeFactor > SimOpt.SimOpts.FieldHeight))
+            if (SimOpt.SimOpts.UpDnConnected == false && (y < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldHeight))
                 return true;
 
             return false;
@@ -1616,66 +1190,6 @@ namespace DarwinBots.Modules
             } while (loopr1 <= ei1 || loopr2 <= ei2 || patch > (16000 ^ 2));
         }
 
-        private void StoreBody(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.strbody] > 100)
-                rob.Memory[MemoryAddresses.strbody] = 100;
-
-            rob.Energy -= rob.Memory[MemoryAddresses.strbody];
-            rob.Body += rob.Memory[MemoryAddresses.strbody] / 10.0;
-
-            if (rob.Body > 32000)
-                rob.Body = 32000;
-
-            rob.Memory[MemoryAddresses.strbody] = 0;
-        }
-
-        private void StorePoison(Robot rob)
-        {
-            const double poisonNrgConvRate = 0.25; // Make 4 poison for 1 nrg
-
-            StoreResource(rob, 826, 827, poisonNrgConvRate, SimOpt.SimOpts.Costs.PoisonCost, r => r.Poison, (r, s) => r.Poison = s);
-        }
-
-        private void StoreResource(Robot rob, int storeAddress, int levelAddress, double conversionRate, double resourceCost, Func<Robot, double> getValue, Action<Robot, double> setValue, bool multiBotDiscount = false)
-        {
-            if (rob.Energy <= 0)
-                return;
-
-            double delta = Math.Clamp(rob.Memory[storeAddress], -32000, 32000);
-            delta = Math.Clamp(delta, -rob.Energy / conversionRate, rob.Energy / conversionRate);
-            delta = Math.Clamp(delta, -100, 100);
-
-            if (getValue(rob) + delta > 32000)
-                delta = 32000 - getValue(rob);
-
-            if (getValue(rob) + delta < 0)
-                delta = -getValue(rob);
-
-            setValue(rob, getValue(rob) + delta);
-
-            if (rob.IsMultibot && multiBotDiscount)
-                rob.Energy -= Math.Abs(delta) * conversionRate / (rob.Ties.Count + 1);
-            else
-                rob.Energy -= Math.Abs(delta) * conversionRate;
-
-            //This is the transaction cost
-            var cost = Math.Abs(delta) * resourceCost * SimOpt.SimOpts.Costs.CostMultiplier;
-
-            rob.Energy -= cost;
-            rob.Waste += cost;
-
-            rob.Memory[storeAddress] = 0;
-            rob.Memory[levelAddress] = (int)getValue(rob);
-        }
-
-        private void StoreVenom(Robot rob)
-        {
-            const double venomNrgConvRate = 1.0; // Make 1 venom for 1 nrg
-
-            StoreResource(rob, 824, 825, venomNrgConvRate, SimOpt.SimOpts.Costs.VenomCost, r => r.Venom, (r, s) => r.Venom = s);
-        }
-
         private async Task UpdateCounters(Robot rob)
         {
             var species = SimOpt.SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
@@ -1701,98 +1215,6 @@ namespace DarwinBots.Modules
                 else
                     await KillRobot(rob);
             }
-            else
-                TotalNotVegs++;
-        }
-
-        private void UpdatePosition(Robot rob)
-        {
-            //Following line commented since mass is set earlier in CalcMass
-            if (rob.Mass + rob.AddedMass < 0.25)
-                rob.Mass = 0.25 - rob.AddedMass; // a fudge since Euler approximation can't handle it when mass -> 0
-
-            double vt = 0;
-
-            if (!rob.IsFixed)
-            {
-                // speed normalization
-                rob.Velocity += rob.IndependentImpulse * (1 / (rob.Mass + rob.AddedMass));
-
-                vt = rob.Velocity.MagnitudeSquare();
-                if (vt > SimOpt.SimOpts.MaxVelocity * SimOpt.SimOpts.MaxVelocity)
-                {
-                    rob.Velocity = rob.Velocity.Unit() * SimOpt.SimOpts.MaxVelocity;
-                }
-
-                rob.Position += rob.Velocity;
-                _bucketManager.UpdateBotBucket(rob);
-            }
-            else
-                rob.Velocity = new DoubleVector(0, 0);
-
-            //Have to do these here for both fixed and unfixed bots to avoid build up of forces in case fixed bots become unfixed.
-            rob.IndependentImpulse = new DoubleVector(0, 0);
-            rob.ResistiveImpulse = rob.IndependentImpulse;
-            rob.StaticImpulse = 0;
-
-            if (SimOpt.SimOpts.ZeroMomentum)
-                rob.Velocity = new DoubleVector(0, 0);
-
-            rob.Memory[MemoryAddresses.dirup] = 0;
-            rob.Memory[MemoryAddresses.dirdn] = 0;
-            rob.Memory[MemoryAddresses.dirdx] = 0;
-            rob.Memory[MemoryAddresses.dirsx] = 0;
-
-            rob.Memory[MemoryAddresses.velscalar] = (int)Math.Clamp(Math.Sqrt(vt), -32000, 32000);
-            rob.Memory[MemoryAddresses.vel] = (int)Math.Clamp(Math.Cos(rob.Aim) * rob.Velocity.X + Math.Sin(rob.Aim) * rob.Velocity.Y * -1, -32000, 32000);
-            rob.Memory[MemoryAddresses.veldn] = rob.Memory[MemoryAddresses.vel] * -1;
-            rob.Memory[MemoryAddresses.veldx] = (int)Math.Clamp(Math.Sin(rob.Aim) * rob.Velocity.X + Math.Cos(rob.Aim) * rob.Velocity.Y, -32000, 32000);
-            rob.Memory[MemoryAddresses.velsx] = rob.Memory[MemoryAddresses.veldx] * -1;
-
-            rob.Memory[MemoryAddresses.masssys] = (int)rob.Mass;
-            rob.Memory[MemoryAddresses.maxvelsys] = (int)SimOpt.SimOpts.MaxVelocity;
-        }
-
-        private void Upkeep(Robot rob)
-        {
-            double cost;
-
-            //Age Cost
-            var ageDelta = rob.Age - SimOpt.SimOpts.Costs.AgeCostBeginAge;
-
-            if (ageDelta > 0 & rob.Age > 0)
-            {
-                if (SimOpt.SimOpts.Costs.EnableAgeCostIncreaseLog)
-                    cost = SimOpt.SimOpts.Costs.AgeCost * Math.Log(ageDelta);
-                else if (SimOpt.SimOpts.Costs.EnableAgeCostIncreasePerCycle)
-                    cost = SimOpt.SimOpts.Costs.AgeCost + ageDelta * SimOpt.SimOpts.Costs.AgeCostIncreasePerCycle;
-                else
-                    cost = SimOpt.SimOpts.Costs.AgeCost;
-
-                rob.Energy -= cost * SimOpt.SimOpts.Costs.CostMultiplier;
-            }
-
-            //BODY UPKEEP
-            cost = rob.Body * SimOpt.SimOpts.Costs.BodyUpkeepCost * SimOpt.SimOpts.Costs.CostMultiplier;
-            rob.Energy -= cost;
-
-            //DNA upkeep cost
-            cost = (rob.Dna.Count - 1) * SimOpt.SimOpts.Costs.DnaUpkeepCost * SimOpt.SimOpts.Costs.CostMultiplier;
-            rob.Energy -= cost;
-
-            //degrade slime
-            rob.Slime *= 0.98;
-            if (rob.Slime < 0.5)
-                rob.Slime = 0; // To keep things sane for integer rounding, etc.
-
-            rob.Memory[821] = (int)rob.Slime;
-
-            //degrade poison
-            rob.Poison *= 0.98;
-            if (rob.Poison < 0.5)
-                rob.Poison = 0;
-
-            rob.Memory[827] = (int)rob.Poison;
         }
     }
 }

@@ -245,7 +245,7 @@ namespace DarwinBots.Modules
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && i.AbsNum > rob.AbsNum))
             {
                 var distvector = rob.Position - r.Position;
-                var dist = rob.Radius + r.Radius;
+                var dist = rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + r.GetRadius(SimOpt.SimOpts.FixedBotRadii);
                 if (distvector.MagnitudeSquare() < dist * dist)
                     Physics.Repel(rob, r);
             }
@@ -260,7 +260,7 @@ namespace DarwinBots.Modules
         private void CompareRobots(Robot rob1, Robot rob2)
         {
             var ab = rob2.Position - rob1.Position;
-            var edgeToEdgeDistance = ab.Magnitude() - rob1.Radius - rob2.Radius;
+            var edgeToEdgeDistance = ab.Magnitude() - rob1.GetRadius(SimOpt.SimOpts.FixedBotRadii) - rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             var sightDistances = Enumerable.Range(0, 8)
                 .Select(a => EyeSightDistance(rob1.Memory[MemoryAddresses.EYE1WIDTH + a], rob1))
@@ -284,11 +284,11 @@ namespace DarwinBots.Modules
             var ac = ab.Unit();
 
             var ad = new DoubleVector(ac.Y, -ac.X);
-            ad *= rob2.Radius;
+            ad *= rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
             ad += ab;
 
             ac = new DoubleVector(-ac.Y, ac.X);
-            ac *= rob2.Radius;
+            ac *= rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
             ac += ab;
 
             // Coordinates are in the 4th quadrant, so make the y values negative so the math works
@@ -601,7 +601,7 @@ namespace DarwinBots.Modules
 
                     if (lowestDist >= 32000) continue;
 
-                    var percentDistance = (lowestDist - rob.Radius + 10) / sightDistance;
+                    var percentDistance = (lowestDist - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + 10) / sightDistance;
                     var eyeValue = percentDistance <= 0 ? 32000 : (int)(1 / (percentDistance * percentDistance));
 
                     if (eyeValue > 32000)

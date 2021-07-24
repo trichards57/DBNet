@@ -107,41 +107,41 @@ namespace DarwinBots.Modules
                 }
 
                 //Push the bot the closest edge
-                var distUp = rob.Position.Y + rob.Radius - o.Position.Y;
-                var distDown = o.Position.Y + o.Height - (rob.Position.Y - rob.Radius);
-                var distLeft = rob.Position.X + rob.Radius - o.Position.X;
-                var distRight = o.Position.X + o.Width - (rob.Position.X - rob.Radius);
+                var distUp = rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - o.Position.Y;
+                var distDown = o.Position.Y + o.Height - (rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+                var distLeft = rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - o.Position.X;
+                var distRight = o.Position.X + o.Width - (rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
 
                 if (Math.Min(distLeft, distRight) < Math.Min(distUp, distDown) && lastPush != 1 && lastPush != 2 || lastPush is 3 or 4)
                 {
                     //Push left or right
                     if ((distLeft <= distRight || o.Position.X + o.Width >= SimOpt.SimOpts.FieldWidth) && o.Position.X > 0)
                     {
-                        if (rob.Position.X - rob.Radius < o.Position.X)
+                        if (rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < o.Position.X)
                         {
-                            rob.Position = new DoubleVector(o.Position.X - rob.Radius, rob.Position.Y);
+                            rob.Position = new DoubleVector(o.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
                             rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
-                            Senses.Touch(rob, rob.Position.X + rob.Radius, rob.Position.Y); // Update hit senses, right side
+                            Senses.Touch(rob, rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y); // Update hit senses, right side
                         }
                         else
                         {
                             rob.ResistiveImpulse += new DoubleVector(distLeft * k, 0);
-                            rob.Position = new DoubleVector(o.Position.X - rob.Radius, rob.Position.Y);
+                            rob.Position = new DoubleVector(o.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
                         }
                         lastPush = 1;
                     }
                     else
                     {
-                        if (rob.Position.X + rob.Radius > o.Position.X + o.Width)
+                        if (rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > o.Position.X + o.Width)
                         {
-                            rob.Position = new DoubleVector(o.Position.X + o.Width + rob.Radius, rob.Position.Y);
+                            rob.Position = new DoubleVector(o.Position.X + o.Width + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
                             rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
-                            Senses.Touch(rob, rob.Position.X - rob.Radius, rob.Position.Y); // Update hit senses, left side
+                            Senses.Touch(rob, rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y); // Update hit senses, left side
                         }
                         else
                         {
                             rob.ResistiveImpulse -= new DoubleVector(distRight * k, 0);
-                            rob.Position = new DoubleVector(o.Position.X + o.Width + rob.Radius, rob.Position.Y);
+                            rob.Position = new DoubleVector(o.Position.X + o.Width + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
                         }
                         lastPush = 2;
                     }
@@ -151,31 +151,31 @@ namespace DarwinBots.Modules
                     //Push up or down
                     if ((distUp <= distDown || o.Position.Y + o.Height >= SimOpt.SimOpts.FieldHeight) && o.Position.Y > 0)
                     {
-                        if (rob.Position.Y - rob.Radius < o.Position.Y)
+                        if (rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < o.Position.Y)
                         {
-                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y - rob.Radius);
+                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
                             rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
-                            Senses.Touch(rob, rob.Position.X, rob.Position.Y + rob.Radius); // Update hit senses, bottom
+                            Senses.Touch(rob, rob.Position.X, rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ResistiveImpulse += new DoubleVector(0, distUp * k);
-                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y - rob.Radius);
+                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
                         }
                         lastPush = 3;
                     }
                     else
                     {
-                        if (rob.Position.Y + rob.Radius > o.Position.Y + o.Height)
+                        if (rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > o.Position.Y + o.Height)
                         {
-                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y + o.Height + rob.Radius);
+                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y + o.Height + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
                             rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
-                            Senses.Touch(rob, rob.Position.X, rob.Position.Y - rob.Radius); // Update hit senses, bottom
+                            Senses.Touch(rob, rob.Position.X, rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)); // Update hit senses, bottom
                         }
                         else
                         {
                             rob.ResistiveImpulse -= new DoubleVector(0, distDown * k);
-                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y + o.Height + rob.Radius);
+                            rob.Position = new DoubleVector(rob.Position.X, o.Position.Y + o.Height + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
                         }
 
                         lastPush = 4;
@@ -400,10 +400,10 @@ namespace DarwinBots.Modules
 
         private static bool ObstacleCollision(Robot rob, Obstacle o)
         {
-            var botRightEdge = rob.Position.X + rob.Radius;
-            var botLeftEdge = rob.Position.X - rob.Radius;
-            var botTopEdge = rob.Position.Y - rob.Radius;
-            var botBottomEdge = rob.Position.Y + rob.Radius;
+            var botRightEdge = rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            var botLeftEdge = rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            var botTopEdge = rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            var botBottomEdge = rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             return botRightEdge > o.Position.X && botLeftEdge < o.Position.X + o.Width && botBottomEdge > o.Position.Y && botTopEdge < o.Position.Y + o.Height;
         }

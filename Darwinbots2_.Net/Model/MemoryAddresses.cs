@@ -64,6 +64,8 @@
         public const int Kills = 220;
         public const int LandM = 400;
         public const int light = 923;
+        public const int MakeShell = 822;
+        public const int MakeSlime = 820;
         public const int masssys = 10;
         public const int maxvelsys = 11;
         public const int mkchlr = 921;
@@ -84,8 +86,10 @@
         public const int out8 = 807;
         public const int out9 = 808;
         public const int pain = 203;
+        public const int ParalyzedCountdown = 837;
         public const int pleas = 204;
         public const int poison = 827;
+        public const int PoisonCountdown = 838;
         public const int rdboy = 315;
         public const int readtiesys = 471;
         public const int refaim = 711;
@@ -111,12 +115,16 @@
         public const int sharechlr = 924;
         public const int shdn = 211;
         public const int shdx = 212;
+        public const int Shell = 823;
         public const int shflav = 202;
         public const int shoot = 7;
         public const int shootval = 8;
         public const int shsx = 213;
         public const int shup = 210;
+        public const int Slime = 821;
         public const int stifftie = 331;
+        public const int StorePoison = 826;
+        public const int StoreVenom = 824;
         public const int strbody = 313;
         public const int SYSFERTILIZED = 303;
         public const int thisgene = 341;
@@ -154,6 +162,7 @@
         public const int velscalar = 196;
         public const int velsx = 197;
         public const int velup = 200;
+        public const int Venom = 825;
         public const int VshootSys = 338;
         public const int Vtimer = 337;
         public const int xpos = 219;

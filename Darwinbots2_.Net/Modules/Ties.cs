@@ -51,7 +51,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void MakeTie(Robot robA, Robot robB, int length, int last, int mem)
+        public static void MakeTie(Robot robA, Robot robB, int length, int last, int port)
         {
             if (robA.Exists == false)
                 return;
@@ -69,7 +69,7 @@ namespace DarwinBots.Modules
                         OtherBot = robB,
                         NaturalLength = distance,
                         Last = last,
-                        Port = mem,
+                        Port = port,
                         BackTie = false,
                         b = 0.02,
                         k = 0.01,
@@ -198,11 +198,11 @@ namespace DarwinBots.Modules
                     dist = 32000;
 
                 rob.Memory[MemoryAddresses.TIEANG] = (int)-(Physics.AngDiff(Physics.NormaliseAngle(tieAngle), Physics.NormaliseAngle(rob.Aim)) * 200);
-                rob.Memory[MemoryAddresses.TIELEN] = (int)(dist - rob.Radius - tie.OtherBot.Radius);
+                rob.Memory[MemoryAddresses.TIELEN] = (int)(dist - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - tie.OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii));
             }
         }
 
-        public static void UpdateTies(IRobotManager robotManager, Robot rob)
+        public static void UpdateTies(Robot rob)
         {
             // this routine addresses all ties. not just ones that match .tienum
             rob.vbody = rob.Body;
@@ -217,27 +217,27 @@ namespace DarwinBots.Modules
                     {
                         if (rob.Memory[830] > 0)
                         {
-                            robotManager.ShareEnergy(rob, tie);
+                            rob.ShareEnergy(tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[831] > 0)
                         {
-                            robotManager.ShareWaste(rob, tie);
+                            rob.ShareWaste(tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[832] > 0)
                         {
-                            robotManager.ShareShell(rob, tie);
+                            rob.ShareShell(tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[833] > 0)
                         {
-                            robotManager.ShareSlime(rob, tie);
+                            rob.ShareSlime(tie);
                             tie.Sharing = true; //yellow ties
                         }
                         if (rob.Memory[MemoryAddresses.sharechlr] > 0 & rob.ChloroplastsShareDelay == 0 & !rob.ChloroplastsDisabled)
                         { //Panda 8/31/2013 code to share chloroplasts 'Botsareus 8/16/2014 chloroplast sharing disable
-                            robotManager.ShareChloroplasts(rob, tie);
+                            rob.ShareChloroplasts(tie);
                             tie.Sharing = true; //yellow ties
                         }
                     }
@@ -314,7 +314,7 @@ namespace DarwinBots.Modules
                     //TieLen Section
                     if (rob.Memory[MemoryAddresses.FIXLEN] != 0)
                     {
-                        var len = (int)(Math.Abs(rob.Memory[MemoryAddresses.FIXLEN]) + rob.Radius + tie.OtherBot.Radius); // include the radius of the tied bots in the length
+                        var len = (int)(Math.Abs(rob.Memory[MemoryAddresses.FIXLEN]) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + tie.OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii)); // include the radius of the tied bots in the length
                         if (len > 32000)
                             len = 32000; // Can happen for very big bots with very long ties.
 
@@ -355,7 +355,7 @@ namespace DarwinBots.Modules
                         //input
                         if (rob.TieLengthOverwrite[i - 1])
                         {
-                            var length = (int)(rob.Memory[483 + i] + rob.Radius + rob.Ties[i].OtherBot.Radius); // include the radius of the tied bots in the length
+                            var length = (int)(rob.Memory[483 + i] + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.Ties[i].OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii)); // include the radius of the tied bots in the length
                             if (length > 32000)
                             {
                                 length = 32000; // Can happen for very big bots with very long ties.
@@ -378,7 +378,7 @@ namespace DarwinBots.Modules
                         if (dist > 32000)
                             dist = 32000;
 
-                        rob.Memory[483 + i] = (int)(dist - rob.Radius - rob.Ties[i].OtherBot.Radius);
+                        rob.Memory[483 + i] = (int)(dist - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - rob.Ties[i].OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii));
                         rob.Memory[479 + i] = (int)Physics.NormaliseAngle(Physics.NormaliseAngle(tieAngle) - Physics.NormaliseAngle(rob.Aim)) * 200;
                     }
                 }

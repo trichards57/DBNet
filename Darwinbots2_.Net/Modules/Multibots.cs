@@ -25,7 +25,7 @@ namespace DarwinBots.Modules
 
             var distance = new DoubleVector(x, y) - robmin.Position;
 
-            var radiiDiff = rob.Radius - robmin.Radius;
+            var radiiDiff = rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - robmin.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             distance += DoubleVector.Sign(distance) * (radiiDiff - 1);
 

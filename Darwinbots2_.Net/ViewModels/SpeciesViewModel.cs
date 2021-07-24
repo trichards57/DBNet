@@ -1,6 +1,5 @@
 ﻿using DarwinBots.Forms;
 using DarwinBots.Model;
-using DarwinBots.Modules;
 using DarwinBots.Support;
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Command;
@@ -175,7 +174,7 @@ namespace DarwinBots.ViewModels
 
         private void ChangeSkin()
         {
-            Skin[6] = (Skin[6] + ThreadSafeRandom.Local.Next(0, RobotsManager.RobSize / 2 + 1)) * 2 / 3;
+            Skin[6] = (Skin[6] + ThreadSafeRandom.Local.Next(0, Robot.RobSize / 2 + 1)) * 2 / 3;
         }
 
         private void DisplayFatalRestrictions()

@@ -183,7 +183,7 @@ namespace DarwinBots.Modules
                      Robot = r,
                      Distance = (r.Position - r.Velocity + r.ActualVelocity - point).MagnitudeSquare()
                  })
-                 .Where(r => r.Distance < r.Robot.Radius * r.Robot.Radius)
+                 .Where(r => r.Distance < r.Robot.GetRadius(SimOpt.SimOpts.FixedBotRadii) * r.Robot.GetRadius(SimOpt.SimOpts.FixedBotRadii))
                  .OrderByDescending(r => r.Distance)
                  .FirstOrDefault()?.Robot;
         }
@@ -304,8 +304,10 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
-            _shotsManager.MaxBotShotSeparation = Math.Pow(Robot.StandardRadius, 2) +
-                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + RobotsManager.RobSize / 3.0, 2);
+            var standardRadius = SimOpt.SimOpts.FixedBotRadii ? Robot.RobSize / 2.0 : 415.475;
+
+            _shotsManager.MaxBotShotSeparation = Math.Pow(standardRadius, 2) +
+                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robot.RobSize / 3.0, 2);
 
             if (!startLoaded)
             {
@@ -321,7 +323,6 @@ namespace DarwinBots.Modules
             {
                 Vegs.CoolDown = -SimOpt.SimOpts.RepopCooldown;
                 Vegs.TotalVegs = -1;
-                _robotsManager.TotalNotVegs = SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
             }
 
             _active = true;

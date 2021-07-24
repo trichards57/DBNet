@@ -8,13 +8,7 @@ namespace DarwinBots.Modules
     internal static class Physics
     {
         public const double SmudgeFactor = 50;
-        private const double AddedMassCoefficientForASphere = 0.5;
         public static double BouyancyScaling { get; set; }
-
-        public static void AddedMass(Robot rob)
-        {
-            rob.AddedMass = AddedMassCoefficientForASphere * SimOpt.SimOpts.Density * (Math.PI * 4 / 3) * Math.Pow(rob.Radius, 3);
-        }
 
         public static double AngDiff(double a1, double a2)
         {
@@ -38,12 +32,12 @@ namespace DarwinBots.Modules
         {
             const double b = 0.05;
 
-            if (rob.Position.X > rob.Radius && rob.Position.X < SimOpt.SimOpts.FieldWidth - rob.Radius && rob.Position.Y > rob.Radius && rob.Position.Y < SimOpt.SimOpts.FieldHeight - rob.Radius)
+            if (rob.Position.X > rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && rob.Position.X < SimOpt.SimOpts.FieldWidth - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && rob.Position.Y > rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && rob.Position.Y < SimOpt.SimOpts.FieldHeight - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii))
                 return;
 
             rob.Memory[214] = 0;
 
-            var smudge = rob.Radius + SmudgeFactor;
+            var smudge = rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + SmudgeFactor;
 
             var dif = DoubleVector.Min(DoubleVector.Max(rob.Position, new DoubleVector(smudge, smudge)), new DoubleVector(SimOpt.SimOpts.FieldWidth - smudge, SimOpt.SimOpts.FieldHeight - smudge));
             var dist = dif - rob.Position;
@@ -61,11 +55,11 @@ namespace DarwinBots.Modules
                 {
                     rob.Memory[214] = 1;
 
-                    if (rob.Position.X - rob.Radius < 0)
-                        rob.Position = new DoubleVector(rob.Radius, rob.Position.Y);
+                    if (rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
+                        rob.Position = new DoubleVector(rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
 
-                    if (rob.Position.X + rob.Radius > SimOpt.SimOpts.FieldWidth)
-                        rob.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.Radius, rob.Position.Y);
+                    if (rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldWidth)
+                        rob.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
 
                     rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
                 }
@@ -84,25 +78,20 @@ namespace DarwinBots.Modules
                 {
                     rob.Memory[214] = 1;
 
-                    if (rob.Position.Y - rob.Radius < 0)
-                        rob.Position = new DoubleVector(rob.Position.X, rob.Radius);
+                    if (rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
+                        rob.Position = new DoubleVector(rob.Position.X, rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
 
-                    if (rob.Position.Y + rob.Radius > SimOpt.SimOpts.FieldHeight)
-                        rob.Position = new DoubleVector(rob.Position.X, SimOpt.SimOpts.FieldHeight - rob.Radius);
+                    if (rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldHeight)
+                        rob.Position = new DoubleVector(rob.Position.X, SimOpt.SimOpts.FieldHeight - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
 
                     rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
                 }
             }
         }
 
-        public static void CalcMass(Robot rob)
-        {
-            rob.Mass = Math.Clamp(rob.Body / 1000 + rob.Shell / 200 + rob.Chloroplasts / 32000 * 31680, 1, 32000);
-        }
-
         public static double IntToRadians(int angle)
         {
-            return NormaliseAngle((double)angle / 200);
+            return NormaliseAngle(angle / 200.0);
         }
 
         public static void NetForces(IRobotManager robotManager, Robot rob)
@@ -152,7 +141,7 @@ namespace DarwinBots.Modules
             //mass or size.
             if (rob1.IsFixed && rob2.IsFixed || rob1.Velocity.Magnitude() < 0.0001 && rob2.Velocity.Magnitude() < 0.0001)
             {
-                fixedSep = (rob1.Radius + rob2.Radius - currDist) / 2;
+                fixedSep = (rob1.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii) - currDist) / 2;
                 fixedSepVector = normal.Unit() * fixedSep;
                 rob1.Position -= fixedSepVector;
                 rob2.Position += fixedSepVector;
@@ -160,7 +149,7 @@ namespace DarwinBots.Modules
             else
             {
                 var totalMass = rob1.Mass + rob2.Mass;
-                fixedSep = rob1.Radius + rob2.Radius - currDist;
+                fixedSep = rob1.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii) - currDist;
                 fixedSepVector = normal.Unit() * (fixedSep / (1 + Math.Pow(55, 0.3 - e)));
                 rob1.Position -= fixedSepVector * (rob2.Mass / totalMass);
                 rob2.Position -= fixedSepVector * (rob1.Mass / totalMass);
@@ -251,7 +240,7 @@ namespace DarwinBots.Modules
 
                 //delete tie if length > 1000
                 //remember length is inverse squareroot
-                if (length - rob.Radius - tie.OtherBot.Radius > 1000)
+                if (length - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - tie.OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii) > 1000)
                 {
                     Ties.DeleteTie(rob, tie.OtherBot);
                 }
@@ -469,7 +458,7 @@ namespace DarwinBots.Modules
             if (mag < 0.0000001)
                 return;
 
-            var impulse = 0.5 * SphereCd(mag, rob.Radius) * SimOpt.SimOpts.Density * mag * mag * (Math.PI * Math.Pow(rob.Radius, 2));
+            var impulse = 0.5 * SphereCd(mag, rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)) * SimOpt.SimOpts.Density * mag * mag * (Math.PI * Math.Pow(rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), 2));
 
             if (impulse > mag)
                 impulse = mag * 0.99; // Prevents the resistance force from exceeding the velocity!

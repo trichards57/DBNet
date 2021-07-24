@@ -145,7 +145,7 @@ namespace DarwinBots.Modules
 
             var angle = new DoubleVector(Math.Cos(shotAngle), -Math.Sin(shotAngle));
 
-            shot.Position = rob.Position + angle * rob.Radius;
+            shot.Position = rob.Position + angle * rob.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             if (offset)
             {
@@ -220,8 +220,8 @@ namespace DarwinBots.Modules
 
             var shotAngle = (double)ThreadSafeRandom.Local.Next(1, 1256) / 200;
             shot.Stored = false;
-            shot.Position += new DoubleVector(Math.Cos(shotAngle) * rob.Radius, -Math.Sin(shotAngle) * rob.Radius);
-            shot.Velocity = new DoubleVector(RobotsManager.AbsX(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0), RobotsManager.AbsY(shotAngle, RobotsManager.RobSize / 3, 0, 0, 0)) + rob.ActualVelocity;
+            shot.Position += new DoubleVector(Math.Cos(shotAngle) * rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), -Math.Sin(shotAngle) * rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+            shot.Velocity = new DoubleVector(RobotsManager.AbsX(shotAngle, Robot.RobSize / 3, 0, 0, 0), RobotsManager.AbsY(shotAngle, Robot.RobSize / 3, 0, 0, 0)) + rob.ActualVelocity;
 
             shot.OldPosition = shot.Position - shot.Velocity;
         }
@@ -361,7 +361,7 @@ namespace DarwinBots.Modules
             if (rob.IsCorpse || rob.IsVirusImmune)
                 return;
 
-            var power = shot.Energy / (shot.Range * RobotsManager.RobSize / 3) * shot.Value;
+            var power = shot.Energy / (shot.Range * Robot.RobSize / 3) * shot.Value;
 
             if (power < rob.Slime * SlimeEffectiveness)
             {
@@ -515,7 +515,7 @@ namespace DarwinBots.Modules
                 var b0 = rob.Position - rob.Velocity + rob.ActualVelocity;
                 var p = shot.Position - b0;
 
-                if (p.Magnitude() < rob.Radius)
+                if (p.Magnitude() < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii))
                 {
                     // shot is inside the target at Time 0.  Did we miss the entry last cycle?  How?
                     earliestCollision = 0;
@@ -532,7 +532,7 @@ namespace DarwinBots.Modules
 
                 var dDotP = DoubleVector.Dot(d, p);
                 var x = -dDotP;
-                var y = Math.Pow(dDotP, 2) - d2 * (p2 - Math.Pow(rob.Radius, 2));
+                var y = Math.Pow(dDotP, 2) - d2 * (p2 - Math.Pow(rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), 2));
 
                 if (y < 0)
                     continue; // No collision
@@ -580,7 +580,7 @@ namespace DarwinBots.Modules
             var vel = rob.ActualVelocity - shot.Velocity + rob.ActualVelocity * 0.5;
 
             var power = SimOpt.SimOpts.EnergyExType == ShotMode.Proportional
-                        ? shot.Range == 0 ? 0 : shot.Value * shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * SimOpt.SimOpts.EnergyProp
+                        ? shot.Range == 0 ? 0 : shot.Value * shot.Energy / (shot.Range * (Robot.RobSize / 3.0)) * SimOpt.SimOpts.EnergyProp
                         : SimOpt.SimOpts.EnergyFix;
 
             if (power > 32000)
@@ -674,7 +674,7 @@ namespace DarwinBots.Modules
                 shot.Parent.Memory[220] = shot.Parent.Kills;
             }
 
-            CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.White);
+            CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (Robot.RobSize / 3.0), Colors.White);
         }
 
         private void ReleaseEnergy(Robot rob, Shot shot)
@@ -688,7 +688,7 @@ namespace DarwinBots.Modules
             double power;
             if (SimOpt.SimOpts.EnergyExType == ShotMode.Proportional)
             {
-                power = shot.Range == 0 ? 0 : shot.Value * shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * SimOpt.SimOpts.EnergyProp;
+                power = shot.Range == 0 ? 0 : shot.Value * shot.Energy / (shot.Range * (Robot.RobSize / 3.0)) * SimOpt.SimOpts.EnergyProp;
                 if (shot.Energy < 0)
                     return;
             }
@@ -703,7 +703,7 @@ namespace DarwinBots.Modules
             if (rob.Poison > power)
             {
                 //create poison shot
-                CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -5, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.Yellow);
+                CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -5, rob, power, range * (Robot.RobSize / 3.0), Colors.Yellow);
                 rob.Poison -= power * 0.9;
                 if (rob.Poison < 0)
                 {
@@ -727,7 +727,7 @@ namespace DarwinBots.Modules
                 energyLost = power * 0.01;
                 rob.Body = energyLost > rob.Body ? 0 : rob.Body - energyLost;
 
-                CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (RobotsManager.RobSize / 3.0), Colors.White);
+                CreateShot(shot.Position.X, shot.Position.Y, vel.X, vel.Y, -2, rob, power, range * (Robot.RobSize / 3.0), Colors.White);
             }
 
             if (!(rob.Body <= 0.5) && !(rob.Energy <= 0.5)) return;
@@ -767,7 +767,7 @@ namespace DarwinBots.Modules
             if (rob.IsCorpse)
                 return;
 
-            var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
+            var power = shot.Energy / (shot.Range * (Robot.RobSize / 3.0)) * shot.Value;
 
             if (power < 1)
                 return;
@@ -785,7 +785,7 @@ namespace DarwinBots.Modules
             else
             {
                 rob.IsPoisoned = true;
-                rob.PoisonCountdown += power / 1.5;
+                rob.PoisonCountdown += (int)(power / 1.5);
                 if (rob.PoisonCountdown > 32000)
                     rob.PoisonCountdown = 32000;
 
@@ -824,7 +824,7 @@ namespace DarwinBots.Modules
             if (rob.IsCorpse)
                 return;
 
-            var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
+            var power = shot.Energy / (shot.Range * (Robot.RobSize / 3.0)) * shot.Value;
 
             if (power < 1)
                 return;
@@ -890,7 +890,7 @@ namespace DarwinBots.Modules
 
         private void TakeWaste(Robot rob, Shot shot)
         {
-            var power = shot.Energy / (shot.Range * (RobotsManager.RobSize / 3.0)) * shot.Value;
+            var power = shot.Energy / (shot.Range * (Robot.RobSize / 3.0)) * shot.Value;
 
             if (power >= 0)
                 rob.Waste += power;

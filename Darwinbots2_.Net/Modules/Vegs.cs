@@ -214,7 +214,7 @@ namespace DarwinBots.Modules
 
             ScreenArea -= obstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
 
-            var TotalRobotArea = robotManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.Radius, 2) * Math.PI);
+            var TotalRobotArea = robotManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.GetRadius(SimOpt.SimOpts.FixedBotRadii), 2) * Math.PI);
 
             if (ScreenArea < 1)
             {

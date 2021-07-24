@@ -1,5 +1,4 @@
-﻿using DarwinBots.Modules;
-using DarwinBots.Support;
+﻿using DarwinBots.Support;
 
 namespace DarwinBots.Model
 {
@@ -80,7 +79,7 @@ namespace DarwinBots.Model
         {
             for (var i = 0; i < 8; i += 2)
             {
-                Skin[i] = ThreadSafeRandom.Local.Next(0, RobotsManager.RobSize / 2 + 1);
+                Skin[i] = ThreadSafeRandom.Local.Next(0, Robot.RobSize / 2 + 1);
                 Skin[i + 1] = ThreadSafeRandom.Local.Next(0, 629);
             }
         }
