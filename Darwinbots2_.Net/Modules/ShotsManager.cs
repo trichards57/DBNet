@@ -102,7 +102,6 @@ namespace DarwinBots.Modules
 
             var shot = new Shot
             {
-                Exist = true,
                 Age = 0,
                 Parent = rob,
                 FromSpecie = rob.FName, //Which species fired the shot
@@ -232,9 +231,7 @@ namespace DarwinBots.Modules
             {
                 if (shot.Flash)
                 {
-                    shot.Exist = false;
-                    shot.Flash = false;
-                    shot.Dna.Clear();
+                    shot.CleanUp();
                     Shots.Remove(shot);
                     continue;
                 }
@@ -348,8 +345,7 @@ namespace DarwinBots.Modules
 
                 if (shot.Age > shot.Range && !shot.Flash)
                 {
-                    shot.Exist = false; // Kill shots once they reach maturity
-                    shot.Dna.Clear();
+                    shot.CleanUp();
                     Shots.Remove(shot);
                 }
             }
@@ -435,7 +431,6 @@ namespace DarwinBots.Modules
                 OldPosition = new DoubleVector(x + vx, y + vy),
                 Age = 0,
                 Color = col,
-                Exist = true,
                 Stored = false,
                 Value = (int)val,
                 Energy = loc == -2 ? val : range + 40 + 1,

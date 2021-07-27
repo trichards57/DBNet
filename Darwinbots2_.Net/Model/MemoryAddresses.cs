@@ -113,6 +113,10 @@
         public const int SEXREPRO = 302;
         public const int shang = 209;
         public const int sharechlr = 924;
+        public const int ShareEnergy = 830;
+        public const int ShareShell = 832;
+        public const int ShareSlime = 833;
+        public const int ShareWaste = 831;
         public const int shdn = 211;
         public const int shdx = 212;
         public const int Shell = 823;

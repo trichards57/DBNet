@@ -24,24 +24,27 @@ namespace DarwinBots.Modules
                 return;
 
             var tieK = robA.Ties.FirstOrDefault(t => t.OtherBot == robB);
-            var tieJ = robB.Ties.FirstOrDefault(t => t.OtherBot == robA);
 
             if (tieK != null)
             {
+                var tieJ = tieK.ReverseTie;
+
+                tieK.CleanUp();
+                tieJ.CleanUp();
+
                 robA.Ties.Remove(tieK);
+                robB.Ties.Remove(tieJ);
+
                 robA.Memory[MemoryAddresses.numties] = robA.Ties.Count;
+                robB.Memory[MemoryAddresses.numties] = robB.Ties.Count;
+
                 if (robA.Memory[MemoryAddresses.TIEPRES] == tieK.Port)
                 {
                     var lastTie = robA.Ties.LastOrDefault();
 
                     robA.Memory[MemoryAddresses.TIEPRES] = lastTie?.Port ?? 0;
                 }
-            }
 
-            if (tieJ != null)
-            {
-                robB.Ties.Remove(tieJ);
-                robB.Memory[MemoryAddresses.numties] = robB.Ties.Count;
                 if (robB.Memory[MemoryAddresses.TIEPRES] == tieJ.Port)
                 {
                     var lastTie = robB.Ties.LastOrDefault();
@@ -98,7 +101,7 @@ namespace DarwinBots.Modules
                     robA.Memory[MemoryAddresses.TIEPRES] = tieK.Mem;
                     robB.Memory[MemoryAddresses.TIEPRES] = tieJ.Mem;
 
-                    ReadTRefVars(robA, tieK);
+                    robA.ReadTRefVars(tieK);
                 }
             }
 
@@ -106,24 +109,6 @@ namespace DarwinBots.Modules
                 robB.Slime -= Math.Min(20, robB.Slime);
 
             robA.Energy -= SimOpt.SimOpts.Costs.TieFormationCost * SimOpt.SimOpts.Costs.CostMultiplier / (robA.Ties.Count + 1); //Tie cost to form tie
-        }
-
-        public static void ReadTie(Robot rob)
-        {
-            if (rob.NewAge < 2)
-                return;
-
-            if (rob.Ties.Any())
-            {
-                // If there is a value in .readtie then get the trefvars from that tie else read the trefvars from the last tie created
-                var tn = rob.Memory[MemoryAddresses.readtiesys] != 0 ? rob.Memory[MemoryAddresses.readtiesys] : rob.Memory[MemoryAddresses.TIEPRES];
-
-                var tie = rob.Ties.LastOrDefault(t => t.Port == tn);
-
-                if (tie != null)
-                    ReadTRefVars(rob, tie);
-            }
-            EraseTRefVars(rob);
         }
 
         public static void Regang(Robot rob, Tie tie)
@@ -143,65 +128,6 @@ namespace DarwinBots.Modules
             tie.NaturalLength = dist;
         }
 
-        public static void TiePortCommunication(Robot rob)
-        {
-            if (!(rob.Memory[455] != 0 & rob.Ties.Count > 0 & rob.Memory[MemoryAddresses.tieloc] > 0))
-                return;
-
-            if (rob.Memory[MemoryAddresses.tieloc] > 0 & rob.Memory[MemoryAddresses.tieloc] < 1001)
-            {
-                //.tieloc value
-                var tie = rob.Ties.LastOrDefault(t => t.Port == rob.Memory[MemoryAddresses.TIENUM]);
-
-                if (tie == null)
-                    return;
-
-                tie.OtherBot.Memory[rob.Memory[MemoryAddresses.tieloc]] = rob.Memory[MemoryAddresses.tieval]; //stores a value in tied robot memory location (.tieloc) specified in .tieval
-
-                if (!tie.BackTie)
-                    tie.InfoUsed = true; //draws tie white
-                else
-                    tie.ReverseTie.InfoUsed = true;
-
-                rob.Memory[MemoryAddresses.tieval] = 0;
-                rob.Memory[MemoryAddresses.tieloc] = 0;
-            }
-        }
-
-        public static void UpdateTieAngles(Robot rob)
-        {
-            // Zero these incase no ties or tienum is non-zero, but does not refer to a tieport, etc.
-            rob.Memory[MemoryAddresses.TIEANG] = 0;
-            rob.Memory[MemoryAddresses.TIELEN] = 0;
-
-            //No point in setting the length and angle if no ties!
-            if (rob.Ties.Count == 0)
-                return;
-
-            //Figure if .tienum has a value.  If it's zero, use .tiepres
-            var whichTie = rob.Memory[MemoryAddresses.TIENUM] != 0 ? rob.Memory[MemoryAddresses.TIENUM] : rob.Memory[MemoryAddresses.TIEPRES];
-
-            if (whichTie == 0)
-                return;
-
-            //Now find the tie that corrosponds to either .tienum or .tiepres and set .tieang and .tielen accordingly
-            //We count down through the ties to find the most recent tie with the specified tieport since more than one tie
-            //can potentially have the same tieport and we want the most recent, which will be the one with the highest k.
-            var tie = rob.Ties.LastOrDefault(t => t.Port == whichTie);
-
-            if (tie != null)
-            {
-                var tieAngle = Physics.Angle(rob.Position.X, rob.Position.Y, tie.OtherBot.Position.X, tie.OtherBot.Position.Y);
-                var dist = (rob.Position - tie.OtherBot.Position).Magnitude();
-                //Overflow prevention.  Very long ties can happen for one cycle when bots wrap in torridal fields
-                if (dist > 32000)
-                    dist = 32000;
-
-                rob.Memory[MemoryAddresses.TIEANG] = (int)-(Physics.AngDiff(Physics.NormaliseAngle(tieAngle), Physics.NormaliseAngle(rob.Aim)) * 200);
-                rob.Memory[MemoryAddresses.TIELEN] = (int)(dist - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) - tie.OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii));
-            }
-        }
-
         public static void UpdateTies(Robot rob)
         {
             // this routine addresses all ties. not just ones that match .tienum
@@ -210,36 +136,32 @@ namespace DarwinBots.Modules
             var atLeast1Tie = false;
             if (rob.IsMultibot)
             {
-                foreach (var tie in rob.Ties)
+                foreach (var tie in rob.Ties.Where(t => !t.BackTie))
                 {
-                    // while there is a tie that points to another robot that this bot created.
-                    if (!tie.BackTie)
+                    if (rob.Memory[MemoryAddresses.ShareEnergy] > 0)
                     {
-                        if (rob.Memory[830] > 0)
-                        {
-                            rob.ShareEnergy(tie);
-                            tie.Sharing = true; //yellow ties
-                        }
-                        if (rob.Memory[831] > 0)
-                        {
-                            rob.ShareWaste(tie);
-                            tie.Sharing = true; //yellow ties
-                        }
-                        if (rob.Memory[832] > 0)
-                        {
-                            rob.ShareShell(tie);
-                            tie.Sharing = true; //yellow ties
-                        }
-                        if (rob.Memory[833] > 0)
-                        {
-                            rob.ShareSlime(tie);
-                            tie.Sharing = true; //yellow ties
-                        }
-                        if (rob.Memory[MemoryAddresses.sharechlr] > 0 & rob.ChloroplastsShareDelay == 0 & !rob.ChloroplastsDisabled)
-                        { //Panda 8/31/2013 code to share chloroplasts 'Botsareus 8/16/2014 chloroplast sharing disable
-                            rob.ShareChloroplasts(tie);
-                            tie.Sharing = true; //yellow ties
-                        }
+                        rob.ShareEnergy(tie);
+                        tie.Sharing = true; //yellow ties
+                    }
+                    if (rob.Memory[MemoryAddresses.ShareWaste] > 0)
+                    {
+                        rob.ShareWaste(tie);
+                        tie.Sharing = true; //yellow ties
+                    }
+                    if (rob.Memory[MemoryAddresses.ShareShell] > 0)
+                    {
+                        rob.ShareShell(tie);
+                        tie.Sharing = true; //yellow ties
+                    }
+                    if (rob.Memory[MemoryAddresses.ShareSlime] > 0)
+                    {
+                        rob.ShareSlime(tie);
+                        tie.Sharing = true; //yellow ties
+                    }
+                    if (rob.Memory[MemoryAddresses.sharechlr] > 0 && rob.ChloroplastsShareDelay == 0 && !rob.ChloroplastsDisabled)
+                    {
+                        rob.ShareChloroplasts(tie);
+                        tie.Sharing = true; //yellow ties
                     }
                     rob.vbody += tie.OtherBot.Body;
                     if (rob.FName == tie.OtherBot.FName)
@@ -264,10 +186,10 @@ namespace DarwinBots.Modules
             }
 
             // Zero the sharing sysvars
-            rob.Memory[830] = 0;
-            rob.Memory[831] = 0;
-            rob.Memory[832] = 0;
-            rob.Memory[833] = 0;
+            rob.Memory[MemoryAddresses.ShareEnergy] = 0;
+            rob.Memory[MemoryAddresses.ShareWaste] = 0;
+            rob.Memory[MemoryAddresses.ShareShell] = 0;
+            rob.Memory[MemoryAddresses.ShareSlime] = 0;
             rob.Memory[MemoryAddresses.sharechlr] = 0;
             rob.Memory[MemoryAddresses.numties] = rob.Ties.Count;
 
@@ -730,71 +652,6 @@ namespace DarwinBots.Modules
             }
 
             rob.Memory[MemoryAddresses.tieport1 + 5] = 0; // .tienum should be reset every cycle
-        }
-
-        private static void EraseTRefVars(Robot rob)
-        {
-            // Zero the trefvars as all ties have gone.  Perf -> Could set a flag to not do this everytime
-            for (var counter = 456; counter < 465; counter++)
-                rob.Memory[counter] = 0;
-
-            rob.Memory[MemoryAddresses.trefbody] = 0;
-            rob.Memory[475] = 0;
-            rob.Memory[478] = 0;
-            rob.Memory[479] = 0;
-            for (var counter = 0; counter < 10; counter++)
-                rob.Memory[MemoryAddresses.trefxpos + counter] = 0;
-
-            //These are .tin trefvars
-            for (var counter = 420; counter < 429; counter++)
-                rob.Memory[counter] = 0;
-        }
-
-        private static void ReadTRefVars(Robot rob, Tie tie)
-        {
-            if (tie.OtherBot.Energy < 32000 & tie.OtherBot.Energy > -32000)
-                rob.Memory[MemoryAddresses.trefnrg] = (int)tie.OtherBot.Energy; //copies tied robot's energy into memory cell *trefnrg
-
-            if (tie.OtherBot.Age < 32000)
-                rob.Memory[465] = tie.OtherBot.Age + 1; //copies age of tied robot into *refvar
-            else
-                rob.Memory[465] = 32000;
-
-            if (tie.OtherBot.Body < 32000 & tie.OtherBot.Body > -32000)
-                rob.Memory[MemoryAddresses.trefbody] = (int)tie.OtherBot.Body; //copies tied robot's body value
-            else
-                rob.Memory[MemoryAddresses.trefbody] = 32000;
-
-            for (var l = 1; l < 8; l++)
-                rob.Memory[455 + l] = tie.OtherBot.occurr[l];
-
-            if (rob.Memory[476] > 0 & rob.Memory[476] <= 1000)
-            {
-                //tmemval and tmemloc couple used to read a specific memory value from tied robot.
-                rob.Memory[475] = tie.OtherBot.Memory[rob.Memory[476]];
-            }
-
-            rob.Memory[478] = tie.OtherBot.IsFixed ? 1 : 0;
-            rob.Memory[479] = tie.OtherBot.Memory[MemoryAddresses.AimSys];
-            rob.Memory[MemoryAddresses.trefxpos] = tie.OtherBot.Memory[219];
-            rob.Memory[MemoryAddresses.trefypos] = tie.OtherBot.Memory[217];
-            rob.Memory[MemoryAddresses.trefvelyourup] = tie.OtherBot.Memory[MemoryAddresses.velup];
-            rob.Memory[MemoryAddresses.trefvelyourdn] = tie.OtherBot.Memory[MemoryAddresses.veldn];
-            rob.Memory[MemoryAddresses.trefvelyoursx] = tie.OtherBot.Memory[MemoryAddresses.velsx];
-            rob.Memory[MemoryAddresses.trefvelyourdx] = tie.OtherBot.Memory[MemoryAddresses.veldx];
-
-            tie.OtherBot.Velocity = DoubleVector.Clamp(tie.OtherBot.Velocity, -16000, 16000);
-
-            rob.Memory[MemoryAddresses.trefvelmyup] = (int)(tie.OtherBot.Velocity.X * Math.Cos(rob.Aim) + Math.Sin(rob.Aim) * tie.OtherBot.Velocity.Y * -1 - rob.Memory[MemoryAddresses.velup]); //gives velocity from mybots frame of reference
-            rob.Memory[MemoryAddresses.trefvelmydn] = rob.Memory[MemoryAddresses.trefvelmyup] * -1;
-            rob.Memory[MemoryAddresses.trefvelmydx] = (int)(tie.OtherBot.Velocity.Y * Math.Cos(rob.Aim) + Math.Sin(rob.Aim) * tie.OtherBot.Velocity.X - rob.Memory[MemoryAddresses.veldx]);
-            rob.Memory[MemoryAddresses.trefvelmysx] = rob.Memory[MemoryAddresses.trefvelmydx] * -1;
-            rob.Memory[MemoryAddresses.trefvelscalar] = tie.OtherBot.Memory[MemoryAddresses.velscalar];
-            rob.Memory[MemoryAddresses.trefshell] = (int)tie.OtherBot.Shell;
-
-            //These are the tie in/pairs
-            for (var l = 410; l < 419; l++)
-                rob.Memory[l + 10] = tie.OtherBot.Memory[l];
         }
     }
 }

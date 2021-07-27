@@ -27,5 +27,11 @@
         public Tie ReverseTie { get; set; }
         public bool Sharing { get; set; }
         public TieType Type { get; set; }
+
+        public void CleanUp()
+        {
+            OtherBot = null;
+            ReverseTie = null;
+        }
     }
 }

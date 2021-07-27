@@ -625,7 +625,7 @@ namespace DarwinBots.Modules
         {
             var s = DnaEngine.SystemVariables.FirstOrDefault(t => t.Value == n);
 
-            if (s != null)
+            if (s != default)
                 return $".{s.Name}";
 
             if (savingToFile)
@@ -635,7 +635,7 @@ namespace DarwinBots.Modules
 
             var v = rob.Variables.FirstOrDefault(u => u.Value == n);
 
-            return v != null ? $".{v.Name}" : n.ToString();
+            return v != default ? $".{v.Name}" : n.ToString();
         }
 
         private static int SystemVariableTokenize(string a, Robot rob)
@@ -646,12 +646,12 @@ namespace DarwinBots.Modules
 
                 var s = DnaEngine.SystemVariables.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
 
-                if (s != null)
+                if (s != default)
                     return s.Value;
 
                 var v = rob.Variables.FirstOrDefault(t => t.Name.Equals(a, StringComparison.InvariantCultureIgnoreCase));
 
-                if (v != null)
+                if (v != default)
                     return v.Value;
             }
             else

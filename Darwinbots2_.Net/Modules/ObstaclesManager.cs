@@ -193,7 +193,7 @@ namespace DarwinBots.Modules
             {
                 if (SimOpt.SimOpts.ShapesAbsorbShots)
                 {
-                    shot.Exist = false;
+                    shot.CleanUp();
                     shotManager.Shots.Remove(shot);
                 }
 

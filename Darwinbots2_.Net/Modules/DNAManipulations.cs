@@ -156,7 +156,7 @@ namespace DarwinBots.Modules
                 return rob; // returns the index of the created rob
             }
 
-            rob.Exists = false;
+            rob.CleanUp(null, bucketManager);
             robotManager.Robots.Remove(rob);
             bucketManager.UpdateBotBucket(rob);
             return null;
@@ -167,7 +167,6 @@ namespace DarwinBots.Modules
             //rob.pos.X = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleWidth());
             //rob.pos.Y = ThreadSafeRandom.Local.Next(50, (int)Form1.instance.ScaleHeight());
             rob.Aim = (double)ThreadSafeRandom.Local.Next(0, 628) / 100;
-            rob.Exists = true;
             rob.BucketPosition = new IntVector(-2, -2);
             bucketManager.UpdateBotBucket(rob);
 

@@ -2,6 +2,7 @@
 using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 
 namespace DarwinBots.Model
@@ -35,7 +36,7 @@ namespace DarwinBots.Model
         public int Age
         {
             get => _age;
-            set
+            private set
             {
                 _age = value;
                 Memory[MemoryAddresses.robage] = Math.Min(_age, 32000);
@@ -90,7 +91,7 @@ namespace DarwinBots.Model
 
         public int[] EpigeneticMemory { get; } = new int[14];
 
-        public bool Exists { get; set; }
+        public bool Exists { get; private set; } = true;
 
         public int Fertilized { get; set; }
 
@@ -305,6 +306,33 @@ namespace DarwinBots.Model
             }
         }
 
+        public void CleanUp(IShotManager shotManager, IBucketManager bucketManager)
+        {
+            Dna?.Clear();
+            Dna = null;
+            LastSeenObject = null;
+            LastTouched = null;
+            MutationProbabilities = null;
+            Parent = null;
+            SpermDna?.Clear();
+            SpermDna = null;
+
+            Modules.Ties.DeleteAllTies(this);
+
+            Ties.Clear();
+            Variables.Clear();
+            if (VirusShot != null)
+            {
+                shotManager?.Shots.Remove(VirusShot);
+                VirusShot.CleanUp();
+                VirusShot = null;
+            }
+
+            Exists = false;
+
+            bucketManager?.UpdateBotBucket(this);
+        }
+
         public void DoGeneticMemory()
         {
             if (Age >= 15)
@@ -347,7 +375,7 @@ namespace DarwinBots.Model
             var maxLength = RobSize * 4 + GetRadius(SimOpt.SimOpts.FixedBotRadii) + lastSeen.GetRadius(SimOpt.SimOpts.FixedBotRadii);
 
             if (length <= maxLength)
-                DarwinBots.Modules.Ties.MakeTie(this, lastSeen, (int)(GetRadius(SimOpt.SimOpts.FixedBotRadii) + lastSeen.GetRadius(SimOpt.SimOpts.FixedBotRadii) + RobSize * 2), -20, Memory[MemoryAddresses.mtie]);
+                Modules.Ties.MakeTie(this, lastSeen, (int)(GetRadius(SimOpt.SimOpts.FixedBotRadii) + lastSeen.GetRadius(SimOpt.SimOpts.FixedBotRadii) + RobSize * 2), -20, Memory[MemoryAddresses.mtie]);
 
             Memory[MemoryAddresses.mtie] = 0;
         }
@@ -455,6 +483,71 @@ namespace DarwinBots.Model
                     PoisonValue = 0;
                 }
             }
+        }
+
+        public void ReadTie()
+        {
+            if (NewAge < 2)
+                return;
+
+            if (Ties.Any())
+            {
+                // If there is a value in .readtie then get the trefvars from that tie else read the trefvars from the last tie created
+                var tn = Memory[MemoryAddresses.readtiesys] != 0 ? Memory[MemoryAddresses.readtiesys] : Memory[MemoryAddresses.TIEPRES];
+
+                var tie = Ties.LastOrDefault(t => t.Port == tn);
+
+                if (tie != null)
+                    ReadTRefVars(tie);
+            }
+            EraseTRefVars();
+        }
+
+        public void ReadTRefVars(Tie tie)
+        {
+            if (tie.OtherBot.Energy < 32000 & tie.OtherBot.Energy > -32000)
+                Memory[MemoryAddresses.trefnrg] = (int)tie.OtherBot.Energy; //copies tied robot's energy into memory cell *trefnrg
+
+            if (tie.OtherBot.Age < 32000)
+                Memory[465] = tie.OtherBot.Age + 1; //copies age of tied robot into *refvar
+            else
+                Memory[465] = 32000;
+
+            if (tie.OtherBot.Body < 32000 & tie.OtherBot.Body > -32000)
+                Memory[MemoryAddresses.trefbody] = (int)tie.OtherBot.Body; //copies tied robot's body value
+            else
+                Memory[MemoryAddresses.trefbody] = 32000;
+
+            for (var l = 1; l < 8; l++)
+                Memory[455 + l] = tie.OtherBot.occurr[l];
+
+            if (Memory[476] > 0 & Memory[476] <= 1000)
+            {
+                //tmemval and tmemloc couple used to read a specific memory value from tied robot.
+                Memory[475] = tie.OtherBot.Memory[Memory[476]];
+            }
+
+            Memory[478] = tie.OtherBot.IsFixed ? 1 : 0;
+            Memory[479] = tie.OtherBot.Memory[MemoryAddresses.AimSys];
+            Memory[MemoryAddresses.trefxpos] = tie.OtherBot.Memory[219];
+            Memory[MemoryAddresses.trefypos] = tie.OtherBot.Memory[217];
+            Memory[MemoryAddresses.trefvelyourup] = tie.OtherBot.Memory[MemoryAddresses.velup];
+            Memory[MemoryAddresses.trefvelyourdn] = tie.OtherBot.Memory[MemoryAddresses.veldn];
+            Memory[MemoryAddresses.trefvelyoursx] = tie.OtherBot.Memory[MemoryAddresses.velsx];
+            Memory[MemoryAddresses.trefvelyourdx] = tie.OtherBot.Memory[MemoryAddresses.veldx];
+
+            tie.OtherBot.Velocity = DoubleVector.Clamp(tie.OtherBot.Velocity, -16000, 16000);
+
+            Memory[MemoryAddresses.trefvelmyup] = (int)(tie.OtherBot.Velocity.X * Math.Cos(Aim) + Math.Sin(Aim) * tie.OtherBot.Velocity.Y * -1 - Memory[MemoryAddresses.velup]); //gives velocity from mybots frame of reference
+            Memory[MemoryAddresses.trefvelmydn] = Memory[MemoryAddresses.trefvelmyup] * -1;
+            Memory[MemoryAddresses.trefvelmydx] = (int)(tie.OtherBot.Velocity.Y * Math.Cos(Aim) + Math.Sin(Aim) * tie.OtherBot.Velocity.X - Memory[MemoryAddresses.veldx]);
+            Memory[MemoryAddresses.trefvelmysx] = Memory[MemoryAddresses.trefvelmydx] * -1;
+            Memory[MemoryAddresses.trefvelscalar] = tie.OtherBot.Memory[MemoryAddresses.velscalar];
+            Memory[MemoryAddresses.trefshell] = (int)tie.OtherBot.Shell;
+
+            //These are the tie in/pairs
+            for (var l = 410; l < 419; l++)
+                Memory[l + 10] = tie.OtherBot.Memory[l];
         }
 
         public void SetAim()
@@ -605,6 +698,31 @@ namespace DarwinBots.Model
             Body += Energy / 10;
         }
 
+        public void TiePortCommunication()
+        {
+            if (!(Memory[455] != 0 & Ties.Count > 0 & Memory[MemoryAddresses.tieloc] > 0))
+                return;
+
+            if (Memory[MemoryAddresses.tieloc] > 0 & Memory[MemoryAddresses.tieloc] < 1001)
+            {
+                //.tieloc value
+                var tie = Ties.LastOrDefault(t => t.Port == Memory[MemoryAddresses.TIENUM]);
+
+                if (tie == null)
+                    return;
+
+                tie.OtherBot.Memory[Memory[MemoryAddresses.tieloc]] = Memory[MemoryAddresses.tieval]; //stores a value in tied robot memory location (.tieloc) specified in .tieval
+
+                if (!tie.BackTie)
+                    tie.InfoUsed = true; //draws tie white
+                else
+                    tie.ReverseTie.InfoUsed = true;
+
+                Memory[MemoryAddresses.tieval] = 0;
+                Memory[MemoryAddresses.tieloc] = 0;
+            }
+        }
+
         public void UpdateMass()
         {
             Mass = Math.Clamp(Body / 1000 + Shell / 200 + Chloroplasts / 32000 * 31680, 1, 32000);
@@ -655,6 +773,40 @@ namespace DarwinBots.Model
             Memory[MemoryAddresses.velsx] = Memory[MemoryAddresses.veldx] * -1;
 
             Memory[MemoryAddresses.maxvelsys] = (int)maxVelocity;
+        }
+
+        public void UpdateTieAngles()
+        {
+            // Zero these incase no ties or tienum is non-zero, but does not refer to a tieport, etc.
+            Memory[MemoryAddresses.TIEANG] = 0;
+            Memory[MemoryAddresses.TIELEN] = 0;
+
+            //No point in setting the length and angle if no ties!
+            if (Ties.Count == 0)
+                return;
+
+            //Figure if .tienum has a value.  If it's zero, use .tiepres
+            var whichTie = Memory[MemoryAddresses.TIENUM] != 0 ? Memory[MemoryAddresses.TIENUM] : Memory[MemoryAddresses.TIEPRES];
+
+            if (whichTie == 0)
+                return;
+
+            //Now find the tie that corrosponds to either .tienum or .tiepres and set .tieang and .tielen accordingly
+            //We count down through the ties to find the most recent tie with the specified tieport since more than one tie
+            //can potentially have the same tieport and we want the most recent, which will be the one with the highest k.
+            var tie = Ties.LastOrDefault(t => t.Port == whichTie);
+
+            if (tie != null)
+            {
+                var tieAngle = Physics.Angle(Position.X, Position.Y, tie.OtherBot.Position.X, tie.OtherBot.Position.Y);
+                var dist = (Position - tie.OtherBot.Position).Magnitude();
+                //Overflow prevention.  Very long ties can happen for one cycle when bots wrap in torridal fields
+                if (dist > 32000)
+                    dist = 32000;
+
+                Memory[MemoryAddresses.TIEANG] = (int)-(Physics.AngDiff(Physics.NormaliseAngle(tieAngle), Physics.NormaliseAngle(Aim)) * 200);
+                Memory[MemoryAddresses.TIELEN] = (int)(dist - GetRadius(SimOpt.SimOpts.FixedBotRadii) - tie.OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+            }
         }
 
         public void Upkeep(Costs costs)
@@ -719,6 +871,24 @@ namespace DarwinBots.Model
 
             Memory[MemoryAddresses.mkchlr] = 0;
             Memory[MemoryAddresses.rmchlr] = 0;
+        }
+
+        private void EraseTRefVars()
+        {
+            // Zero the trefvars as all ties have gone.  Perf -> Could set a flag to not do this everytime
+            for (var counter = 456; counter < 465; counter++)
+                Memory[counter] = 0;
+
+            Memory[MemoryAddresses.trefbody] = 0;
+            Memory[475] = 0;
+            Memory[478] = 0;
+            Memory[479] = 0;
+            for (var counter = 0; counter < 10; counter++)
+                Memory[MemoryAddresses.trefxpos + counter] = 0;
+
+            //These are .tin trefvars
+            for (var counter = 420; counter < 429; counter++)
+                Memory[counter] = 0;
         }
 
         private double GetAddedMass(double density, bool radiusFixed)

@@ -9,19 +9,26 @@ namespace DarwinBots.Model
         public Color Color { get; set; }
         public List<DnaBlock> Dna { get; set; } = new();
         public double Energy { get; set; }
-        public bool Exist { get; set; }
+        public bool Exist { get; private set; } = true;
         public bool Flash { get; set; }
         public string FromSpecie { get; init; }
         public int GeneNum { get; set; }
         public int MemoryLocation { get; init; }
         public int MemoryValue { get; set; }
         public DoubleVector OldPosition { get; set; }
-        public Robot Parent { get; init; }
+        public Robot Parent { get; set; }
         public DoubleVector Position { get; set; }
         public double Range { get; set; }
         public int ShotType { get; set; }
         public bool Stored { get; set; }
         public int Value { get; init; }
         public DoubleVector Velocity { get; set; }
+
+        public void CleanUp()
+        {
+            Dna.Clear();
+            Exist = false;
+            Parent = null;
+        }
     }
 }

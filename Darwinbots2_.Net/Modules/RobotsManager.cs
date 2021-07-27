@@ -73,25 +73,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.DeadRobotSnp && (!robot.IsVegetable || !SimOpt.SimOpts.SnpExcludeVegs))
                 await Database.AddRecord(robot);
 
-            robot.IsFixed = false;
-            robot.IsVegetable = false;
-            robot.SonNumber = 0;
-            robot.Age = 0;
-            Ties.DeleteAllTies(robot);
-            robot.Exists = false;
-            _bucketManager.UpdateBotBucket(robot);
-
-            if (robot.VirusShot != null)
-            {
-                robot.VirusShot.Exist = false;
-                _shotManager.Shots.Remove(robot.VirusShot);
-                robot.VirusShot = null;
-            }
-
-            robot.SpermDna.Clear();
-
-            robot.LastMutationDetail = "";
-
+            robot.CleanUp(_shotManager, _bucketManager);
             Robots.Remove(robot);
         }
 
@@ -155,8 +137,8 @@ namespace DarwinBots.Modules
 
                 if (rob.IsCorpse || rob.DnaDisabled) continue;
 
-                Ties.TiePortCommunication(rob); //transfer data through ties
-                Ties.ReadTie(rob); //reads all of the tref variables from a given tie number
+                rob.TiePortCommunication(); //transfer data through ties
+                rob.ReadTie(); //reads all of the tref variables from a given tie number
             }
 
             foreach (var s in SimOpt.SimOpts.Specie)
@@ -182,7 +164,7 @@ namespace DarwinBots.Modules
 
             foreach (var rob in Robots)
             {
-                Ties.UpdateTieAngles(rob); // Updates .tielen and .tieang.  Have to do this here after all bot movement happens above.
+                rob.UpdateTieAngles(); // Updates .tielen and .tieang.  Have to do this here after all bot movement happens above.
 
                 if (!rob.IsCorpse && !rob.DnaDisabled && rob.Exists)
                 {
@@ -522,7 +504,6 @@ namespace DarwinBots.Modules
             nuovo.Ties.Clear();
 
             nuovo.Position = new DoubleVector(robot.Position.X + AbsX(robot.Aim, sondist, 0, 0, 0), robot.Position.Y + AbsY(robot.Aim, sondist, 0, 0, 0));
-            nuovo.Exists = true;
             nuovo.BucketPosition = new IntVector(-2, -2);
             _bucketManager.UpdateBotBucket(nuovo);
             nuovo.Velocity = robot.Velocity;
@@ -794,7 +775,6 @@ namespace DarwinBots.Modules
             nuovo.Ties.Clear();
 
             nuovo.Position += new DoubleVector(AbsX(female.Aim, (int)sondist, 0, 0, 0), AbsY(female.Aim, (int)sondist, 0, 0, 0));
-            nuovo.Exists = true;
             nuovo.BucketPosition = new IntVector(-2, -2);
             _bucketManager.UpdateBotBucket(nuovo);
 
