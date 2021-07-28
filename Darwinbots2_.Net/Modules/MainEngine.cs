@@ -132,7 +132,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.PlanetEatersG = savedFile.PlanetEatersG;
             SimOpt.SimOpts.Viscosity = savedFile.Viscosity;
             SimOpt.SimOpts.Density = savedFile.Density;
-            SimOpt.SimOpts.Costs = savedFile.Costs;
             SimOpt.SimOpts.BadWasteLevel = savedFile.BadWastelevel;
             SimOpt.SimOpts.CoefficientElasticity = savedFile.CoefficientElasticity;
             SimOpt.SimOpts.FluidSolidCustom = savedFile.FluidSolidCustom;
