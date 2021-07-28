@@ -123,7 +123,7 @@ namespace DarwinBots.Model
 
         public int LastMutation { get; set; }
 
-        public string LastMutationDetail { get; set; }
+        public List<string> LastMutationDetail { get; } = new List<string>();
 
         public object LastSeenObject { get; set; }
 
@@ -393,6 +393,40 @@ namespace DarwinBots.Model
                 r = 1;
 
             return r;
+        }
+
+        public void HandleWaste(IShotManager shotManager)
+        {
+            if (Waste > 0 && Chloroplasts > 0)
+                Vegs.feedveg2(this);
+
+            if (SimOpt.SimOpts.BadWasteLevel == 0)
+                SimOpt.SimOpts.BadWasteLevel = 400;
+
+            Alzheimer(SimOpt.SimOpts.BadWasteLevel);
+
+            if (Waste > 32000)
+                shotManager.Defecate(this);
+
+            if (PermanentWaste > 32000)
+                PermanentWaste = 32000;
+
+            if (Waste < 0)
+                Waste = 0;
+
+            Memory[828] = (int)Waste;
+            Memory[829] = (int)PermanentWaste;
+        }
+
+        public void LogMutation(string strmut)
+        {
+            if (SimOpt.SimOpts.TotRunCycle == 0)
+                return;
+
+            if (LastMutationDetail.Count > 5)
+                LastMutationDetail.Remove(LastMutationDetail[0]);
+
+            LastMutationDetail.Add(strmut);
         }
 
         public void MakeStuff(Costs costs)

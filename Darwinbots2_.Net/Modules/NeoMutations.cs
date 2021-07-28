@@ -22,17 +22,6 @@ namespace DarwinBots.Modules
             Senses.MakeOccurrList(rob);
         }
 
-        public static void LogMutation(IRobotManager robotManager, Robot rob, string strmut)
-        {
-            if (SimOpt.SimOpts.TotRunCycle == 0)
-                return;
-
-            if (rob.LastMutationDetail.Length > 100000000 / robotManager.TotalRobots)
-                rob.LastMutationDetail = "";
-
-            rob.LastMutationDetail = $"{strmut}\n{rob.LastMutationDetail}";
-        }
-
         public static void Mutate(IRobotManager robotManager, Robot rob, bool reproducing = false)
         {
             if (!rob.MutationProbabilities.EnableMutations || SimOpt.SimOpts.DisableMutations)
@@ -43,27 +32,27 @@ namespace DarwinBots.Modules
             if (reproducing)
             {
                 if (rob.MutationProbabilities.CopyError.Probability > 0)
-                    CopyError(robotManager, rob);
+                    CopyError(rob);
 
                 if (rob.MutationProbabilities.Insertion.Probability > 0)
-                    Insertion(robotManager, rob);
+                    Insertion(rob);
 
                 if (rob.MutationProbabilities.Reversal.Probability > 0)
-                    Reversal(robotManager, rob);
+                    Reversal(rob);
 
                 if (rob.MutationProbabilities.MajorDeletion.Probability > 0)
-                    MajorDeletion(robotManager, rob);
+                    MajorDeletion(rob);
 
                 if (rob.MutationProbabilities.MinorDeletion.Probability > 0)
-                    MinorDeletion(robotManager, rob);
+                    MinorDeletion(rob);
             }
             else
             {
                 if (rob.MutationProbabilities.PointMutation.Probability > 0)
-                    PointMutation(robotManager, rob);
+                    PointMutation(rob);
 
                 if (rob.MutationProbabilities.Delta.Probability > 0)
-                    DeltaMut(robotManager, rob);
+                    DeltaMut(rob);
             }
 
             delta = rob.LastMutation - delta;
@@ -134,7 +123,7 @@ namespace DarwinBots.Modules
             changeme.PointWhatToChange = 80;
         }
 
-        private static void ChangeDna(IRobotManager robotManager, Robot rob, int nth, MutationType mutationType, int length = 1, int pointToChange = 50)
+        private static void ChangeDna(Robot rob, int nth, MutationType mutationType, int length = 1, int pointToChange = 50)
         {
             for (var t = nth; t < nth + length; t++)
             {
@@ -162,7 +151,7 @@ namespace DarwinBots.Modules
                         rob.Mutations++;
                         rob.LastMutation++;
 
-                        LogMutation(robotManager, rob, $"{MutationToString(mutationType)} changed {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {old} to {rob.Dna[t].Value} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                        rob.LogMutation($"{MutationToString(mutationType)} changed {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {old} to {rob.Dna[t].Value} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                     }
                     else
                     {
@@ -197,7 +186,7 @@ namespace DarwinBots.Modules
                         rob.Mutations++;
                         rob.LastMutation++;
 
-                        LogMutation(robotManager, rob, $"{MutationToString(mutationType)} changed value of {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {oldName} to {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                        rob.LogMutation($"{MutationToString(mutationType)} changed value of {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} from {oldName} to {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                     }
                 }
                 else
@@ -236,12 +225,12 @@ namespace DarwinBots.Modules
                     rob.Mutations++;
                     rob.LastMutation++;
 
-                    LogMutation(robotManager, rob, $"{MutationToString(mutationType)} changed the {DnaTokenizing.TipoDetok(bp.Type)}: {oldName} to the {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} : {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                    rob.LogMutation($"{MutationToString(mutationType)} changed the {DnaTokenizing.TipoDetok(bp.Type)}: {oldName} to the {DnaTokenizing.TipoDetok(rob.Dna[t].Type)} : {name} at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
                 }
             }
         }
 
-        private static void CopyError(IRobotManager robotManager, Robot rob)
+        private static void CopyError(Robot rob)
         {
             var floor = SimOpt.SimOpts.MutCurrMult * rob.Dna.Count * (rob.MutationProbabilities.CopyError.Mean + rob.MutationProbabilities.CopyError.StandardDeviation) / (25 * OverTime);
 
@@ -255,7 +244,7 @@ namespace DarwinBots.Modules
 
                 var length = (int)Common.Gauss(rob.MutationProbabilities.CopyError.StandardDeviation, rob.MutationProbabilities.CopyError.Mean); //length
 
-                ChangeDna(robotManager, rob, t, MutationType.CopyError, length, rob.MutationProbabilities.CopyErrorWhatToChange);
+                ChangeDna(rob, t, MutationType.CopyError, length, rob.MutationProbabilities.CopyErrorWhatToChange);
             }
         }
 
@@ -269,7 +258,7 @@ namespace DarwinBots.Modules
             dna.RemoveRange(i, f - i); // EricL Added +1
         }
 
-        private static void DeltaMut(IRobotManager robotManager, Robot rob)
+        private static void DeltaMut(Robot rob)
         {
             if (ThreadSafeRandom.Local.NextDouble() <= 1 - 1 / (100 * rob.MutationProbabilities.Delta.Probability / SimOpt.SimOpts.MutCurrMult))
                 return;
@@ -293,13 +282,13 @@ namespace DarwinBots.Modules
                 newval = Common.Gauss(rob.MutationProbabilities.Delta.Mean, rob.MutationProbabilities.Delta.Probability);
             } while (Math.Abs(rob.MutationProbabilities.GetProbability(temp) - newval) < 0.1 || newval <= 0);
 
-            LogMutation(robotManager, rob, $"Delta mutations changed {MutationToString(temp)} from 1 in {rob.MutationProbabilities.GetProbability(temp)} to 1 in {newval}");
+            rob.LogMutation($"Delta mutations changed {MutationToString(temp)} from 1 in {rob.MutationProbabilities.GetProbability(temp)} to 1 in {newval}");
             rob.Mutations++;
             rob.LastMutation++;
             rob.MutationProbabilities.SetProbability(temp, newval);
         }
 
-        private static void Insertion(IRobotManager robotManager, Robot rob)
+        private static void Insertion(Robot rob)
         {
             var floor = rob.Dna.Count * (rob.MutationProbabilities.Insertion.Mean + rob.MutationProbabilities.Insertion.StandardDeviation) / (5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
@@ -332,14 +321,14 @@ namespace DarwinBots.Modules
                     });
                 }
 
-                ChangeDna(robotManager, rob, t + 1, MutationType.Insertion, length, 0); //change the type first so that the mutated value is within the space of the new type
-                ChangeDna(robotManager, rob, t + 1, MutationType.Insertion, length, 100); //set a good value up
+                ChangeDna(rob, t + 1, MutationType.Insertion, length, 0); //change the type first so that the mutated value is within the space of the new type
+                ChangeDna(rob, t + 1, MutationType.Insertion, length, 100); //set a good value up
 
                 t += length;
             }
         }
 
-        private static void MajorDeletion(IRobotManager robotManager, Robot rob)
+        private static void MajorDeletion(Robot rob)
         {
             var floor = rob.Dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
@@ -371,11 +360,11 @@ namespace DarwinBots.Modules
 
                 rob.Mutations++;
                 rob.LastMutation++;
-                LogMutation(robotManager, rob, $"Major Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                rob.LogMutation($"Major Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }
         }
 
-        private static void MinorDeletion(IRobotManager robotManager, Robot rob)
+        private static void MinorDeletion(Robot rob)
         {
             var floor = rob.Dna.Count / (2.5 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
@@ -407,7 +396,7 @@ namespace DarwinBots.Modules
 
                 rob.Mutations++;
                 rob.LastMutation++;
-                LogMutation(robotManager, rob, $"Minor Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                rob.LogMutation($"Minor Deletion deleted a run of {length} bps at position {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }
         }
 
@@ -457,7 +446,7 @@ namespace DarwinBots.Modules
             };
         }
 
-        private static void PointMutation(IRobotManager robotManager, Robot rob)
+        private static void PointMutation(Robot rob)
         {
             //assume the bot has a positive (>0) mutarray value for this
 
@@ -472,7 +461,7 @@ namespace DarwinBots.Modules
             //Do it again in case we get two point mutations in a single cycle
             while (rob.Age == rob.PointMutationCycle && rob.Age > 0 & rob.Dna.Count > 1)
             {
-                ChangeDna(robotManager, rob, rob.PointMutationBasePair, (MutationType)(Common.Gauss(rob.MutationProbabilities.PointMutation.StandardDeviation, rob.MutationProbabilities.PointMutation.Mean) % 32000), rob.MutationProbabilities.PointWhatToChange);
+                ChangeDna(rob, rob.PointMutationBasePair, (MutationType)(Common.Gauss(rob.MutationProbabilities.PointMutation.StandardDeviation, rob.MutationProbabilities.PointMutation.Mean) % 32000), rob.MutationProbabilities.PointWhatToChange);
                 PointMutWhereAndWhen(ThreadSafeRandom.Local.NextDouble(), rob);
             }
         }
@@ -499,7 +488,7 @@ namespace DarwinBots.Modules
             rob.PointMutationCycle = rob.Age + (int)result / (rob.Dna.Count - 1);
         }
 
-        private static void Reversal(IRobotManager robotManager, Robot rob)
+        private static void Reversal(Robot rob)
         {
             var floor = rob.Dna.Count * (rob.MutationProbabilities.Reversal.Mean + rob.MutationProbabilities.Reversal.StandardDeviation) / (105 * OverTime) * SimOpt.SimOpts.MutCurrMult;
 
@@ -545,7 +534,7 @@ namespace DarwinBots.Modules
                 rob.Mutations++;
                 rob.LastMutation++;
 
-                LogMutation(robotManager, rob, $"Reversal of {length * 2 + 1} bps centered at {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
+                rob.LogMutation($"Reversal of {length * 2 + 1} bps centered at {t} during cycle {SimOpt.SimOpts.TotRunCycle}");
             }
         }
     }

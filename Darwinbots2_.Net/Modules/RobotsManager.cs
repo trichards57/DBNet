@@ -170,8 +170,8 @@ namespace DarwinBots.Modules
                 {
                     NeoMutations.Mutate(this, rob);
                     rob.MakeStuff(SimOpt.SimOpts.Costs);
-                    HandleWaste(rob);
-                    Shooting(rob);
+                    rob.HandleWaste(_shotManager);
+                    Shoot(rob);
                     rob.ManageChlr(TotalChlr, SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier, SimOpt.SimOpts.MaxPopulation);
                     rob.ManageBody();
                     rob.ManageBouyancy();
@@ -338,29 +338,6 @@ namespace DarwinBots.Modules
             return rob1.Count(b => b.match == 0) + rob2.Count(b => b.match == 0) / (rob1.Count + rob2.Count);
         }
 
-        private void HandleWaste(Robot rob)
-        {
-            if (rob.Waste > 0 && rob.Chloroplasts > 0)
-                Vegs.feedveg2(rob);
-
-            if (SimOpt.SimOpts.BadWasteLevel == 0)
-                SimOpt.SimOpts.BadWasteLevel = 400;
-
-            rob.Alzheimer(SimOpt.SimOpts.BadWasteLevel);
-
-            if (rob.Waste > 32000)
-                _shotManager.Defecate(rob);
-
-            if (rob.PermanentWaste > 32000)
-                rob.PermanentWaste = 32000;
-
-            if (rob.Waste < 0)
-                rob.Waste = 0;
-
-            rob.Memory[828] = (int)rob.Waste;
-            rob.Memory[829] = (int)rob.PermanentWaste;
-        }
-
         private void ManageDeath(Robot rob)
         {
             if (SimOpt.SimOpts.CorpseEnabled)
@@ -495,7 +472,7 @@ namespace DarwinBots.Modules
             nuovo.OldMutations = robot.OldMutations;
 
             nuovo.LastMutation = 0;
-            nuovo.LastMutationDetail = robot.LastMutationDetail;
+            nuovo.LastMutationDetail.AddRange(robot.LastMutationDetail);
 
             for (var t = 0; t < 12; t++)
                 nuovo.Skin[t] = robot.Skin[t];
@@ -764,7 +741,7 @@ namespace DarwinBots.Modules
             nuovo.OldMutations = female.OldMutations; //Botsareus 10/8/2015
 
             nuovo.LastMutation = 0;
-            nuovo.LastMutationDetail = female.LastMutationDetail;
+            nuovo.LastMutationDetail.AddRange(female.LastMutationDetail);
 
             for (var t = 0; t < 12; t++)
             {
@@ -855,7 +832,7 @@ namespace DarwinBots.Modules
             for (var i = 0; i < 14; i++)
                 female.EpigeneticMemory[i] = 0;
 
-            NeoMutations.LogMutation(this, nuovo, $"Female DNA len {female.Dna.Count} and male DNA len {female.SpermDna.Count} had offspring DNA len {nuovo.Dna.Count} during cycle {SimOpt.SimOpts.TotRunCycle}");
+            nuovo.LogMutation($"Female DNA len {female.Dna.Count} and male DNA len {female.SpermDna.Count} had offspring DNA len {nuovo.Dna.Count} during cycle {SimOpt.SimOpts.TotRunCycle}");
 
             NeoMutations.Mutate(this, nuovo, true);
 
@@ -888,6 +865,10 @@ namespace DarwinBots.Modules
                 return;
 
             var shtype = rob.Memory[MemoryAddresses.shoot];
+
+            if (shtype == 0)
+                return;
+
             double value = rob.Memory[MemoryAddresses.shootval];
             var multiplier = 0.0;
             var rngmultiplier = 0.0;
@@ -1049,14 +1030,6 @@ namespace DarwinBots.Modules
             }
             rob.Memory[MemoryAddresses.shoot] = 0;
             rob.Memory[MemoryAddresses.shootval] = 0;
-        }
-
-        private void Shooting(Robot rob)
-        {
-            if (rob.Memory[MemoryAddresses.shoot] != 0)
-                Shoot(rob);
-
-            rob.Memory[MemoryAddresses.shoot] = 0;
         }
 
         private bool SimpleCollision(int x, int y, Robot rob)

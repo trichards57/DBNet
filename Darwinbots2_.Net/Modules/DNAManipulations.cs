@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using DarwinBots.Support;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -44,11 +43,6 @@ namespace DarwinBots.Modules
             }
 
             return genesCount;
-        }
-
-        public static int DnaLen(IEnumerable<DnaBlock> dna)
-        {
-            return dna.TakeWhile(d => !(d.Type == 10 & d.Value == 1)).Count();
         }
 
         public static int GeneEnd(IList<DnaBlock> dna, int position)

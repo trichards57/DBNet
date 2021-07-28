@@ -550,7 +550,7 @@ namespace DarwinBots.Modules
             if (totlen > 3000000)
             {
                 foreach (var rob in _robotsManager.Robots)
-                    rob.LastMutationDetail = "";
+                    rob.LastMutationDetail.Clear();
             }
         }
     }

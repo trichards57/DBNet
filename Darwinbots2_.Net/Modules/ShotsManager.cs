@@ -394,7 +394,7 @@ namespace DarwinBots.Modules
 
             rob.SubSpecies = NeoMutations.NewSubSpecies(rob); // Infection with a virus counts as a new subspecies
 
-            NeoMutations.LogMutation(robotManager, rob, $"Infected with virus during cycle {SimOpt.SimOpts.TotRunCycle} at pos {insert}");
+            NeoMutations.LogMutation(rob, $"Infected with virus during cycle {SimOpt.SimOpts.TotRunCycle} at pos {insert}");
             rob.Mutations++;
             rob.LastMutation++;
         }
