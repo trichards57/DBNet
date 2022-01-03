@@ -175,18 +175,13 @@ namespace DarwinBots.ViewModels
 
         private void DisplayFatalRestrictions()
         {
-            var vm = new RestrictionOptionsViewModel
-            {
-                DialogState = IsVeg ? RestrictionOptionsDialogState.VegetableKillsOnly : RestrictionOptionsDialogState.NonVegetableKillsOnly
-            };
-
-            vm.LoadFromSpecies(this);
-
             var dialog = new RestrictionOptionsForm();
+            dialog.ViewModel.DialogState = IsVeg ? RestrictionOptionsDialogState.VegetableKillsOnly : RestrictionOptionsDialogState.NonVegetableKillsOnly;
+            dialog.ViewModel.LoadFromSpecies(this);
             var res = dialog.ShowDialog();
 
             if (res == true)
-                vm.SaveToSpecies(this);
+                dialog.ViewModel.SaveToSpecies(this);
         }
 
         private void DisplayMutationRates()

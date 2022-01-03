@@ -1,24 +1,24 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Input;
-using AsyncAwaitBestPractices.MVVM;
+﻿using AsyncAwaitBestPractices.MVVM;
 using DarwinBots.DataModel;
 using DarwinBots.Model;
 using DarwinBots.Modules;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Win32;
 using PostSharp.Patterns.Model;
+using System;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged]
     internal class RestrictionOptionsViewModel : ObservableObject
     {
-        private readonly RestrictionOptionsDialogState _dialogState;
+        private RestrictionOptionsDialogState _dialogState;
         private string _speciesName;
 
         public RestrictionOptionsViewModel()
@@ -30,7 +30,7 @@ namespace DarwinBots.ViewModels
         public RestrictionOptionsDialogState DialogState
         {
             get => _dialogState;
-            init
+            set
             {
                 _dialogState = value;
 
