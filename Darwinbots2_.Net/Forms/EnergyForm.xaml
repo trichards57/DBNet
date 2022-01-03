@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:EnergyViewModel}"
-        mc:Ignorable="d" Title="Energy Management" ResizeMode="NoResize" WindowStyle="ToolWindow">
+        mc:Ignorable="d" Title="Energy Management" Height="365" Width="460" ResizeMode="NoResize">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
@@ -45,10 +45,10 @@
                             <RowDefinition />
                             <RowDefinition />
                         </Grid.RowDefinitions>
-                        <TextBox Grid.Column="1" Margin="2.5,5,2.5,2.5" />
+                        <TextBox Text="{Binding TidesCyclesOff}" Grid.Column="1" Margin="2.5,5,2.5,2.5" />
                         <TextBlock Grid.Row="0" Grid.Column="2" Margin="2.5,5,5,2.5">cycles (off)</TextBlock>
                         <Label Padding="0" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5">offset</Label>
-                        <TextBox Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,2.5,2.5" />
+                        <TextBox Text="{Binding TidesCyclesOn}" Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,2.5,2.5" />
                         <TextBlock Grid.Row="1" Grid.Column="2" Margin="2.5,2.5,5,5">cycles</TextBlock>
                     </Grid>
                 </GroupBox>
@@ -66,19 +66,19 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Label Grid.RowSpan="3" Margin="5,5,2.5,2.5" VerticalAlignment="Center">When Threshold reached:</Label>
-                        <RadioButton Grid.Row="0" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,5,5,2.5">Temporarily Suspend Day Cycles</RadioButton>
-                        <RadioButton Grid.Row="1" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Permanently Toggle Sun State</RadioButton>
-                        <RadioButton Grid.Row="2" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Advance Sun to Dawn / Dusk</RadioButton>
+                        <RadioButton IsChecked="{Binding ThresholdSuspendsDayCycles}" Grid.Row="0" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,5,5,2.5">Temporarily Suspend Day Cycles</RadioButton>
+                        <RadioButton IsChecked="{Binding ThresholdAdvancesSun}" Grid.Row="1" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Permanently Toggle Sun State</RadioButton>
+                        <RadioButton IsChecked="{Binding ThresholdAdvancesSun}" Grid.Row="2" Grid.Column="1" GroupName="ThresholdMode" Margin="2.5,2.5,5,2.5">Advance Sun to Dawn / Dusk</RadioButton>
                         <CheckBox IsChecked="{Binding EnableSunGoesDownThreshold}" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" >Sun goes down if nrg &gt;</CheckBox>
-                        <TextBox IsEnabled="{Binding EnableSunGoesDownThreshold}" Grid.Column="1" Grid.Row="3" x:Name="SunDownThreshold" Margin="2.5,2.5,5,2.5" />
+                        <TextBox IsEnabled="{Binding EnableSunGoesDownThreshold}" Text="{Binding SunGoesDownThreshold}" Grid.Column="1" Grid.Row="3" x:Name="SunDownThreshold" Margin="2.5,2.5,5,2.5" />
                         <CheckBox IsChecked="{Binding EnableSunComesUpThreshold}" Grid.Row="4" Grid.Column="0" Margin="5,2.5,2.5,5">Sun comes up if nrg &lt;</CheckBox>
-                        <TextBox IsEnabled="{Binding EnableSunComesUpThreshold}" Grid.Column="1" Grid.Row="4" x:Name="SunUpThreshold" Margin="2.5,2.5,5,5" />
+                        <TextBox IsEnabled="{Binding EnableSunComesUpThreshold}" Text="{Binding SunComesUpThreshold}" Grid.Column="1" Grid.Row="4" x:Name="SunUpThreshold" Margin="2.5,2.5,5,5" />
                     </Grid>
                 </GroupBox>
             </Grid>
         </GroupBox>
         <StackPanel Margin="5,2.5,5,5" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="5,2.5,2.5,5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" Click="OKButton_Click">OKay</Button>
+            <Button Margin="5,2.5,2.5,5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" Click="OKButton_Click">Okay</Button>
             <Button Margin="2.5,2.5,5,5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Center" Click="CancelButton_Click">Cancel</Button>
         </StackPanel>
     </Grid>

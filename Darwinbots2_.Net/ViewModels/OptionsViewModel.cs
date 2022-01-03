@@ -90,6 +90,7 @@ namespace DarwinBots.ViewModels
         private int _repopulationCooldownPeriod;
         private int _robotsPerRepopulationEvent;
         private double _sedimentLevel;
+        private SpeciesViewModel _selectedSpecies;
         private int _shotEnergy;
         private bool _shotModeFixedEnergy;
         private bool _shotModeProportional;
@@ -145,6 +146,7 @@ namespace DarwinBots.ViewModels
 
         public int CyclesHigh { get => _cyclesHigh; set => SetProperty(ref _cyclesHigh, Math.Clamp(value, 0, 500000)); }
         public int CyclesLow { get => _cyclesLow; set => SetProperty(ref _cyclesLow, Math.Clamp(value, 0, 500000)); }
+        public int DayNightCyclePeriod { get; set; }
         public int DecayPeriod { get; set; }
         public double DecayRate { get; set; }
 
@@ -205,6 +207,7 @@ namespace DarwinBots.ViewModels
             }
         }
 
+        public bool EnableDayNightCycles { get; set; }
         public bool EnableLeftRightWrap { get; set; }
 
         public bool EnableMutationCycling { get; set; }
@@ -223,8 +226,11 @@ namespace DarwinBots.ViewModels
         }
 
         public bool EnablePondMode { get; set; }
+        public bool EnableSunComesUpThreshold { get; set; }
+        public bool EnableSunGoesDownThreshold { get; set; }
         public bool EnableTides { get; set; }
         public bool EnableTopDownWrap { get; set; }
+        public bool EnableWeather { get; set; }
         public float EnergyScalingFactor { get => _energyScalingFactor; set => SetProperty(ref _energyScalingFactor, value == 0 ? 1 : value); }
 
         public int FieldHeight
@@ -337,6 +343,7 @@ namespace DarwinBots.ViewModels
         public bool FixBotRadii { get; set; }
         public VerticalGravity Gravity { get; set; }
         public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
+        public bool IsSpeciesSelected => SelectedSpecies != null;
         public int LightLevel { get => _lightLevel; set => SetProperty(ref _lightLevel, Math.Clamp(value, 0, 1000)); }
         public ICommand ListNonNativeSpeciesCommand { get; }
         public ICommand LoadSettingsCommand { get; }
@@ -378,7 +385,17 @@ namespace DarwinBots.ViewModels
         public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set => SetProperty(ref _robotsPerRepopulationEvent, Math.Clamp(value, 0, 32000)); }
         public ICommand SaveSettingsCommand { get; }
         public double SedimentLevel { get => _sedimentLevel; set => SetProperty(ref _sedimentLevel, Math.Clamp(value, 0, 200)); }
-        public SpeciesViewModel SelectedSpecies { get; set; }
+
+        public SpeciesViewModel SelectedSpecies
+        {
+            get => _selectedSpecies;
+            set
+            {
+                SetProperty(ref _selectedSpecies, value);
+                OnPropertyChanged(nameof(IsSpeciesSelected));
+            }
+        }
+
         public int ShotEnergy { get => _shotEnergy; set => SetProperty(ref _shotEnergy, Math.Clamp(value, 0, 10000)); }
 
         public bool ShotModeFixedEnergy
@@ -410,6 +427,13 @@ namespace DarwinBots.ViewModels
         public ICommand ShowGlobalSettingsCommand { get; }
         public ObservableCollection<SpeciesViewModel> SpeciesList { get; } = new();
         public ICommand StartNewCommand { get; }
+        public int SunComesUpThreshold { get; set; }
+        public int SunGoesDownThreshold { get; set; }
+        public bool ThresholdAdvancesSun { get; set; }
+        public bool ThresholdSuspendsDayCycles { get; set; }
+        public bool ThresholdTogglesSunState { get; set; }
+        public int TidesCyclesOff { get; set; }
+        public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
         public int WasteThreshold { get; set; }
         public object YGravity { get; private set; }
@@ -572,6 +596,33 @@ namespace DarwinBots.ViewModels
 
             FieldWidth = options.FieldWidth;
             FieldHeight = options.FieldHeight;
+
+            DayNightCyclePeriod = options.CycleLength;
+            EnableDayNightCycles = options.DayNight;
+            SunComesUpThreshold = options.SunUpThreshold;
+            EnableSunComesUpThreshold = options.SunUp;
+            SunGoesDownThreshold = options.SunDownThreshold;
+            EnableSunGoesDownThreshold = options.SunDown;
+
+            switch (options.SunThresholdMode)
+            {
+                case SunThresholdMode.TemporarilySuspend:
+                    ThresholdSuspendsDayCycles = true;
+                    break;
+
+                case SunThresholdMode.AdvanceToDawnDusk:
+                    ThresholdAdvancesSun = true;
+                    break;
+
+                case SunThresholdMode.PermanentlyToggle:
+                    ThresholdTogglesSunState = true;
+                    break;
+            }
+
+            EnableWeather = options.SunOnRnd;
+
+            TidesCyclesOn = options.Tides;
+            TidesCyclesOff = options.TidesOf;
         }
 
         public void SaveToOptions(SimOptions options)
@@ -724,6 +775,25 @@ namespace DarwinBots.ViewModels
 
             options.FieldWidth = FieldWidth;
             options.FieldHeight = FieldHeight;
+
+            options.CycleLength = DayNightCyclePeriod;
+            options.DayNight = EnableDayNightCycles;
+            options.SunUpThreshold = SunComesUpThreshold;
+            options.SunUp = EnableSunComesUpThreshold;
+            options.SunDownThreshold = SunGoesDownThreshold;
+            options.SunDown = EnableSunGoesDownThreshold;
+
+            if (ThresholdSuspendsDayCycles)
+                options.SunThresholdMode = SunThresholdMode.TemporarilySuspend;
+            else if (ThresholdAdvancesSun)
+                options.SunThresholdMode = SunThresholdMode.AdvanceToDawnDusk;
+            else
+                options.SunThresholdMode = SunThresholdMode.PermanentlyToggle;
+
+            options.SunOnRnd = EnableWeather;
+
+            options.Tides = TidesCyclesOn;
+            options.TidesOf = TidesCyclesOff;
         }
 
         public void SetPondMode(bool enable)
@@ -862,21 +932,24 @@ namespace DarwinBots.ViewModels
 
         private void ShowCustomCosts()
         {
-            var vm = new CostsViewModel();
-            vm.LoadFromOptions(_costs);
-
             var form = new CostsForm();
+            form.ViewModel.LoadFromOptions(_costs);
+
             var res = form.ShowDialog();
 
             if (res == true)
-            {
-                _costs = vm.SaveOptions();
-            }
+                _costs = form.ViewModel.SaveOptions();
         }
 
         private void ShowEnergyManagement()
         {
-            // TODO : Implement this
+            var form = new EnergyForm();
+            form.ViewModel.LoadFromOptions(this);
+
+            var res = form.ShowDialog();
+
+            if (res == true)
+                form.ViewModel.SaveToOptions(this);
         }
 
         private void ShowGlobalSettings()

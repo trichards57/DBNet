@@ -6,7 +6,7 @@
         xmlns:forms="clr-namespace:DarwinBots.Forms"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:OptionsViewModel, IsDesignTimeCreatable=True}"
-        mc:Ignorable="d" Title="Simulation Settings" SizeToContent="Manual" Height="520" Width="700">
+        mc:Ignorable="d" Title="Simulation Settings" Height="520" Width="700" ResizeMode="NoResize">
     <Window.Resources>
         <Style TargetType="Button">
             <Setter Property="Padding" Value="5" />
@@ -55,12 +55,12 @@
                         <Button Command="{Binding DuplicateSpeciesCommand}" Grid.Row="3" Grid.Column="1" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Duplicate</Button>
                         <Button Command="{Binding RenameSpeciesCommand}" Grid.Row="3" Grid.Column="2" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Rename</Button>
                         <Label Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5">Species Comments:</Label>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0" Padding="5" Margin="5,2.5,2.5,5" >
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0" Padding="5" Margin="5,2.5,2.5,5">
                             <TextBlock DataContext="{Binding SelectedSpecies}" Text="{Binding Comments}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                         </ScrollViewer>
                     </Grid>
-                    <GroupBox DataContext="{Binding SelectedSpecies}" Grid.Column="1" Margin="2.5,5,5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Species Properties">
-                        <Grid>
+                    <GroupBox IsEnabled="{Binding IsSpeciesSelected}" Grid.Column="1" Margin="2.5,5,5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Species Properties">
+                        <Grid DataContext="{Binding SelectedSpecies}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />

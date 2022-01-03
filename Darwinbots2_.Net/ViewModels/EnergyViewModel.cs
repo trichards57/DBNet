@@ -1,7 +1,6 @@
-﻿using System;
-using DarwinBots.Model;
-using Microsoft.Toolkit.Mvvm.ComponentModel;
+﻿using Microsoft.Toolkit.Mvvm.ComponentModel;
 using PostSharp.Patterns.Model;
+using System;
 
 namespace DarwinBots.ViewModels
 {
@@ -79,56 +78,36 @@ namespace DarwinBots.ViewModels
             set => SetProperty(ref _tidesCyclesOn, Math.Clamp(value, 0, 32000));
         }
 
-        public void LoadFromOptions(SimOptions options)
+        public void LoadFromOptions(OptionsViewModel options)
         {
-            DayNightCyclePeriod = options.CycleLength;
-            EnableDayNightCycles = options.DayNight;
-            SunComesUpThreshold = options.SunUpThreshold;
-            EnableSunComesUpThreshold = options.SunUp;
-            SunGoesDownThreshold = options.SunDownThreshold;
-            EnableSunGoesDownThreshold = options.SunDown;
-
-            switch (options.SunThresholdMode)
-            {
-                case SunThresholdMode.TemporarilySuspend:
-                    ThresholdSuspendsDayCycles = true;
-                    break;
-
-                case SunThresholdMode.AdvanceToDawnDusk:
-                    ThresholdAdvancesSun = true;
-                    break;
-
-                case SunThresholdMode.PermanentlyToggle:
-                    ThresholdTogglesSunState = true;
-                    break;
-            }
-
-            EnableWeather = options.SunOnRnd;
-
-            TidesCyclesOn = options.Tides;
-            TidesCyclesOff = options.TidesOf;
+            DayNightCyclePeriod = options.DayNightCyclePeriod;
+            EnableDayNightCycles = options.EnableDayNightCycles;
+            SunComesUpThreshold = options.SunComesUpThreshold;
+            EnableSunComesUpThreshold = options.EnableSunComesUpThreshold;
+            SunGoesDownThreshold = options.SunGoesDownThreshold;
+            EnableSunGoesDownThreshold = options.EnableSunGoesDownThreshold;
+            ThresholdSuspendsDayCycles = options.ThresholdSuspendsDayCycles;
+            ThresholdAdvancesSun = options.ThresholdAdvancesSun;
+            ThresholdTogglesSunState = options.ThresholdTogglesSunState;
+            EnableWeather = options.EnableWeather;
+            TidesCyclesOn = options.TidesCyclesOn;
+            TidesCyclesOff = options.TidesCyclesOff;
         }
 
-        public void SaveToOptions(SimOptions options)
+        public void SaveToOptions(OptionsViewModel options)
         {
-            options.CycleLength = DayNightCyclePeriod;
-            options.DayNight = EnableDayNightCycles;
-            options.SunUpThreshold = SunComesUpThreshold;
-            options.SunUp = EnableSunComesUpThreshold;
-            options.SunDownThreshold = SunGoesDownThreshold;
-            options.SunDown = EnableSunGoesDownThreshold;
-
-            if (ThresholdSuspendsDayCycles)
-                options.SunThresholdMode = SunThresholdMode.TemporarilySuspend;
-            else if (ThresholdAdvancesSun)
-                options.SunThresholdMode = SunThresholdMode.AdvanceToDawnDusk;
-            else
-                options.SunThresholdMode = SunThresholdMode.PermanentlyToggle;
-
-            options.SunOnRnd = EnableWeather;
-
-            options.Tides = TidesCyclesOn;
-            options.TidesOf = TidesCyclesOff;
+            options.DayNightCyclePeriod = DayNightCyclePeriod;
+            options.EnableDayNightCycles = EnableDayNightCycles;
+            options.SunComesUpThreshold = SunComesUpThreshold;
+            options.EnableSunComesUpThreshold = EnableSunComesUpThreshold;
+            options.SunGoesDownThreshold = SunGoesDownThreshold;
+            options.EnableSunGoesDownThreshold = EnableSunGoesDownThreshold;
+            options.ThresholdSuspendsDayCycles = ThresholdSuspendsDayCycles;
+            options.ThresholdAdvancesSun = ThresholdAdvancesSun;
+            options.ThresholdTogglesSunState = ThresholdTogglesSunState;
+            options.EnableWeather = EnableWeather;
+            options.TidesCyclesOn = TidesCyclesOn;
+            options.TidesCyclesOff = TidesCyclesOff;
         }
     }
 }
