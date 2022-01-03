@@ -1,22 +1,22 @@
-﻿using AsyncAwaitBestPractices.MVVM;
-using DarwinBots.DataModel;
-using DarwinBots.Model;
-using DarwinBots.Modules;
-using GalaSoft.MvvmLight;
-using Microsoft.Win32;
-using PostSharp.Patterns.Model;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using AsyncAwaitBestPractices.MVVM;
+using DarwinBots.DataModel;
+using DarwinBots.Model;
+using DarwinBots.Modules;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Win32;
+using PostSharp.Patterns.Model;
 
 namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged]
-    internal class RestrictionOptionsViewModel : ViewModelBase
+    internal class RestrictionOptionsViewModel : ObservableObject
     {
         private readonly RestrictionOptionsDialogState _dialogState;
         private string _speciesName;

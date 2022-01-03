@@ -12,5 +12,11 @@ namespace DarwinBots.Forms
         }
 
         public MutationsProbabilitiesViewModel ViewModel { get; } = new();
+
+        private void OkayClicked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
     }
 }

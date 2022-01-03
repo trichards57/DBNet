@@ -22,9 +22,16 @@ namespace DarwinBots.Model
             DisableDna = false;
             CantReproduce = false;
             VirusImmune = false;
+            Quantity = 5;
+            Stnrg = 3000;
 
             Color = System.Windows.Media.Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256),
                 (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
+
+            Mutables = new MutationProbabilities()
+            {
+                EnableMutations = true
+            };
         }
 
         public bool CantReproduce { get; set; }

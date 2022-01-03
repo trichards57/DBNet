@@ -1,13 +1,13 @@
 ﻿using DarwinBots.Modules;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using PostSharp.Patterns.Model;
 using System.Windows.Input;
 
 namespace DarwinBots.ViewModels
 {
-    [NotifyPropertyChanged]
-    internal class CostsViewModel : ViewModelBase
+    [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
+    internal class CostsViewModel : ObservableObject
     {
         private bool _enableAgeCostIncreaseLog;
         private bool _enableAgeCostIncreasePerCycle;
@@ -40,8 +40,7 @@ namespace DarwinBots.ViewModels
             get => _enableAgeCostIncreaseLog;
             set
             {
-                _enableAgeCostIncreaseLog = value;
-                RaisePropertyChanged();
+                SetProperty(ref _enableAgeCostIncreaseLog, value);
                 if (EnableAgeCostIncreasePerCycle && value)
                     EnableAgeCostIncreasePerCycle = false;
             }
@@ -52,8 +51,7 @@ namespace DarwinBots.ViewModels
             get => _enableAgeCostIncreasePerCycle;
             set
             {
-                _enableAgeCostIncreasePerCycle = value;
-                RaisePropertyChanged();
+                SetProperty(ref _enableAgeCostIncreasePerCycle, value);
                 if (EnableAgeCostIncreaseLog && value)
                     EnableAgeCostIncreaseLog = false;
             }

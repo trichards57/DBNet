@@ -1,8 +1,9 @@
 ﻿using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Modules;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using DarwinBots.Services;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Win32;
 using PostSharp.Patterns.Model;
 using System;
@@ -56,12 +57,14 @@ namespace DarwinBots.ViewModels
         Star
     }
 
-    [NotifyPropertyChanged]
-    internal class OptionsViewModel : ViewModelBase
+    [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
+    public class OptionsViewModel : ObservableObject, IAsyncDisposable
     {
         // TODO : Show custom physics dialog
         // TODO : Implement saving and loading settings
 
+        private readonly IClipboardService _clipboardService;
+        private readonly IDialogService _dialogService;
         private readonly Timer _lightTimer;
         private Costs _costs;
         private bool _costsCustom;
@@ -69,10 +72,10 @@ namespace DarwinBots.ViewModels
         private int _cyclesHigh;
         private int _cyclesLow;
         private bool _decayTypeEnergy;
-        private bool _decayTypeNone;
+        private bool _decayTypeNone = true;
         private bool _decayTypeWaste;
-        private bool _enabelMutationSineWave;
         private bool _enableCorpseMode;
+        private bool _enableMutationSineWave;
         private float _energyScalingFactor;
         private bool _fieldModeCustom;
         private bool _fieldModeFluid;
@@ -91,14 +94,20 @@ namespace DarwinBots.ViewModels
         private bool _shotModeFixedEnergy;
         private bool _shotModeProportional;
 
-        public OptionsViewModel()
+        public OptionsViewModel() : this(null, null)
         {
+        }
+
+        public OptionsViewModel(IClipboardService clipboardService = null, IDialogService dialogService = null)
+        {
+            _clipboardService = clipboardService ?? new ClipboardService();
+            _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
             _lightTimer = new Timer(LightTimerTick, null, Timeout.Infinite, Timeout.Infinite);
             ShowEnergyManagementCommand = new RelayCommand(ShowEnergyManagement);
             ShowGlobalSettingsCommand = new RelayCommand(ShowGlobalSettings);
             ListNonNativeSpeciesCommand = new RelayCommand(ListNonNativeSpecies);
             ShowCustomCostsCommand = new RelayCommand(ShowCustomCosts);
-            AddSpeciesCommand = new RelayCommand(AddSpecies);
+            AddSpeciesCommand = new AsyncRelayCommand(AddSpecies);
             DuplicateSpeciesCommand = new RelayCommand(DuplicateSpecies);
             DeleteSpeciesCommand = new RelayCommand(DeleteSpecies);
         }
@@ -113,17 +122,11 @@ namespace DarwinBots.ViewModels
             get => _costsCustom;
             set
             {
-                if (_costsCustom == value)
-                    return;
-
-                _costsCustom = value;
-                RaisePropertyChanged();
-
-                if (!_costsCustom)
-                    return;
-
-                CostsNoCosts = false;
-                _costs = Costs.DefaultCosts;
+                if (SetProperty(ref _costsCustom, value) && _costsCustom)
+                {
+                    CostsNoCosts = false;
+                    _costs = Costs.DefaultCosts;
+                }
             }
         }
 
@@ -132,9 +135,7 @@ namespace DarwinBots.ViewModels
             get => _costsNoCosts;
             set
             {
-                _costsNoCosts = value;
-                RaisePropertyChanged();
-                if (_costsNoCosts)
+                if (SetProperty(ref _costsNoCosts, value) && _costsNoCosts)
                 {
                     CostsCustom = false;
                     _costs = Costs.ZeroCosts;
@@ -142,8 +143,8 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public int CyclesHigh { get => _cyclesHigh; set { _cyclesHigh = Math.Clamp(value, 0, 500000); RaisePropertyChanged(); } }
-        public int CyclesLow { get => _cyclesLow; set { _cyclesLow = Math.Clamp(value, 0, 500000); RaisePropertyChanged(); } }
+        public int CyclesHigh { get => _cyclesHigh; set => SetProperty(ref _cyclesHigh, Math.Clamp(value, 0, 500000)); }
+        public int CyclesLow { get => _cyclesLow; set => SetProperty(ref _cyclesLow, Math.Clamp(value, 0, 500000)); }
         public int DecayPeriod { get; set; }
         public double DecayRate { get; set; }
 
@@ -152,9 +153,7 @@ namespace DarwinBots.ViewModels
             get => _decayTypeEnergy;
             set
             {
-                _decayTypeEnergy = value;
-                RaisePropertyChanged();
-                if (_decayTypeEnergy)
+                if (SetProperty(ref _decayTypeEnergy, value) && _decayTypeEnergy)
                 {
                     DecayTypeNone = false;
                     DecayTypeWaste = false;
@@ -167,9 +166,7 @@ namespace DarwinBots.ViewModels
             get => _decayTypeNone;
             set
             {
-                _decayTypeNone = value;
-                RaisePropertyChanged();
-                if (_decayTypeNone)
+                if (SetProperty(ref _decayTypeNone, value) && _decayTypeNone)
                 {
                     DecayTypeEnergy = false;
                     DecayTypeWaste = false;
@@ -179,11 +176,10 @@ namespace DarwinBots.ViewModels
 
         public bool DecayTypeWaste
         {
-            get => _decayTypeWaste; set
+            get => _decayTypeWaste;
+            set
             {
-                _decayTypeWaste = value;
-                RaisePropertyChanged();
-                if (_decayTypeWaste)
+                if (SetProperty(ref _decayTypeWaste, value) && _decayTypeWaste)
                 {
                     DecayTypeNone = false;
                     DecayTypeEnergy = false;
@@ -195,27 +191,12 @@ namespace DarwinBots.ViewModels
         public bool DisableMutations { get; set; }
         public ICommand DuplicateSpeciesCommand { get; }
 
-        public bool EnabelMutationSineWave
-        {
-            get => _enabelMutationSineWave;
-            set
-            {
-                _enabelMutationSineWave = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(MaxCyclesLabel));
-                RaisePropertyChanged(nameof(MinCyclesLabel));
-            }
-        }
-
         public bool EnableCorpseMode
         {
             get => _enableCorpseMode;
             set
             {
-                _enableCorpseMode = value;
-                RaisePropertyChanged();
-
-                if (_enableCorpseMode)
+                if (SetProperty(ref _enableCorpseMode, value) && _enableCorpseMode)
                 {
                     DecayTypeEnergy = true;
                     DecayRate = 75;
@@ -225,25 +206,51 @@ namespace DarwinBots.ViewModels
         }
 
         public bool EnableLeftRightWrap { get; set; }
+
         public bool EnableMutationCycling { get; set; }
+
+        public bool EnableMutationSineWave
+        {
+            get => _enableMutationSineWave;
+            set
+            {
+                if (SetProperty(ref _enableMutationSineWave, value))
+                {
+                    OnPropertyChanged(nameof(MaxCyclesLabel));
+                    OnPropertyChanged(nameof(MinCyclesLabel));
+                }
+            }
+        }
+
         public bool EnablePondMode { get; set; }
         public bool EnableTides { get; set; }
         public bool EnableTopDownWrap { get; set; }
-        public float EnergyScalingFactor { get => _energyScalingFactor; set { _energyScalingFactor = value == 0 ? 1 : value; RaisePropertyChanged(); } }
+        public float EnergyScalingFactor { get => _energyScalingFactor; set => SetProperty(ref _energyScalingFactor, value == 0 ? 1 : value); }
 
         public int FieldHeight
         {
             get
             {
                 if (FieldSize == 1)
+                {
                     return 6928;
+                }
 
                 var height = 6000;
 
                 if (FieldSize <= 12)
+                {
                     return height * FieldSize;
+                }
 
                 return height * 12 * (FieldSize - 12) * 2;
+            }
+            private set
+            {
+                if (value <= 72000)
+                    FieldSize = value / 6000;
+                else
+                    FieldSize = (value / (6000 * 12 * 2)) + 12;
             }
         }
 
@@ -252,9 +259,7 @@ namespace DarwinBots.ViewModels
             get => _fieldModeCustom;
             set
             {
-                _fieldModeCustom = value;
-                RaisePropertyChanged();
-                if (_fieldModeCustom)
+                if (SetProperty(ref _fieldModeCustom, value) && _fieldModeCustom)
                 {
                     FieldModeFluid = false;
                     FieldModeSolid = false;
@@ -267,9 +272,7 @@ namespace DarwinBots.ViewModels
             get => _fieldModeFluid;
             set
             {
-                _fieldModeFluid = value;
-                RaisePropertyChanged();
-                if (_fieldModeFluid)
+                if (SetProperty(ref _fieldModeFluid, value) && _fieldModeFluid)
                 {
                     FieldModeCustom = false;
                     FieldModeSolid = false;
@@ -283,9 +286,7 @@ namespace DarwinBots.ViewModels
             get => _fieldModeSolid;
             set
             {
-                _fieldModeSolid = value;
-                RaisePropertyChanged();
-                if (_fieldModeSolid)
+                if (SetProperty(ref _fieldModeSolid, value) && _fieldModeSolid)
                 {
                     FieldModeFluid = false;
                     FieldModeCustom = false;
@@ -298,10 +299,11 @@ namespace DarwinBots.ViewModels
             get => _fieldSize;
             set
             {
-                _fieldSize = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(FieldWidth));
-                RaisePropertyChanged(nameof(FieldHeight));
+                if (SetProperty(ref _fieldSize, value))
+                {
+                    OnPropertyChanged(nameof(FieldWidth));
+                    OnPropertyChanged(nameof(FieldHeight));
+                }
             }
         }
 
@@ -310,30 +312,39 @@ namespace DarwinBots.ViewModels
             get
             {
                 if (FieldSize == 1)
+                {
                     return 9237;
+                }
 
                 var width = 8000;
 
                 if (FieldSize <= 12)
+                {
                     return width * FieldSize;
+                }
 
                 return width * 12 * (FieldSize - 12) * 2;
+            }
+            private set
+            {
+                if (value <= 96000)
+                    FieldSize = value / 8000;
+                else
+                    FieldSize = (value / (8000 * 12 * 2)) + 12;
             }
         }
 
         public bool FixBotRadii { get; set; }
-        public bool ForceCholoplastsSustain { get; set; }
-        public int GraphUpdateInterval { get; set; }
         public VerticalGravity Gravity { get; set; }
-        public int InitialLightEnergy { get => _initialLightEnergy; set { _initialLightEnergy = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
-        public int LightLevel { get => _lightLevel; set { _lightLevel = Math.Clamp(value, 0, 1000); RaisePropertyChanged(); } }
+        public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
+        public int LightLevel { get => _lightLevel; set => SetProperty(ref _lightLevel, Math.Clamp(value, 0, 1000)); }
         public ICommand ListNonNativeSpeciesCommand { get; }
         public ICommand LoadSettingsCommand { get; }
-        public string MaxCyclesLabel => EnabelMutationSineWave ? "Max at 20x" : "Cycles at 16x";
-        public int MaximumChloroplasts { get => _maximumChloroplasts; set { _maximumChloroplasts = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
+        public string MaxCyclesLabel => EnableMutationSineWave ? "Max at 20x" : "Cycles at 16x";
+        public int MaximumChloroplasts { get => _maximumChloroplasts; set => SetProperty(ref _maximumChloroplasts, Math.Clamp(value, 0, 32000)); }
         public double MaxVelocity { get; set; }
-        public string MinCyclesLabel => EnabelMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
-        public int MinimumChloroplastsThreshold { get => _minimumChloroplastsThreshold; set { _minimumChloroplastsThreshold = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
+        public string MinCyclesLabel => EnableMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
+        public int MinimumChloroplastsThreshold { get => _minimumChloroplastsThreshold; set => SetProperty(ref _minimumChloroplastsThreshold, Math.Clamp(value, 0, 32000)); }
         public DragPresets MovementDrag { get; set; }
         public MovementEfficiency MovementEfficiency { get; set; }
         public FrictionPresets MovementFriction { get; set; }
@@ -343,7 +354,9 @@ namespace DarwinBots.ViewModels
             get
             {
                 if (MutationMultiplier > 1)
+                {
                     return $"{(int)Math.Pow(2, MutationMultiplier)} X";
+                }
                 return $"1/{(int)Math.Pow(2, -MutationMultiplier)} X";
             }
         }
@@ -353,28 +366,29 @@ namespace DarwinBots.ViewModels
             get => _mutationMultiplier;
             set
             {
-                _mutationMultiplier = value;
-                RaisePropertyChanged();
-                RaisePropertyChanged(nameof(MutationDisplay));
+                if (SetProperty(ref _mutationMultiplier, value))
+                {
+                    OnPropertyChanged(nameof(MutationDisplay));
+                }
             }
         }
 
         public ICommand RenameSpeciesCommand { get; }
-        public int RepopulationCooldownPeriod { get => _repopulationCooldownPeriod; set { _repopulationCooldownPeriod = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
-        public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set { _robotsPerRepopulationEvent = Math.Clamp(value, 0, 32000); RaisePropertyChanged(); } }
+        public int RepopulationCooldownPeriod { get => _repopulationCooldownPeriod; set => SetProperty(ref _repopulationCooldownPeriod, Math.Clamp(value, 0, 32000)); }
+        public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set => SetProperty(ref _robotsPerRepopulationEvent, Math.Clamp(value, 0, 32000)); }
         public ICommand SaveSettingsCommand { get; }
-        public double SedimentLevel { get => _sedimentLevel; set { _sedimentLevel = Math.Clamp(value, 0.0, 200.0); RaisePropertyChanged(); } }
+        public double SedimentLevel { get => _sedimentLevel; set => SetProperty(ref _sedimentLevel, Math.Clamp(value, 0, 200)); }
         public SpeciesViewModel SelectedSpecies { get; set; }
-        public int ShotEnergy { get => _shotEnergy; set { _shotEnergy = Math.Clamp(value, 0, 10000); RaisePropertyChanged(); } }
+        public int ShotEnergy { get => _shotEnergy; set => SetProperty(ref _shotEnergy, Math.Clamp(value, 0, 10000)); }
 
         public bool ShotModeFixedEnergy
         {
             get => _shotModeFixedEnergy; set
             {
-                _shotModeFixedEnergy = value;
-                RaisePropertyChanged();
-                if (_shotModeFixedEnergy)
+                if (SetProperty(ref _shotModeFixedEnergy, value) && _shotModeFixedEnergy)
+                {
                     ShotModeProportional = false;
+                }
             }
         }
 
@@ -382,10 +396,10 @@ namespace DarwinBots.ViewModels
         {
             get => _shotModeProportional; set
             {
-                _shotModeProportional = value;
-                RaisePropertyChanged();
-                if (_shotModeProportional)
+                if (SetProperty(ref _shotModeProportional, value) && _shotModeProportional)
+                {
                     ShotModeFixedEnergy = false;
+                }
             }
         }
 
@@ -400,6 +414,12 @@ namespace DarwinBots.ViewModels
         public int WasteThreshold { get; set; }
         public object YGravity { get; private set; }
 
+        public async ValueTask DisposeAsync()
+        {
+            await _lightTimer.DisposeAsync();
+            GC.SuppressFinalize(this);
+        }
+
         public async Task LoadFromOptions(SimOptions options)
         {
             MaximumChloroplasts = options.MaxPopulation;
@@ -410,16 +430,17 @@ namespace DarwinBots.ViewModels
 
             switch (options.DecayType)
             {
-                case DecayType.None:
-                    DecayTypeNone = true;
-                    break;
-
                 case DecayType.Waste:
                     DecayTypeWaste = true;
                     break;
 
                 case DecayType.Energy:
                     DecayTypeEnergy = true;
+                    break;
+
+                case DecayType.None:
+                default:
+                    DecayTypeNone = true;
                     break;
             }
 
@@ -436,7 +457,7 @@ namespace DarwinBots.ViewModels
             ShotModeFixedEnergy = options.EnergyExType == ShotMode.Fixed;
             MutationMultiplier = Math.Log(Math.Max(options.MutCurrMult, 0), 2);
             EnableMutationCycling = options.MutOscill;
-            EnabelMutationSineWave = options.MutOscillSine;
+            EnableMutationSineWave = options.MutOscillSine;
             DisableMutations = options.DisableMutations;
             CyclesHigh = options.MutCycMax;
             CyclesLow = options.MutCycMin;
@@ -444,10 +465,6 @@ namespace DarwinBots.ViewModels
 
             switch (options.FluidSolidCustom)
             {
-                case FieldMode.Fluid:
-                    FieldModeFluid = true;
-                    break;
-
                 case FieldMode.Solid:
                     FieldModeSolid = true;
                     break;
@@ -455,34 +472,63 @@ namespace DarwinBots.ViewModels
                 case FieldMode.Custom:
                     FieldModeCustom = true;
                     break;
+
+                default:
+                case FieldMode.Fluid:
+                    FieldModeFluid = true;
+                    break;
             }
 
             if (options.Costs == Costs.ZeroCosts)
+            {
                 CostsNoCosts = true;
+            }
             else
+            {
                 CostsCustom = true;
+            }
 
             if (options.CoefficientKinetic == 0.75 && options.CoefficientStatic == 0.9 && options.ZGravity == 4)
+            {
                 MovementFriction = FrictionPresets.Sandpaper;
+            }
             else if (options.CoefficientKinetic == 0.4 && options.CoefficientStatic == 0.6 && options.ZGravity == 2)
+            {
                 MovementFriction = FrictionPresets.Metal;
+            }
             else if (options.CoefficientStatic == 0.05 && options.CoefficientKinetic == 0.05 && options.ZGravity == 1)
+            {
                 MovementFriction = FrictionPresets.Teflon;
+            }
             else if (options.CoefficientStatic == 0 & options.CoefficientKinetic == 0 & options.ZGravity == 0)
+            {
                 MovementFriction = FrictionPresets.None;
+            }
             else
+            {
                 MovementFriction = FrictionPresets.Custom;
+            }
 
             if (options.Viscosity == 0.01 && options.Density == 0.0000001)
+            {
                 MovementDrag = DragPresets.ThickFluid;
+            }
             else if (options.Viscosity == 0.0005 && options.Density == 0.0000001)
+            {
                 MovementDrag = DragPresets.Transitory;
+            }
             else if (options.Viscosity == 0.000025 && options.Density == 0.0000001)
+            {
                 MovementDrag = DragPresets.ThinFluid;
+            }
             else if (options.Viscosity == 0 & options.Density == 0)
+            {
                 MovementDrag = DragPresets.None;
+            }
             else
+            {
                 MovementDrag = DragPresets.Custom;
+            }
 
             MaxVelocity = options.MaxVelocity;
             VegEnergyBodyDistribution = options.VegFeedingToBody * 100;
@@ -523,6 +569,9 @@ namespace DarwinBots.ViewModels
                 await vm.LoadComment();
                 SpeciesList.Add(vm);
             }
+
+            FieldWidth = options.FieldWidth;
+            FieldHeight = options.FieldHeight;
         }
 
         public void SaveToOptions(SimOptions options)
@@ -534,11 +583,17 @@ namespace DarwinBots.ViewModels
             options.CorpseEnabled = EnableCorpseMode;
 
             if (DecayTypeEnergy)
+            {
                 options.DecayType = DecayType.Energy;
+            }
             else if (DecayTypeNone)
+            {
                 options.DecayType = DecayType.None;
+            }
             else
+            {
                 options.DecayType = DecayType.Waste;
+            }
 
             options.Decay = DecayRate;
             options.DecayDelay = DecayPeriod;
@@ -552,18 +607,24 @@ namespace DarwinBots.ViewModels
             options.EnergyExType = ShotModeProportional ? ShotMode.Proportional : ShotMode.Fixed;
             options.MutCurrMult = Math.Pow(MutationMultiplier, 2);
             options.MutOscill = EnableMutationCycling;
-            options.MutOscillSine = EnabelMutationSineWave;
+            options.MutOscillSine = EnableMutationSineWave;
             options.DisableMutations = DisableMutations;
             options.MutCycMax = CyclesHigh;
             options.MutCycMin = CyclesLow;
             options.MaxEnergy = InitialLightEnergy;
 
             if (FieldModeFluid)
+            {
                 options.FluidSolidCustom = FieldMode.Fluid;
+            }
             else if (FieldModeSolid)
+            {
                 options.FluidSolidCustom = FieldMode.Solid;
+            }
             else
+            {
                 options.FluidSolidCustom = FieldMode.Custom;
+            }
 
             switch (MovementFriction)
             {
@@ -655,9 +716,14 @@ namespace DarwinBots.ViewModels
             };
 
             foreach (var s in SpeciesList)
+            {
                 s.Save();
+            }
 
             options.Costs = _costs;
+
+            options.FieldWidth = FieldWidth;
+            options.FieldHeight = FieldHeight;
         }
 
         public void SetPondMode(bool enable)
@@ -688,7 +754,7 @@ namespace DarwinBots.ViewModels
             _lightTimer.Change(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
         }
 
-        private void AddSpecies()
+        private async Task AddSpecies()
         {
             var dialog = new OpenFileDialog
             {
@@ -702,13 +768,16 @@ namespace DarwinBots.ViewModels
             var result = dialog.ShowDialog();
 
             if (result != true)
+            {
                 return;
+            }
 
             var species = new Species(dialog.FileName);
             species.Mutables.ResetToDefault();
             species.AssignSkin();
 
             var vm = new SpeciesViewModel(species);
+            await vm.LoadComment();
 
             SpeciesList.Add(vm);
         }
@@ -716,7 +785,9 @@ namespace DarwinBots.ViewModels
         private void DeleteSpecies()
         {
             if (SelectedSpecies == null)
+            {
                 return;
+            }
 
             SpeciesList.Remove(SelectedSpecies);
 
@@ -726,12 +797,18 @@ namespace DarwinBots.ViewModels
         private void DuplicateSpecies()
         {
             if (SelectedSpecies == null)
+            {
                 return;
+            }
 
             if (SelectedSpecies.Native)
+            {
                 SpeciesList.Add(SelectedSpecies.Duplicate());
+            }
             else
+            {
                 MessageBox.Show("You cannot duplicate a bot that did not originate in this simulation.", "Cannot Duplicate Non-Native Species", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void LightTimerTick(object state)
@@ -746,7 +823,9 @@ namespace DarwinBots.ViewModels
                     EnergyScalingFactor = 100;
                 }
                 else
+                {
                     EnergyScalingFactor = n;
+                }
             }
             else
             {
@@ -758,23 +837,26 @@ namespace DarwinBots.ViewModels
                     EnergyScalingFactor = 2;
                 }
                 else
+                {
                     EnergyScalingFactor = n;
+                }
             }
         }
 
         private void ListNonNativeSpecies()
         {
-            var nativeSpecies = SpeciesList.Where(s => s.Native).ToList();
+            var nonNative = SpeciesList.Where(s => !s.Native).ToList();
 
-            if (!nativeSpecies.Any())
-                MessageBox.Show("There are no non-native species.", "Non-Native Species Summary", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (!nonNative.Any())
+            {
+                _dialogService.ShowInfoMessageBox("Non-Native Species Summary", "There are no non-native species.");
+            }
             else
             {
-                var names = string.Join(", ", nativeSpecies.Select(s => $"\"{s.Name}\""));
+                var names = string.Join(", ", nonNative.Select(s => $"\"{s.Name}\""));
 
-                Clipboard.SetText(names, TextDataFormat.CommaSeparatedValue);
-
-                MessageBox.Show($"The non-native species are:\n\n{names}\n\nThese have been copied to the clipboard.", "Non-Native Species Summary", MessageBoxButton.OK, MessageBoxImage.Information);
+                _clipboardService.CopyCsvToClipboard(names);
+                _dialogService.ShowInfoMessageBox("Non-Native Species Summary", $"The non-native species are:\n\n{names}\n\nThese have been copied to the clipboard.");
             }
         }
 
@@ -787,7 +869,9 @@ namespace DarwinBots.ViewModels
             var res = form.ShowDialog();
 
             if (res == true)
+            {
                 _costs = vm.SaveOptions();
+            }
         }
 
         private void ShowEnergyManagement()

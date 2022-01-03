@@ -1,8 +1,8 @@
 ﻿using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Support;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using PostSharp.Patterns.Model;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -13,12 +13,11 @@ using System.Windows.Media;
 
 namespace DarwinBots.ViewModels
 {
-    [NotifyPropertyChanged]
-    internal class SpeciesViewModel : ViewModelBase
+    [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
+    public class SpeciesViewModel : ObservableObject
     {
         // TODO : Sort out initial position
         // TODO : Sort out displaying skin
-        // TODO : Sort out displaying mutation rates dialog
         // TODO : Sort out colour picking
 
         private readonly Species _species;
@@ -31,9 +30,10 @@ namespace DarwinBots.ViewModels
             _species = species;
 
             DisplayFatalRestrictionsCommand = new RelayCommand(DisplayFatalRestrictions);
+            DisplayMutationRatesCommand = new RelayCommand(DisplayMutationRates);
             ChangeSkinCommand = new RelayCommand(ChangeSkin);
-            SetInitialEnergyCommand = new RelayCommand<int>(SetInitialEnergy);
-            SetInitialIndividualsCommand = new RelayCommand<int>(SetInitialIndividuals);
+            SetInitialEnergyCommand = new RelayCommand<string>(SetInitialEnergy);
+            SetInitialIndividualsCommand = new RelayCommand<string>(SetInitialIndividuals);
 
             DisableChloroplasts = _species.NoChlr;
             DisableDna = _species.DisableDna;
@@ -65,11 +65,10 @@ namespace DarwinBots.ViewModels
             get => _disableChloroplasts;
             set
             {
-                _disableChloroplasts = value;
-                RaisePropertyChanged();
-
-                if (DisableChloroplasts)
+                if (SetProperty(ref _disableChloroplasts, value) && _disableChloroplasts)
+                {
                     EnableRepopulation = false;
+                }
             }
         }
 
@@ -86,23 +85,17 @@ namespace DarwinBots.ViewModels
             get => _enableRepopulation;
             set
             {
-                _enableRepopulation = value;
-
-                if (_enableRepopulation)
+                if (SetProperty(ref _enableRepopulation, value) && _enableRepopulation)
+                {
                     DisableChloroplasts = false;
-
-                RaisePropertyChanged();
+                }
             }
         }
 
         public int InitialEnergy
         {
             get => _initialEnergy;
-            set
-            {
-                _initialEnergy = value % 32000;
-                RaisePropertyChanged();
-            }
+            set => SetProperty(ref _initialEnergy, value % 32000);
         }
 
         public int InitialIndividuals { get; set; }
@@ -144,11 +137,14 @@ namespace DarwinBots.ViewModels
 
         public async Task LoadComment()
         {
-            var lines = await File.ReadAllLinesAsync(Path.Combine(_species.Path, _species.Name));
+            var path = Path.Combine(_species.Path, _species.Name);
+            var lines = await File.ReadAllLinesAsync(path);
 
             var topComment = lines.Select(s => s.Trim()).TakeWhile(s => s.StartsWith("'") || s.StartsWith("/"));
+            var actualComment = string.Join("\n", topComment.Select(s => s[1..].Trim())).Trim();
 
-            _species.Comment = string.Join("\n", topComment.Select(s => s[1..].Trim()));
+            _species.Comment = actualComment;
+            Comments = _species.Comment.Trim();
         }
 
         public void Save()
@@ -193,14 +189,24 @@ namespace DarwinBots.ViewModels
                 vm.SaveToSpecies(this);
         }
 
-        private void SetInitialEnergy(int value)
+        private void DisplayMutationRates()
         {
-            InitialIndividuals = value;
+            var dialog = new MutationsProbability();
+            dialog.ViewModel.LoadFromProbabilities(_species.Mutables);
+            var res = dialog.ShowDialog();
+
+            if (res == true)
+                dialog.ViewModel.SaveToProbabilities(_species.Mutables);
         }
 
-        private void SetInitialIndividuals(int value)
+        private void SetInitialEnergy(string value)
         {
-            InitialIndividuals = value;
+            InitialEnergy = int.Parse(value);
+        }
+
+        private void SetInitialIndividuals(string value)
+        {
+            InitialIndividuals = int.Parse(value);
         }
     }
 }

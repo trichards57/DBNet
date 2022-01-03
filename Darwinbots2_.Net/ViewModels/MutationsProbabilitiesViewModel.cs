@@ -1,7 +1,7 @@
 ﻿using DarwinBots.Model;
 using DarwinBots.Modules;
-using GalaSoft.MvvmLight;
-using GalaSoft.MvvmLight.Command;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using PostSharp.Patterns.Model;
 using System;
 using System.Windows.Input;
@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
-    public class MutationsProbabilitiesViewModel : ViewModelBase
+    public class MutationsProbabilitiesViewModel : ObservableObject
     {
         // TODO : Save mutations to a mrates file.
         // TODO : Work out a more efficient way of changing the mutation values.  Probably need a mutable version for this use.
@@ -17,8 +17,6 @@ namespace DarwinBots.ViewModels
         private bool _amplificationSelected;
         private bool _copyError2Selected;
         private bool _copyErrorSelected;
-        private double _customGaussLower;
-        private double _customGaussUpper;
         private bool _deltaMutationSelected;
         private bool _insertionSelected;
         private bool _majorDeletionSelected;
@@ -32,6 +30,7 @@ namespace DarwinBots.ViewModels
         public MutationsProbabilitiesViewModel()
         {
             SetDefaultRatesCommand = new RelayCommand(SetDefaultRates);
+            PointMutationSelected = true;
         }
 
         public bool AmplificationSelected
@@ -39,12 +38,7 @@ namespace DarwinBots.ViewModels
             get => _amplificationSelected;
             set
             {
-                if (value == _amplificationSelected)
-                    return;
-
-                _amplificationSelected = value;
-
-                if (value)
+                if (SetProperty(ref _amplificationSelected, value) && _amplificationSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -62,14 +56,32 @@ namespace DarwinBots.ViewModels
                     Explanation = "A series of bp are replicated and inserted in another place in the genome.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
-                }
 
-                RaisePropertyChanged(string.Empty);
+                    OnPropertyChanged(string.Empty);
+                }
             }
         }
 
         public bool ApplyChangesGlobally { get; set; }
-        public double ChancePerBasePair { get; set; }
+
+        public double ChancePerBasePair
+        {
+            get
+            {
+                var pNone = AntiProb(_mutationProbabilities.CopyError.Probability)
+                           * AntiProb(_mutationProbabilities.Delta.Probability)
+                           * AntiProb(_mutationProbabilities.Insertion.Probability)
+                           * AntiProb(_mutationProbabilities.MajorDeletion.Probability)
+                           * AntiProb(_mutationProbabilities.MinorDeletion.Probability)
+                           * AntiProb(_mutationProbabilities.PointMutation.Probability)
+                           * AntiProb(_mutationProbabilities.Reversal.Probability);
+
+                var pSome = 1 - pNone;
+
+                return pSome == 0 ? double.PositiveInfinity : 1 / pSome;
+            }
+            set { }
+        }
 
         public double ChancePerUnit
         {
@@ -77,19 +89,7 @@ namespace DarwinBots.ViewModels
             set
             {
                 _mutationProbabilities.SetProbability(GetCurrentMutation(), value);
-                RaisePropertyChanged();
-
-                var pNone = AntiProb(_mutationProbabilities.CopyError.Probability)
-                            * AntiProb(_mutationProbabilities.Delta.Probability)
-                            * AntiProb(_mutationProbabilities.Insertion.Probability)
-                            * AntiProb(_mutationProbabilities.MajorDeletion.Probability)
-                            * AntiProb(_mutationProbabilities.MinorDeletion.Probability)
-                            * AntiProb(_mutationProbabilities.PointMutation.Probability)
-                            * AntiProb(_mutationProbabilities.Reversal.Probability);
-
-                var pSome = 1 - pNone;
-
-                ChancePerBasePair = pSome == 0 ? double.PositiveInfinity : 1 / pSome;
+                OnPropertyChanged(string.Empty);
             }
         }
 
@@ -98,12 +98,7 @@ namespace DarwinBots.ViewModels
             get => _copyError2Selected;
             set
             {
-                if (value == _copyError2Selected)
-                    return;
-
-                _copyError2Selected = value;
-
-                if (value)
+                if (SetProperty(ref _copyError2Selected, value) && _copyError2Selected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -120,9 +115,8 @@ namespace DarwinBots.ViewModels
                     EnableTypeSlider = false;
                     Explanation = "Similar to copy error, but always changes to an existing sysvar, *sysvar, or special values if followed by .shoot store or .focuseye store.";
                     Unit = "per bp per copy";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -131,12 +125,7 @@ namespace DarwinBots.ViewModels
             get => _copyErrorSelected;
             set
             {
-                if (value == _copyErrorSelected)
-                    return;
-
-                _copyErrorSelected = value;
-
-                if (value)
+                if (SetProperty(ref _copyErrorSelected, value) && _copyErrorSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -154,25 +143,25 @@ namespace DarwinBots.ViewModels
                     Explanation = "Similar to point mutations, but these occur during DNA replication for reproduction or viruses.  A small series (usually 1 bp) is changed in either parent or child.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
         public double CustomGaussLower
         {
-            get => _customGaussLower;
+            get => CustomGaussMean - CustomGaussStdDev * 2;
             set
             {
-                if (Math.Abs(_customGaussLower - value) < 0.01) return;
+                if (Math.Abs(CustomGaussLower - value) < 0.01) return;
 
-                _customGaussLower = value;
+                var lower = value;
+                var upper = CustomGaussUpper;
 
-                CustomGaussMean = (CustomGaussLower + CustomGaussUpper) / 2;
-                CustomGaussStdDev = (CustomGaussUpper - CustomGaussLower) / 4;
+                CustomGaussMean = (lower + upper) / 2;
+                CustomGaussStdDev = (upper - lower) / 4;
 
-                RaisePropertyChanged(string.Empty);
+                OnPropertyChanged(string.Empty);
             }
         }
 
@@ -183,18 +172,13 @@ namespace DarwinBots.ViewModels
             {
                 if (Math.Abs(_mutationProbabilities.GetMean(GetCurrentMutation()) - value) < 0.01) return;
 
+                var upper = CustomGaussUpper;
+                var lower = CustomGaussLower;
+                var temp = (upper - lower) / 2;
+
                 _mutationProbabilities.SetMean(GetCurrentMutation(), value);
 
-                if (Math.Abs(CustomGaussMean - (CustomGaussLower + CustomGaussUpper) / 2) < 0.01)
-                    return;
-
-                var temp = (CustomGaussUpper - CustomGaussLower) / 2;
-                _customGaussLower = CustomGaussMean - temp;
-                _customGaussUpper = CustomGaussMean + temp;
-
-                CustomGaussStdDev = (CustomGaussLower + CustomGaussUpper) / 4;
-
-                RaisePropertyChanged(string.Empty);
+                OnPropertyChanged(string.Empty);
             }
         }
 
@@ -207,26 +191,25 @@ namespace DarwinBots.ViewModels
                     return;
 
                 _mutationProbabilities.SetStandardDeviation(GetCurrentMutation(), value);
-                _customGaussLower = CustomGaussMean - value * 2;
-                _customGaussUpper = CustomGaussMean + value * 2;
 
-                RaisePropertyChanged(string.Empty);
+                OnPropertyChanged(string.Empty);
             }
         }
 
         public double CustomGaussUpper
         {
-            get => _customGaussUpper;
+            get => CustomGaussMean + CustomGaussStdDev * 2;
             set
             {
-                if (Math.Abs(_customGaussUpper - value) < 0.01) return;
+                if (Math.Abs(CustomGaussUpper - value) < 0.01) return;
 
-                _customGaussUpper = value;
+                var lower = CustomGaussLower;
+                var upper = value;
 
-                CustomGaussMean = (CustomGaussLower + CustomGaussUpper) / 2;
-                CustomGaussStdDev = (CustomGaussUpper - CustomGaussLower) / 4;
+                CustomGaussMean = (lower + upper) / 2;
+                CustomGaussStdDev = (upper - lower) / 4;
 
-                RaisePropertyChanged(string.Empty);
+                OnPropertyChanged(string.Empty);
             }
         }
 
@@ -235,12 +218,7 @@ namespace DarwinBots.ViewModels
             get => _deltaMutationSelected;
             set
             {
-                if (value == _deltaMutationSelected)
-                    return;
-
-                _deltaMutationSelected = value;
-
-                if (value)
+                if (SetProperty(ref _deltaMutationSelected, value) && _deltaMutationSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -258,9 +236,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "The mutation rates of a bot are allowed to change slowly over time.  This change in mutation rates can include Delta EnableMutations as well.  Theoretically, it may be possible for a bot to figure its own optimal mutation rate.";
                     Unit = "00 per cycle";
                     GaussLabel = "Standard Deviation";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -274,12 +251,7 @@ namespace DarwinBots.ViewModels
             get => _insertionSelected;
             set
             {
-                if (value == _insertionSelected)
-                    return;
-
-                _insertionSelected = value;
-
-                if (value)
+                if (SetProperty(ref _insertionSelected, value) && _insertionSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -297,9 +269,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "A run of random bp are inserted into the genome.  The size of this run should be fairly small.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -311,7 +282,7 @@ namespace DarwinBots.ViewModels
                 _mutationProbabilities.SetProbability(GetCurrentMutation(), value
                     ? Math.Abs(_mutationProbabilities.GetProbability(GetCurrentMutation()))
                     : -Math.Abs(_mutationProbabilities.GetProbability(GetCurrentMutation())));
-                RaisePropertyChanged();
+                OnPropertyChanged();
             }
         }
 
@@ -320,12 +291,7 @@ namespace DarwinBots.ViewModels
             get => _majorDeletionSelected;
             set
             {
-                if (value == _majorDeletionSelected)
-                    return;
-
-                _majorDeletionSelected = value;
-
-                if (value)
+                if (SetProperty(ref _majorDeletionSelected, value) && _majorDeletionSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -343,9 +309,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "A relatively long series of bp are deleted from the genome.  This can be quite disasterous, so set probabilities wisely.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -354,12 +319,7 @@ namespace DarwinBots.ViewModels
             get => _minorDeletionSelected;
             set
             {
-                if (value == _minorDeletionSelected)
-                    return;
-
-                _minorDeletionSelected = value;
-
-                if (value)
+                if (SetProperty(ref _minorDeletionSelected, value) && _minorDeletionSelected)
                 {
                     PointMutationSelected = false;
                     ReversalSelected = false;
@@ -377,9 +337,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "A small series of bp are deleted from the genome.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -388,12 +347,7 @@ namespace DarwinBots.ViewModels
             get => _point2Selected;
             set
             {
-                if (value == _point2Selected)
-                    return;
-
-                _point2Selected = value;
-
-                if (value)
+                if (SetProperty(ref _point2Selected, value) && _point2Selected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -410,9 +364,8 @@ namespace DarwinBots.ViewModels
                     EnableTypeSlider = false;
                     Explanation = "Note: The length of this mutation is always 1, but the rate is multiplied by the Gaussen Length of Point Mutation.  Similar to point mutations, but always changes to an existing sysvar, *sysvar, or special values if followed by .shoot store or .focuseye store.  The algorithm is also designed to introduce more stores. Should allow for evolving a zero-bot the same as a random-bot.";
                     Unit = "per bp per cycle";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -421,12 +374,7 @@ namespace DarwinBots.ViewModels
             get => _pointMutationSelected;
             set
             {
-                if (_pointMutationSelected == value)
-                    return;
-
-                _pointMutationSelected = value;
-
-                if (value)
+                if (SetProperty(ref _pointMutationSelected, value) && _pointMutationSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -444,9 +392,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "A small scale mutation that causes a small series of commands to change.  It may occur at any time in a bots life.  Represents environmental mutations such as UV light or an error in DNA maintenance.  Length should be kept relatively small to mirror real life (~1 bp).  Unlike other mutations, point mutation chances are given as 1 in X per bp per kilocycles, so they occur quite independantly of reproduction rate.  To find the liklihood of at least one mutation over any length of time: 1/(1 - (1-1/X)^(how many cycles)) = Y, as in 1 chance in Y per that many cycles.  Finding the probable number of mutations in that range is more difficult.  (Lookup Negative Binomial Distribution).";
                     Unit = "per bp per cycle";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -455,12 +402,7 @@ namespace DarwinBots.ViewModels
             get => _reversalSelected;
             set
             {
-                if (value == _reversalSelected)
-                    return;
-
-                _reversalSelected = value;
-
-                if (value)
+                if (SetProperty(ref _reversalSelected, value) && _reversalSelected)
                 {
                     MinorDeletionSelected = false;
                     PointMutationSelected = false;
@@ -478,9 +420,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "A series of bp are reversed in the genome.  For example, '2 3 > or' becomes 'or > 3 2'.  Length of reversal should be >= 2.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -492,12 +433,7 @@ namespace DarwinBots.ViewModels
             get => _translocationSelected;
             set
             {
-                if (value == _translocationSelected)
-                    return;
-
-                _translocationSelected = value;
-
-                if (value)
+                if (SetProperty(ref _translocationSelected, value) && _translocationSelected)
                 {
                     MinorDeletionSelected = false;
                     ReversalSelected = false;
@@ -515,9 +451,8 @@ namespace DarwinBots.ViewModels
                     Explanation = "Tranlocation moves a segment of DNA from one location to another in the genome.";
                     Unit = "per bp per copy";
                     GaussLabel = "Length";
+                    OnPropertyChanged(string.Empty);
                 }
-
-                RaisePropertyChanged(string.Empty);
             }
         }
 
@@ -562,7 +497,21 @@ namespace DarwinBots.ViewModels
             ShowDeltaMutation = false;
         }
 
-        private double AntiProb(double a)
+        public void SaveToProbabilities(MutationProbabilities probs)
+        {
+            probs.CopyErrorWhatToChange = _mutationProbabilities.CopyErrorWhatToChange;
+            probs.EnableMutations = _mutationProbabilities.EnableMutations;
+            probs.PointWhatToChange = _mutationProbabilities.PointWhatToChange;
+            probs.CopyError = _mutationProbabilities.CopyError;
+            probs.Insertion = _mutationProbabilities.Insertion;
+            probs.MajorDeletion = _mutationProbabilities.MajorDeletion;
+            probs.Delta = _mutationProbabilities.Delta;
+            probs.PointMutation = _mutationProbabilities.PointMutation;
+            probs.MinorDeletion = _mutationProbabilities.MinorDeletion;
+            probs.Reversal = _mutationProbabilities.Reversal;
+        }
+
+        private static double AntiProb(double a)
         {
             return a <= 0 ? 1 : 1 - 1 / a;
         }
@@ -587,6 +536,7 @@ namespace DarwinBots.ViewModels
         private void SetDefaultRates()
         {
             _mutationProbabilities.ResetToDefault();
+            OnPropertyChanged(string.Empty);
         }
     }
 }

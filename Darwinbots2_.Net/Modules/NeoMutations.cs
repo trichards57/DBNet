@@ -112,13 +112,13 @@ namespace DarwinBots.Modules
 
         public static void SetDefaultLengths(MutationProbabilities changeme)
         {
-            changeme.PointMutation = new MutationProbability { Mean = 3, StandardDeviation = 1 };
-            changeme.Delta = new MutationProbability { Mean = 500, StandardDeviation = 150 };
-            changeme.MinorDeletion = new MutationProbability { Mean = 1, StandardDeviation = 0 };
-            changeme.Insertion = new MutationProbability { Mean = 1, StandardDeviation = 0 };
-            changeme.CopyError = new MutationProbability { Mean = 1, StandardDeviation = 0 };
-            changeme.MajorDeletion = new MutationProbability { Mean = 3, StandardDeviation = 1 };
-            changeme.Reversal = new MutationProbability { Mean = 3, StandardDeviation = 1 };
+            changeme.PointMutation = changeme.PointMutation with { Mean = 3, StandardDeviation = 1 };
+            changeme.Delta = changeme.Delta with { Mean = 500, StandardDeviation = 150 };
+            changeme.MinorDeletion = changeme.MinorDeletion with { Mean = 1, StandardDeviation = 0 };
+            changeme.Insertion = changeme.Insertion with { Mean = 1, StandardDeviation = 0 };
+            changeme.CopyError = changeme.CopyError with { Mean = 1, StandardDeviation = 0 };
+            changeme.MajorDeletion = changeme.MajorDeletion with { Mean = 3, StandardDeviation = 1 };
+            changeme.Reversal = changeme.Reversal with { Mean = 3, StandardDeviation = 1 };
             changeme.CopyErrorWhatToChange = 80;
             changeme.PointWhatToChange = 80;
         }

@@ -8,6 +8,8 @@ namespace DarwinBots.Forms
         public OptionsForm()
         {
             InitializeComponent();
+
+            DataContext = ViewModel;
         }
 
         internal OptionsViewModel ViewModel { get; } = new();

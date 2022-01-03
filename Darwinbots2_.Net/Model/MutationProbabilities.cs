@@ -78,43 +78,43 @@ namespace DarwinBots.Model
         {
             CopyError = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             Delta = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             Insertion = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             MajorDeletion = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             MinorDeletion = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             PointMutation = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };
             Reversal = new MutationProbability
             {
-                Probability = 500,
+                Probability = 5000,
                 Mean = 1,
                 StandardDeviation = 0
             };

@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
         <TabControl VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
             <TabItem Header="Species">
-                <Grid>
+                <Grid VerticalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition />
                         <ColumnDefinition Width="2*" />
@@ -42,14 +42,22 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <Label Margin="5,5,2.5,2.5" Grid.ColumnSpan="3">Native Species:</Label>
-                        <ListBox SelectedItem="{Binding SelectedSpecies}" ItemsSource="{Binding SpeciesList}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                        <ListBox SelectedItem="{Binding SelectedSpecies}" ItemsSource="{Binding SpeciesList}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" />
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
                         <Button Command="{Binding AddSpeciesCommand}" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5" HorizontalAlignment="Stretch">Add</Button>
                         <Button Command="{Binding ListNonNativeSpeciesCommand}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">List Non-Native Species</Button>
                         <Button Command="{Binding DeleteSpeciesCommand}" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5" HorizontalAlignment="Stretch">Delete</Button>
                         <Button Command="{Binding DuplicateSpeciesCommand}" Grid.Row="3" Grid.Column="1" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Duplicate</Button>
                         <Button Command="{Binding RenameSpeciesCommand}" Grid.Row="3" Grid.Column="2" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Rename</Button>
                         <Label Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5">Species Comments:</Label>
-                        <TextBlock DataContext="{Binding SelectedSpecies}" Text="{Binding Comment}" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0" Padding="5" Margin="5,2.5,2.5,5" >
+                            <TextBlock DataContext="{Binding SelectedSpecies}" Text="{Binding Comments}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                        </ScrollViewer>
                     </Grid>
                     <GroupBox DataContext="{Binding SelectedSpecies}" Grid.Column="1" Margin="2.5,5,5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Species Properties">
                         <Grid>
@@ -116,7 +124,7 @@
                                     <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="30" Padding="5">30</Button>
                                 </UniformGrid>
                                 <Label Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Initial Energy</Label>
-                                <TextBox Text="{Binding InitialEnergy}" Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5" HorizontalAlignment="Stretch" />
+                                <TextBox VerticalAlignment="Center" Text="{Binding InitialEnergy}" Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5" HorizontalAlignment="Stretch" />
                                 <UniformGrid Margin="5,2.5,5,2.5" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Rows="1">
                                     <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="3000" Padding="5">3000</Button>
                                     <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="5000" Padding="5">5000</Button>
@@ -130,7 +138,7 @@
                                 <CheckBox IsChecked="{Binding DisableMovement}" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Voluntary Movement</CheckBox>
                                 <CheckBox IsChecked="{Binding DisableReproduction}" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Reproduction</CheckBox>
                                 <CheckBox IsChecked="{Binding IsVirusImmune}" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Virus Immune</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable EnableMutations</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Mutations</CheckBox>
                                 <Button Command="{Binding DisplayFatalRestrictionsCommand}" Grid.Row="13" Grid.Column="0" Margin="5,2.5,2.5,5" HorizontalAlignment="Stretch">Fatal Restrictions</Button>
                                 <Button IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}" Command="{Binding DisplayMutationRatesCommand}" Grid.Row="13" Grid.Column="1" Margin="2.5,2.5,5,5" HorizontalAlignment="Stretch">Mutation Rates</Button>
                             </Grid>
@@ -267,8 +275,8 @@
                                     <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center">Light Intensity</Label>
                                     <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Margin="2.5" Grid.Column="1" Text="{Binding LightLevel}" VerticalAlignment="Center" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
                                     <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center">Sediment Level</Label>
-                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="1" Margin="2.5" VerticalAlignment="Center" Text="{Binding SedimentLevel}" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
-                                    <GroupBox IsEnabled="{Binding EnablePondMode}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Margin="2.5,5,2.5,2.5" Header="Light Demo">
+                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="1" Margin="2.5" VerticalAlignment="Center" Text="{Binding SedimentLevel, StringFormat=0.00}" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
+                                    <GroupBox IsEnabled="{Binding EnablePondMode}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Margin="2.5,5,2.5,2.5" Header="Light Demo" HorizontalAlignment="Stretch">
                                         <Viewbox Visibility="{Binding EnablePondMode, Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Fill" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Canvas Width="5" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <Rectangle Height="5" Width="1" Canvas.Left="2">
@@ -309,15 +317,14 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Margin="5,5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MaximumChloroplasts}" />
+                                    <TextBox VerticalAlignment="Center" Margin="5,5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MaximumChloroplasts}" />
                                     <Label Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5">* 16K Maximum Chloroplasts</Label>
-                                    <TextBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MinimumChloroplastsThreshold}" />
+                                    <TextBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MinimumChloroplastsThreshold}" />
                                     <Label Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,5,2.5">* 16K Repopulation threshold of Chloroplasts</Label>
-                                    <TextBox Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RobotsPerRepopulationEvent}" />
+                                    <TextBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RobotsPerRepopulationEvent}" />
                                     <Label Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5">Robots per Repopulation Event</Label>
-                                    <TextBox Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RepopulationCooldownPeriod}" />
+                                    <TextBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RepopulationCooldownPeriod}" />
                                     <Label Grid.Row="3" Grid.Column="1" Margin="2.5,2.5,5,2.5">Repopulation Cooldown Period</Label>
-                                    <CheckBox IsChecked="{Binding ForceCholoplastsSustain}" Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,5">Force robots to sustain their own chloroplasts</CheckBox>
                                 </Grid>
                             </GroupBox>
                             <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,5" Header="Veg Body/NRG Distribution">
@@ -481,7 +488,7 @@
                     </GroupBox>
                 </Grid>
             </TabItem>
-            <TabItem Header="EnableMutations">
+            <TabItem Header="Mutations">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -492,7 +499,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding DisableMutations}" Margin="5,5,5,2.5">Disable All EnableMutations</CheckBox>
+                    <CheckBox IsChecked="{Binding DisableMutations}" Margin="5,5,5,2.5">Disable All Mutations</CheckBox>
                     <GroupBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5" Header="Current Multiplier">
                         <Grid>
                             <Grid.ColumnDefinitions>

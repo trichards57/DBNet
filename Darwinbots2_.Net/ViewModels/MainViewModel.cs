@@ -1,14 +1,14 @@
-﻿using AsyncAwaitBestPractices.MVVM;
+﻿using System.Threading.Tasks;
+using System.Windows.Input;
+using AsyncAwaitBestPractices.MVVM;
 using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Modules;
-using GalaSoft.MvvmLight;
-using System.Threading.Tasks;
-using System.Windows.Input;
+using Microsoft.Toolkit.Mvvm.ComponentModel;
 
 namespace DarwinBots.ViewModels
 {
-    internal class MainViewModel : ViewModelBase
+    internal class MainViewModel : ObservableObject
     {
         public MainViewModel()
         {

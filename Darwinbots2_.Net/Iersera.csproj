@@ -1,12 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWPF>true</UseWPF>
     <StartupObject>DarwinBots.App</StartupObject>
     <RootNamespace>DarwinBots</RootNamespace>
     <AssemblyName>DarwinBots</AssemblyName>
+    <Configurations>Debug;Release;Debug No PostSharp</Configurations>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No PostSharp|AnyCPU'">
+    <SkipPostSharp>True</SkipPostSharp>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Forms\datirob.xaml.cs" />
@@ -43,15 +47,15 @@
     <Page Remove="Forms\TeleportForm.xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="5.1.0" />
+    <PackageReference Include="AsyncAwaitBestPractices.MVVM" Version="6.0.4" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.227701">
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
-    <PackageReference Include="MvvmLightLibsStd10" Version="5.4.1.1" />
-    <PackageReference Include="PostSharp" Version="6.9.6" />
-    <PackageReference Include="PostSharp.Patterns.Model" Version="6.9.6" />
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+    <PackageReference Include="PostSharp" Version="6.10.5" />
+    <PackageReference Include="PostSharp.Patterns.Model" Version="6.10.5" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="App.xaml" />
