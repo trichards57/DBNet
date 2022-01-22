@@ -5,16 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MutationsProbabilitiesViewModel}"
-        mc:Ignorable="d" Title="Mutation Probabilities" Height="410" Width="600" ResizeMode="NoResize">
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="MinWidth" Value="55" />
-        </Style>
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="5" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-    </Window.Resources>
+        mc:Ignorable="d" Title="Mutation Probabilities" Style="{StaticResource OptionsForm}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -29,32 +20,32 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <GroupBox Grid.RowSpan="3" Margin="5,5,2.5,2.5" Header="Mutation Types">
+        <GroupBox Grid.RowSpan="3" Header="Mutation Types">
             <StackPanel>
-                <RadioButton IsChecked="{Binding PointMutationSelected}" GroupName="SelectedMutation" Margin="5,5,5,2.5">Point</RadioButton>
-                <RadioButton IsChecked="{Binding MinorDeletionSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Minor Deletion</RadioButton>
-                <RadioButton IsChecked="{Binding ReversalSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Reversal</RadioButton>
-                <RadioButton IsChecked="{Binding InsertionSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Insertion</RadioButton>
-                <RadioButton IsChecked="{Binding AmplificationSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Amplification</RadioButton>
-                <RadioButton IsChecked="{Binding MajorDeletionSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Major Deletion</RadioButton>
-                <RadioButton IsChecked="{Binding CopyErrorSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Copy Error</RadioButton>
-                <RadioButton IsEnabled="{Binding ShowDeltaMutation}" IsChecked="{Binding DeltaMutationSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Delta Mutation</RadioButton>
-                <RadioButton IsChecked="{Binding TranslocationSelected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Translocation</RadioButton>
-                <RadioButton IsChecked="{Binding Point2Selected}" GroupName="SelectedMutation" Margin="5,2.5,5,2.5">Point 2</RadioButton>
-                <RadioButton IsChecked="{Binding CopyError2Selected}" GroupName="SelectedMutation" Margin="5,2.5,5,5">Copy Error 2</RadioButton>
+                <RadioButton IsChecked="{Binding PointMutationSelected}" GroupName="SelectedMutation">Point</RadioButton>
+                <RadioButton IsChecked="{Binding MinorDeletionSelected}" GroupName="SelectedMutation">Minor Deletion</RadioButton>
+                <RadioButton IsChecked="{Binding ReversalSelected}" GroupName="SelectedMutation">Reversal</RadioButton>
+                <RadioButton IsChecked="{Binding InsertionSelected}" GroupName="SelectedMutation">Insertion</RadioButton>
+                <RadioButton IsChecked="{Binding AmplificationSelected}" GroupName="SelectedMutation">Amplification</RadioButton>
+                <RadioButton IsChecked="{Binding MajorDeletionSelected}" GroupName="SelectedMutation">Major Deletion</RadioButton>
+                <RadioButton IsChecked="{Binding CopyErrorSelected}" GroupName="SelectedMutation">Copy Error</RadioButton>
+                <RadioButton IsEnabled="{Binding ShowDeltaMutation}" IsChecked="{Binding DeltaMutationSelected}" GroupName="SelectedMutation">Delta Mutation</RadioButton>
+                <RadioButton IsChecked="{Binding TranslocationSelected}" GroupName="SelectedMutation">Translocation</RadioButton>
+                <RadioButton IsChecked="{Binding Point2Selected}" GroupName="SelectedMutation">Point 2</RadioButton>
+                <RadioButton IsChecked="{Binding CopyError2Selected}" GroupName="SelectedMutation">Copy Error 2</RadioButton>
             </StackPanel>
         </GroupBox>
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="110" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" Margin="2.5,5,5,2.5">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="110" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
             <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" />
         </ScrollViewer>
-        <CheckBox IsChecked="{Binding IsEnabled}" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Margin="2.5">Enabled</CheckBox>
-        <StackPanel Grid.Row="1" Margin="2.5,2.5,5,2.5" Grid.Column="2" Orientation="Horizontal">
-            <TextBlock VerticalAlignment="Center" Margin="0,0,2.5,0" >1 chance in</TextBlock>
-            <TextBox VerticalAlignment="Center" Margin="2.5,0" Text="{Binding ChancePerUnit}" />
-            <TextBlock VerticalAlignment="Center" Margin="2.5,0">per</TextBlock>
-            <TextBlock VerticalAlignment="Center" Margin="2.5,0" Text="{Binding Unit}" />
+        <CheckBox IsChecked="{Binding IsEnabled}" Grid.Row="1" Grid.Column="1">Enabled</CheckBox>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+            <TextBlock>1 chance in</TextBlock>
+            <TextBox Text="{Binding ChancePerUnit}" />
+            <TextBlock>per</TextBlock>
+            <TextBlock Text="{Binding Unit}" />
         </StackPanel>
-        <GroupBox Grid.ColumnSpan="2" IsEnabled="{Binding EnableGauss}" Grid.Row="2" Grid.Column="1" Margin="2.5" Header="{Binding GaussLabel}">
+        <GroupBox Grid.ColumnSpan="2" IsEnabled="{Binding EnableGauss}" Grid.Row="2" Grid.Column="1" Header="{Binding GaussLabel}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition />
@@ -67,26 +58,26 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Image Margin="5,5,5,3" Grid.ColumnSpan="3" />
-                <Label Grid.Row="1" Grid.Column="0" Margin="20,2,0,3" HorizontalAlignment="Left" Grid.ColumnSpan="2">Lower</Label>
-                <Label Grid.Row="1" Grid.Column="1" Margin="0,2,0,3" HorizontalAlignment="Center">Mean</Label>
-                <Label Grid.Row="1" Grid.Column="2" Margin="0,2,0,3" HorizontalAlignment="Center">Upper</Label>
-                <TextBox Text="{Binding CustomGaussLower}" Grid.Row="2" Grid.Column="0" Margin="13,2,0,3" />
-                <TextBox Text="{Binding CustomGaussMean}" Grid.Row="2" Grid.Column="1" Margin="2,2,2,3" />
-                <TextBox Text="{Binding CustomGaussUpper}"  Grid.Row="2" Grid.Column="2" Margin="3,2,3,3" />
-                <Label Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2,2,5">Standard Deviation:</Label>
-                <TextBox Text="{Binding CustomGaussStdDev}" VerticalAlignment="Center" Grid.Row="3" Grid.Column="3" Margin="3,2,3,5" />
+                <Image Grid.ColumnSpan="3" />
+                <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">Lower</Label>
+                <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">Mean</Label>
+                <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">Upper</Label>
+                <TextBox Text="{Binding CustomGaussLower}" Grid.Row="2" Grid.Column="0" />
+                <TextBox Text="{Binding CustomGaussMean}" Grid.Row="2" Grid.Column="1" />
+                <TextBox Text="{Binding CustomGaussUpper}"  Grid.Row="2" Grid.Column="2" />
+                <Label Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right">Standard Deviation:</Label>
+                <TextBox Text="{Binding CustomGaussStdDev}" Grid.Row="3" Grid.Column="3" />
             </Grid>
         </GroupBox>
-        <Grid Margin="2.5,2.5,5,2.5" Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Label IsEnabled="{Binding EnableTypeSlider}" Margin="0,0,2.5,0">Change type</Label>
-            <Slider Width="150" IsEnabled="{Binding EnableTypeSlider}" Value="{Binding TypeValueRatio}" Grid.Column="1" Margin="2.5,0"  Minimum="0" Maximum="100" TickFrequency="5" TickPlacement="BottomRight" />
-            <Label IsEnabled="{Binding EnableTypeSlider}" Grid.Column="2" Margin="2.5,0,5,0">Change value</Label>
+            <Label IsEnabled="{Binding EnableTypeSlider}">Change type</Label>
+            <Slider Width="150" IsEnabled="{Binding EnableTypeSlider}" Value="{Binding TypeValueRatio}" Grid.Column="1"  Minimum="0" Maximum="100" TickFrequency="5" />
+            <Label IsEnabled="{Binding EnableTypeSlider}" Grid.Column="2">Change value</Label>
         </Grid>
         <Grid Grid.Row="3" Grid.RowSpan="2" Grid.Column="0">
             <Grid.ColumnDefinitions>
@@ -99,16 +90,16 @@
                 <RowDefinition />
                 <RowDefinition />
             </Grid.RowDefinitions>
-            <Label Grid.ColumnSpan="3" Margin="5,2.5,2.5,2.5">Mutation Summations:</Label>
-            <Label Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" Content="1 chance in" />
-            <TextBlock Width="55" Text="{Binding ChancePerBasePair, StringFormat=0.00}" Grid.Row="1" Grid.Column="1" Margin="2.5" VerticalAlignment="Center" />
-            <Label Grid.Row="1" Grid.Column="2" Margin="2.5" Content="per bp" />
-            <CheckBox IsChecked="{Binding ApplyChangesGlobally}" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5">Apply Changes Globally</CheckBox>
+            <Label Grid.ColumnSpan="3">Mutation Summations:</Label>
+            <Label Grid.Row="1" Grid.Column="0">1 chance in</Label>
+            <TextBlock Width="55" Text="{Binding ChancePerBasePair, StringFormat=0.00}" Grid.Row="1" Grid.Column="1" />
+            <Label Grid.Row="1" Grid.Column="2">per bp</Label>
+            <CheckBox IsChecked="{Binding ApplyChangesGlobally}" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">Apply Changes Globally</CheckBox>
         </Grid>
-        <Button Command="{Binding SetDefaultRatesCommand}" Grid.Row="4" Grid.Column="1" Margin="5,2.5,2.5,5" HorizontalAlignment="Center">Default Rates</Button>
-        <StackPanel Grid.Row="4" Grid.Column="2" Margin="2.5,2.5,5,5" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button Margin="0,0,2.5,0" Content="Okay" IsDefault="True" Click="OkayClicked" />
-            <Button Margin="2.5,0,0,0" Content="Cancel" IsCancel="True" />
+        <Button Command="{Binding SetDefaultRatesCommand}" Grid.Row="4" Grid.Column="1">Default Rates</Button>
+        <StackPanel Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button IsDefault="True" Click="Okay_Click">Okay</Button>
+            <Button IsCancel="True" Click="Cancel_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

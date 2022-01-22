@@ -5,22 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:CostsViewModel}"
-        mc:Ignorable="d" Title="Costs" ResizeMode="NoResize" ShowInTaskbar="False" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow">
-    <Window.Resources>
-        <Style TargetType="TextBox">
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="MinWidth" Value="50" />
-            <Setter Property="Margin" Value="5" />
-        </Style>
-        <Style TargetType="Label">
-            <Setter Property="HorizontalAlignment" Value="Left" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style TargetType="CheckBox">
-            <Setter Property="Margin" Value="5" />
-        </Style>
-    </Window.Resources>
+        mc:Ignorable="d" Title="Costs" Style="{StaticResource OptionsForm}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -32,7 +17,7 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <GroupBox Margin="10,10,5,5" HorizontalAlignment="Stretch" Header="DNA Command Costs">
+        <GroupBox HorizontalAlignment="Stretch" Header="DNA Command Costs">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -50,7 +35,7 @@
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Label VerticalAlignment="Center" HorizontalAlignment="Left">number</Label>
+                <Label>number</Label>
                 <TextBox x:Name="NumberCostTextBox" Grid.Row="0" Grid.Column="1" Text="{Binding NumberCost}" />
                 <Label Grid.Row="0" Grid.Column="2">nrg per instance</Label>
                 <Label Grid.Row="1" Grid.Column="0">*number</Label>
@@ -79,7 +64,7 @@
                 <Label Grid.Row="8" Grid.Column="2">nrg per instance</Label>
             </Grid>
         </GroupBox>
-        <GroupBox Margin="5,10,10,5" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Stretch" Header="Morphological Costs">
+        <GroupBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Header="Morphological Costs">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -126,19 +111,19 @@
                 <Label Grid.Row="7" Grid.Column="2" >nrg per unit constructed</Label>
                 <Label Grid.Row="8" Grid.Column="0">Shell Cost</Label>
                 <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding ShellCost}" />
-                <Label Grid.Row="8" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per unit constructed</Label>
-                <Label Grid.Row="9" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">Body Upkeep</Label>
+                <Label Grid.Row="8" Grid.Column="2">nrg per unit constructed</Label>
+                <Label Grid.Row="9" Grid.Column="0">Body Upkeep</Label>
                 <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding BodyUpkeepCost}" />
-                <Label Grid.Row="9" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per body per turn</Label>
-                <Label Grid.Row="10" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">DNA Copy</Label>
+                <Label Grid.Row="9" Grid.Column="2">nrg per body per turn</Label>
+                <Label Grid.Row="10" Grid.Column="0">DNA Copy</Label>
                 <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding DnaCopyCost}" />
-                <Label Grid.Row="10" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per data per cycle</Label>
-                <Label Grid.Row="11" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">Chloroplast Cost</Label>
+                <Label Grid.Row="10" Grid.Column="2">nrg per data per cycle</Label>
+                <Label Grid.Row="11" Grid.Column="0">Chloroplast Cost</Label>
                 <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding CholorplastCost}" />
-                <Label Grid.Row="11" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per added chlr</Label>
+                <Label Grid.Row="11" Grid.Column="2">nrg per added chlr</Label>
             </Grid>
         </GroupBox>
-        <GroupBox Margin="10,5,5,5" Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" HorizontalAlignment="Stretch" Header="Cost Overrides">
+        <GroupBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Header="Cost Overrides">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -152,15 +137,15 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label VerticalAlignment="Center">Cost Multiplier:</Label>
-                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding CostMultiplier}" />
-                <CheckBox Grid.Row="0" Grid.Column="2" x:Name="AllowNegativeCostXCheck" VerticalAlignment="Center" IsChecked="{Binding AllowMultiplerToGoNegative}">Allow Multiplier to go Negative</CheckBox>
-                <Label Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center">Zero Costs when population falls below</Label>
-                <TextBox Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding ZeroCostPopulationLimit}" />
-                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center">Reinstate Costs when population above</Label>
-                <TextBox Grid.Row="2" Grid.Column="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding ReinstateCostPopulationLimit}" />
-                <CheckBox Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding IncludeAllRobotsInPopulation}">Include all robots</CheckBox>
-                <GroupBox Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" HorizontalAlignment="Stretch" Header="Dynamic Cost Adjustment">
+                <Label>Cost Multiplier:</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CostMultiplier}" />
+                <CheckBox Grid.Row="0" Grid.Column="2" x:Name="AllowNegativeCostXCheck" IsChecked="{Binding AllowMultiplerToGoNegative}">Allow Multiplier to go Negative</CheckBox>
+                <Label Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">Zero Costs when population falls below</Label>
+                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding ZeroCostPopulationLimit}" />
+                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0">Reinstate Costs when population above</Label>
+                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding ReinstateCostPopulationLimit}" />
+                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IncludeAllRobotsInPopulation}">Include all robots</CheckBox>
+                <GroupBox Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Header="Dynamic Cost Adjustment">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -176,24 +161,24 @@
                             <ColumnDefinition />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <CheckBox Grid.ColumnSpan="3" VerticalAlignment="Center" HorizontalAlignment="Left" IsChecked="{Binding EnableDynamicCosts}">Enable Dynamic Costs</CheckBox>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">Target Population</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding DynamicCostsTargetPopulation}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center">Sensitivity</Label>
-                        <Slider Minimum="1" Maximum="1000" TickFrequency="50" TickPlacement="Both" IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Stretch" Value="{Binding DynamicCostsSensitivity}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left" >Upper Range: Target +</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="2"  VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding DynamicCostsUpperRangeTarget}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left">%</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Left">Lower Range: Target -</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding DynamicCostsLowerRangeTarget}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Left">%</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center">Low</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" >High</Label>
+                        <CheckBox Grid.ColumnSpan="4" IsChecked="{Binding EnableDynamicCosts}">Enable Dynamic Costs</CheckBox>
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="1">Target Population</Label>
+                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="2" Text="{Binding DynamicCostsTargetPopulation}" />
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center">Sensitivity</Label>
+                        <Slider Minimum="1" Maximum="1000" TickFrequency="50" IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="0" Value="{Binding DynamicCostsSensitivity}" />
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="1">Upper Range: Target +</Label>
+                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="2" Text="{Binding DynamicCostsUpperRangeTarget}" />
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="3">%</Label>
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="1">Lower Range: Target -</Label>
+                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="2" Text="{Binding DynamicCostsLowerRangeTarget}" />
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="3">%</Label>
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0">Low</Label>
+                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right">High</Label>
                     </Grid>
                 </GroupBox>
             </Grid>
         </GroupBox>
-        <GroupBox Margin="5,5,10,5" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Stretch" Header="Aging">
+        <GroupBox Grid.Column="1" Grid.Row="2" Header="Aging">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -207,23 +192,23 @@
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Label VerticalAlignment="Center">Age Cost</Label>
-                <TextBox Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding AgeCost}" />
-                <Label Grid.Row="0" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per cycle</Label>
-                <Label Grid.Row="1" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left">Begins upon reaching</Label>
-                <TextBox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding AgeCostBeginAge}" />
-                <Label Grid.Row="1" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">cycles old</Label>
-                <Label Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0" VerticalAlignment="Center" >Once cost begins being applied:</Label>
-                <CheckBox Grid.Row="3" Grid.Column="0" VerticalAlignment="Center" IsChecked="{Binding EnableAgeCostIncreasePerCycle}">Increase by</CheckBox>
-                <TextBox IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding AgeCostIncreasePerCycle}" />
-                <Label IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Left">nrg per cycle</Label>
-                <CheckBox Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="4" VerticalAlignment="Center" IsChecked="{Binding EnableAgeCostIncreaseLog}">Increase log (bot age - cost start age)</CheckBox>
+                <Label>Age Cost</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AgeCost}" />
+                <Label Grid.Row="0" Grid.Column="2">nrg per cycle</Label>
+                <Label Grid.Row="1" Grid.Column="0">Begins upon reaching</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AgeCostBeginAge}" />
+                <Label Grid.Row="1" Grid.Column="2">cycles old</Label>
+                <Label Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">Once cost begins being applied:</Label>
+                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding EnableAgeCostIncreasePerCycle}">Increase by</CheckBox>
+                <TextBox IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="1" Text="{Binding AgeCostIncreasePerCycle}" />
+                <Label IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="2">nrg per cycle</Label>
+                <CheckBox Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="4" IsChecked="{Binding EnableAgeCostIncreaseLog}">Increase log (bot age - cost start age)</CheckBox>
             </Grid>
         </GroupBox>
-        <Button Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" IsCancel="True" Padding="5" Margin="5" Command="{Binding RestoreDefaultsCommand}">Restore Defaults</Button>
-        <StackPanel Margin="10,5,10,10" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
-            <Button IsDefault="True" Padding="5" Margin="0,0,5,0" Click="Okay_Click">Okay</Button>
-            <Button IsCancel="True" Padding="5" Click="Cancel_Click">Cancel</Button>
+        <Button Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Command="{Binding RestoreDefaultsCommand}">Restore Defaults</Button>
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button IsDefault="True" Click="Okay_Click">Okay</Button>
+            <Button IsCancel="True" Click="Cancel_Click">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

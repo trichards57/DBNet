@@ -26,7 +26,6 @@
     <Compile Remove="Forms\NetEvent.xaml.cs" />
     <Compile Remove="Forms\ObstacleForm.xaml.cs" />
     <Compile Remove="Forms\parentele.xaml.cs" />
-    <Compile Remove="Forms\PhysicsOptions.xaml.cs" />
     <Compile Remove="Forms\TeleportForm.xaml.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -43,7 +42,6 @@
     <Page Remove="Forms\NetEvent.xaml" />
     <Page Remove="Forms\ObstacleForm.xaml" />
     <Page Remove="Forms\parentele.xaml" />
-    <Page Remove="Forms\PhysicsOptions.xaml" />
     <Page Remove="Forms\TeleportForm.xaml" />
   </ItemGroup>
   <ItemGroup>

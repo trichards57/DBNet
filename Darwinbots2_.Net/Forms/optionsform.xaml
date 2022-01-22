@@ -6,13 +6,10 @@
         xmlns:forms="clr-namespace:DarwinBots.Forms"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:OptionsViewModel, IsDesignTimeCreatable=True}"
-        mc:Ignorable="d" Title="Simulation Settings" Height="520" Width="700" ResizeMode="NoResize">
+        mc:Ignorable="d" Title="Simulation Settings" Style="{StaticResource OptionsForm}">
     <Window.Resources>
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="5" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
         <forms:InvertBoolConverter x:Key="InvertBoolConverter" />
+        <forms:EnumToIntConverter x:Key="EnumToIntConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
     <Grid>
@@ -41,25 +38,25 @@
                             <ColumnDefinition />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
-                        <Label Margin="5,5,2.5,2.5" Grid.ColumnSpan="3">Native Species:</Label>
-                        <ListBox SelectedItem="{Binding SelectedSpecies}" ItemsSource="{Binding SpeciesList}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Label Grid.ColumnSpan="3">Native Species:</Label>
+                        <ListBox SelectedItem="{Binding SelectedSpecies}" ItemsSource="{Binding SpeciesList}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" />
                                 </DataTemplate>
                             </ListBox.ItemTemplate>
                         </ListBox>
-                        <Button Command="{Binding AddSpeciesCommand}" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5" HorizontalAlignment="Stretch">Add</Button>
-                        <Button Command="{Binding ListNonNativeSpeciesCommand}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">List Non-Native Species</Button>
-                        <Button Command="{Binding DeleteSpeciesCommand}" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5" HorizontalAlignment="Stretch">Delete</Button>
-                        <Button Command="{Binding DuplicateSpeciesCommand}" Grid.Row="3" Grid.Column="1" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Duplicate</Button>
-                        <Button Command="{Binding RenameSpeciesCommand}" Grid.Row="3" Grid.Column="2" Margin="2.5" Padding="5" HorizontalAlignment="Stretch">Rename</Button>
-                        <Label Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" Padding="5">Species Comments:</Label>
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0" Padding="5" Margin="5,2.5,2.5,5">
+                        <Button Command="{Binding AddSpeciesCommand}" Grid.Row="2" Grid.Column="0">Add</Button>
+                        <Button Command="{Binding ListNonNativeSpeciesCommand}" Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2">List Non-Native Species</Button>
+                        <Button Command="{Binding DeleteSpeciesCommand}" Grid.Row="3" Grid.Column="0">Delete</Button>
+                        <Button Command="{Binding DuplicateSpeciesCommand}" Grid.Row="3" Grid.Column="1">Duplicate</Button>
+                        <Button Command="{Binding RenameSpeciesCommand}" Grid.Row="3" Grid.Column="2">Rename</Button>
+                        <Label Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0">Species Comments:</Label>
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" Grid.Row="5" Grid.ColumnSpan="3" Grid.Column="0">
                             <TextBlock DataContext="{Binding SelectedSpecies}" Text="{Binding Comments}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                         </ScrollViewer>
                     </Grid>
-                    <GroupBox IsEnabled="{Binding IsSpeciesSelected}" Grid.Column="1" Margin="2.5,5,5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Species Properties">
+                    <GroupBox IsEnabled="{Binding IsSpeciesSelected}" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Species Properties">
                         <Grid DataContext="{Binding SelectedSpecies}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -77,22 +74,22 @@
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition />
                                 </Grid.ColumnDefinitions>
-                                <GroupBox Grid.ColumnSpan="3" Margin="5,5,2.5,2.5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Header="Skin">
+                                <GroupBox Grid.ColumnSpan="3" Header="Skin">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
-                                        <Button Command="{Binding ChangeSkinCommand}" Margin="5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">Change</Button>
+                                        <Button Command="{Binding ChangeSkinCommand}" VerticalAlignment="Center">Change</Button>
                                         <Image Grid.Column="1" />
                                     </Grid>
                                 </GroupBox>
-                                <Label Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Left" >Color</Label>
+                                <Label Grid.Row="1" Grid.Column="0">Color</Label>
                                 <Rectangle Fill="{Binding Color}" Grid.Row="1" Grid.Column="1" Width="25" Height="25" />
-                                <Button Command="{Binding PickColourCommand}" Grid.Row="1" Grid.Column="2" Margin="2.5,2.5,5,2.5" Padding="5" VerticalAlignment="Center" HorizontalAlignment="Stretch">Pick Colour</Button>
-                                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Starting Position</Label>
-                                <Button Command="{Binding ResetPositionCommand}" Grid.Row="2" Grid.Column="2"  Margin="2.5,2.5,5,2.5" Padding="5" HorizontalAlignment="Stretch">Reset</Button>
-                                <Image Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,5,5" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                                <Button Command="{Binding PickColourCommand}" Grid.Row="1" Grid.Column="2">Pick Colour</Button>
+                                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0">Starting Position</Label>
+                                <Button Command="{Binding ResetPositionCommand}" Grid.Row="2" Grid.Column="2">Reset</Button>
+                                <Image Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" />
                             </Grid>
                             <Grid Grid.Column="1">
                                 <Grid.ColumnDefinitions>
@@ -115,32 +112,32 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <Label Margin="5,5,2.5,2.5">Individuals</Label>
-                                <TextBox Text="{Binding InitialIndividuals}" Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                                <UniformGrid Margin="5,2.5,5,2.5" Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Rows="1">
-                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="0" Padding="5">0</Button>
-                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="5" Padding="5">5</Button>
-                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="15" Padding="5">15</Button>
-                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="30" Padding="5">30</Button>
+                                <Label>Individuals</Label>
+                                <TextBox Text="{Binding InitialIndividuals}" Grid.Row="0" Grid.Column="1" />
+                                <UniformGrid Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Rows="1">
+                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="0">0</Button>
+                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="5">5</Button>
+                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="15">15</Button>
+                                    <Button Command="{Binding SetInitialIndividualsCommand}" CommandParameter="30">30</Button>
                                 </UniformGrid>
-                                <Label Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Initial Energy</Label>
-                                <TextBox VerticalAlignment="Center" Text="{Binding InitialEnergy}" Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5" HorizontalAlignment="Stretch" />
-                                <UniformGrid Margin="5,2.5,5,2.5" Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Right" Rows="1">
-                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="3000" Padding="5">3000</Button>
-                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="5000" Padding="5">5000</Button>
-                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="30000" Padding="5">30000</Button>
+                                <Label Grid.Row="2" Grid.Column="0">Initial Energy</Label>
+                                <TextBox Text="{Binding InitialEnergy}" Grid.Row="2" Grid.Column="1" />
+                                <UniformGrid Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Rows="1">
+                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="3000">3000</Button>
+                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="5000">5000</Button>
+                                    <Button Command="{Binding SetInitialEnergyCommand}" CommandParameter="30000">30000</Button>
                                 </UniformGrid>
-                                <CheckBox IsChecked="{Binding EnableRepopulation}" Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Repopulate</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableChloroplasts}" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Chloroplasts</CheckBox>
-                                <CheckBox IsChecked="{Binding IsFixedInPlace}" Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Fixed in Place</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableVision}" Grid.Row="7" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Vision</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableDna}" Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable DNA Execution</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableMovement}" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Voluntary Movement</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableReproduction}" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Reproduction</CheckBox>
-                                <CheckBox IsChecked="{Binding IsVirusImmune}" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Virus Immune</CheckBox>
-                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,2.5">Disable Mutations</CheckBox>
-                                <Button Command="{Binding DisplayFatalRestrictionsCommand}" Grid.Row="13" Grid.Column="0" Margin="5,2.5,2.5,5" HorizontalAlignment="Stretch">Fatal Restrictions</Button>
-                                <Button IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}" Command="{Binding DisplayMutationRatesCommand}" Grid.Row="13" Grid.Column="1" Margin="2.5,2.5,5,5" HorizontalAlignment="Stretch">Mutation Rates</Button>
+                                <CheckBox IsChecked="{Binding EnableRepopulation}" Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0">Repopulate</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableChloroplasts}" Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0">Disable Chloroplasts</CheckBox>
+                                <CheckBox IsChecked="{Binding IsFixedInPlace}" Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0">Fixed in Place</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableVision}" Grid.Row="7" Grid.ColumnSpan="2" Grid.Column="0">Disable Vision</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableDna}" Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0">Disable DNA Execution</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableMovement}" Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0">Disable Voluntary Movement</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableReproduction}" Grid.Row="10" Grid.ColumnSpan="2" Grid.Column="0">Disable Reproduction</CheckBox>
+                                <CheckBox IsChecked="{Binding IsVirusImmune}" Grid.Row="11" Grid.ColumnSpan="2" Grid.Column="0">Virus Immune</CheckBox>
+                                <CheckBox IsChecked="{Binding DisableMutations}" Grid.Row="12" Grid.ColumnSpan="2" Grid.Column="0">Disable Mutations</CheckBox>
+                                <Button Command="{Binding DisplayFatalRestrictionsCommand}" Grid.Row="13" Grid.Column="0">Fatal Restrictions</Button>
+                                <Button IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}" Command="{Binding DisplayMutationRatesCommand}" Grid.Row="13" Grid.Column="1">Mutation Rates</Button>
                             </Grid>
                         </Grid>
                     </GroupBox>
@@ -159,7 +156,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <GroupBox Margin="5,5,2.5,5" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Header="Field Controls">
+                    <GroupBox Grid.ColumnSpan="2" Header="Field Controls">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="2*" />
@@ -169,8 +166,8 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <Label Margin="5,5,5,2.5" VerticalAlignment="Bottom" HorizontalAlignment="Center">Size</Label>
-                            <Slider Value="{Binding FieldSize}" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5" HorizontalAlignment="Stretch" TickPlacement="BottomRight" Minimum="1" Maximum="25" />
+                            <Label HorizontalAlignment="Center">Size</Label>
+                            <Slider Value="{Binding FieldSize}" Grid.Row="1" Grid.Column="0" Minimum="1" Maximum="25" />
                             <Grid Grid.Column="1" Grid.Row="0" Grid.RowSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -180,45 +177,45 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <Label Margin="2.5,5,2.5,2.5">Width:</Label>
-                                <Label Grid.Row="1" Grid.Column="0" Margin="2.5,2.5,2.5,5">Height:</Label>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5" VerticalAlignment="Center" Text="{Binding FieldWidth}" />
-                                <TextBlock Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,5,5" VerticalAlignment="Center" Text="{Binding FieldHeight}" />
+                                <Label>Width:</Label>
+                                <Label Grid.Row="1" Grid.Column="0">Height:</Label>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FieldWidth}" />
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding FieldHeight}" />
                             </Grid>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Header="Wrap Around">
+                    <GroupBox Grid.Row="1" Grid.Column="0" Header="Wrap Around">
                         <StackPanel>
-                            <CheckBox IsEnabled="{Binding EnablePondMode, Converter={StaticResource InvertBoolConverter}}" IsChecked="{Binding EnableTopDownWrap}" Margin="5,5,5,2.5">Top / Down Wrap</CheckBox>
-                            <CheckBox IsChecked="{Binding EnableLeftRightWrap}" Margin="5,2.5,5,5">Left / Right Wrap</CheckBox>
+                            <CheckBox IsEnabled="{Binding EnablePondMode, Converter={StaticResource InvertBoolConverter}}" IsChecked="{Binding EnableTopDownWrap}">Top / Down Wrap</CheckBox>
+                            <CheckBox IsChecked="{Binding EnableLeftRightWrap}">Left / Right Wrap</CheckBox>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Header="Waste">
+                    <GroupBox Grid.Row="2" Grid.Column="0" Header="Waste">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <Label VerticalAlignment="Center" Margin="5,5,2.5,5">Threshold</Label>
-                            <TextBox Text="{Binding WasteThreshold}" Grid.Column="1"  Margin="2.5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
+                            <Label>Threshold</Label>
+                            <TextBox Text="{Binding WasteThreshold}" Grid.Column="1" />
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,5" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="Misc. Controls">
+                    <GroupBox Grid.Row="3" Grid.Column="0" VerticalAlignment="Top" Header="Misc. Controls">
                         <StackPanel>
-                            <CheckBox IsChecked="{Binding FixBotRadii}" Margin="5">Fix Bot Radii</CheckBox>
+                            <CheckBox IsChecked="{Binding FixBotRadii}">Fix Bot Radii</CheckBox>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" Margin="2.5,2.5,2.5,2.5" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="Corpse Mode">
+                    <GroupBox Grid.Row="1" Grid.Column="1" Grid.RowSpan="4" VerticalAlignment="Top" Header="Corpse Mode">
                         <StackPanel>
-                            <CheckBox IsChecked="{Binding EnableCorpseMode}" Margin="5,5,5,2.5">Enable</CheckBox>
-                            <GroupBox IsEnabled="{Binding EnableCorpseMode}" Margin="5,2.5,5,2.5" HorizontalAlignment="Stretch" Header="Decay Type">
+                            <CheckBox IsChecked="{Binding EnableCorpseMode}">Enable</CheckBox>
+                            <GroupBox IsEnabled="{Binding EnableCorpseMode}" Header="Decay Type">
                                 <StackPanel>
-                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeNone}" GroupName="DecayOption" Margin="5,5,5,2.5">None</RadioButton>
-                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeWaste}" GroupName="DecayOption" Margin="5,2.5,5,2.5">Waste</RadioButton>
-                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeEnergy}" GroupName="DecayOption" Margin="5,2.5,5,5">Energy</RadioButton>
+                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeNone}" GroupName="DecayOption">None</RadioButton>
+                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeWaste}" GroupName="DecayOption">Waste</RadioButton>
+                                    <RadioButton IsEnabled="{Binding EnableCorpseMode}" IsChecked="{Binding DecayTypeEnergy}" GroupName="DecayOption">Energy</RadioButton>
                                 </StackPanel>
                             </GroupBox>
-                            <GroupBox IsEnabled="{Binding EnableCorpseMode}" Margin="5,2.5,5,5" HorizontalAlignment="Stretch" Header="Decay Rate">
+                            <GroupBox IsEnabled="{Binding EnableCorpseMode}" HorizontalAlignment="Stretch" Header="Decay Rate">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -228,15 +225,15 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <Label IsEnabled="{Binding EnableCorpseMode}" Margin="5,5,2.5,2.5">Size</Label>
-                                    <TextBox IsEnabled="{Binding EnableCorpseMode}" Text="{Binding DecayRate}" Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                                    <Label IsEnabled="{Binding EnableCorpseMode}" Grid.Row="1" Grid.Column="0" Margin="5,2.5,5,5">Period</Label>
-                                    <TextBox IsEnabled="{Binding EnableCorpseMode}" Text="{Binding DecayPeriod}" Grid.Column="1" Grid.Row="1" Margin="2.5,2.5,5,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                                    <Label IsEnabled="{Binding EnableCorpseMode}">Size</Label>
+                                    <TextBox IsEnabled="{Binding EnableCorpseMode}" Text="{Binding DecayRate}" Grid.Row="0" Grid.Column="1" />
+                                    <Label IsEnabled="{Binding EnableCorpseMode}" Grid.Row="1" Grid.Column="0">Period</Label>
+                                    <TextBox IsEnabled="{Binding EnableCorpseMode}" Text="{Binding DecayPeriod}" Grid.Column="1" Grid.Row="1" />
                                 </Grid>
                             </GroupBox>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" Margin="2.5,5,5,5" HorizontalAlignment="Stretch" Header="Veggy Controls">
+                    <GroupBox Grid.Column="2" Grid.Row="0" Grid.RowSpan="5" Header="Veggy Controls">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -248,7 +245,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <GroupBox Margin="5,5,2.5,2.5" Grid.RowSpan="2" HorizontalAlignment="Left" Header="Pond Mode">
+                            <GroupBox Grid.RowSpan="2" HorizontalAlignment="Left" Header="Pond Mode">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
@@ -260,12 +257,12 @@
                                         <RowDefinition Height="Auto" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
-                                    <CheckBox IsChecked="{Binding EnablePondMode}" Grid.ColumnSpan="2" x:Name="Pondcheck" Margin="5,5,2.5,2.5" Click="Pondcheck_Click">Pond Mode</CheckBox>
-                                    <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center">Light Intensity</Label>
-                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Margin="2.5" Grid.Column="1" Text="{Binding LightLevel}" VerticalAlignment="Center" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
-                                    <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center">Sediment Level</Label>
-                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="1" Margin="2.5" VerticalAlignment="Center" Text="{Binding SedimentLevel, StringFormat=0.00}" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
-                                    <GroupBox IsEnabled="{Binding EnablePondMode}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Margin="2.5,5,2.5,2.5" Header="Light Demo" HorizontalAlignment="Stretch">
+                                    <CheckBox IsChecked="{Binding EnablePondMode}" Grid.ColumnSpan="2" Click="Pondcheck_Click">Pond Mode</CheckBox>
+                                    <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Grid.Column="0">Light Intensity</Label>
+                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="1" Grid.Column="1" Text="{Binding LightLevel}" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
+                                    <Label IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="0">Sediment Level</Label>
+                                    <TextBox IsEnabled="{Binding EnablePondMode}" Grid.Row="2" Grid.Column="1" Text="{Binding SedimentLevel, StringFormat=0.00}" LostFocus="LightBox_LostFocus" GotFocus="LightBox_GotFocus" />
+                                    <GroupBox IsEnabled="{Binding EnablePondMode}" Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" Header="Light Demo">
                                         <Viewbox Visibility="{Binding EnablePondMode, Converter={StaticResource BoolToVisibilityConverter}}" Stretch="Fill" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                             <Canvas Width="5" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                                                 <Rectangle Height="5" Width="1" Canvas.Left="2">
@@ -282,18 +279,18 @@
                                     </GroupBox>
                                 </Grid>
                             </GroupBox>
-                            <GroupBox Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5" Header="Initial Light Energy">
+                            <GroupBox Grid.Row="0" Grid.Column="1" Header="Initial Light Energy">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox Margin="5,5,2.5,5" VerticalAlignment="Center" Text="{Binding InitialLightEnergy}" />
-                                    <Label Grid.Column="1" VerticalAlignment="Center" Margin="2.5,5,5,5">NRG</Label>
+                                    <TextBox Text="{Binding InitialLightEnergy}" />
+                                    <Label Grid.Column="1">NRG</Label>
                                 </Grid>
                             </GroupBox>
-                            <Button Command="{Binding ShowEnergyManagementCommand}" Grid.Column="1" Grid.Row="1" Margin="2.5,2.5,5,2.5" VerticalAlignment="Center" HorizontalAlignment="Center">Energy Management</Button>
-                            <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" Header="Rates for Repopulation">
+                            <Button Command="{Binding ShowEnergyManagementCommand}" Grid.Column="1" Grid.Row="1">Energy Management</Button>
+                            <GroupBox Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Header="Rates for Repopulation">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -306,26 +303,26 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
-                                    <TextBox VerticalAlignment="Center" Margin="5,5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MaximumChloroplasts}" />
-                                    <Label Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5">* 16K Maximum Chloroplasts</Label>
-                                    <TextBox VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding MinimumChloroplastsThreshold}" />
-                                    <Label Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,5,2.5">* 16K Repopulation threshold of Chloroplasts</Label>
-                                    <TextBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RobotsPerRepopulationEvent}" />
-                                    <Label Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5">Robots per Repopulation Event</Label>
-                                    <TextBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Stretch" Text="{Binding RepopulationCooldownPeriod}" />
-                                    <Label Grid.Row="3" Grid.Column="1" Margin="2.5,2.5,5,2.5">Repopulation Cooldown Period</Label>
+                                    <TextBox Text="{Binding MaximumChloroplasts}" />
+                                    <Label Grid.Row="0" Grid.Column="1">* 16K Maximum Chloroplasts</Label>
+                                    <TextBox Grid.Row="1" Grid.Column="0" Text="{Binding MinimumChloroplastsThreshold}" />
+                                    <Label Grid.Row="1" Grid.Column="1">* 16K Repopulation threshold of Chloroplasts</Label>
+                                    <TextBox VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" Text="{Binding RobotsPerRepopulationEvent}" />
+                                    <Label Grid.Row="2" Grid.Column="1">Robots per Repopulation Event</Label>
+                                    <TextBox VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" Text="{Binding RepopulationCooldownPeriod}" />
+                                    <Label Grid.Row="3" Grid.Column="1">Repopulation Cooldown Period</Label>
                                 </Grid>
                             </GroupBox>
-                            <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Margin="5,2.5,5,5" Header="Veg Body/NRG Distribution">
+                            <GroupBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Header="Veg Body/NRG Distribution">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <Label Margin="5,5,2.5,5" VerticalAlignment="Center">NRG</Label>
-                                    <Slider Value="{Binding VegEnergyBodyDistribution}" Grid.Column="1" Margin="2.5,5,2.5,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" TickFrequency="10" TickPlacement="Both" />
-                                    <Label Grid.Column="2" Margin="2.5,5,5,5" VerticalAlignment="Center">Body</Label>
+                                    <Label VerticalAlignment="Center">NRG</Label>
+                                    <Slider Value="{Binding VegEnergyBodyDistribution}" Grid.Column="1"  Minimum="0" Maximum="100" TickFrequency="10" />
+                                    <Label Grid.Column="2">Body</Label>
                                 </Grid>
                             </GroupBox>
                         </Grid>
@@ -338,7 +335,7 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <GroupBox x:Name="Frame20" Margin="5,5,2.5,5" Header="Physics">
+                    <GroupBox x:Name="Frame20" Header="Physics">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -352,7 +349,7 @@
                                 <ColumnDefinition />
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <GroupBox Grid.ColumnSpan="2" Margin="5,5,5,2.5" Header="The Big Blue Screen Acts Like A">
+                            <GroupBox Grid.ColumnSpan="2" Header="The Big Blue Screen Acts Like A">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
@@ -363,40 +360,40 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <RadioButton IsChecked="{Binding FieldModeFluid}" VerticalAlignment="Center" GroupName="FluidSolidRadio" Margin="5,5,2.5,2.5">Fluid</RadioButton>
-                                    <RadioButton IsChecked="{Binding FieldModeSolid}" VerticalAlignment="Center" GroupName="FluidSolidRadio" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5">Solid</RadioButton>
-                                    <RadioButton IsChecked="{Binding FieldModeCustom}" VerticalAlignment="Center" GroupName="FluidSolidRadio" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,5">Custom</RadioButton>
-                                    <ComboBox IsEnabled="{Binding FieldModeFluid}" SelectedIndex="{Binding MovementDrag}" Grid.Row="0" Grid.Column="1" Margin="2.5,5,5,2.5" Text="Set Drag">
+                                    <RadioButton IsChecked="{Binding FieldModeFluid}" GroupName="FluidSolidRadio">Fluid</RadioButton>
+                                    <RadioButton IsChecked="{Binding FieldModeSolid}" GroupName="FluidSolidRadio" Grid.Row="1" Grid.Column="0">Solid</RadioButton>
+                                    <RadioButton IsChecked="{Binding FieldModeCustom}" GroupName="FluidSolidRadio" Grid.Row="2" Grid.Column="0">Custom</RadioButton>
+                                    <ComboBox IsEnabled="{Binding FieldModeFluid}" SelectedIndex="{Binding MovementDrag, Converter={StaticResource EnumToIntConverter}}" Grid.Row="0" Grid.Column="1" Text="Set Drag">
                                         <ComboBoxItem>Thick Fluid</ComboBoxItem>
                                         <ComboBoxItem>Transitory</ComboBoxItem>
                                         <ComboBoxItem>Thin Fluid</ComboBoxItem>
                                         <ComboBoxItem>None</ComboBoxItem>
                                         <ComboBoxItem>Custom</ComboBoxItem>
                                     </ComboBox>
-                                    <ComboBox IsEnabled="{Binding FieldModeSolid}" SelectedIndex="{Binding MovementFriction}" Grid.Column="1" Grid.Row="1" Margin="2.5,2.5,5,2.5" Text="Set Friction">
+                                    <ComboBox IsEnabled="{Binding FieldModeSolid}" SelectedIndex="{Binding MovementFriction, Converter={StaticResource EnumToIntConverter}}" Grid.Column="1" Grid.Row="1" Text="Set Friction">
                                         <ComboBoxItem>Sandpaper</ComboBoxItem>
                                         <ComboBoxItem>Metal</ComboBoxItem>
                                         <ComboBoxItem>Teflon</ComboBoxItem>
                                         <ComboBoxItem>None</ComboBoxItem>
                                         <ComboBoxItem>Custom</ComboBoxItem>
                                     </ComboBox>
-                                    <Button IsEnabled="{Binding FieldModeCustom}" Command="{Binding DisplayCustomPhysicsCommand}" Grid.Column="1" Grid.Row="2"  x:Name="ToPhysics" Margin="2.5,2.5,5,5">Custom Physics</Button>
+                                    <Button IsEnabled="{Binding FieldModeCustom}" Command="{Binding DisplayCustomPhysicsCommand}" Grid.Column="1" Grid.Row="2">Custom Physics</Button>
                                 </Grid>
                             </GroupBox>
-                            <Label Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5">Movement Efficiency</Label>
-                            <ComboBox SelectedIndex="{Binding MovementEfficiency}" Grid.Row="1" Grid.Column="1" x:Name="EfficiencyCombo" Margin="2.5,2.5,5,2.5" Text="Set Efficiency">
+                            <Label Grid.Row="1" Grid.Column="0">Movement Efficiency</Label>
+                            <ComboBox SelectedIndex="{Binding MovementEfficiency, Converter={StaticResource EnumToIntConverter}}" Grid.Row="1" Grid.Column="1" Text="Set Efficiency">
                                 <ComboBoxItem>Ideal</ComboBoxItem>
                                 <ComboBoxItem>Biological</ComboBoxItem>
                                 <ComboBoxItem>Mechanical</ComboBoxItem>
                             </ComboBox>
-                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="2" Grid.RowSpan="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Brownian Movement</Label>
-                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding BrownianMotion}" Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5" Text="Set Brownian">
+                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="2" Grid.Column="0">Brownian Movement</Label>
+                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding BrownianMotion, Converter={StaticResource EnumToIntConverter}}" Grid.Row="2" Grid.Column="1" Text="Set Brownian">
                                 <ComboBoxItem>Molecular</ComboBoxItem>
                                 <ComboBoxItem>Bacterial</ComboBoxItem>
                                 <ComboBoxItem>Animal</ComboBoxItem>
                             </ComboBox>
-                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="3" Grid.RowSpan="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Vertical Gravity</Label>
-                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding Gravity}" Grid.Row="3" Grid.Column="1" Margin="2.5,2.5,5,2.5" Text="Set Gravity">
+                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="3" Grid.Column="0">Vertical Gravity</Label>
+                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding Gravity, Converter={StaticResource EnumToIntConverter}}" Grid.Row="3" Grid.Column="1" Text="Set Gravity">
                                 <ComboBoxItem>None</ComboBoxItem>
                                 <ComboBoxItem>Moon</ComboBoxItem>
                                 <ComboBoxItem>Earth</ComboBoxItem>
@@ -413,10 +410,10 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <Label Margin="5,2.5,2.5,2.5">Slow</Label>
-                                <Label Grid.Row="0" Grid.Column="1" Margin="2.5,5,2.5,2.5" HorizontalAlignment="Center">Max Velocity</Label>
-                                <Label Grid.Row="0" Grid.Column="2" Margin="2.5,5,5,2.5">Fast</Label>
-                                <Slider Value="{Binding MaxVelocity}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,5,2.5" HorizontalAlignment="Stretch" Minimum="0" Maximum="180" TickFrequency="10" TickPlacement="TopLeft" />
+                                <Label>Slow</Label>
+                                <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">Max Velocity</Label>
+                                <Label Grid.Row="0" Grid.Column="2">Fast</Label>
+                                <Slider Value="{Binding MaxVelocity}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Minimum="0" Maximum="180" TickFrequency="10" />
                             </Grid>
                             <Grid Grid.Row="5" Grid.ColumnSpan="2" Grid.Column="0">
                                 <Grid.ColumnDefinitions>
@@ -428,17 +425,17 @@
                                     <RowDefinition />
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
-                                <Label Margin="5,2.5,2.5,2.5">Ghosts</Label>
-                                <Label Grid.Row="0" Grid.Column="1" Margin="2.5,5,2.5,2.5" HorizontalAlignment="Center">Collision Elasticity</Label>
-                                <Label Grid.Row="0" Grid.Column="2" Margin="2.5,5,5,2.5">Marbles</Label>
-                                <Slider Value="{Binding CollisionElasticity}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5,5,2.5" HorizontalAlignment="Stretch" Minimum="-10" Maximum="10" TickFrequency="1" TickPlacement="TopLeft" />
+                                <Label>Ghosts</Label>
+                                <Label Grid.Row="0" Grid.Column="1" HorizontalAlignment="Center">Collision Elasticity</Label>
+                                <Label Grid.Row="0" Grid.Column="2">Marbles</Label>
+                                <Slider Value="{Binding CollisionElasticity}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Minimum="-10" Maximum="10" TickFrequency="1" />
                             </Grid>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Column="1" Margin="2.5,5,5,5" Header="Costs and Returned Shots">
+                    <GroupBox Grid.Column="1" Header="Costs and Returned Shots">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="200" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -449,7 +446,7 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.ColumnSpan="4" Margin="5,5,5,2.5" Header="Costs">
+                            <GroupBox Grid.ColumnSpan="4" Header="Costs">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition />
@@ -459,17 +456,17 @@
                                         <RowDefinition />
                                         <RowDefinition />
                                     </Grid.RowDefinitions>
-                                    <RadioButton IsChecked="{Binding CostsNoCosts}" GroupName="CostRadio" Margin="5,5,2.5,2.5">No Costs</RadioButton>
-                                    <RadioButton IsChecked="{Binding CostsCustom}" Grid.Row="1" Grid.Column="0" GroupName="CostRadio" Margin="5,2.5,2.5,5">Custom</RadioButton>
-                                    <Button IsEnabled="{Binding CostsCustom}" Command="{Binding DisplayCustomCostsCommand}" Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Margin="2.5,2.5,5,5">Custom Simulation Costs</Button>
+                                    <RadioButton IsChecked="{Binding CostsNoCosts}" GroupName="CostRadio">No Costs</RadioButton>
+                                    <RadioButton IsChecked="{Binding CostsCustom}" Grid.Row="1" Grid.Column="0" GroupName="CostRadio">Custom</RadioButton>
+                                    <Button IsEnabled="{Binding CostsCustom}" Command="{Binding DisplayCustomCostsCommand}" Grid.Row="1" Grid.Column="1">Custom Simulation Costs</Button>
                                 </Grid>
                             </GroupBox>
-                            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center" TextWrapping="Wrap">Shot Energy Exchange Method</TextBlock>
-                            <RadioButton IsChecked="{Binding ShotModeFixedEnergy}" Grid.Row="1" Grid.Column="1" GroupName="ExchangeMode" Margin="2.5" VerticalAlignment="Center">Fixed Nrg</RadioButton>
-                            <RadioButton IsChecked="{Binding ShotModeProportional}" Grid.Row="2" Grid.Column="1" GroupName="ExchangeMode" Margin="2.5" VerticalAlignment="Center">Proportional</RadioButton>
-                            <TextBox Text="{Binding ShotEnergy}" MinWidth="40" Grid.Row="1" Grid.Column="2" Margin="2.5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                            <TextBox Text="{Binding ShotProportion}" MinWidth="40" Grid.Row="2" Grid.Column="2" Margin="2.5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                            <Label Grid.Row="2" Grid.Column="3" x:Name="Label10" Margin="2.5,2.5,5,2.5" Content="%" />
+                            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">Shot Energy Exchange Method</TextBlock>
+                            <RadioButton IsChecked="{Binding ShotModeFixedEnergy}" Grid.Row="1" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Fixed Nrg</RadioButton>
+                            <RadioButton IsChecked="{Binding ShotModeProportional}" Grid.Row="2" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Proportional</RadioButton>
+                            <TextBox Text="{Binding ShotEnergy}" Grid.Row="1" Grid.Column="2" />
+                            <TextBox Text="{Binding ShotProportion}" Grid.Row="2" Grid.Column="2" />
+                            <Label Grid.Row="2" Grid.Column="3" Content="%" />
                             <TextBlock Grid.Row="3" Grid.ColumnSpan="4" Grid.Column="0" Margin="5,22.5,5,5" VerticalAlignment="Top" HorizontalAlignment="Stretch" TextWrapping="Wrap">
                                 These variables control some of the fundamental aspects of the simulation.  Any change made will have an effect on the cost-benefit ratios for all individuals.
                             </TextBlock>
@@ -488,8 +485,8 @@
                         <ColumnDefinition />
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <CheckBox IsChecked="{Binding DisableMutations}" Margin="5,5,5,2.5">Disable All Mutations</CheckBox>
-                    <GroupBox Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,5" Header="Current Multiplier">
+                    <CheckBox IsChecked="{Binding DisableMutations}">Disable All Mutations</CheckBox>
+                    <GroupBox Grid.Row="1" Grid.Column="0" Header="Current Multiplier">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -502,19 +499,19 @@
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
-                            <TextBlock Grid.Column="1" Margin="2.5,5,2.5,2.5" HorizontalAlignment="Center" Text="{Binding MutationDisplay}" />
-                            <Slider Value="{Binding MutationMultiplier}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Margin="5,2.5" HorizontalAlignment="Stretch" Minimum="-5" Maximum="5" TickPlacement="BottomRight" />
-                            <Label Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5">Low</Label>
-                            <Label Grid.Row="2" Grid.Column="1" Margin="5,2.5,2.5,2.5" HorizontalAlignment="Center">1</Label>
-                            <Label Grid.Row="2" Grid.Column="2" Margin="5,2.5,2.5,2.5">High</Label>
-                            <TextBlock Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" TextWrapping="Wrap" Margin="5,2.5,5,5">
+                            <TextBlock Grid.Column="1" Text="{Binding MutationDisplay}" />
+                            <Slider Value="{Binding MutationMultiplier}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Minimum="-5" Maximum="5" />
+                            <Label Grid.Row="2" Grid.Column="0">Low</Label>
+                            <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center">1</Label>
+                            <Label Grid.Row="2" Grid.Column="2">High</Label>
+                            <TextBlock Grid.Row="3" Grid.ColumnSpan="3" Grid.Column="0" TextWrapping="Wrap">
                                 This controls the multiplier for the mutation frequencies for all robots.
                                 This is useful for stabilising the population after a period of intense mutation,
                                 or vice-versa.
                             </TextBlock>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="1" Margin="2.5,2.5,5,5" Header="Oscillation Frequency">
+                    <GroupBox Grid.Row="1" Grid.Column="1" Header="Oscillation Frequency">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -526,18 +523,18 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <CheckBox IsChecked="{Binding EnableMutationCycling}" Margin="5,5,5,2.5" Grid.ColumnSpan="3" VerticalAlignment="Center">Cycle the frequency between 20x and 1/20x</CheckBox>
-                            <CheckBox IsEnabled="{Binding EnableMutationCycling}" IsChecked="{Binding EnabelMutationSineWave}" Grid.Row="1" Grid.Column="0" Margin="5,2.5,2.5,2.5" VerticalAlignment="Center">Sine wave instead of saw wave</CheckBox>
-                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="2" Grid.Column="0" Margin="5,2.5,2.5,2.5" Content="{Binding MaxCyclesLabel}" />
-                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Text="{Binding CyclesHigh}" Grid.Row="2" Grid.Column="1" Margin="2.5,2.5,5,2.5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
-                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,5" Content="{Binding MinCyclesLabel}" />
-                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Width="80" Text="{Binding CyclesLow}" Grid.Row="3" Grid.Column="1" Margin="2.5,2.5,5,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" />
+                            <CheckBox IsChecked="{Binding EnableMutationCycling}" Grid.ColumnSpan="3">Cycle the frequency between 20x and 1/20x</CheckBox>
+                            <CheckBox IsEnabled="{Binding EnableMutationCycling}" IsChecked="{Binding EnableMutationSineWave}" Grid.Row="1" Grid.Column="0">Sine wave instead of saw wave</CheckBox>
+                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="2" Grid.Column="0" Content="{Binding MaxCyclesLabel}" />
+                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Text="{Binding CyclesHigh}" Grid.Row="2" Grid.Column="1" />
+                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="3" Grid.Column="0" Content="{Binding MinCyclesLabel}" />
+                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Text="{Binding CyclesLow}" Grid.Row="3" Grid.Column="1" />
                         </Grid>
                     </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
-        <Grid Grid.Row="1" Margin="5,2.5,5,5">
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -545,11 +542,11 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <Button Command="{Binding LoadSettingsCommand}" Margin="5,5,2.5,5">Load Settings</Button>
-            <Button Command="{Binding SaveSettingsCommand}" Margin="2.5,5,5,5" Grid.Column="1">Save Settings</Button>
-            <Button Command="{Binding ShowGlobalSettingsCommand}" Margin="5" Grid.Column="2" HorizontalAlignment="Center">Global Settings</Button>
-            <Button Command="{Binding StartNewCommand}" Margin="5,5,2.5,5" Grid.Column="3">Start New</Button>
-            <Button Command="{Binding ChangeCommand}" Margin="2.5,5,5,5" Grid.Column="4">Change</Button>
+            <Button Command="{Binding LoadSettingsCommand}">Load Settings</Button>
+            <Button Command="{Binding SaveSettingsCommand}" Grid.Column="1">Save Settings</Button>
+            <Button Command="{Binding ShowGlobalSettingsCommand}" Grid.Column="2">Global Settings</Button>
+            <Button Command="{Binding StartNewCommand}" Grid.Column="3">Start New</Button>
+            <Button Command="{Binding ChangeCommand}" Grid.Column="4">Change</Button>
         </Grid>
     </Grid>
 </Window>

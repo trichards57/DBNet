@@ -5,15 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:RestrictionOptionsViewModel}"
-        mc:Ignorable="d" Title="{Binding Title}" ResizeMode="NoResize" ShowInTaskbar="False" SizeToContent="WidthAndHeight" WindowStyle="ToolWindow">
+        mc:Ignorable="d" Title="{Binding Title}" Style="{StaticResource OptionsForm}">
     <Window.Resources>
-        <Style TargetType="Button">
-            <Setter Property="Padding" Value="5" />
-            <Setter Property="VerticalAlignment" Value="Center" />
-        </Style>
-        <Style TargetType="CheckBox">
-            <Setter Property="Margin" Value="5" />
-        </Style>
         <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
     </Window.Resources>
     <Grid>
@@ -26,21 +19,19 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Command="{Binding LoadPresetCommand}" Margin="5,5,2.5,5">Load Preset...</Button>
-            <Button Command="{Binding SavePresetCommand}" Margin="2.5,5,2.5,5">Save Preset...</Button>
+            <Button Command="{Binding LoadPresetCommand}">Load Preset...</Button>
+            <Button Command="{Binding SavePresetCommand}">Save Preset...</Button>
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Click="ApplyClick" HorizontalAlignment="Left" Margin="5,5,2.5,5" IsDefault="True">Apply</Button>
-            <Button Click="CancelClick" HorizontalAlignment="Left" Margin="2.5,5,5,5" IsCancel="True">Cancel</Button>
+            <Button Click="ApplyClick" IsDefault="True">Apply</Button>
+            <Button Click="CancelClick" IsCancel="True">Cancel</Button>
         </StackPanel>
-        <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Margin="10,10,5,10" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="For Non-Repopulating Robots">
+        <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Header="For Non-Repopulating Robots">
             <StackPanel>
-                <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
-                    <StackPanel>
-                        <CheckBox IsChecked="{Binding KillNonMultibotNonVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
-                    </StackPanel>
+                <GroupBox Header="Fatal Restrictions">
+                    <CheckBox IsChecked="{Binding KillNonMultibotNonVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
                 </GroupBox>
-                <GroupBox Visibility="{Binding ShowNonVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Margin="10,5,10,10" HorizontalAlignment="Stretch" Header="Property Applied Restrictions">
+                <GroupBox Visibility="{Binding ShowNonVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding FixedInPlaceNonVeg}">Fixed in place</CheckBox>
                         <CheckBox IsChecked="{Binding DisableVisionNonVeg}">Disable Vision</CheckBox>
@@ -54,14 +45,12 @@
                 </GroupBox>
             </StackPanel>
         </GroupBox>
-        <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Row="0" Grid.Column="1" Margin="5,10,10,10" Header="For Repopulating Robots">
+        <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Row="0" Grid.Column="1" Header="For Repopulating Robots">
             <StackPanel>
-                <GroupBox Margin="10,10,10,5" HorizontalAlignment="Stretch" Header="Fatal Restrictions">
-                    <StackPanel>
-                        <CheckBox IsChecked="{Binding KillNonMultibotVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
-                    </StackPanel>
+                <GroupBox HorizontalAlignment="Stretch" Header="Fatal Restrictions">
+                    <CheckBox IsChecked="{Binding KillNonMultibotVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
                 </GroupBox>
-                <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Margin="10,5,10,10" HorizontalAlignment="Stretch" Header="Property Applied Restrictions">
+                <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding FixedInPlaceVeg}">Fixed in place</CheckBox>
                         <CheckBox IsChecked="{Binding DisableVisionVeg}">Disable Vision</CheckBox>

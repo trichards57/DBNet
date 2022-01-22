@@ -106,6 +106,7 @@ namespace DarwinBots.ViewModels
             _lightTimer = new Timer(LightTimerTick, null, Timeout.Infinite, Timeout.Infinite);
             ShowEnergyManagementCommand = new RelayCommand(ShowEnergyManagement);
             ShowGlobalSettingsCommand = new RelayCommand(ShowGlobalSettings);
+            ShowCustomPhysicsCommand = new RelayCommand(ShowCustomPhysics);
             ListNonNativeSpeciesCommand = new RelayCommand(ListNonNativeSpecies);
             ShowCustomCostsCommand = new RelayCommand(ShowCustomCosts);
             AddSpeciesCommand = new AsyncRelayCommand(AddSpecies);
@@ -114,8 +115,32 @@ namespace DarwinBots.ViewModels
         }
 
         public ICommand AddSpeciesCommand { get; }
-        public BrownianMotion BrownianMotion { get; set; }
+
+        public BrownianMotion BrownianMotion
+        {
+            get
+            {
+                return PhysBrown switch
+                {
+                    <= 0.5 => BrownianMotion.Animal,
+                    > 0.5 and <= 7 => BrownianMotion.Bacterial,
+                    _ => BrownianMotion.Molecular
+                };
+            }
+            set
+            {
+                PhysBrown = value switch
+                {
+                    BrownianMotion.Bacterial => 7,
+                    BrownianMotion.Molecular => 0.5,
+                    _ => 0,
+                };
+            }
+        }
+
         public ICommand ChangeCommand { get; }
+        public double CoefficientKinetic { get; set; }
+        public double CoefficientStatic { get; set; }
         public double CollisionElasticity { get; set; }
 
         public bool CostsCustom
@@ -209,7 +234,6 @@ namespace DarwinBots.ViewModels
 
         public bool EnableDayNightCycles { get; set; }
         public bool EnableLeftRightWrap { get; set; }
-
         public bool EnableMutationCycling { get; set; }
 
         public bool EnableMutationSineWave
@@ -380,6 +404,10 @@ namespace DarwinBots.ViewModels
             }
         }
 
+        public double PhysBrown { get; set; }
+        public double PhysMoving { get; set; }
+        public bool PlanetEaters { get; set; }
+        public double PlanetEatersG { get; set; }
         public ICommand RenameSpeciesCommand { get; }
         public int RepopulationCooldownPeriod { get => _repopulationCooldownPeriod; set => SetProperty(ref _repopulationCooldownPeriod, Math.Clamp(value, 0, 32000)); }
         public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set => SetProperty(ref _robotsPerRepopulationEvent, Math.Clamp(value, 0, 32000)); }
@@ -436,7 +464,9 @@ namespace DarwinBots.ViewModels
         public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
         public int WasteThreshold { get; set; }
-        public object YGravity { get; private set; }
+        public object YGravity { get; set; }
+        public bool ZeroMomentum { get; set; }
+        public double ZGravity { get; set; }
 
         public async ValueTask DisposeAsync()
         {
@@ -569,12 +599,7 @@ namespace DarwinBots.ViewModels
                 _ => MovementEfficiency.Ideal,
             };
 
-            BrownianMotion = options.PhysBrown switch
-            {
-                <= 0.5 => BrownianMotion.Animal,
-                > 0.5 and <= 7 => BrownianMotion.Bacterial,
-                _ => BrownianMotion.Molecular
-            };
+            PhysBrown = options.PhysBrown;
 
             Gravity = options.YGravity switch
             {
@@ -623,6 +648,13 @@ namespace DarwinBots.ViewModels
 
             TidesCyclesOn = options.Tides;
             TidesCyclesOff = options.TidesOf;
+            ZeroMomentum = options.ZeroMomentum;
+            PlanetEaters = options.PlanetEaters;
+            PhysMoving = options.PhysMoving;
+            ZGravity = options.ZGravity;
+            PlanetEatersG = options.PlanetEatersG;
+            CoefficientStatic = options.CoefficientStatic;
+            CoefficientKinetic = options.CoefficientKinetic;
         }
 
         public void SaveToOptions(SimOptions options)
@@ -750,12 +782,7 @@ namespace DarwinBots.ViewModels
                 _ => 1,
             };
 
-            options.PhysBrown = BrownianMotion switch
-            {
-                BrownianMotion.Bacterial => 7,
-                BrownianMotion.Molecular => 0.5,
-                _ => 0,
-            };
+            options.PhysBrown = PhysBrown;
 
             options.YGravity = Gravity switch
             {
@@ -794,6 +821,14 @@ namespace DarwinBots.ViewModels
 
             options.Tides = TidesCyclesOn;
             options.TidesOf = TidesCyclesOff;
+
+            options.ZeroMomentum = ZeroMomentum;
+            options.PlanetEaters = PlanetEaters;
+            options.PhysMoving = PhysMoving;
+            options.ZGravity = ZGravity;
+            options.PlanetEatersG = PlanetEatersG;
+            options.CoefficientStatic = CoefficientStatic;
+            options.CoefficientKinetic = CoefficientKinetic;
         }
 
         public void SetPondMode(bool enable)
@@ -939,6 +974,17 @@ namespace DarwinBots.ViewModels
 
             if (res == true)
                 _costs = form.ViewModel.SaveOptions();
+        }
+
+        private void ShowCustomPhysics()
+        {
+            var form = new PhysicsOptions();
+            form.ViewModel.LoadFromOptions(this);
+
+            var res = form.ShowDialog();
+
+            if (res == true)
+                form.ViewModel.SaveToOptions(this);
         }
 
         private void ShowEnergyManagement()
