@@ -157,7 +157,6 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <GroupBox Margin="5,5,2.5,5" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Header="Field Controls">
@@ -204,17 +203,7 @@
                             <TextBox Text="{Binding WasteThreshold}" Grid.Column="1"  Margin="2.5,5,5,5" HorizontalAlignment="Stretch" VerticalAlignment="Center" />
                         </Grid>
                     </GroupBox>
-                    <GroupBox Margin="5,2.5,2.5,2.5"  Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Header="Graphing">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <Label Margin="5,5,2.5,5">Update Interval</Label>
-                            <TextBox Grid.Column="1" Margin="2.5,5,5,5" VerticalAlignment="Center" HorizontalAlignment="Stretch" Text="{Binding GraphUpdateInterval}" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Grid.Row="4" Grid.Column="0" Margin="5,2.5,2.5,5" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="Misc. Controls">
+                    <GroupBox Grid.Row="3" Grid.Column="0" Margin="5,2.5,2.5,5" VerticalAlignment="Top" HorizontalAlignment="Stretch" Header="Misc. Controls">
                         <StackPanel>
                             <CheckBox IsChecked="{Binding FixBotRadii}" Margin="5">Fix Bot Radii</CheckBox>
                         </StackPanel>
