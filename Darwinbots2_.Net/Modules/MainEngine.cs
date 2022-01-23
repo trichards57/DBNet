@@ -277,7 +277,10 @@ namespace DarwinBots.Modules
                 Zgravity = SimOpt.SimOpts.ZGravity,
             };
 
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            var dName = Path.GetDirectoryName(path);
+            if (dName != null)
+                Directory.CreateDirectory(dName);
+
             File.WriteAllText(path, JsonSerializer.Serialize(sim));
         }
 

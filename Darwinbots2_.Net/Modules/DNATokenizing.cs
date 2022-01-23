@@ -631,7 +631,8 @@ namespace DarwinBots.Modules
             if (savingToFile)
                 return n.ToString();
 
-            if (!(rob != null & n != 0)) return n.ToString();
+            if (rob == null || n == 0)
+                return n.ToString();
 
             var v = rob.Variables.FirstOrDefault(u => u.Value == n);
 
