@@ -304,7 +304,7 @@ namespace DarwinBots.Modules
 
         private static int Clamp(int val, int max = MaxIntValue)
         {
-            return Math.Clamp(val, max, -max);
+            return Math.Clamp(val, -max, max);
         }
 
         private static int Mod32000(int a)
