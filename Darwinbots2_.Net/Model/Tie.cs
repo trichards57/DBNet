@@ -1,4 +1,6 @@
-﻿namespace DarwinBots.Model
+﻿using System.Windows.Media;
+
+namespace DarwinBots.Model
 {
     internal enum TieType
     {
@@ -14,6 +16,21 @@
         public double b { get; set; }
         public bool BackTie { get; set; }
         public double Bend { get; set; }
+
+        public Color? Color
+        {
+            get
+            {
+                if (Sharing)
+                    return Colors.Yellow;
+                if (EnergyUsed)
+                    return Colors.Red;
+                if (InfoUsed)
+                    return Colors.White;
+                return null;
+            }
+        }
+
         public bool EnergyUsed { get; set; }
         public bool FixedAngle { get; set; }
         public bool InfoUsed { get; set; }

@@ -11,6 +11,8 @@ namespace DarwinBots.Forms
     public partial class MainForm
     {
         private readonly List<RobotDisplay> _robotDisplays = new();
+        private readonly List<ShotDisplay> _shotDisplays = new();
+        private readonly List<TieDisplay> _tieDisplays = new();
         private readonly MainViewModel _viewModel = new();
 
         public MainForm()
@@ -52,6 +54,7 @@ namespace DarwinBots.Forms
                         ellipse = new Ellipse();
                         MainCanvas.Children.Add(ellipse);
                         ellipse.StrokeThickness = 10;
+                        Canvas.SetZIndex(ellipse, 100);
                     });
 
                     _robotDisplays.Add(new RobotDisplay()
@@ -81,6 +84,97 @@ namespace DarwinBots.Forms
                 });
                 el.Display = null;
                 _robotDisplays.Remove(el);
+            }
+
+            for (var i = 0; i < e.Update.TieUpdates.Count; i++)
+            {
+                var update = e.Update.TieUpdates[i];
+
+                while (_tieDisplays.Count <= i)
+                {
+                    Line line = null;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        line = new Line();
+                        MainCanvas.Children.Add(line);
+                        Canvas.SetZIndex(line, 10);
+                    });
+
+                    _tieDisplays.Add(new TieDisplay()
+                    {
+                        Display = line
+                    });
+                }
+
+                var display = _tieDisplays[i];
+
+                Dispatcher.Invoke(() =>
+                {
+                    display.Display.X1 = update.StartPoint.X;
+                    display.Display.Y1 = update.StartPoint.Y;
+                    display.Display.X2 = update.EndPoint.X;
+                    display.Display.Y2 = update.EndPoint.Y;
+                    display.Display.Stroke = new SolidColorBrush(update.Color);
+                    display.Display.StrokeThickness = update.Width;
+                });
+            }
+
+            while (_tieDisplays.Count > e.Update.TieUpdates.Count)
+            {
+                var el = _tieDisplays[^1];
+                Dispatcher.Invoke(() =>
+                {
+                    MainCanvas.Children.Remove(el.Display);
+                });
+                el.Display = null;
+                _tieDisplays.Remove(el);
+            }
+
+            for (var i = 0; i < e.Update.ShotUpdates.Count; i++)
+            {
+                var update = e.Update.ShotUpdates[i];
+
+                while (_shotDisplays.Count <= i)
+                {
+                    Ellipse ellipse = null;
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        ellipse = new Ellipse();
+                        MainCanvas.Children.Add(ellipse);
+                        ellipse.StrokeThickness = 10;
+                        Canvas.SetZIndex(ellipse, 100);
+                    });
+
+                    _shotDisplays.Add(new ShotDisplay()
+                    {
+                        Display = ellipse
+                    });
+                }
+
+                var display = _shotDisplays[i];
+
+                Dispatcher.Invoke(() =>
+                {
+                    Canvas.SetLeft(display.Display, update.Position.X - 20);
+                    Canvas.SetTop(display.Display, update.Position.Y - 20);
+                    display.Display.Width = 20 * 2;
+                    display.Display.Height = 20 * 2;
+                    display.Display.Stroke = new SolidColorBrush(update.Color);
+                    display.Display.Fill = new SolidColorBrush(update.Color);
+                });
+            }
+
+            while (_shotDisplays.Count > e.Update.ShotUpdates.Count)
+            {
+                var el = _shotDisplays[^1];
+                Dispatcher.Invoke(() =>
+                {
+                    MainCanvas.Children.Remove(el.Display);
+                });
+                el.Display = null;
+                _shotDisplays.Remove(el);
             }
         }
     }

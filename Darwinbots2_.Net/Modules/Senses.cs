@@ -78,7 +78,7 @@ namespace DarwinBots.Modules
             rob1.Memory[715] = rob2.Kills; //refkills
             rob1.Memory[MemoryAddresses.refmulti] = rob2.IsMultibot ? 1 : 0;
 
-            if (rob1.Memory[474] > 0 & rob1.Memory[474] <= 1000)
+            if (rob1.Memory[474] > 0 & rob1.Memory[474] < 1000)
             {
                 //readmem and memloc couple used to read a specified memory location of the target robot
                 rob1.Memory[473] = rob2.Memory[rob1.Memory[474]];

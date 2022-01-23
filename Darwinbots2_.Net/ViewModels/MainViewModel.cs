@@ -37,7 +37,7 @@ namespace DarwinBots.ViewModels
 
         public void StopSimulation()
         {
-            _engine.Stop();
+            _engine?.Stop();
         }
 
         private async Task NewSimulation()

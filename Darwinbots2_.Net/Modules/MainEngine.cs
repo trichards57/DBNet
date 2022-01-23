@@ -493,6 +493,18 @@ namespace DarwinBots.Modules
                     Position = r.Position,
                     Radius = r.GetRadius(SimOpt.SimOpts.FixedBotRadii),
                     Color = r.Color
+                }).ToList().AsReadOnly(),
+                TieUpdates = _robotsManager.Robots.SelectMany(r => r.Ties.Where(t => !t.BackTie).Select(t => new TieUpdate
+                {
+                    Color = t.Color ?? r.Color,
+                    StartPoint = r.OffsetPosition,
+                    EndPoint = t.OtherBot.OffsetPosition,
+                    Width = Math.Max(10, t.Last > 0 ? r.GetRadius(SimOpt.SimOpts.FixedBotRadii) / 20 : r.GetRadius(SimOpt.SimOpts.FixedBotRadii) / 40),
+                })).ToList().AsReadOnly(),
+                ShotUpdates = _shotsManager.Shots.Select(r => new ShotUpdate
+                {
+                    Position = r.Position,
+                    Color = r.Color
                 }).ToList().AsReadOnly()
             };
 
