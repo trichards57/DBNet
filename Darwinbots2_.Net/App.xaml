@@ -46,9 +46,11 @@
         </Style>
         <Style TargetType="Window" x:Key="OptionsForm">
             <Setter Property="ResizeMode" Value="NoResize" />
-            <Setter Property="ShowInTaskbar" Value="False" />
             <Setter Property="SizeToContent" Value="WidthAndHeight" />
             <Setter Property="WindowStyle" Value="ToolWindow" />
+        </Style>
+        <Style TargetType="TabControl">
+            <Setter Property="Margin" Value="5" />
         </Style>
     </Application.Resources>
 </Application>

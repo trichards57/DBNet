@@ -1,24 +1,45 @@
-﻿using System.Windows;
+﻿using DarwinBots.Forms;
+using DarwinBots.ViewModels;
+using System.Windows;
 
 namespace DarwinBots.Services
 {
     public interface IDialogService
     {
         void ShowInfoMessageBox(string title, string message);
+
+        void ShowOptionsSubDialog<TForm>(OptionsViewModel optionsViewModel, Window parentForm = null)
+           where TForm : IOptionsSubDialog, new();
     }
 
     public class DialogService : IDialogService
     {
-        private readonly Window _owner;
-
         public DialogService(Window owner)
         {
-            _owner = owner;
+            Owner = owner;
         }
+
+        public Window Owner { get; }
 
         public void ShowInfoMessageBox(string title, string message)
         {
-            MessageBox.Show(_owner, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(Owner, message, title, MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+
+        public void ShowOptionsSubDialog<TForm>(OptionsViewModel optionsViewModel, Window parentForm = null)
+            where TForm : IOptionsSubDialog, new()
+        {
+            var form = new TForm
+            {
+                Owner = parentForm ?? Owner
+            };
+
+            form.LoadFromOptions(optionsViewModel);
+
+            var res = form.ShowDialog();
+
+            if (res == true)
+                form.SaveToOptions(optionsViewModel);
         }
     }
 }

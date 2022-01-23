@@ -20,6 +20,7 @@ namespace DarwinBots.ViewModels
             set => SetProperty(ref _dayNightCyclePeriod, Math.Clamp(value, 0, 32000));
         }
 
+        public bool EnableTides { get; set; }
         public bool EnableDayNightCycles { get; set; }
         public bool EnableSunComesUpThreshold { get; set; }
         public bool EnableSunGoesDownThreshold { get; set; }
@@ -92,6 +93,7 @@ namespace DarwinBots.ViewModels
             EnableWeather = options.EnableWeather;
             TidesCyclesOn = options.TidesCyclesOn;
             TidesCyclesOff = options.TidesCyclesOff;
+            EnableTides = options.EnableTides;
         }
 
         public void SaveToOptions(OptionsViewModel options)
@@ -108,6 +110,7 @@ namespace DarwinBots.ViewModels
             options.EnableWeather = EnableWeather;
             options.TidesCyclesOn = TidesCyclesOn;
             options.TidesCyclesOff = TidesCyclesOff;
+            options.EnableTides = EnableTides;
         }
     }
 }

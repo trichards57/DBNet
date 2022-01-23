@@ -11,7 +11,7 @@ namespace DarwinBots.ViewModels
         private double _density;
         private double _viscosity;
 
-        public double BangEfficiency { get; private set; }
+        public double BangEfficiency { get; set; }
         public double BrownianMotion { get; set; }
 
         public double Density
@@ -24,14 +24,14 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnableTides { get; private set; }
-        public double KineticFrictionCoefficient { get; private set; }
+        public bool EnableTides { get; set; }
+        public double KineticFrictionCoefficient { get; set; }
         public bool PlanetEaters { get; set; }
-        public double PlanetEatersG { get; private set; }
+        public double PlanetEatersG { get; set; }
 
         public double ReynoldsNumber => Density * Robot.RobSize / Math.Max(Viscosity, 1e-7);
 
-        public double StaticFrictionCoefficient { get; private set; }
+        public double StaticFrictionCoefficient { get; set; }
 
         public double Viscosity
         {
@@ -43,8 +43,8 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public object YGravity { get; set; }
-        public double ZAxisGravity { get; private set; }
+        public double YGravity { get; set; }
+        public double ZAxisGravity { get; set; }
         public bool ZeroMomentum { get; set; }
 
         public void LoadFromOptions(OptionsViewModel optionsViewModel)
@@ -54,7 +54,7 @@ namespace DarwinBots.ViewModels
             PlanetEatersG = optionsViewModel.PlanetEatersG;
             EnableTides = optionsViewModel.EnableTides;
 
-            if (optionsViewModel.EnableTides)
+            if (!optionsViewModel.EnableTides)
             {
                 YGravity = optionsViewModel.YGravity;
                 BrownianMotion = optionsViewModel.PhysBrown;
@@ -73,7 +73,7 @@ namespace DarwinBots.ViewModels
             optionsViewModel.PlanetEatersG = PlanetEatersG;
             optionsViewModel.EnableTides = EnableTides;
 
-            if (EnableTides)
+            if (!EnableTides)
             {
                 optionsViewModel.YGravity = YGravity;
                 optionsViewModel.PhysBrown = BrownianMotion;

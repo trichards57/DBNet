@@ -215,7 +215,7 @@ namespace DarwinBots.Model
             NoShotDecay = false;
             NoWShotDecay = false;
             OldCostX = 1;
-            PhysBrown = 0.1;
+            PhysBrown = 0.5;
             PhysMoving = 0.66;
             PlanetEaters = false;
             PlanetEatersG = 0;

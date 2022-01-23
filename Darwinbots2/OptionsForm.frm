@@ -85,13 +85,14 @@ Begin VB.Form optionsform
       _Version        =   393216
       Style           =   1
       Tabs            =   6
+      Tab             =   2
       TabsPerRow      =   10
       TabHeight       =   520
       ShowFocusRect   =   0   'False
       BackColor       =   12632256
       TabCaption(0)   =   "Species"
       TabPicture(0)   =   "OptionsForm.frx":0000
-      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).ControlEnabled=   0   'False
       Tab(0).Control(0)=   "SpeciesLabel"
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "Label36"
@@ -121,7 +122,7 @@ Begin VB.Form optionsform
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Physics and Costs"
       TabPicture(2)   =   "OptionsForm.frx":0038
-      Tab(2).ControlEnabled=   0   'False
+      Tab(2).ControlEnabled=   -1  'True
       Tab(2).Control(0)=   "Frame21"
       Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "Frame20"
@@ -130,37 +131,37 @@ Begin VB.Form optionsform
       TabCaption(3)   =   "Mutations"
       TabPicture(3)   =   "OptionsForm.frx":0054
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "Frame13"
+      Tab(3).Control(0)=   "DisableMutationsCheck"
       Tab(3).Control(0).Enabled=   0   'False
       Tab(3).Control(1)=   "Frame14"
       Tab(3).Control(1).Enabled=   0   'False
-      Tab(3).Control(2)=   "DisableMutationsCheck"
+      Tab(3).Control(2)=   "Frame13"
       Tab(3).Control(2).Enabled=   0   'False
       Tab(3).ControlCount=   3
       TabCaption(4)   =   "Restart and League"
       TabPicture(4)   =   "OptionsForm.frx":0070
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "Label19"
+      Tab(4).Control(0)=   "btnSetSB"
       Tab(4).Control(0).Enabled=   0   'False
-      Tab(4).Control(1)=   "Restart"
+      Tab(4).Control(1)=   "btnSetF2"
       Tab(4).Control(1).Enabled=   0   'False
-      Tab(4).Control(2)=   "Frame7"
+      Tab(4).Control(2)=   "btnSetF1"
       Tab(4).Control(2).Enabled=   0   'False
-      Tab(4).Control(3)=   "btnSetF1"
+      Tab(4).Control(3)=   "Frame7"
       Tab(4).Control(3).Enabled=   0   'False
-      Tab(4).Control(4)=   "btnSetF2"
+      Tab(4).Control(4)=   "Restart"
       Tab(4).Control(4).Enabled=   0   'False
-      Tab(4).Control(5)=   "btnSetSB"
+      Tab(4).Control(5)=   "Label19"
       Tab(4).Control(5).Enabled=   0   'False
       Tab(4).ControlCount=   6
       TabCaption(5)   =   "Internet"
       TabPicture(5)   =   "OptionsForm.frx":008C
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label41"
+      Tab(5).Control(0)=   "Simulazione"
       Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "Label42"
       Tab(5).Control(1).Enabled=   0   'False
-      Tab(5).Control(2)=   "Simulazione"
+      Tab(5).Control(2)=   "Label41"
       Tab(5).Control(2).Enabled=   0   'False
       Tab(5).ControlCount=   3
       Begin VB.CommandButton btnSetSB 
@@ -190,7 +191,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton NativeSpeciesButton 
          Caption         =   "List Non-Native Species "
          Height          =   375
-         Left            =   1440
+         Left            =   -73560
          TabIndex        =   186
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -208,7 +209,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame20 
          Caption         =   "Physics"
          Height          =   5235
-         Left            =   -74820
+         Left            =   180
          TabIndex        =   150
          Top             =   420
          Width           =   4635
@@ -1383,7 +1384,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton DuplicaButt 
          Caption         =   "Duplicate"
          Height          =   375
-         Left            =   1440
+         Left            =   -73560
          TabIndex        =   78
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -1393,7 +1394,7 @@ Begin VB.Form optionsform
       Begin VB.ListBox SpecList 
          Height          =   2400
          ItemData        =   "OptionsForm.frx":03C3
-         Left            =   240
+         Left            =   -74760
          List            =   "OptionsForm.frx":03C5
          TabIndex        =   77
          Top             =   720
@@ -1402,7 +1403,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton AddSpec 
          Caption         =   "Add"
          Height          =   375
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   76
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -1412,7 +1413,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton DelSpec 
          Caption         =   "Delete"
          Height          =   375
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   75
          Tag             =   "0"
          Top             =   3720
@@ -1421,7 +1422,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton RenameButton 
          Caption         =   "Rename"
          Height          =   375
-         Left            =   2640
+         Left            =   -72360
          TabIndex        =   74
          Tag             =   "0"
          Top             =   3720
@@ -1854,7 +1855,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame21 
          Caption         =   "Costs and Returned Shots"
          Height          =   5235
-         Left            =   -70080
+         Left            =   4920
          TabIndex        =   6
          Top             =   420
          Width           =   4815
@@ -2003,14 +2004,13 @@ Begin VB.Form optionsform
       End
       Begin RichTextLib.RichTextBox CommentBox 
          Height          =   975
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   79
          Top             =   4680
          Width           =   3495
          _ExtentX        =   6165
          _ExtentY        =   1720
          _Version        =   393217
-         Enabled         =   -1  'True
          ReadOnly        =   -1  'True
          ScrollBars      =   2
          TextRTF         =   $"OptionsForm.frx":0547
@@ -2018,7 +2018,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame1 
          Caption         =   "Species Properties"
          Height          =   5085
-         Left            =   3840
+         Left            =   -71160
          TabIndex        =   47
          Tag             =   "2010"
          Top             =   600
@@ -2469,7 +2469,7 @@ Begin VB.Form optionsform
       Begin VB.Label Label36 
          Caption         =   "Commenti sulla specie:"
          Height          =   255
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   164
          Tag             =   "2100"
          Top             =   4440
@@ -2478,7 +2478,7 @@ Begin VB.Form optionsform
       Begin VB.Label SpeciesLabel 
          Caption         =   "Native Species:"
          Height          =   255
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   163
          Tag             =   "0"
          Top             =   480

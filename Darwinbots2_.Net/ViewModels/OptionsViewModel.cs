@@ -60,13 +60,11 @@ namespace DarwinBots.ViewModels
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
     public class OptionsViewModel : ObservableObject, IAsyncDisposable
     {
-        // TODO : Show custom physics dialog
         // TODO : Implement saving and loading settings
 
         private readonly IClipboardService _clipboardService;
         private readonly IDialogService _dialogService;
         private readonly Timer _lightTimer;
-        private Costs _costs;
         private bool _costsCustom;
         private bool _costsNoCosts;
         private int _cyclesHigh;
@@ -94,6 +92,9 @@ namespace DarwinBots.ViewModels
         private int _shotEnergy;
         private bool _shotModeFixedEnergy;
         private bool _shotModeProportional;
+        private double _physBrown;
+        private double yGravity;
+        private double _physMoving;
 
         public OptionsViewModel() : this(null, null)
         {
@@ -143,6 +144,8 @@ namespace DarwinBots.ViewModels
         public double CoefficientStatic { get; set; }
         public double CollisionElasticity { get; set; }
 
+        public Costs Costs { get; set; }
+
         public bool CostsCustom
         {
             get => _costsCustom;
@@ -151,7 +154,7 @@ namespace DarwinBots.ViewModels
                 if (SetProperty(ref _costsCustom, value) && _costsCustom)
                 {
                     CostsNoCosts = false;
-                    _costs = Costs.DefaultCosts;
+                    Costs = Costs.DefaultCosts;
                 }
             }
         }
@@ -164,7 +167,7 @@ namespace DarwinBots.ViewModels
                 if (SetProperty(ref _costsNoCosts, value) && _costsNoCosts)
                 {
                     CostsCustom = false;
-                    _costs = Costs.ZeroCosts;
+                    Costs = Costs.ZeroCosts;
                 }
             }
         }
@@ -365,7 +368,34 @@ namespace DarwinBots.ViewModels
         }
 
         public bool FixBotRadii { get; set; }
-        public VerticalGravity Gravity { get; set; }
+
+
+
+        public VerticalGravity Gravity
+        {
+            get
+            {
+                return YGravity switch
+                {
+                    <= 0.1 => VerticalGravity.None,
+                    > 0.1 and <= 0.3 => VerticalGravity.Moon,
+                    > 0.3 and <= 0.9 => VerticalGravity.Earth,
+                    > 0.9 and <= 9 => VerticalGravity.Jupiter,
+                    _ => VerticalGravity.Star
+                };
+            }
+            set
+            {
+                YGravity = value switch
+                {
+                    VerticalGravity.None => 0,
+                    VerticalGravity.Moon => 0.1,
+                    VerticalGravity.Earth => 0.3,
+                    VerticalGravity.Jupiter => 0.9,
+                    _ => 6,
+                };
+            }
+        }
         public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
         public bool IsSpeciesSelected => SelectedSpecies != null;
         public int LightLevel { get => _lightLevel; set => SetProperty(ref _lightLevel, Math.Clamp(value, 0, 1000)); }
@@ -377,7 +407,27 @@ namespace DarwinBots.ViewModels
         public string MinCyclesLabel => EnableMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
         public int MinimumChloroplastsThreshold { get => _minimumChloroplastsThreshold; set => SetProperty(ref _minimumChloroplastsThreshold, Math.Clamp(value, 0, 32000)); }
         public DragPresets MovementDrag { get; set; }
-        public MovementEfficiency MovementEfficiency { get; set; }
+        public MovementEfficiency MovementEfficiency
+        {
+            get
+            {
+                return PhysMoving switch
+                {
+                    <= 0.33 => MovementEfficiency.Mechanical,
+                    > 0.33 and <= 0.66 => MovementEfficiency.Biological,
+                    _ => MovementEfficiency.Ideal,
+                };
+            }
+            set
+            {
+                PhysMoving = value switch
+                {
+                    MovementEfficiency.Mechanical => 0.33,
+                    MovementEfficiency.Biological => 0.66,
+                    _ => 1,
+                };
+            }
+        }
         public FrictionPresets MovementFriction { get; set; }
 
         public string MutationDisplay
@@ -404,8 +454,26 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public double PhysBrown { get; set; }
-        public double PhysMoving { get; set; }
+        public OptionsForm ParentForm { get; internal set; }
+        public double PhysBrown
+        {
+            get => _physBrown;
+            set
+            {
+                if (SetProperty(ref _physBrown, value))
+                {
+                    OnPropertyChanged(nameof(BrownianMotion));
+                }
+            }
+        }
+        public double PhysMoving { 
+            get => _physMoving; 
+            set 
+            {
+                if (SetProperty(ref _physMoving, value))
+                    OnPropertyChanged(nameof(MovementEfficiency));
+            }
+        }
         public bool PlanetEaters { get; set; }
         public double PlanetEatersG { get; set; }
         public ICommand RenameSpeciesCommand { get; }
@@ -464,7 +532,15 @@ namespace DarwinBots.ViewModels
         public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
         public int WasteThreshold { get; set; }
-        public object YGravity { get; set; }
+        public double YGravity
+        {
+            get => yGravity;
+            set
+            {
+                if (SetProperty(ref yGravity, value))
+                    OnPropertyChanged(nameof(Gravity));
+            }
+        }
         public bool ZeroMomentum { get; set; }
         public double ZGravity { get; set; }
 
@@ -592,23 +668,10 @@ namespace DarwinBots.ViewModels
             SelectedSpecies = null;
             EnableTides = options.Tides > 0;
 
-            MovementEfficiency = options.PhysMoving switch
-            {
-                <= 0.33 => MovementEfficiency.Mechanical,
-                > 0.33 and <= 0.66 => MovementEfficiency.Biological,
-                _ => MovementEfficiency.Ideal,
-            };
+
 
             PhysBrown = options.PhysBrown;
 
-            Gravity = options.YGravity switch
-            {
-                <= 0.1 => VerticalGravity.None,
-                > 0.1 and <= 0.3 => VerticalGravity.Moon,
-                > 0.3 and <= 0.9 => VerticalGravity.Earth,
-                > 0.9 and <= 9 => VerticalGravity.Jupiter,
-                _ => VerticalGravity.Star
-            };
 
             SpeciesList.Clear();
 
@@ -775,30 +838,18 @@ namespace DarwinBots.ViewModels
             // TODO : Work out how this works
             // EnableTides = options.Tides > 0;
 
-            options.PhysMoving = MovementEfficiency switch
-            {
-                MovementEfficiency.Ideal => 0.66,
-                MovementEfficiency.Biological => 0.33,
-                _ => 1,
-            };
+
 
             options.PhysBrown = PhysBrown;
 
-            options.YGravity = Gravity switch
-            {
-                VerticalGravity.None => 0,
-                VerticalGravity.Moon => 0.1,
-                VerticalGravity.Earth => 0.3,
-                VerticalGravity.Jupiter => 0.9,
-                _ => 6,
-            };
+
 
             foreach (var s in SpeciesList)
             {
                 s.Save();
             }
 
-            options.Costs = _costs;
+            options.Costs = Costs;
 
             options.FieldWidth = FieldWidth;
             options.FieldHeight = FieldHeight;
@@ -967,35 +1018,17 @@ namespace DarwinBots.ViewModels
 
         private void ShowCustomCosts()
         {
-            var form = new CostsForm();
-            form.ViewModel.LoadFromOptions(_costs);
-
-            var res = form.ShowDialog();
-
-            if (res == true)
-                _costs = form.ViewModel.SaveOptions();
+            _dialogService.ShowOptionsSubDialog<CostsForm>(this, ParentForm);
         }
 
         private void ShowCustomPhysics()
         {
-            var form = new PhysicsOptions();
-            form.ViewModel.LoadFromOptions(this);
-
-            var res = form.ShowDialog();
-
-            if (res == true)
-                form.ViewModel.SaveToOptions(this);
+            _dialogService.ShowOptionsSubDialog<PhysicsOptions>(this, ParentForm);
         }
 
         private void ShowEnergyManagement()
         {
-            var form = new EnergyForm();
-            form.ViewModel.LoadFromOptions(this);
-
-            var res = form.ShowDialog();
-
-            if (res == true)
-                form.ViewModel.SaveToOptions(this);
+            _dialogService.ShowOptionsSubDialog<EnergyForm>(this, ParentForm);
         }
 
         private void ShowGlobalSettings()

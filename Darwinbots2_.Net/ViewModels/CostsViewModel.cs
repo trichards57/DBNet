@@ -124,7 +124,7 @@ namespace DarwinBots.ViewModels
             DynamicCostsLowerRangeTarget = costs.DynamicCostsLowerRangeTarget;
         }
 
-        public Costs SaveOptions()
+        public Costs SaveToOptions()
         {
             return new()
             {

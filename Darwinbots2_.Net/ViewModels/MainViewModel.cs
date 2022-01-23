@@ -1,18 +1,23 @@
-﻿using System.Threading.Tasks;
-using System.Windows.Input;
-using AsyncAwaitBestPractices.MVVM;
+﻿using AsyncAwaitBestPractices.MVVM;
 using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Modules;
+using DarwinBots.Services;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace DarwinBots.ViewModels
 {
     internal class MainViewModel : ObservableObject
     {
-        public MainViewModel()
+        private readonly DialogService _dialogService;
+
+        public MainViewModel(DialogService dialogService = null)
         {
             NewSimulationCommand = new AsyncCommand(NewSimulation);
+            _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
         }
 
         public ICommand NewSimulationCommand { get; }
@@ -21,7 +26,10 @@ namespace DarwinBots.ViewModels
         {
             SimOpt.SimOpts ??= new SimOptions();
 
-            var optionsForm = new OptionsForm();
+            var optionsForm = new OptionsForm()
+            {
+                Owner = _dialogService.Owner
+            };
             await optionsForm.ViewModel.LoadFromOptions(SimOpt.SimOpts);
 
             var result = optionsForm.ShowDialog();
