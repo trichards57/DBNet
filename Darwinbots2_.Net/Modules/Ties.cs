@@ -275,7 +275,7 @@ namespace DarwinBots.Modules
                     if (rob.Ties[i].Type == TieType.AntiRope)
                     {
                         //input
-                        if (rob.TieLengthOverwrite[i - 1])
+                        if (rob.TieLengthOverwrite[i])
                         {
                             var length = (int)(rob.Memory[483 + i] + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.Ties[i].OtherBot.GetRadius(SimOpt.SimOpts.FixedBotRadii)); // include the radius of the tied bots in the length
                             if (length > 32000)
@@ -285,14 +285,14 @@ namespace DarwinBots.Modules
                             rob.Ties[i].NaturalLength = length; //for first robot
                             rob.Ties[i].ReverseTie.NaturalLength = length; //for second robot. What a messed up formula
                         }
-                        if (rob.TieAngleOverwrite[i - 1])
+                        if (rob.TieAngleOverwrite[i])
                         {
                             rob.Ties[i].Angle = Physics.NormaliseAngle(Physics.IntToRadians(rob.Memory[479 + i]));
                             rob.Ties[i].FixedAngle = true; //EricL 4/24/2006
                         }
                         //clear input
-                        rob.TieAngleOverwrite[i - 1] = false;
-                        rob.TieLengthOverwrite[i - 1] = false;
+                        rob.TieAngleOverwrite[i] = false;
+                        rob.TieLengthOverwrite[i] = false;
                         //output
 
                         var tieAngle = Physics.Angle(rob.Position.X, rob.Position.Y, rob.Ties[i].OtherBot.Position.X, rob.Ties[i].OtherBot.Position.Y);

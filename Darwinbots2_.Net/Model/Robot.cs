@@ -297,7 +297,7 @@ namespace DarwinBots.Model
 
         public void DoGeneticMemory()
         {
-            if (Age >= 15)
+            if (Age >= EpigeneticMemory.Length)
                 return;
 
             if (Ties.Count <= 0 || Ties[0].Last <= 0)

@@ -9,8 +9,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Interop;
-using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace DarwinBots.ViewModels
 {
@@ -27,25 +26,18 @@ namespace DarwinBots.ViewModels
             _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
         }
 
-        public BitmapSource FieldRender { get; set; }
+        public event EventHandler<UpdateAvailableArgs> UpdateAvailable;
+
+        public Dispatcher Dispatcher { get; internal set; }
 
         public ICommand NewSimulationCommand { get; }
 
         [DllImport("gdi32.dll")]
         public static extern bool DeleteObject(IntPtr hObject);
 
-        private void ImageAvailable(object sender, ImageAvailableArgs e)
+        public void StopSimulation()
         {
-            var ip = e.Image.GetHbitmap();
-
-            try
-            {
-                FieldRender = Imaging.CreateBitmapSourceFromHBitmap(ip, IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
-            }
-            finally
-            {
-                DeleteObject(ip);
-            }
+            _engine.Stop();
         }
 
         private async Task NewSimulation()
@@ -73,9 +65,18 @@ namespace DarwinBots.ViewModels
                 s.Native = true;
             }
 
+            if (_engine != null)
+                _engine.UpdateAvailable -= OnUpdateAvailable;
+
             _engine = new MainEngine();
-            _engine.ImageAvailable += ImageAvailable;
+            _engine.UpdateAvailable += OnUpdateAvailable;
+
             await _engine.StartSimulation();
+        }
+
+        private void OnUpdateAvailable(object sender, UpdateAvailableArgs e)
+        {
+            UpdateAvailable?.Invoke(sender, e);
         }
     }
 }

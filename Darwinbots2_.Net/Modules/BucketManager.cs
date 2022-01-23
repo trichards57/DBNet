@@ -1,5 +1,6 @@
 using DarwinBots.Model;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace DarwinBots.Modules
@@ -54,7 +55,7 @@ namespace DarwinBots.Modules
             _options = opts;
             _obstacleManager = obstacleManager;
 
-            _numBuckets = new IntVector(opts.FieldWidth / BucketSize, opts.FieldHeight / BucketSize);
+            _numBuckets = new IntVector((int)Math.Ceiling((double)opts.FieldWidth / BucketSize), (int)Math.Ceiling((double)opts.FieldHeight / BucketSize));
 
             _buckets = new Bucket[_numBuckets.X, _numBuckets.Y];
 
@@ -151,6 +152,10 @@ namespace DarwinBots.Modules
 
             if (rob.BucketPosition.X != -2 && rob.BucketPosition.Y != -2)
                 _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
+
+            Debug.Assert(newBucket.X < _buckets.GetLength(0));
+            Debug.Assert(newBucket.Y < _buckets.GetLength(1));
+
             _buckets[newBucket.X, newBucket.Y].Robots.Add(rob);
             rob.BucketPosition = newBucket;
         }

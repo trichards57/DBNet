@@ -2,8 +2,8 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Windows.Media;
 
 namespace DarwinBots.Modules
 {
@@ -63,7 +63,7 @@ namespace DarwinBots.Modules
         public void ChangeAllObstacleColor(Color? color)
         {
             foreach (var o in Obstacles)
-                o.Color = color ?? Color.FromArgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
+                o.Color = color ?? Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
         }
 
         public void DeleteAllObstacles()
@@ -239,11 +239,11 @@ namespace DarwinBots.Modules
             }
         }
 
-        public void DrawObstacles(Graphics graphics)
-        {
-            foreach (var o in Obstacles.Where(o => o.Exist))
-                graphics.FillRectangle(new SolidBrush(o.Color), new Rectangle(o.Position, o.Size));
-        }
+        //public void DrawObstacles(Graphics graphics)
+        //{
+        //    foreach (var o in Obstacles.Where(o => o.Exist))
+        //        graphics.FillRectangle(new SolidBrush(o.Color), new Rectangle(o.Position, o.Size));
+        //}
 
         public void DrawPolarIceMaze()
         {
@@ -355,8 +355,8 @@ namespace DarwinBots.Modules
                 Height = height,
                 Velocity = new DoubleVector(0, 0),
                 Color = SimOpt.SimOpts.MakeAllShapesBlack
-                    ? Color.Black
-                    : Color.FromArgb(ThreadSafeRandom.Local.Next(0, 256), ThreadSafeRandom.Local.Next(0, 256), ThreadSafeRandom.Local.Next(0, 256))
+                    ? Colors.Black
+                    : Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256))
             };
 
             return obstacle;

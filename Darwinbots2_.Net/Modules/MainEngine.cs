@@ -1,9 +1,9 @@
 ﻿using DarwinBots.DataModel;
 using DarwinBots.Forms;
 using DarwinBots.Model;
+using DarwinBots.Model.Display;
 using DarwinBots.Support;
 using System;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -34,7 +34,7 @@ namespace DarwinBots.Modules
         // TODO : Drag and drop robots
         // TODO : Triggering screen updates
 
-        public event EventHandler<ImageAvailableArgs> ImageAvailable;
+        public event EventHandler<UpdateAvailableArgs> UpdateAvailable;
 
         /// <summary>
         /// Adds a record to the species array when a bot with a new species is loaded or teleported in.
@@ -333,38 +333,53 @@ namespace DarwinBots.Modules
             Main();
         }
 
-        private void DrawArena(Graphics graphics)
+        public void Stop()
         {
-            var color = Color.Yellow;
-
-            if (SimOpt.SimOpts.Tides > 0)
-                color = Color.FromArgb(255 - 255 - (int)Physics.BouyancyScaling, 255 - 255 - (int)Physics.BouyancyScaling, 0);
-
-            var sunStart = (Vegs.SunPosition - (0.25 + Math.Pow(Vegs.SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
-            var sunStop = (Vegs.SunPosition + (0.25 + Math.Pow(Vegs.SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
-            double sunAdd = 0;
-
-            var brush = new SolidBrush(color);
-            var pen = new Pen(color);
-
-            if (sunStart < 0)
-            {
-                sunAdd = SimOpt.SimOpts.FieldWidth + sunStart;
-                graphics.FillRectangle(brush, new Rectangle((int)sunAdd, 0, SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight / 100));
-                graphics.DrawLine(pen, (int)sunAdd, 0, (int)sunAdd, SimOpt.SimOpts.FieldHeight);
-                sunStart = 0;
-            }
-
-            if (sunStop > SimOpt.SimOpts.FieldWidth)
-            {
-                sunAdd = sunStop - SimOpt.SimOpts.FieldWidth;
-                graphics.FillRectangle(brush, new Rectangle((int)sunAdd, 0, 0, SimOpt.SimOpts.FieldHeight / 100));
-                graphics.DrawLine(pen, (int)sunAdd, 0, (int)sunAdd, SimOpt.SimOpts.FieldHeight);
-                sunStop = SimOpt.SimOpts.FieldWidth;
-            }
-
-            graphics.DrawRectangle(Pens.White, new Rectangle(0, 0, SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight));
+            _simThreadCancel.Cancel();
         }
+
+        //private void DrawAllTies(Graphics graphics)
+        //{
+        //    foreach (var r in _robotsManager.Robots.Where(r => r.Exists))
+        //    {
+        //        DrawTobTiesCol(graphics, r, r.GetRadius(SimOpt.SimOpts.FixedBotRadii) * 2, r.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+        //    }
+        //}
+
+        //private void DrawTobTiesCol(Graphics graphics, Robot t, double w, double s)
+        //{
+        //    var drawSmall = Math.Max((int)(w / 4), 1);
+        //    var centre = t.Position;
+
+        //    foreach (var tie in t.Ties.Where(i => !i.BackTie))
+        //    {
+        //        var otherRob = tie.OtherBot;
+        //        var centre1 = otherRob.Position;
+        //        var drawWidth = drawSmall;
+        //        var col = t.Color;
+        //        w = Math.Max(w, 2);
+
+        //        if (tie.Last > 0)
+        //            drawWidth = (int)(w / 2);
+        //        if (tie.InfoUsed)
+        //        {
+        //            col = Colors.White;
+        //            tie.InfoUsed = false;
+        //        }
+        //        if (tie.EnergyUsed)
+        //        {
+        //            col = Colors.Red;
+        //            tie.EnergyUsed = false;
+        //        }
+        //        if (tie.Sharing)
+        //        {
+        //            col = Colors.Yellow;
+        //            tie.Sharing = false;
+        //        }
+
+        //        graphics.DrawLine(new Pen(col), centre, centre1);
+        //    }
+        //}
 
         private void Initialise()
         {
@@ -375,7 +390,7 @@ namespace DarwinBots.Modules
         {
             foreach (var species in SimOpt.SimOpts.Specie)
             {
-                for (var t = 1; t < species.Quantity; t++)
+                for (var t = 0; t < species.Quantity; t++)
                 {
                     var rob = await DnaManipulations.RobScriptLoad(_robotsManager, _bucketManager, Path.Join(species.Path, species.Name));
 
@@ -443,13 +458,23 @@ namespace DarwinBots.Modules
 
         private async void MainFunction(object state)
         {
+            const int MinFrameLength = 1000 / 50; // 50 FPS
             var cancelToken = (CancellationToken)state;
 
             while (!cancelToken.IsCancellationRequested)
             {
+                var lastCycle = DateTime.Now;
+
                 if (_active)
                 {
-                    await UpdateSim();
+                    try
+                    {
+                        await UpdateSim();
+                        var currentTime = DateTime.Now;
+                        Thread.Sleep(Math.Max(0, MinFrameLength - (int)(currentTime - lastCycle).TotalMilliseconds));
+                    }
+                    catch (TaskCanceledException)
+                    { }
                 }
                 else
                 {
@@ -460,16 +485,18 @@ namespace DarwinBots.Modules
 
         private void RenderField()
         {
-            var image = new Bitmap(SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight);
+            var update = new DisplayUpdate
+            {
+                FieldSize = new System.Windows.Size(SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight),
+                RobotUpdates = _robotsManager.Robots.Select(r => new RobotUpdate
+                {
+                    Position = r.Position,
+                    Radius = r.GetRadius(SimOpt.SimOpts.FixedBotRadii),
+                    Color = r.Color
+                }).ToList().AsReadOnly()
+            };
 
-            var graphics = Graphics.FromImage(image);
-
-            _obstacleManager.DrawObstacles(graphics);
-            DrawArena(graphics);
-
-            graphics.Dispose();
-
-            ImageAvailable?.Invoke(this, new ImageAvailableArgs { Image = image });
+            UpdateAvailable?.Invoke(this, new UpdateAvailableArgs { Update = update });
         }
 
         private async Task UpdateSim()

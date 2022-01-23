@@ -124,6 +124,8 @@
                 <Button Content="{StaticResource PauseIcon}" />
             </ToolBar>
         </ToolBarTray>
-        <Image Source="{Binding FieldRender}" />
+        <Viewbox Stretch="Uniform" ScrollViewer.CanContentScroll="True" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <Canvas x:Name="MainCanvas" />
+        </Viewbox>
     </DockPanel>
 </Window>
