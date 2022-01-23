@@ -85,13 +85,13 @@ namespace DarwinBots.Modules
             Vegs.TotalVegsDisplayed = Vegs.TotalVegs;
             Vegs.TotalVegs = 0;
 
-            if (SimOpt.TmpOpts.Tides == 0)
+            if (SimOpt.SimOpts.Tides == 0)
             {
                 Physics.BouyancyScaling = 1;
             }
             else
             {
-                Physics.BouyancyScaling = (1 + Math.Sin((float)(SimOpt.SimOpts.TotRunCycle + SimOpt.TmpOpts.TidesOf) % SimOpt.TmpOpts.Tides / SimOpt.SimOpts.Tides * Math.PI * 2)) / 2;
+                Physics.BouyancyScaling = (1 + Math.Sin((float)(SimOpt.SimOpts.TotRunCycle + SimOpt.SimOpts.TidesOf) % SimOpt.SimOpts.Tides / SimOpt.SimOpts.Tides * Math.PI * 2)) / 2;
                 Physics.BouyancyScaling = Math.Sqrt(Physics.BouyancyScaling);
                 SimOpt.SimOpts.YGravity = (1 - Physics.BouyancyScaling) * 4;
                 SimOpt.SimOpts.PhysBrown = Physics.BouyancyScaling > 0.8 ? 10 : 0;

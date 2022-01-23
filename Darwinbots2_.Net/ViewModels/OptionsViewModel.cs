@@ -843,7 +843,16 @@ namespace DarwinBots.ViewModels
             options.CoefficientElasticity = CollisionElasticity / 10;
             options.FixedBotRadii = FixBotRadii;
             // TODO : Work out how this works
-            // EnableTides = options.Tides > 0;
+            if (EnableTides)
+            {
+                options.Tides = TidesCyclesOn;
+                options.TidesOf = TidesCyclesOff;
+            }
+            else
+            {
+                options.Tides = 0;
+                options.TidesOf = 0;
+            }
 
             options.PhysBrown = PhysBrown;
 

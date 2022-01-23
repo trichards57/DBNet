@@ -30,5 +30,11 @@ namespace DarwinBots.Forms
         {
             ViewModel.SetPondMode(!ViewModel.EnablePondMode);
         }
+
+        private void StartNew(object sender, RoutedEventArgs e)
+        {
+            DialogResult = true;
+            Close();
+        }
     }
 }

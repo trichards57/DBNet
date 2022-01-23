@@ -289,7 +289,7 @@ namespace DarwinBots.Modules
 
                 acttok -= rob.Age * rob.Chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
 
-                if (SimOpt.TmpOpts.Tides > 0)
+                if (SimOpt.SimOpts.Tides > 0)
                     acttok *= (1 - Physics.BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
 
                 rob.Energy += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);

@@ -9,6 +9,5 @@ namespace DarwinBots.Modules
 
         public static SimOptions SimOpts { get; set; }
         public static List<Species> Species { get; } = new();
-        public static SimOptions TmpOpts { get; set; }
     }
 }
