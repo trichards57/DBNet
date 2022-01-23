@@ -20,10 +20,5 @@ namespace DarwinBots.Forms
             DialogResult = true;
             Close();
         }
-
-        private void CancelClick(object sender, RoutedEventArgs e)
-        {
-            Close();
-        }
     }
 }

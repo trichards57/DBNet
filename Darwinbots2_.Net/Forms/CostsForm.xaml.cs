@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class CostsForm
+    public partial class CostsForm : IOptionsSubDialog
     {
         // TODO : Set up some validation on the Okay button.
 
@@ -16,9 +16,14 @@ namespace DarwinBots.Forms
 
         internal CostsViewModel ViewModel { get; } = new();
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        public void LoadFromOptions(OptionsViewModel viewModel)
         {
-            Close();
+            ViewModel.LoadFromOptions(viewModel.Costs);
+        }
+
+        public void SaveToOptions(OptionsViewModel viewModel)
+        {
+            viewModel.Costs = ViewModel.SaveToOptions();
         }
 
         private void Okay_Click(object sender, RoutedEventArgs e)

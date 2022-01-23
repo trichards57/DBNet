@@ -18,14 +18,6 @@
             <RowDefinition />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Command="{Binding LoadPresetCommand}">Load Preset...</Button>
-            <Button Command="{Binding SavePresetCommand}">Save Preset...</Button>
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Click="ApplyClick" IsDefault="True">Apply</Button>
-            <Button Click="CancelClick" IsCancel="True">Cancel</Button>
-        </StackPanel>
         <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Header="For Non-Repopulating Robots">
             <StackPanel>
                 <GroupBox Header="Fatal Restrictions">
@@ -63,5 +55,13 @@
                 </GroupBox>
             </StackPanel>
         </GroupBox>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Command="{Binding LoadPresetCommand}">Load Preset...</Button>
+            <Button Command="{Binding SavePresetCommand}">Save Preset...</Button>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Click="ApplyClick" IsDefault="True">Apply</Button>
+            <Button IsCancel="True">Cancel</Button>
+        </StackPanel>
     </Grid>
 </Window>

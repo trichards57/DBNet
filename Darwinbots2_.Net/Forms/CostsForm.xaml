@@ -208,7 +208,7 @@
         <Button Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Command="{Binding RestoreDefaultsCommand}">Restore Defaults</Button>
         <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button IsDefault="True" Click="Okay_Click">Okay</Button>
-            <Button IsCancel="True" Click="Cancel_Click">Cancel</Button>
+            <Button IsCancel="True">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

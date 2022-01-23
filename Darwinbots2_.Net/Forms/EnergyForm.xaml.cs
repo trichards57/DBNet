@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class EnergyForm
+    public partial class EnergyForm : IOptionsSubDialog
     {
         public EnergyForm()
         {
@@ -13,13 +13,17 @@ namespace DarwinBots.Forms
 
         public EnergyViewModel ViewModel { get; } = new();
 
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        public void LoadFromOptions(OptionsViewModel viewModel)
         {
-            DialogResult = false;
-            Close();
+            ViewModel.LoadFromOptions(viewModel);
         }
 
-        private void OKButton_Click(object sender, RoutedEventArgs e)
+        public void SaveToOptions(OptionsViewModel viewModel)
+        {
+            ViewModel.SaveToOptions(viewModel);
+        }
+
+        private void Okay_Click(object sender, RoutedEventArgs e)
         {
             DialogResult = true;
             Close();

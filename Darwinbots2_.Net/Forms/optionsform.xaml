@@ -6,7 +6,7 @@
         xmlns:forms="clr-namespace:DarwinBots.Forms"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:OptionsViewModel, IsDesignTimeCreatable=True}"
-        mc:Ignorable="d" Title="Simulation Settings" Style="{StaticResource OptionsForm}">
+        mc:Ignorable="d" Title="Simulation Settings" SizeToContent="Height" Width="815" Style="{StaticResource OptionsForm}">
     <Window.Resources>
         <forms:InvertBoolConverter x:Key="InvertBoolConverter" />
         <forms:EnumToIntConverter x:Key="EnumToIntConverter" />
@@ -377,7 +377,7 @@
                                         <ComboBoxItem>None</ComboBoxItem>
                                         <ComboBoxItem>Custom</ComboBoxItem>
                                     </ComboBox>
-                                    <Button IsEnabled="{Binding FieldModeCustom}" Command="{Binding DisplayCustomPhysicsCommand}" Grid.Column="1" Grid.Row="2">Custom Physics</Button>
+                                    <Button IsEnabled="{Binding FieldModeCustom}" Command="{Binding ShowCustomPhysicsCommand}" Grid.Column="1" Grid.Row="2">Custom Physics</Button>
                                 </Grid>
                             </GroupBox>
                             <Label Grid.Row="1" Grid.Column="0">Movement Efficiency</Label>
@@ -435,7 +435,7 @@
                     <GroupBox Grid.Column="1" Header="Costs and Returned Shots">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
@@ -461,7 +461,7 @@
                                     <Button IsEnabled="{Binding CostsCustom}" Command="{Binding DisplayCustomCostsCommand}" Grid.Row="1" Grid.Column="1">Custom Simulation Costs</Button>
                                 </Grid>
                             </GroupBox>
-                            <TextBlock Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center" TextWrapping="Wrap">Shot Energy Exchange Method</TextBlock>
+                            <Label Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center">Shot Energy Exchange Method</Label>
                             <RadioButton IsChecked="{Binding ShotModeFixedEnergy}" Grid.Row="1" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Fixed Nrg</RadioButton>
                             <RadioButton IsChecked="{Binding ShotModeProportional}" Grid.Row="2" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Proportional</RadioButton>
                             <TextBox Text="{Binding ShotEnergy}" Grid.Row="1" Grid.Column="2" />

@@ -10,6 +10,7 @@ namespace DarwinBots.Forms
             InitializeComponent();
 
             DataContext = ViewModel;
+            ViewModel.ParentForm = this;
         }
 
         internal OptionsViewModel ViewModel { get; } = new();

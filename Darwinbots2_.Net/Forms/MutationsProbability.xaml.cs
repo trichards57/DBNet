@@ -13,7 +13,7 @@ namespace DarwinBots.Forms
 
         public MutationsProbabilitiesViewModel ViewModel { get; } = new();
 
-        private void OkayClicked(object sender, System.Windows.RoutedEventArgs e)
+        private void Okay_Click(object sender, System.Windows.RoutedEventArgs e)
         {
             DialogResult = true;
             Close();

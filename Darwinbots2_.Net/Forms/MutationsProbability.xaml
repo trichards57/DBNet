@@ -99,7 +99,7 @@
         <Button Command="{Binding SetDefaultRatesCommand}" Grid.Row="4" Grid.Column="1">Default Rates</Button>
         <StackPanel Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
             <Button IsDefault="True" Click="Okay_Click">Okay</Button>
-            <Button IsCancel="True" Click="Cancel_Click">Cancel</Button>
+            <Button IsCancel="True">Cancel</Button>
         </StackPanel>
     </Grid>
 </Window>

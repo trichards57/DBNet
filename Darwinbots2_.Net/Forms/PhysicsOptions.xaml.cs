@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class PhysicsOptions : Window
+    public partial class PhysicsOptions : IOptionsSubDialog
     {
         public PhysicsOptions()
         {
@@ -14,9 +14,14 @@ namespace DarwinBots.Forms
 
         internal PhysicsOptionsViewModel ViewModel { get; } = new();
 
-        private void Cancel_Click(object sender, RoutedEventArgs e)
+        public void LoadFromOptions(OptionsViewModel viewModel)
         {
-            Close();
+            ViewModel.LoadFromOptions(viewModel);
+        }
+
+        public void SaveToOptions(OptionsViewModel viewModel)
+        {
+            ViewModel.SaveToOptions(viewModel);
         }
 
         private void Okay_Click(object sender, RoutedEventArgs e)
