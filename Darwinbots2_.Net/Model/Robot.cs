@@ -44,11 +44,8 @@ namespace DarwinBots.Model
         }
 
         public double Aim { get; set; }
-
         public DoubleVector AimVector => new(Math.Cos(Aim), Math.Sin(Aim));
-
         public double AngularMomentum { get; set; }
-
         public int BirthCycle { get; set; }
 
         public double Body
@@ -62,25 +59,15 @@ namespace DarwinBots.Model
         }
 
         public double Bouyancy { get; set; }
-
         public IntVector BucketPosition { get; set; }
-
         public bool CantReproduce { get; set; }
-
         public bool CantSee { get; set; }
-
         public double Chloroplasts { get; set; }
-
         public bool ChloroplastsDisabled { get; set; }
-
         public byte ChloroplastsShareDelay { get; set; }
-
         public Color Color { get; set; }
-
         public int DecayTimer { get; set; }
-
         public List<DnaBlock> Dna { get; set; } = new();
-
         public bool DnaDisabled { get; set; }
 
         public double Energy
@@ -90,45 +77,25 @@ namespace DarwinBots.Model
         }
 
         public int[] EpigeneticMemory { get; } = new int[14];
-
         public bool Exists { get; private set; } = true;
-
         public int Fertilized { get; set; }
-
         public string FName { get; set; }
-
         public int Generation { get; set; }
-
         public double GenMut { get; set; }
-
         public DoubleVector IndependentImpulse { get; set; }
-
         public bool IsCorpse { get; set; }
-
         public bool IsDead { get; set; }
-
         public bool IsFixed { get; set; }
-
         public bool IsMultibot { get; set; }
-
         public bool IsParalyzed { get; set; }
-
         public bool IsPoisoned { get; set; }
-
         public bool IsVegetable { get; set; }
-
         public bool IsVirusImmune { get; set; }
-
         public int Kills { get; set; }
-
         public int LastMutation { get; set; }
-
         public List<string> LastMutationDetail { get; } = new List<string>();
-
         public object LastSeenObject { get; set; }
-
         public DoubleVector LastSeenObjectPosition { get; set; }
-
         public Robot LastTouched { get; set; }
 
         public double Mass
@@ -142,13 +109,9 @@ namespace DarwinBots.Model
         }
 
         public int[] Memory { get; } = new int[1000];
-
         public bool MovementSysvarsDisabled { get; set; }
-
         public int MultibotTimer { get; set; }
-
         public MutationProbabilities MutationProbabilities { get; set; }
-
         public int Mutations { get; set; }
 
         /// <summary>
@@ -160,9 +123,8 @@ namespace DarwinBots.Model
         public int NewAge { get; private set; }
 
         public int NumberOfGenes { get; set; }
-
         public int[] occurr { get; } = new int[20];
-
+        public DoubleVector OffsetPosition => Position - Velocity + ActualVelocity;
         public double OldBody { get; set; }
 
         public double OldEnergy { get; set; }

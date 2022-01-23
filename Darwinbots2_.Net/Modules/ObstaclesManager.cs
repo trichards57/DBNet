@@ -2,8 +2,8 @@ using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Windows.Media;
 
 namespace DarwinBots.Modules
 {
@@ -63,7 +63,7 @@ namespace DarwinBots.Modules
         public void ChangeAllObstacleColor(Color? color)
         {
             foreach (var o in Obstacles)
-                o.Color = color ?? Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
+                o.Color = color ?? Color.FromArgb((byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256));
         }
 
         public void DeleteAllObstacles()
@@ -239,28 +239,10 @@ namespace DarwinBots.Modules
             }
         }
 
-        public void DrawObstacles()
+        public void DrawObstacles(Graphics graphics)
         {
-            //int i = 0;
-
-            //for (i = 1; i < numObstacles; i++)
-            //{
-            //    if (Obstacles(i).exist)
-            //    {
-            //        if (SimOpts.MakeAllShapesTransparent)
-            //        {
-            //            //Form1.Line(Obstacles(i).pos.x, Obstacles(i).pos.y) - (Obstacles(i).pos.x + Obstacles(i).Width, Obstacles(i).pos.y + Obstacles(i).Height), Obstacles(i).color, B);
-            //        }
-            //        else
-            //        {
-            //            //Form1.Line(Obstacles(i).pos.x, Obstacles(i).pos.y)-(Obstacles(i).pos.x + Obstacles(i).Width, Obstacles(i).pos.y + Obstacles(i).Height), Obstacles(i).color, BF);
-            //        }
-            //        if (i == obstaclefocus)
-            //        {
-            //            //Form1.Line(Obstacles(i).pos.x - 2, Obstacles(i).pos.y - 2) - (Obstacles(i).pos.x + Obstacles(i).Width + 2, Obstacles(i).pos.y + Obstacles(i).Height + 2), vbWhite, B);
-            //        }
-            //    }
-            //}
+            foreach (var o in Obstacles.Where(o => o.Exist))
+                graphics.FillRectangle(new SolidBrush(o.Color), new Rectangle(o.Position, o.Size));
         }
 
         public void DrawPolarIceMaze()
@@ -373,9 +355,8 @@ namespace DarwinBots.Modules
                 Height = height,
                 Velocity = new DoubleVector(0, 0),
                 Color = SimOpt.SimOpts.MakeAllShapesBlack
-                    ? Colors.Black
-                    : Color.FromRgb((byte)ThreadSafeRandom.Local.Next(0, 256),
-                        (byte)ThreadSafeRandom.Local.Next(0, 256), (byte)ThreadSafeRandom.Local.Next(0, 256))
+                    ? Color.Black
+                    : Color.FromArgb(ThreadSafeRandom.Local.Next(0, 256), ThreadSafeRandom.Local.Next(0, 256), ThreadSafeRandom.Local.Next(0, 256))
             };
 
             return obstacle;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace DarwinBots.Model
 {
@@ -14,7 +15,9 @@ namespace DarwinBots.Model
         }
 
         public static DoubleVector Zero { get; } = new(0, 0);
+
         public double X { get => _x; init => _x = Math.Clamp(value, -32000, 32000); }
+
         public double Y { get => _y; init => _y = Math.Clamp(value, -32000, 32000); }
 
         public static DoubleVector Clamp(DoubleVector v1, double min, double max)
@@ -52,6 +55,16 @@ namespace DarwinBots.Model
                 X = Math.Floor(v1.X),
                 Y = Math.Floor(v1.Y)
             };
+        }
+
+        public static implicit operator Point(DoubleVector vector)
+        {
+            return new Point((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
+        }
+
+        public static implicit operator Size(DoubleVector vector)
+        {
+            return new Size((int)Math.Round(vector.X), (int)Math.Round(vector.Y));
         }
 
         public static DoubleVector Max(DoubleVector x, DoubleVector y)

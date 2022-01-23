@@ -1,7 +1,9 @@
 ﻿using DarwinBots.DataModel;
+using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -31,6 +33,8 @@ namespace DarwinBots.Modules
         // TODO : Handle saving the sim on error
         // TODO : Drag and drop robots
         // TODO : Triggering screen updates
+
+        public event EventHandler<ImageAvailableArgs> ImageAvailable;
 
         /// <summary>
         /// Adds a record to the species array when a bot with a new species is loaded or teleported in.
@@ -169,8 +173,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.Tides = savedFile.Tides;
             SimOpt.SimOpts.TidesOf = savedFile.TidesOf;
             SimOpt.SimOpts.MutOscillSine = savedFile.MutOscillSine;
-
-            SimOpt.TmpOpts = SimOpt.SimOpts;
         }
 
         public Robot RobotAtPoint(DoubleVector point)
@@ -180,7 +182,7 @@ namespace DarwinBots.Modules
                  .Select(r => new
                  {
                      Robot = r,
-                     Distance = (r.Position - r.Velocity + r.ActualVelocity - point).MagnitudeSquare()
+                     Distance = (r.OffsetPosition - point).MagnitudeSquare()
                  })
                  .Where(r => r.Distance < r.Robot.GetRadius(SimOpt.SimOpts.FixedBotRadii) * r.Robot.GetRadius(SimOpt.SimOpts.FixedBotRadii))
                  .OrderByDescending(r => r.Distance)
@@ -306,11 +308,6 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.TotBorn = 0;
             }
 
-            var standardRadius = SimOpt.SimOpts.FixedBotRadii ? Robot.RobSize / 2.0 : 415.475;
-
-            _shotsManager.MaxBotShotSeparation = Math.Pow(standardRadius, 2) +
-                                                 Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robot.RobSize / 3.0, 2);
-
             if (!startLoaded)
             {
                 _obstacleManager = new ObstaclesManager();
@@ -318,6 +315,10 @@ namespace DarwinBots.Modules
                 _bucketManager = new BucketManager(SimOpt.SimOpts, _obstacleManager);
                 _robotsManager = new RobotsManager(_bucketManager, _obstacleManager, _shotsManager);
             }
+
+            var standardRadius = SimOpt.SimOpts.FixedBotRadii ? Robot.RobSize / 2.0 : 415.475;
+            _shotsManager.MaxBotShotSeparation = Math.Pow(standardRadius, 2) +
+                                     Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robot.RobSize / 3.0, 2);
 
             if (!startLoaded)
                 await LoadRobots();
@@ -330,6 +331,39 @@ namespace DarwinBots.Modules
             _active = true;
 
             Main();
+        }
+
+        private void DrawArena(Graphics graphics)
+        {
+            var color = Color.Yellow;
+
+            if (SimOpt.SimOpts.Tides > 0)
+                color = Color.FromArgb(255 - 255 - (int)Physics.BouyancyScaling, 255 - 255 - (int)Physics.BouyancyScaling, 0);
+
+            var sunStart = (Vegs.SunPosition - (0.25 + Math.Pow(Vegs.SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
+            var sunStop = (Vegs.SunPosition + (0.25 + Math.Pow(Vegs.SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
+            double sunAdd = 0;
+
+            var brush = new SolidBrush(color);
+            var pen = new Pen(color);
+
+            if (sunStart < 0)
+            {
+                sunAdd = SimOpt.SimOpts.FieldWidth + sunStart;
+                graphics.FillRectangle(brush, new Rectangle((int)sunAdd, 0, SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight / 100));
+                graphics.DrawLine(pen, (int)sunAdd, 0, (int)sunAdd, SimOpt.SimOpts.FieldHeight);
+                sunStart = 0;
+            }
+
+            if (sunStop > SimOpt.SimOpts.FieldWidth)
+            {
+                sunAdd = sunStop - SimOpt.SimOpts.FieldWidth;
+                graphics.FillRectangle(brush, new Rectangle((int)sunAdd, 0, 0, SimOpt.SimOpts.FieldHeight / 100));
+                graphics.DrawLine(pen, (int)sunAdd, 0, (int)sunAdd, SimOpt.SimOpts.FieldHeight);
+                sunStop = SimOpt.SimOpts.FieldWidth;
+            }
+
+            graphics.DrawRectangle(Pens.White, new Rectangle(0, 0, SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight));
         }
 
         private void Initialise()
@@ -424,6 +458,20 @@ namespace DarwinBots.Modules
             }
         }
 
+        private void RenderField()
+        {
+            var image = new Bitmap(SimOpt.SimOpts.FieldWidth, SimOpt.SimOpts.FieldHeight);
+
+            var graphics = Graphics.FromImage(image);
+
+            _obstacleManager.DrawObstacles(graphics);
+            DrawArena(graphics);
+
+            graphics.Dispose();
+
+            ImageAvailable?.Invoke(this, new ImageAvailableArgs { Image = image });
+        }
+
         private async Task UpdateSim()
         {
             SimOpt.SimOpts.TotRunCycle++;
@@ -455,10 +503,10 @@ namespace DarwinBots.Modules
 
             if (SimOpt.SimOpts.TotRunCycle % 10 == 0)
             {
-                for (var i = 10; i >= 2; i--)
+                for (var i = 9; i >= 1; i--)
                     _populationLast10Cycles[i] = _populationLast10Cycles[i - 1];
 
-                _populationLast10Cycles[1] = currentPopulation;
+                _populationLast10Cycles[9] = currentPopulation;
             }
 
             if (SimOpt.SimOpts.Costs.EnableDynamicCosts)
@@ -467,8 +515,8 @@ namespace DarwinBots.Modules
 
                 //If we are more than X% off of our target population either way AND the population isn't moving in the
                 //the direction we want or hasn't moved at all in the past 10 cycles then adjust the cost multiplier
-                var upperRange = SimOpt.TmpOpts.Costs.DynamicCostsUpperRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
-                var lowerRange = SimOpt.TmpOpts.Costs.DynamicCostsLowerRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
+                var upperRange = SimOpt.SimOpts.Costs.DynamicCostsUpperRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
+                var lowerRange = SimOpt.SimOpts.Costs.DynamicCostsLowerRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
 
                 if (currentPopulation == _populationLast10Cycles[10])
                 {
@@ -554,6 +602,8 @@ namespace DarwinBots.Modules
                 foreach (var rob in _robotsManager.Robots)
                     rob.LastMutationDetail.Clear();
             }
+
+            RenderField();
         }
     }
 }

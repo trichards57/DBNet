@@ -124,6 +124,6 @@
                 <Button Content="{StaticResource PauseIcon}" />
             </ToolBar>
         </ToolBarTray>
-        <Canvas />
+        <Image Source="{Binding FieldRender}" />
     </DockPanel>
 </Window>
