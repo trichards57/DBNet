@@ -59,9 +59,7 @@ namespace DarwinBots.ViewModels
         }
 
         public ICommand ChangeSkinCommand { get; }
-
         public Color Color { get; set; }
-
         public string Comments { get; set; }
 
         public bool DisableChloroplasts
@@ -115,6 +113,7 @@ namespace DarwinBots.ViewModels
         public ICommand SetInitialEnergyCommand { get; }
         public ICommand SetInitialIndividualsCommand { get; }
         public ObservableCollection<int> Skin { get; set; } = new(new int[8]);
+        public Species Species => _species;
 
         public SpeciesViewModel Duplicate()
         {
