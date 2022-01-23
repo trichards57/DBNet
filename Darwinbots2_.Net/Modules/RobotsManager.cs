@@ -196,63 +196,7 @@ namespace DarwinBots.Modules
             RemoveExtinctSpecies();
         }
 
-        private void BotDnaManipulation(Robot rob)
-        {
-            // count down
-            if (rob.VirusTimer > 1)
-                rob.VirusTimer--;
-
-            rob.Memory[MemoryAddresses.Vtimer] = rob.VirusTimer;
-
-            // Viruses
-            if (rob.Memory[MemoryAddresses.mkvirus] > 0 & rob.VirusTimer == 0)
-            {
-                if (rob.Chloroplasts == 0)
-                {
-                    if (_shotManager.MakeVirus(rob, rob.Memory[MemoryAddresses.mkvirus]))
-                    {
-                        var length = GeneLength(rob, rob.Memory[MemoryAddresses.mkvirus]) * 2;
-                        rob.Energy -= length / 2.0 * SimOpt.SimOpts.Costs.DnaCopyCost * SimOpt.SimOpts.Costs.CostMultiplier;
-                        rob.VirusTimer = Math.Min(length, 32000);
-                    }
-                    else
-                    {
-                        rob.VirusTimer = 0;
-                        rob.VirusShot = null;
-                    }
-                }
-                else
-                {
-                    rob.Chloroplasts = 0;
-                }
-            }
-
-            // shoot it!
-            if (rob.Memory[MemoryAddresses.VshootSys] != 0 & rob.VirusTimer == 1)
-            {
-                // Botsareus 10/5/2015 Bugfix for negative values in vshoot
-                _shotManager.ShootVirus(rob, rob.VirusShot);
-
-                rob.Memory[MemoryAddresses.VshootSys] = 0;
-                rob.Memory[MemoryAddresses.Vtimer] = 0;
-                rob.Memory[MemoryAddresses.mkvirus] = 0;
-                rob.VirusTimer = 0;
-                rob.VirusShot = null;
-            }
-
-            // Other stuff
-
-            if (rob.Memory[MemoryAddresses.DelgeneSys] > 0)
-            {
-                NeoMutations.DeleteGene(rob, rob.Memory[MemoryAddresses.DelgeneSys]);
-                rob.Memory[MemoryAddresses.DelgeneSys] = 0;
-            }
-
-            rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
-            rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
-        }
-
-        private List<DnaBlock> Crossover(List<block2> dna1, List<block2> dna2)
+        private static List<DnaBlock> Crossover(List<block2> dna1, List<block2> dna2)
         {
             var nn = 0;
             var res1 = 0;//result1
@@ -327,15 +271,194 @@ namespace DarwinBots.Modules
             }
         }
 
-        private int GeneLength(Robot rob, int p)
+        private static int GeneLength(Robot rob, int p)
         {
             var pos = DnaManipulations.GenePosition(rob.Dna, p);
             return DnaManipulations.GeneEnd(rob.Dna, pos) - pos + 1;
         }
 
-        private double GeneticDistance(List<block3> rob1, List<block3> rob2)
+        private static double GeneticDistance(List<block3> rob1, List<block3> rob2)
         {
             return rob1.Count(b => b.match == 0) + rob2.Count(b => b.match == 0) / (rob1.Count + rob2.Count);
+        }
+
+        private static MutationProbability MutateProbability(MutationProbability probability)
+        {
+            var p = probability.Probability;
+            p /= 10;
+            if (p == 0)
+                p = 1000;
+
+            return probability with { Probability = p };
+        }
+
+        private static void RemoveExtinctSpecies()
+        {
+            foreach (var s in SimOpt.SimOpts.Specie.Where(s => s.Population == 0 && !s.Native).ToArray())
+                SimOpt.SimOpts.Specie.Remove(s);
+        }
+
+        private static int ScanFromN(IList<block2> rob, int n, ref int layer)
+        {
+            for (var a = n; a < rob.Count; a++)
+            {
+                if (rob[a].match == layer)
+                    continue;
+
+                layer = rob[a].match;
+                return a;
+            }
+            return rob.Count;
+        }
+
+        private static void SimpleMatch(List<block3> r1, List<block3> r2)
+        {
+            var ei1 = r1.Count;
+            var ei2 = r2.Count;
+            var matchlist1 = new List<int>();
+            var matchlist2 = new List<int>();
+            var loopr1 = 0;
+            var loopr2 = 0;
+            var laststartmatch1 = 0;
+            var laststartmatch2 = 0;
+            var patch = 0;//Botsareus 4/18/2016 Temporary fix to prevent infinate loop
+
+            do
+            {
+                //keep building until both sides max out
+                if (loopr1 >= ei1)
+                    loopr1 = ei1 - 1;
+
+                if (loopr2 >= ei2)
+                    loopr2 = ei2 - 1;
+
+                matchlist1.Add(r1[loopr1].nucli);
+                matchlist2.Add(r2[loopr2].nucli);
+
+                //does anything match
+                var matchr2 = false;
+
+                var match = false;
+
+                int loopold;
+
+                for (loopold = 0; loopold < matchlist1.Count; loopold++)
+                {
+                    if (r2[loopr2].nucli == matchlist1[loopold])
+                    {
+                        matchr2 = true;
+                        match = true;
+                        break;
+                    }
+                    if (r1[loopr1].nucli == matchlist2[loopold])
+                    {
+                        match = true;
+                        break;
+                    }
+                    patch++;
+                }
+
+                if (match)
+                {
+                    if (matchr2)
+                    {
+                        loopr1 = loopold + laststartmatch1;
+                    }
+                    else
+                    {
+                        loopr2 = loopold + laststartmatch2;
+                    }
+
+                    //start matching
+
+                    var inc = 0;
+                    var newmatch = false;
+
+                    do
+                    {
+                        if (r2[loopr2].nucli == r1[loopr1].nucli)
+                        {
+                            if (newmatch == false)
+                                inc++;
+
+                            newmatch = true;
+                            r1[loopr1].match = inc;
+                            r2[loopr2].match = inc;
+                        }
+                        else
+                        {
+                            laststartmatch1 = loopr1;
+                            laststartmatch2 = loopr2;
+                            loopr1--;
+                            loopr2--;
+                            break;
+                        }
+                        loopr1++;
+                        loopr2++;
+                        patch++;
+                    } while (loopr1 <= ei1 && loopr2 <= ei2);
+                }
+
+                loopr1++;
+                loopr2++;
+                patch++;
+            } while (loopr1 <= ei1 || loopr2 <= ei2 || patch > (16000 ^ 2));
+        }
+
+        private void BotDnaManipulation(Robot rob)
+        {
+            // count down
+            if (rob.VirusTimer > 1)
+                rob.VirusTimer--;
+
+            rob.Memory[MemoryAddresses.Vtimer] = rob.VirusTimer;
+
+            // Viruses
+            if (rob.Memory[MemoryAddresses.mkvirus] > 0 & rob.VirusTimer == 0)
+            {
+                if (rob.Chloroplasts == 0)
+                {
+                    if (_shotManager.MakeVirus(rob, rob.Memory[MemoryAddresses.mkvirus]))
+                    {
+                        var length = GeneLength(rob, rob.Memory[MemoryAddresses.mkvirus]) * 2;
+                        rob.Energy -= length / 2.0 * SimOpt.SimOpts.Costs.DnaCopyCost * SimOpt.SimOpts.Costs.CostMultiplier;
+                        rob.VirusTimer = Math.Min(length, 32000);
+                    }
+                    else
+                    {
+                        rob.VirusTimer = 0;
+                        rob.VirusShot = null;
+                    }
+                }
+                else
+                {
+                    rob.Chloroplasts = 0;
+                }
+            }
+
+            // shoot it!
+            if (rob.Memory[MemoryAddresses.VshootSys] != 0 & rob.VirusTimer == 1)
+            {
+                // Botsareus 10/5/2015 Bugfix for negative values in vshoot
+                _shotManager.ShootVirus(rob, rob.VirusShot);
+
+                rob.Memory[MemoryAddresses.VshootSys] = 0;
+                rob.Memory[MemoryAddresses.Vtimer] = 0;
+                rob.Memory[MemoryAddresses.mkvirus] = 0;
+                rob.VirusTimer = 0;
+                rob.VirusShot = null;
+            }
+
+            // Other stuff
+
+            if (rob.Memory[MemoryAddresses.DelgeneSys] > 0)
+            {
+                NeoMutations.DeleteGene(rob, rob.Memory[MemoryAddresses.DelgeneSys]);
+                rob.Memory[MemoryAddresses.DelgeneSys] = 0;
+            }
+
+            rob.Memory[MemoryAddresses.DnaLenSys] = rob.Dna.Count;
+            rob.Memory[MemoryAddresses.GenesSys] = rob.NumberOfGenes;
         }
 
         private void ManageDeath(Robot rob)
@@ -399,22 +522,6 @@ namespace DarwinBots.Modules
             // Sexual Reproduction
             if (rob.Memory[MemoryAddresses.SEXREPRO] > 0 & rob.Fertilized >= 0 & !rob.CantReproduce)
                 BotsToReproduceSexually.Add(rob);
-        }
-
-        private MutationProbability MutateProbability(MutationProbability probability)
-        {
-            var p = probability.Probability;
-            p /= 10;
-            if (p == 0)
-                p = 1000;
-
-            return probability with { Probability = p };
-        }
-
-        private void RemoveExtinctSpecies()
-        {
-            foreach (var s in SimOpt.SimOpts.Specie.Where(s => s.Population == 0 && !s.Native).ToArray())
-                SimOpt.SimOpts.Specie.Remove(s);
         }
 
         private void Reproduce(Robot robot, int per)
@@ -568,7 +675,6 @@ namespace DarwinBots.Modules
                 nuovo.MutationProbabilities.EnableMutations = true; // mutate even if mutations disabled for this bot
 
                 nuovo.MutationProbabilities.CopyError = MutateProbability(nuovo.MutationProbabilities.CopyError);
-                nuovo.MutationProbabilities.Delta = MutateProbability(nuovo.MutationProbabilities.Delta);
                 nuovo.MutationProbabilities.Insertion = MutateProbability(nuovo.MutationProbabilities.Insertion);
                 nuovo.MutationProbabilities.MajorDeletion = MutateProbability(nuovo.MutationProbabilities.MajorDeletion);
                 nuovo.MutationProbabilities.MinorDeletion = MutateProbability(nuovo.MutationProbabilities.MinorDeletion);
@@ -633,19 +739,6 @@ namespace DarwinBots.Modules
 
             foreach (var r in BotsToKill)
                 await KillRobot(r);
-        }
-
-        private int ScanFromN(IList<block2> rob, int n, ref int layer)
-        {
-            for (var a = n; a < rob.Count; a++)
-            {
-                if (rob[a].match == layer)
-                    continue;
-
-                layer = rob[a].match;
-                return a;
-            }
-            return rob.Count;
         }
 
         private void SexReproduce(Robot female)
@@ -1047,100 +1140,6 @@ namespace DarwinBots.Modules
                 return true;
 
             return false;
-        }
-
-        private void SimpleMatch(List<block3> r1, List<block3> r2)
-        {
-            var ei1 = r1.Count;
-            var ei2 = r2.Count;
-            var matchlist1 = new List<int>();
-            var matchlist2 = new List<int>();
-            var loopr1 = 0;
-            var loopr2 = 0;
-            var laststartmatch1 = 0;
-            var laststartmatch2 = 0;
-            var patch = 0;//Botsareus 4/18/2016 Temporary fix to prevent infinate loop
-
-            do
-            {
-                //keep building until both sides max out
-                if (loopr1 >= ei1)
-                    loopr1 = ei1 - 1;
-
-                if (loopr2 >= ei2)
-                    loopr2 = ei2 - 1;
-
-                matchlist1.Add(r1[loopr1].nucli);
-                matchlist2.Add(r2[loopr2].nucli);
-
-                //does anything match
-                var matchr2 = false;
-
-                var match = false;
-
-                int loopold;
-
-                for (loopold = 0; loopold < matchlist1.Count; loopold++)
-                {
-                    if (r2[loopr2].nucli == matchlist1[loopold])
-                    {
-                        matchr2 = true;
-                        match = true;
-                        break;
-                    }
-                    if (r1[loopr1].nucli == matchlist2[loopold])
-                    {
-                        match = true;
-                        break;
-                    }
-                    patch++;
-                }
-
-                if (match)
-                {
-                    if (matchr2)
-                    {
-                        loopr1 = loopold + laststartmatch1;
-                    }
-                    else
-                    {
-                        loopr2 = loopold + laststartmatch2;
-                    }
-
-                    //start matching
-
-                    var inc = 0;
-                    var newmatch = false;
-
-                    do
-                    {
-                        if (r2[loopr2].nucli == r1[loopr1].nucli)
-                        {
-                            if (newmatch == false)
-                                inc++;
-
-                            newmatch = true;
-                            r1[loopr1].match = inc;
-                            r2[loopr2].match = inc;
-                        }
-                        else
-                        {
-                            laststartmatch1 = loopr1;
-                            laststartmatch2 = loopr2;
-                            loopr1--;
-                            loopr2--;
-                            break;
-                        }
-                        loopr1++;
-                        loopr2++;
-                        patch++;
-                    } while (loopr1 <= ei1 && loopr2 <= ei2);
-                }
-
-                loopr1++;
-                loopr2++;
-                patch++;
-            } while (loopr1 <= ei1 || loopr2 <= ei2 || patch > (16000 ^ 2));
         }
 
         private async Task UpdateCounters(Robot rob)

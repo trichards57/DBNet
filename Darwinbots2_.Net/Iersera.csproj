@@ -8,6 +8,7 @@
     <RootNamespace>DarwinBots</RootNamespace>
     <AssemblyName>DarwinBots</AssemblyName>
     <Configurations>Debug;Release;Debug No PostSharp</Configurations>
+    <Nullable>warnings</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No PostSharp|AnyCPU'">
     <SkipPostSharp>True</SkipPostSharp>

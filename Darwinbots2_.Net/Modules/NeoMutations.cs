@@ -50,9 +50,6 @@ namespace DarwinBots.Modules
             {
                 if (rob.MutationProbabilities.PointMutation.Probability > 0)
                     PointMutation(rob);
-
-                if (rob.MutationProbabilities.Delta.Probability > 0)
-                    DeltaMut(rob);
             }
 
             delta = rob.LastMutation - delta;
@@ -113,7 +110,6 @@ namespace DarwinBots.Modules
         public static void SetDefaultLengths(MutationProbabilities changeme)
         {
             changeme.PointMutation = changeme.PointMutation with { Mean = 3, StandardDeviation = 1 };
-            changeme.Delta = changeme.Delta with { Mean = 500, StandardDeviation = 150 };
             changeme.MinorDeletion = changeme.MinorDeletion with { Mean = 1, StandardDeviation = 0 };
             changeme.Insertion = changeme.Insertion with { Mean = 1, StandardDeviation = 0 };
             changeme.CopyError = changeme.CopyError with { Mean = 1, StandardDeviation = 0 };
@@ -256,36 +252,6 @@ namespace DarwinBots.Modules
 
             var f = DnaManipulations.GeneEnd(dna, i);
             dna.RemoveRange(i, f - i); // EricL Added +1
-        }
-
-        private static void DeltaMut(Robot rob)
-        {
-            if (ThreadSafeRandom.Local.NextDouble() <= 1 - 1 / (100 * rob.MutationProbabilities.Delta.Probability / SimOpt.SimOpts.MutCurrMult))
-                return;
-
-            if (rob.MutationProbabilities.Delta.StandardDeviation == 0)
-                rob.MutationProbabilities.Delta = rob.MutationProbabilities.Delta with { Mean = 50 };
-            else if (rob.MutationProbabilities.Delta.Mean == 0)
-                rob.MutationProbabilities.Delta = rob.MutationProbabilities.Delta with { Mean = 25 };
-
-            MutationType temp;
-
-            do
-            {
-                temp = (MutationType)ThreadSafeRandom.Local.Next(0, (int)MutationType.MaxType); //Botsareus 12/14/2013 Added new mutations
-            } while (rob.MutationProbabilities.GetProbability(temp) <= 0);
-
-            double newval;
-
-            do
-            {
-                newval = Common.Gauss(rob.MutationProbabilities.Delta.Mean, rob.MutationProbabilities.Delta.Probability);
-            } while (Math.Abs(rob.MutationProbabilities.GetProbability(temp) - newval) < 0.1 || newval <= 0);
-
-            rob.LogMutation($"Delta mutations changed {MutationToString(temp)} from 1 in {rob.MutationProbabilities.GetProbability(temp)} to 1 in {newval}");
-            rob.Mutations++;
-            rob.LastMutation++;
-            rob.MutationProbabilities.SetProbability(temp, newval);
         }
 
         private static void Insertion(Robot rob)
