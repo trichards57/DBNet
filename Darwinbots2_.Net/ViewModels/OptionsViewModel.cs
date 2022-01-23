@@ -859,6 +859,7 @@ namespace DarwinBots.ViewModels
             foreach (var s in SpeciesList)
             {
                 s.Save();
+                options.Specie.Add(s.Species);
             }
 
             options.Costs = Costs;
