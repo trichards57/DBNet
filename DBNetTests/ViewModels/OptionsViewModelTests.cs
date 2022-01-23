@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using DarwinBots.Model;
 using DarwinBots.Modules;
 using DarwinBots.Services;
 using DarwinBots.ViewModels;
 using FluentAssertions;
 using Moq;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace DBNetTests.ViewModels
