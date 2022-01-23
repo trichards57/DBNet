@@ -1,4 +1,5 @@
 using DarwinBots.ViewModels;
+using System;
 
 namespace DarwinBots.Forms
 {
@@ -11,6 +12,13 @@ namespace DarwinBots.Forms
             InitializeComponent();
 
             DataContext = _viewModel;
+            _viewModel.Dispatcher = Dispatcher;
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            _viewModel.StopSimulation();
+            base.OnClosed(e);
         }
     }
 }
