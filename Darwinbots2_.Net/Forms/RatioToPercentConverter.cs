@@ -5,12 +5,14 @@ using System.Windows.Data;
 
 namespace DarwinBots.Forms
 {
-    internal class RatioToPercentConverter : IValueConverter
+    internal class NumberScaleConverter : IValueConverter
     {
+        public int Scaler { get; set; } = 1;
+
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is double val)
-                return ((val + 1) * 100).ToString("F0");
+                return (val * Math.Pow(10, Scaler)).ToString("F");
 
             return DependencyProperty.UnsetValue;
         }
@@ -25,7 +27,7 @@ namespace DarwinBots.Forms
             if (!valValid)
                 return DependencyProperty.UnsetValue;
 
-            return (val / 100) - 1;
+            return val * Math.Pow(10, -Scaler);
         }
     }
 }

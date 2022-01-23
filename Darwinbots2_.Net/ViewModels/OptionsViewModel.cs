@@ -85,6 +85,8 @@ namespace DarwinBots.ViewModels
         private int _maximumChloroplasts;
         private int _minimumChloroplastsThreshold;
         private double _mutationMultiplier;
+        private double _physBrown;
+        private double _physMoving;
         private int _repopulationCooldownPeriod;
         private int _robotsPerRepopulationEvent;
         private double _sedimentLevel;
@@ -92,9 +94,7 @@ namespace DarwinBots.ViewModels
         private int _shotEnergy;
         private bool _shotModeFixedEnergy;
         private bool _shotModeProportional;
-        private double _physBrown;
         private double yGravity;
-        private double _physMoving;
 
         public OptionsViewModel() : this(null, null)
         {
@@ -369,8 +369,6 @@ namespace DarwinBots.ViewModels
 
         public bool FixBotRadii { get; set; }
 
-
-
         public VerticalGravity Gravity
         {
             get
@@ -396,6 +394,7 @@ namespace DarwinBots.ViewModels
                 };
             }
         }
+
         public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
         public bool IsSpeciesSelected => SelectedSpecies != null;
         public int LightLevel { get => _lightLevel; set => SetProperty(ref _lightLevel, Math.Clamp(value, 0, 1000)); }
@@ -407,6 +406,7 @@ namespace DarwinBots.ViewModels
         public string MinCyclesLabel => EnableMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
         public int MinimumChloroplastsThreshold { get => _minimumChloroplastsThreshold; set => SetProperty(ref _minimumChloroplastsThreshold, Math.Clamp(value, 0, 32000)); }
         public DragPresets MovementDrag { get; set; }
+
         public MovementEfficiency MovementEfficiency
         {
             get
@@ -428,13 +428,14 @@ namespace DarwinBots.ViewModels
                 };
             }
         }
+
         public FrictionPresets MovementFriction { get; set; }
 
         public string MutationDisplay
         {
             get
             {
-                if (MutationMultiplier > 1)
+                if (MutationMultiplier >= 0)
                 {
                     return $"{(int)Math.Pow(2, MutationMultiplier)} X";
                 }
@@ -454,7 +455,8 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public OptionsForm ParentForm { get; internal set; }
+        public OptionsForm ParentForm { get; set; }
+
         public double PhysBrown
         {
             get => _physBrown;
@@ -466,14 +468,17 @@ namespace DarwinBots.ViewModels
                 }
             }
         }
-        public double PhysMoving { 
-            get => _physMoving; 
-            set 
+
+        public double PhysMoving
+        {
+            get => _physMoving;
+            set
             {
                 if (SetProperty(ref _physMoving, value))
                     OnPropertyChanged(nameof(MovementEfficiency));
             }
         }
+
         public bool PlanetEaters { get; set; }
         public double PlanetEatersG { get; set; }
         public ICommand RenameSpeciesCommand { get; }
@@ -532,6 +537,7 @@ namespace DarwinBots.ViewModels
         public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
         public int WasteThreshold { get; set; }
+
         public double YGravity
         {
             get => yGravity;
@@ -541,6 +547,7 @@ namespace DarwinBots.ViewModels
                     OnPropertyChanged(nameof(Gravity));
             }
         }
+
         public bool ZeroMomentum { get; set; }
         public double ZGravity { get; set; }
 
@@ -668,16 +675,16 @@ namespace DarwinBots.ViewModels
             SelectedSpecies = null;
             EnableTides = options.Tides > 0;
 
-
-
             PhysBrown = options.PhysBrown;
-
 
             SpeciesList.Clear();
 
             foreach (var s in options.Specie)
             {
-                var vm = new SpeciesViewModel(s);
+                var vm = new SpeciesViewModel(s)
+                {
+                    ParentForm = ParentForm
+                };
                 await vm.LoadComment();
                 SpeciesList.Add(vm);
             }
@@ -838,11 +845,7 @@ namespace DarwinBots.ViewModels
             // TODO : Work out how this works
             // EnableTides = options.Tides > 0;
 
-
-
             options.PhysBrown = PhysBrown;
-
-
 
             foreach (var s in SpeciesList)
             {
@@ -932,7 +935,10 @@ namespace DarwinBots.ViewModels
             species.Mutables.ResetToDefault();
             species.AssignSkin();
 
-            var vm = new SpeciesViewModel(species);
+            var vm = new SpeciesViewModel(species)
+            {
+                ParentForm = ParentForm
+            };
             await vm.LoadComment();
 
             SpeciesList.Add(vm);

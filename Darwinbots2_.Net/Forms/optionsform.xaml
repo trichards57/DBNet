@@ -11,6 +11,7 @@
         <forms:InvertBoolConverter x:Key="InvertBoolConverter" />
         <forms:EnumToIntConverter x:Key="EnumToIntConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <forms:RatioToPercentConverter x:Key="RatioToPercentConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -458,14 +459,14 @@
                                     </Grid.RowDefinitions>
                                     <RadioButton IsChecked="{Binding CostsNoCosts}" GroupName="CostRadio">No Costs</RadioButton>
                                     <RadioButton IsChecked="{Binding CostsCustom}" Grid.Row="1" Grid.Column="0" GroupName="CostRadio">Custom</RadioButton>
-                                    <Button IsEnabled="{Binding CostsCustom}" Command="{Binding DisplayCustomCostsCommand}" Grid.Row="1" Grid.Column="1">Custom Simulation Costs</Button>
+                                    <Button IsEnabled="{Binding CostsCustom}" Command="{Binding ShowCustomCostsCommand}" Grid.Row="1" Grid.Column="1">Custom Simulation Costs</Button>
                                 </Grid>
                             </GroupBox>
                             <Label Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center">Shot Energy Exchange Method</Label>
                             <RadioButton IsChecked="{Binding ShotModeFixedEnergy}" Grid.Row="1" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Fixed Nrg</RadioButton>
                             <RadioButton IsChecked="{Binding ShotModeProportional}" Grid.Row="2" Grid.Column="1" GroupName="ExchangeMode" VerticalAlignment="Center">Proportional</RadioButton>
                             <TextBox Text="{Binding ShotEnergy}" Grid.Row="1" Grid.Column="2" />
-                            <TextBox Text="{Binding ShotProportion}" Grid.Row="2" Grid.Column="2" />
+                            <TextBox Text="{Binding ShotProportion, Converter={StaticResource RatioToPercentConverter}}" Grid.Row="2" Grid.Column="2" />
                             <Label Grid.Row="2" Grid.Column="3" Content="%" />
                             <TextBlock Grid.Row="3" Grid.ColumnSpan="4" Grid.Column="0" Margin="5,22.5,5,5" VerticalAlignment="Top" HorizontalAlignment="Stretch" TextWrapping="Wrap">
                                 These variables control some of the fundamental aspects of the simulation.  Any change made will have an effect on the cost-benefit ratios for all individuals.
@@ -486,7 +487,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <CheckBox IsChecked="{Binding DisableMutations}">Disable All Mutations</CheckBox>
-                    <GroupBox Grid.Row="1" Grid.Column="0" Header="Current Multiplier">
+                    <GroupBox Grid.Row="1" Grid.Column="0" Header="Current Multiplier" IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -500,7 +501,7 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Column="1" Text="{Binding MutationDisplay}" />
-                            <Slider Value="{Binding MutationMultiplier}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Minimum="-5" Maximum="5" />
+                            <Slider Value="{Binding MutationMultiplier}" Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" Minimum="-5" Maximum="5" IsSnapToTickEnabled="True" />
                             <Label Grid.Row="2" Grid.Column="0">Low</Label>
                             <Label Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center">1</Label>
                             <Label Grid.Row="2" Grid.Column="2">High</Label>
@@ -511,7 +512,7 @@
                             </TextBlock>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="1" Header="Oscillation Frequency">
+                    <GroupBox Grid.Row="1" Grid.Column="1" Header="Oscillation Frequency" IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />

@@ -1,5 +1,6 @@
 ﻿using DarwinBots.Forms;
 using DarwinBots.Model;
+using DarwinBots.Services;
 using DarwinBots.Support;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
@@ -8,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -20,14 +22,16 @@ namespace DarwinBots.ViewModels
         // TODO : Sort out displaying skin
         // TODO : Sort out colour picking
 
+        private readonly DialogService _dialogService;
         private readonly Species _species;
         private bool _disableChloroplasts;
         private bool _enableRepopulation;
         private int _initialEnergy;
 
-        public SpeciesViewModel(Species species)
+        public SpeciesViewModel(Species species, DialogService dialogService = null)
         {
             _species = species;
+            _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
 
             DisplayFatalRestrictionsCommand = new RelayCommand(DisplayFatalRestrictions);
             DisplayMutationRatesCommand = new RelayCommand(DisplayMutationRates);
@@ -105,6 +109,7 @@ namespace DarwinBots.ViewModels
         public bool KillNonMultibot { get; set; }
         public string Name { get; set; }
         public bool Native => _species.Native;
+        public OptionsForm ParentForm { get; set; }
         public ICommand PickColourCommand { get; }
         public ICommand ResetPositionCommand { get; }
         public ICommand SetInitialEnergyCommand { get; }
@@ -175,7 +180,10 @@ namespace DarwinBots.ViewModels
 
         private void DisplayFatalRestrictions()
         {
-            var dialog = new RestrictionOptionsForm();
+            var dialog = new RestrictionOptionsForm()
+            {
+                Owner = ParentForm
+            };
             dialog.ViewModel.DialogState = IsVeg ? RestrictionOptionsDialogState.VegetableKillsOnly : RestrictionOptionsDialogState.NonVegetableKillsOnly;
             dialog.ViewModel.LoadFromSpecies(this);
             var res = dialog.ShowDialog();
@@ -186,7 +194,10 @@ namespace DarwinBots.ViewModels
 
         private void DisplayMutationRates()
         {
-            var dialog = new MutationsProbability();
+            var dialog = new MutationsProbability()
+            {
+                Owner = ParentForm
+            };
             dialog.ViewModel.LoadFromProbabilities(_species.Mutables);
             var res = dialog.ShowDialog();
 
