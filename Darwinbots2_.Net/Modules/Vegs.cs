@@ -3,7 +3,6 @@ using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace DarwinBots.Modules
 {
@@ -303,21 +302,21 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static async Task VegsRepopulate(IRobotManager robotManager, IBucketManager bucketManager)
+        public static void VegsRepopulate(IRobotManager robotManager, IBucketManager bucketManager)
         {
             CoolDown++;
             if (CoolDown >= SimOpt.SimOpts.RepopCooldown)
             {
                 for (var t = 1; t < SimOpt.SimOpts.RepopAmount; t++)
                 {
-                    await aggiungirob(robotManager, bucketManager);
+                    aggiungirob(robotManager, bucketManager);
                     TotalVegs++;
                 }
                 CoolDown -= SimOpt.SimOpts.RepopCooldown;
             }
         }
 
-        private static async Task aggiungirob(IRobotManager robotManager, IBucketManager bucketManager)
+        private static void aggiungirob(IRobotManager robotManager, IBucketManager bucketManager)
         {
             if (!SimOpt.SimOpts.Specie.Any(s => CheckVegStatus(robotManager, s)))
                 return;
@@ -335,7 +334,7 @@ namespace DarwinBots.Modules
             if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].Path == "Invalid Path")
                 return;
 
-            var a = await DnaManipulations.RobScriptLoad(robotManager, bucketManager, System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
+            var a = DnaManipulations.RobScriptLoad(robotManager, bucketManager, System.IO.Path.Join(SimOpt.SimOpts.Specie[r].Path,
                     SimOpt.SimOpts.Specie[r].Name));
 
             if (a == null)

@@ -71,7 +71,7 @@ namespace DarwinBots.ViewModels
             _engine = new MainEngine();
             _engine.UpdateAvailable += OnUpdateAvailable;
 
-            await _engine.StartSimulation();
+            _engine.StartSimulation();
         }
 
         private void OnUpdateAvailable(object sender, UpdateAvailableArgs e)

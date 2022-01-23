@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace DarwinBots.Modules
 {
@@ -148,7 +147,7 @@ namespace DarwinBots.Modules
             return Convert.ToHexString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(s)));
         }
 
-        public static async Task<bool> LoadDna(string path, Robot rob)
+        public static bool LoadDna(string path, Robot rob)
         {
             var hold = new StringBuilder();
 
@@ -157,7 +156,7 @@ namespace DarwinBots.Modules
             if (path == "")
                 return false;
 
-            var lines = await File.ReadAllLinesAsync(path);
+            var lines = File.ReadAllLines(path);
             foreach (var a in lines)
             {
                 var processedLine = a;

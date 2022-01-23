@@ -286,7 +286,7 @@ namespace DarwinBots.Modules
             File.WriteAllText(path, JsonSerializer.Serialize(sim));
         }
 
-        public async Task StartSimulation(bool startLoaded = false)
+        public void StartSimulation(bool startLoaded = false)
         {
             DnaEngine.LoadSysVars();
 
@@ -321,7 +321,7 @@ namespace DarwinBots.Modules
                                      Math.Pow(SimOpt.SimOpts.MaxVelocity * 2 + Robot.RobSize / 3.0, 2);
 
             if (!startLoaded)
-                await LoadRobots();
+                LoadRobots();
             else
             {
                 Vegs.CoolDown = -SimOpt.SimOpts.RepopCooldown;
@@ -386,13 +386,13 @@ namespace DarwinBots.Modules
             _obstacleManager.InitObstacles();
         }
 
-        private async Task LoadRobots()
+        private void LoadRobots()
         {
             foreach (var species in SimOpt.SimOpts.Specie)
             {
                 for (var t = 0; t < species.Quantity; t++)
                 {
-                    var rob = await DnaManipulations.RobScriptLoad(_robotsManager, _bucketManager, Path.Join(species.Path, species.Name));
+                    var rob = DnaManipulations.RobScriptLoad(_robotsManager, _bucketManager, Path.Join(species.Path, species.Name));
 
                     if (rob == null)
                     {
@@ -456,7 +456,7 @@ namespace DarwinBots.Modules
             _simThread.Start(_simThreadCancel.Token);
         }
 
-        private async void MainFunction(object state)
+        private void MainFunction(object state)
         {
             const int MinFrameLength = 1000 / 50; // 50 FPS
             var cancelToken = (CancellationToken)state;
@@ -469,7 +469,7 @@ namespace DarwinBots.Modules
                 {
                     try
                     {
-                        await UpdateSim();
+                        UpdateSim();
                         var currentTime = DateTime.Now;
                         Thread.Sleep(Math.Max(0, MinFrameLength - (int)(currentTime - lastCycle).TotalMilliseconds));
                     }
@@ -499,7 +499,7 @@ namespace DarwinBots.Modules
             UpdateAvailable?.Invoke(this, new UpdateAvailableArgs { Update = update });
         }
 
-        private async Task UpdateSim()
+        private void UpdateSim()
         {
             SimOpt.SimOpts.TotRunCycle++;
 
@@ -596,7 +596,7 @@ namespace DarwinBots.Modules
             foreach (var rob in _robotsManager.Robots.Where(r => r.Exists))
                 rob.OldPosition = rob.Position;
 
-            await _robotsManager.UpdateBots();
+            _robotsManager.UpdateBots();
 
             //to figure actual velocity of the bot incase there is a collision event
             foreach (var rob in _robotsManager.Robots.Where(r => r.Exists && !(r.OldPosition.X == 0 & r.OldPosition.Y == 0)))
@@ -610,7 +610,7 @@ namespace DarwinBots.Modules
             _robotsManager.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
             if (_robotsManager.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
-                await Vegs.VegsRepopulate(_robotsManager, _bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
+                Vegs.VegsRepopulate(_robotsManager, _bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
             Vegs.feedvegs(_robotsManager, _obstacleManager, SimOpt.SimOpts.MaxEnergy);
 
@@ -622,7 +622,7 @@ namespace DarwinBots.Modules
                 var maxdel = 1500 * (_robotsManager.TotalRobots * 425 / totlen);
 
                 foreach (var rob in _robotsManager.Robots.Where(r => r.Exists).OrderByDescending(r => r.Energy + r.Body * 10).Take(maxdel).ToArray())
-                    await _robotsManager.KillRobot(rob);
+                    _robotsManager.KillRobot(rob);
             }
             if (totlen > 3000000)
             {

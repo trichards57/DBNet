@@ -3,7 +3,6 @@ using DarwinBots.Support;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace DarwinBots.Modules
@@ -25,6 +24,8 @@ namespace DarwinBots.Modules
         private readonly IBucketManager _bucketManager;
         private readonly IObstacleManager _obstacleManager;
         private readonly IShotManager _shotManager;
+
+        private int _lastAbsoluteNumber = -1;
 
         public RobotsManager(IBucketManager bucketManager, IObstacleManager obstacleManager, IShotManager shotManager)
         {
@@ -61,23 +62,25 @@ namespace DarwinBots.Modules
 
         public Robot GetNewBot()
         {
-            var robot = new Robot(_bucketManager);
+            _lastAbsoluteNumber++;
+
+            var robot = new Robot(_bucketManager)
+            {
+                AbsNum = _lastAbsoluteNumber
+            };
 
             Robots.Add(robot);
 
             return robot;
         }
 
-        public async Task KillRobot(Robot robot)
+        public void KillRobot(Robot robot)
         {
-            if (SimOpt.SimOpts.DeadRobotSnp && (!robot.IsVegetable || !SimOpt.SimOpts.SnpExcludeVegs))
-                await Database.AddRecord(robot);
-
             robot.CleanUp(_shotManager, _bucketManager);
             Robots.Remove(robot);
         }
 
-        public async Task UpdateBots()
+        public void UpdateBots()
         {
             BotsToKill.Clear();
             BotsToReproduce.Clear();
@@ -145,7 +148,7 @@ namespace DarwinBots.Modules
                 s.Population = 0;
 
             foreach (var rob in Robots.Where(r => r.Exists))
-                await UpdateCounters(rob); // Counts the number of bots and decays body...
+                UpdateCounters(rob); // Counts the number of bots and decays body...
 
             foreach (var rob in Robots.Where(r => r.Exists))
             {
@@ -192,7 +195,7 @@ namespace DarwinBots.Modules
                 }
             }
 
-            await ReproduceAndKill();
+            ReproduceAndKill();
             RemoveExtinctSpecies();
         }
 
@@ -707,7 +710,7 @@ namespace DarwinBots.Modules
                 robot.Energy = 0;
         }
 
-        private async Task ReproduceAndKill()
+        private void ReproduceAndKill()
         {
             foreach (var r in BotsToReproduce)
             {
@@ -738,7 +741,7 @@ namespace DarwinBots.Modules
             }
 
             foreach (var r in BotsToKill)
-                await KillRobot(r);
+                KillRobot(r);
         }
 
         private void SexReproduce(Robot female)
@@ -1142,7 +1145,7 @@ namespace DarwinBots.Modules
             return false;
         }
 
-        private async Task UpdateCounters(Robot rob)
+        private void UpdateCounters(Robot rob)
         {
             var species = SimOpt.SimOpts.Specie.FirstOrDefault(s => s.Name == rob.FName);
 
@@ -1165,7 +1168,7 @@ namespace DarwinBots.Modules
                 if (rob.Body > 0)
                     _shotManager.Decay(rob);
                 else
-                    await KillRobot(rob);
+                    KillRobot(rob);
             }
         }
     }

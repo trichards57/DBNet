@@ -152,7 +152,7 @@ namespace DarwinBots.Modules
                 fixedSep = rob1.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii) - currDist;
                 fixedSepVector = normal.Unit() * (fixedSep / (1 + Math.Pow(55, 0.3 - e)));
                 rob1.Position -= fixedSepVector * (rob2.Mass / totalMass);
-                rob2.Position -= fixedSepVector * (rob1.Mass / totalMass);
+                rob2.Position += fixedSepVector * (rob1.Mass / totalMass);
             }
 
             if (!double.IsFinite(1.0 / normal.Magnitude()))

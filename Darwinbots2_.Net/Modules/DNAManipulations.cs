@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using DarwinBots.Support;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace DarwinBots.Modules
@@ -136,11 +135,11 @@ namespace DarwinBots.Modules
             rob.Variables.Add(new Variable(parts[0], cValid ? cVal : 0));
         }
 
-        public static async Task<Robot> RobScriptLoad(IRobotManager robotManager, IBucketManager bucketManager, string path)
+        public static Robot RobScriptLoad(IRobotManager robotManager, IBucketManager bucketManager, string path)
         {
             var rob = robotManager.GetNewBot();
             PrepareRob(bucketManager, rob, path); // prepares structure
-            if (await DnaTokenizing.LoadDna(path, rob))
+            if (DnaTokenizing.LoadDna(path, rob))
             {
                 // loads and parses dna
                 Senses.MakeOccurrList(rob); // creates the ref* array
