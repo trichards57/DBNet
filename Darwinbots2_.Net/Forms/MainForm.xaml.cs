@@ -155,12 +155,14 @@ namespace DarwinBots.Forms
 
                 var display = _shotDisplays[i];
 
+                const int ShotRadius = 5;
+
                 Dispatcher.Invoke(() =>
                 {
-                    Canvas.SetLeft(display.Display, update.Position.X - 20);
-                    Canvas.SetTop(display.Display, update.Position.Y - 20);
-                    display.Display.Width = 20 * 2;
-                    display.Display.Height = 20 * 2;
+                    Canvas.SetLeft(display.Display, update.Position.X - ShotRadius);
+                    Canvas.SetTop(display.Display, update.Position.Y - ShotRadius);
+                    display.Display.Width = ShotRadius * 2;
+                    display.Display.Height = ShotRadius * 2;
                     display.Display.Stroke = new SolidColorBrush(update.Color);
                     display.Display.Fill = new SolidColorBrush(update.Color);
                 });

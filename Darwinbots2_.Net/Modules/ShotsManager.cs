@@ -26,7 +26,7 @@ namespace DarwinBots.Modules
     {
         private const double MinBotRadius = 0.2;
         private const int ShellEffectiveness = 20;
-        private const int ShotDecay = 40;
+        private const int ShotDecay = 20;
         private const double SlimeEffectiveness = 1.0 / 20;
         private const int VenomEffectivenessVsShell = 25;
         private readonly IObstacleManager _obstacleManager;
@@ -160,7 +160,7 @@ namespace DarwinBots.Modules
             {
                 shot.Energy = Math.Log(Math.Abs(rob.vbody)) * 60 * rangeMultiplier;
 
-                shot.Range = (shot.Energy + 40 + 1) / 40;
+                shot.Range = 15 * (shot.Energy + 40 + 1) / 40;
                 shot.Energy += 40 + 1;
             }
             else

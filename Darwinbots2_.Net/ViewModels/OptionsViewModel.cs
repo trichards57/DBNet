@@ -725,6 +725,7 @@ namespace DarwinBots.ViewModels
             PlanetEatersG = options.PlanetEatersG;
             CoefficientStatic = options.CoefficientStatic;
             CoefficientKinetic = options.CoefficientKinetic;
+            YGravity = options.YGravity;
         }
 
         public void SaveToOptions(SimOptions options)
@@ -893,6 +894,7 @@ namespace DarwinBots.ViewModels
             options.PlanetEatersG = PlanetEatersG;
             options.CoefficientStatic = CoefficientStatic;
             options.CoefficientKinetic = CoefficientKinetic;
+            options.YGravity = YGravity;
         }
 
         public void SetPondMode(bool enable)

@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31025.194
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iersera", "Iersera.csproj", "{92F75129-0EC1-47BA-85A7-E47F9EB140FD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ExampleApp", "..\ExampleApp\ExampleApp.csproj", "{97F7B19C-39D6-4795-B4A0-8DCA1D86E389}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBNetTests", "..\DBNetTests\DBNetTests.csproj", "{A117D188-EA48-4541-8305-5364D87FEFDB}"
 EndProject
@@ -22,12 +20,10 @@ Global
 		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{97F7B19C-39D6-4795-B4A0-8DCA1D86E389}.Debug No PostSharp|Any CPU.ActiveCfg = Debug|Any CPU
-		{97F7B19C-39D6-4795-B4A0-8DCA1D86E389}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{97F7B19C-39D6-4795-B4A0-8DCA1D86E389}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug No PostSharp|Any CPU.ActiveCfg = Debug|Any CPU
 		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug No PostSharp|Any CPU.Build.0 = Debug|Any CPU
 		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A117D188-EA48-4541-8305-5364D87FEFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A117D188-EA48-4541-8305-5364D87FEFDB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
