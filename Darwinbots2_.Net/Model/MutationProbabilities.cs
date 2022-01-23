@@ -12,21 +12,13 @@ namespace DarwinBots.Model
     public class MutationProbabilities
     {
         public MutationProbability CopyError { get; set; }
-
         public int CopyErrorWhatToChange { get; set; }
-
-        public MutationProbability Delta { get; set; }
-
         public bool EnableMutations { get; set; }
         public MutationProbability Insertion { get; set; }
-
         public MutationProbability MajorDeletion { get; set; }
-
         public MutationProbability MinorDeletion { get; set; }
         public MutationProbability PointMutation { get; set; }
-
         public int PointWhatToChange { get; set; }
-
         public MutationProbability Reversal { get; set; }
 
         public double GetMean(MutationType type)
@@ -39,7 +31,6 @@ namespace DarwinBots.Model
                 MutationType.Insertion => Insertion.Mean,
                 MutationType.MajorDeletion => MajorDeletion.Mean,
                 MutationType.CopyError => CopyError.Mean,
-                MutationType.Delta => Delta.Mean,
                 _ => 0,
             };
         }
@@ -54,7 +45,6 @@ namespace DarwinBots.Model
                 MutationType.Insertion => Insertion.Probability,
                 MutationType.MajorDeletion => MajorDeletion.Probability,
                 MutationType.CopyError => CopyError.Probability,
-                MutationType.Delta => Delta.Probability,
                 _ => 0,
             };
         }
@@ -69,7 +59,6 @@ namespace DarwinBots.Model
                 MutationType.Insertion => Insertion.StandardDeviation,
                 MutationType.MajorDeletion => MajorDeletion.StandardDeviation,
                 MutationType.CopyError => CopyError.StandardDeviation,
-                MutationType.Delta => Delta.StandardDeviation,
                 _ => 0,
             };
         }
@@ -77,12 +66,6 @@ namespace DarwinBots.Model
         public void ResetToDefault()
         {
             CopyError = new MutationProbability
-            {
-                Probability = 5000,
-                Mean = 1,
-                StandardDeviation = 0
-            };
-            Delta = new MutationProbability
             {
                 Probability = 5000,
                 Mean = 1,
@@ -149,10 +132,6 @@ namespace DarwinBots.Model
                 case MutationType.CopyError:
                     CopyError = CopyError with { Mean = value };
                     break;
-
-                case MutationType.Delta:
-                    Delta = Delta with { Mean = value };
-                    break;
             }
         }
 
@@ -183,10 +162,6 @@ namespace DarwinBots.Model
                 case MutationType.CopyError:
                     CopyError = CopyError with { Probability = value };
                     break;
-
-                case MutationType.Delta:
-                    Delta = Delta with { Probability = value };
-                    break;
             }
         }
 
@@ -216,10 +191,6 @@ namespace DarwinBots.Model
 
                 case MutationType.CopyError:
                     CopyError = CopyError with { StandardDeviation = value };
-                    break;
-
-                case MutationType.Delta:
-                    Delta = Delta with { StandardDeviation = value };
                     break;
             }
         }

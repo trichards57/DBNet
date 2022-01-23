@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
         d:DataContext="{d:DesignInstance Type=viewmodels:MutationsProbabilitiesViewModel}"
-        mc:Ignorable="d" Title="Mutation Probabilities" Style="{StaticResource OptionsForm}">
+        mc:Ignorable="d" Title="Mutation Probabilities" SizeToContent="Height" Width="815" Style="{StaticResource OptionsForm}">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -29,10 +29,6 @@
                 <RadioButton IsChecked="{Binding AmplificationSelected}" GroupName="SelectedMutation">Amplification</RadioButton>
                 <RadioButton IsChecked="{Binding MajorDeletionSelected}" GroupName="SelectedMutation">Major Deletion</RadioButton>
                 <RadioButton IsChecked="{Binding CopyErrorSelected}" GroupName="SelectedMutation">Copy Error</RadioButton>
-                <RadioButton IsEnabled="{Binding ShowDeltaMutation}" IsChecked="{Binding DeltaMutationSelected}" GroupName="SelectedMutation">Delta Mutation</RadioButton>
-                <RadioButton IsChecked="{Binding TranslocationSelected}" GroupName="SelectedMutation">Translocation</RadioButton>
-                <RadioButton IsChecked="{Binding Point2Selected}" GroupName="SelectedMutation">Point 2</RadioButton>
-                <RadioButton IsChecked="{Binding CopyError2Selected}" GroupName="SelectedMutation">Copy Error 2</RadioButton>
             </StackPanel>
         </GroupBox>
         <ScrollViewer VerticalScrollBarVisibility="Auto" Height="110" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
@@ -42,7 +38,6 @@
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
             <TextBlock>1 chance in</TextBlock>
             <TextBox Text="{Binding ChancePerUnit}" />
-            <TextBlock>per</TextBlock>
             <TextBlock Text="{Binding Unit}" />
         </StackPanel>
         <GroupBox Grid.ColumnSpan="2" IsEnabled="{Binding EnableGauss}" Grid.Row="2" Grid.Column="1" Header="{Binding GaussLabel}">
