@@ -56,11 +56,11 @@ namespace DarwinBots.Modules
 
             _numBuckets = new IntVector(opts.FieldWidth / BucketSize, opts.FieldHeight / BucketSize);
 
-            _buckets = new Bucket[_numBuckets.X + 1, _numBuckets.Y + 1];
+            _buckets = new Bucket[_numBuckets.X, _numBuckets.Y];
 
-            for (var y = 0; y < _numBuckets.Y - 1; y++)
+            for (var y = 0; y < _numBuckets.Y; y++)
             {
-                for (var x = 0; x < _numBuckets.X - 1; x++)
+                for (var x = 0; x < _numBuckets.X; x++)
                 {
                     _buckets[x, y] = new Bucket();
 
@@ -149,7 +149,8 @@ namespace DarwinBots.Modules
 
             if (rob.BucketPosition == newBucket) return;
 
-            _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
+            if (rob.BucketPosition.X != -2 && rob.BucketPosition.Y != -2)
+                _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
             _buckets[newBucket.X, newBucket.Y].Robots.Add(rob);
             rob.BucketPosition = newBucket;
         }
