@@ -200,12 +200,7 @@ namespace DarwinBots.Modules
 
             if (!rob.CantSee && !rob.IsCorpse && bucketManager.BucketsProximity(rob, SimOpt.SimOpts.FixedBotRadii) != null)
             {
-                switch (rob.LastSeenObject)
-                {
-                    case Robot r:
-                        LookOccurr(rob, r); // It's a bot.  Populate the refvar sysvars
-                        break;
-                }
+                LookOccurr(rob, rob.LastSeenObject); // It's a bot.  Populate the refvar sysvars
             }
 
             if (rob.Energy > 32000)

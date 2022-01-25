@@ -1,6 +1,5 @@
 ﻿using DarwinBots.Model;
 using DarwinBots.Modules;
-using System;
 using System.Collections.Generic;
 
 namespace DarwinBots.DataModel
@@ -13,7 +12,6 @@ namespace DarwinBots.DataModel
         public double CoefficientStatic { get; set; }
         public bool CorpseEnabled { get; set; }
         public Costs Costs { get; set; }
-        public bool DeadRobotSnp { get; set; }
         public double Decay { get; set; }
         public int DecayDelay { get; set; }
         public DecayType DecayType { get; set; }
@@ -22,7 +20,6 @@ namespace DarwinBots.DataModel
         public bool DisableMutations { get; set; }
         public bool DisableTies { get; set; }
         public bool DisableTypArepro { get; set; }
-        public bool DxSxConnected { get; set; }
         public bool EnableAutoSpeciation { get; set; }
         public ShotMode EnergyExType { get; set; }
         public int EnergyFix { get; set; }
@@ -31,35 +28,24 @@ namespace DarwinBots.DataModel
         public int FieldWidth { get; set; }
         public bool FixedBotRadii { get; set; }
         public FieldMode FluidSolidCustom { get; set; }
-        public int MaxAbsNum { get; set; }
         public int MaxEnergy { get; set; }
         public int MaxPopulation { get; set; }
         public double MaxVelocity { get; set; }
         public int MinVegs { get; set; }
         public double MutCurrMult { get; set; }
-        public int MutCycMax { get; set; }
-        public int MutCycMin { get; set; }
-        public bool MutOscill { get; set; }
-        public bool MutOscillSine { get; set; }
         public bool NoShotDecay { get; set; }
         public bool NoWShotDecay { get; set; }
-        public double OldCostX { get; set; }
         public double PhysBrown { get; set; }
         public double PhysMoving { get; set; }
-        public bool PlanetEaters { get; set; }
-        public double PlanetEatersG { get; set; }
         public int RepopAmount { get; set; }
         public int RepopCooldown { get; set; }
         public IEnumerable<Robot> Robots { get; set; }
         public IEnumerable<Shot> Shots { get; set; }
-        public Guid SimGuid { get; set; }
-        public bool SnpExcludeVegs { get; set; }
         public int SpeciationForkInterval { get; set; }
         public int SpeciationGeneticDistance { get; set; }
         public IEnumerable<Species> Species { get; set; }
         public int TotBorn { get; set; }
         public int TotRunCycle { get; set; }
-        public bool UpDnConnected { get; set; }
         public double VegFeedingToBody { get; set; }
         public double Viscosity { get; set; }
         public double Ygravity { get; set; }

@@ -213,13 +213,6 @@ namespace DarwinBots.Modules
             };
         }
 
-        public static string SaveRobHeader(Robot rob)
-        {
-            var totalMutations = Math.Min(rob.Mutations + rob.OldMutations, DnaEngine.MaxIntValue);
-
-            return $"'#generation: {rob.Generation}\n'#mutations: {totalMutations}\n";
-        }
-
         public static string TipoDetok(int tipo)
         {
             return tipo switch
@@ -446,12 +439,6 @@ namespace DarwinBots.Modules
             var name = parts[0].Trim()[3..];
             var value = parts[1].Trim();
 
-            if (name == "generation")
-            {
-                var valValid = int.TryParse(value, out var val);
-                rob.Generation = valValid ? val : 0;
-            }
-
             if (name == "mutations")
             {
                 var valValid = int.TryParse(value, out var val);
@@ -463,7 +450,6 @@ namespace DarwinBots.Modules
                 var value2 = Hash(hold);
                 if (value2 != value)
                 {
-                    rob.Generation = 0;
                     rob.OldMutations = 0;
                 }
             }

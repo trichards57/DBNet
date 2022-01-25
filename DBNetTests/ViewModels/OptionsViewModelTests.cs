@@ -68,18 +68,6 @@ namespace DBNetTests.ViewModels
         }
 
         [Fact]
-        public void EnabledMutationSineWave_UpdatesMinMaxLabels()
-        {
-            var vm = new OptionsViewModel();
-            vm.EnableMutationSineWave = true;
-            vm.MaxCyclesLabel.Should().Be("Max at 20x");
-            vm.MinCyclesLabel.Should().Be("Max at 1/20x");
-            vm.EnableMutationSineWave = false;
-            vm.MaxCyclesLabel.Should().Be("Cycles at 16x");
-            vm.MinCyclesLabel.Should().Be("Cycles at 1/16x");
-        }
-
-        [Fact]
         public void ListNativeSpecies_ReportsNoneWhenAllFiltered()
         {
             var testSpecies = _fixture.Build<Species>()
@@ -435,11 +423,7 @@ namespace DBNetTests.ViewModels
             vm.ShotProportion.Should().Be(options.EnergyProp * 100);
             vm.ShotEnergy.Should().Be(options.EnergyFix);
             vm.MutationMultiplier.Should().Be(Math.Log(Math.Max(options.MutCurrMult, 0), 2));
-            vm.EnableMutationCycling.Should().Be(options.MutOscill);
-            vm.EnableMutationSineWave.Should().Be(options.MutOscillSine);
             vm.DisableMutations.Should().Be(options.DisableMutations);
-            vm.CyclesHigh.Should().Be(options.MutCycMax);
-            vm.CyclesLow.Should().Be(options.MutCycMin);
             vm.InitialLightEnergy.Should().Be(options.MaxEnergy);
             vm.MaxVelocity.Should().Be(options.MaxVelocity);
             vm.VegEnergyBodyDistribution.Should().Be(options.VegFeedingToBody * 100);

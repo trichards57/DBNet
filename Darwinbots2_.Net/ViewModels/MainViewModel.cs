@@ -1,13 +1,12 @@
-﻿using AsyncAwaitBestPractices.MVVM;
-using DarwinBots.Forms;
+﻿using DarwinBots.Forms;
 using DarwinBots.Model;
 using DarwinBots.Modules;
 using DarwinBots.Services;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace DarwinBots.ViewModels
@@ -21,7 +20,7 @@ namespace DarwinBots.ViewModels
 
         public MainViewModel(DialogService dialogService = null)
         {
-            NewSimulationCommand = new AsyncCommand(NewSimulation);
+            NewSimulationCommand = new AsyncRelayCommand(NewSimulation);
             _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
         }
 
@@ -29,7 +28,7 @@ namespace DarwinBots.ViewModels
 
         public Dispatcher Dispatcher { get; internal set; }
 
-        public ICommand NewSimulationCommand { get; }
+        public IRelayCommand NewSimulationCommand { get; }
 
         public void StopSimulation()
         {

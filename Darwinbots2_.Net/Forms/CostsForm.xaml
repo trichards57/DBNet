@@ -137,7 +137,6 @@
                 </Grid.ColumnDefinitions>
                 <Label>Cost Multiplier:</Label>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CostMultiplier}" />
-                <CheckBox Grid.Row="0" Grid.Column="2" x:Name="AllowNegativeCostXCheck" IsChecked="{Binding AllowMultiplerToGoNegative}">Allow Multiplier to go Negative</CheckBox>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Column="1" Grid.Row="2" Header="Aging">

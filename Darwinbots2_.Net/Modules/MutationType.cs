@@ -9,6 +9,5 @@ namespace DarwinBots.Modules
         MajorDeletion,
         CopyError,
         Delta,
-        MaxType
     }
 }

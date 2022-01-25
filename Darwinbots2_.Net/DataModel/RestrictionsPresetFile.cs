@@ -2,7 +2,6 @@
 {
     internal record RestrictionsPresetFile
     {
-        public bool DisableChloroplastsNonVeg { get; set; }
         public bool DisableDnaNonVeg { get; set; }
         public bool DisableDnaVeg { get; set; }
         public bool DisableMotionNonVeg { get; set; }
@@ -15,8 +14,6 @@
         public bool DisableVisionVeg { get; set; }
         public bool FixedInPlaceNonVeg { get; set; }
         public bool FixedInPlaceVeg { get; set; }
-        public bool KillNonMultibotNonVeg { get; set; }
-        public bool KillNonMultibotVeg { get; set; }
         public bool VirusImmuneNonVeg { get; set; }
         public bool VirusImmuneVeg { get; set; }
     }

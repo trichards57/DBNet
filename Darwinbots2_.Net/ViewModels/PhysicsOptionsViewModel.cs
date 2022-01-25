@@ -53,6 +53,8 @@ namespace DarwinBots.ViewModels
             ZAxisGravity = optionsViewModel.ZGravity;
             StaticFrictionCoefficient = optionsViewModel.CoefficientStatic;
             KineticFrictionCoefficient = optionsViewModel.CoefficientKinetic;
+            Viscosity = optionsViewModel.Viscosity;
+            Density = optionsViewModel.Density;
         }
 
         internal void SaveToOptions(OptionsViewModel optionsViewModel)
@@ -64,6 +66,8 @@ namespace DarwinBots.ViewModels
             optionsViewModel.CoefficientKinetic = KineticFrictionCoefficient;
             optionsViewModel.YGravity = YGravity;
             optionsViewModel.PhysBrown = BrownianMotion;
+            optionsViewModel.Viscosity = Viscosity;
+            optionsViewModel.Density = Density;
         }
     }
 }

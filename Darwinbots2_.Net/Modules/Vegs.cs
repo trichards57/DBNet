@@ -162,8 +162,8 @@ namespace DarwinBots.Modules
                 r = ThreadSafeRandom.Local.Next(0, SimOpt.SimOpts.Specie.Count); // start randomly in the list of species
             } while (!CheckVegStatus(robotManager, SimOpt.SimOpts.Specie[r]));
 
-            var x = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(SimOpt.SimOpts.Specie[r].Posrg * (SimOpt.SimOpts.FieldWidth - 60)));
-            var y = ThreadSafeRandom.Local.Next((int)(SimOpt.SimOpts.Specie[r].Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(SimOpt.SimOpts.Specie[r].Posdn * (SimOpt.SimOpts.FieldHeight - 60)));
+            var x = ThreadSafeRandom.Local.Next(Robot.RobSize / 2, SimOpt.SimOpts.FieldWidth - Robot.RobSize / 2);
+            var y = ThreadSafeRandom.Local.Next(Robot.RobSize / 2, SimOpt.SimOpts.FieldHeight - Robot.RobSize / 2);
 
             if (SimOpt.SimOpts.Specie[r].Name == "" || SimOpt.SimOpts.Specie[r].Path == "Invalid Path")
                 return;
@@ -202,7 +202,6 @@ namespace DarwinBots.Modules
             a.Mutations = 0;
             a.OldMutations = 0;
             a.LastMutation = 0;
-            a.Generation = 0;
             a.SonNumber = 0;
             a.Parent = null;
             Array.Clear(a.Memory, 0, a.Memory.Length);
@@ -229,7 +228,6 @@ namespace DarwinBots.Modules
             a.Memory[MemoryAddresses.DnaLenSys] = a.Dna.Count;
             a.Memory[MemoryAddresses.GenesSys] = a.NumberOfGenes;
 
-            a.MultibotTimer = SimOpt.SimOpts.Specie[r].kill_mb ? 210 : 0;
             a.ChloroplastsDisabled = SimOpt.SimOpts.Specie[r].NoChlr;
 
             for (var i = 0; i < 7; i++)

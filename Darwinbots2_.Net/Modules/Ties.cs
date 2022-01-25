@@ -132,8 +132,6 @@ namespace DarwinBots.Modules
         {
             // this routine addresses all ties. not just ones that match .tienum
             rob.vbody = rob.Body;
-
-            var atLeast1Tie = false;
             if (rob.IsMultibot)
             {
                 foreach (var tie in rob.Ties.Where(t => !t.BackTie))
@@ -164,25 +162,7 @@ namespace DarwinBots.Modules
                         tie.Sharing = true; //yellow ties
                     }
                     rob.vbody += tie.OtherBot.Body;
-                    if (rob.FName == tie.OtherBot.FName)
-                    {
-                        atLeast1Tie = true;
-                    }
                 }
-            }
-
-            if (rob.MultibotTimer > 0)
-            {
-                if (atLeast1Tie)
-                    rob.MultibotTimer++;
-                else
-                    rob.MultibotTimer--;
-
-                if (rob.MultibotTimer > 210)
-                    rob.MultibotTimer = 210;
-
-                if (rob.MultibotTimer < 10)
-                    rob.IsDead = true; //safe kill robot
             }
 
             // Zero the sharing sysvars

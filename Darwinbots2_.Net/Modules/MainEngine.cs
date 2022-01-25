@@ -54,10 +54,6 @@ namespace DarwinBots.Modules
                 SubSpeciesCounter = 0,
                 Color = rob.Color,
                 Comment = "Species arrived from the Internet",
-                Posrg = 1,
-                Posdn = 1,
-                Poslf = 0,
-                Postp = 0,
                 Quantity = 5,
                 Stnrg = 3000,
                 Native = isNative,
@@ -96,9 +92,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.MaxPopulation = savedFile.MaxPopulation;
             SimOpt.SimOpts.MinVegs = savedFile.MinVegs;
             SimOpt.SimOpts.MutCurrMult = savedFile.MutCurrMult;
-            SimOpt.SimOpts.MutCycMax = savedFile.MutCycMax;
-            SimOpt.SimOpts.MutCycMin = savedFile.MutCycMin;
-            SimOpt.SimOpts.MutOscill = savedFile.MutOscill;
             SimOpt.SimOpts.PhysBrown = savedFile.PhysBrown;
             SimOpt.SimOpts.YGravity = savedFile.Ygravity;
             SimOpt.SimOpts.ZGravity = savedFile.Zgravity;
@@ -123,7 +116,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.MaxVelocity = savedFile.MaxVelocity;
             SimOpt.SimOpts.NoShotDecay = savedFile.NoShotDecay;
             SimOpt.SimOpts.FixedBotRadii = savedFile.FixedBotRadii;
-            SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
             SimOpt.SimOpts.SpeciationGeneticDistance = savedFile.SpeciationGeneticDistance;
             SimOpt.SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
@@ -131,7 +123,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
             SimOpt.SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
             SimOpt.SimOpts.DisableFixing = savedFile.DisableFixing;
-            SimOpt.SimOpts.MutOscillSine = savedFile.MutOscillSine;
         }
 
         public Robot RobotAtPoint(DoubleVector point)
@@ -179,13 +170,8 @@ namespace DarwinBots.Modules
                 MaxVelocity = SimOpt.SimOpts.MaxVelocity,
                 MinVegs = SimOpt.SimOpts.MinVegs,
                 MutCurrMult = SimOpt.SimOpts.MutCurrMult,
-                MutCycMax = SimOpt.SimOpts.MutCycMax,
-                MutCycMin = SimOpt.SimOpts.MutCycMin,
-                MutOscill = SimOpt.SimOpts.MutOscill,
-                MutOscillSine = SimOpt.SimOpts.MutOscillSine,
                 NoShotDecay = SimOpt.SimOpts.NoShotDecay,
                 NoWShotDecay = SimOpt.SimOpts.NoWShotDecay,
-                OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
@@ -274,8 +260,7 @@ namespace DarwinBots.Modules
                         rob.Memory[216] = 1;
                     }
 
-                    rob.Position = new DoubleVector(ThreadSafeRandom.Local.Next((int)(species.Poslf * (SimOpt.SimOpts.FieldWidth - 60)), (int)(species.Posrg * (SimOpt.SimOpts.FieldWidth - 60))), ThreadSafeRandom.Local.Next((int)(species.Postp * (SimOpt.SimOpts.FieldHeight - 60)), (int)(species.Posdn * (SimOpt.SimOpts.FieldHeight - 60))));
-
+                    rob.Position = new DoubleVector(ThreadSafeRandom.Local.Next(Robot.RobSize / 2, SimOpt.SimOpts.FieldWidth - Robot.RobSize / 2), ThreadSafeRandom.Local.Next(Robot.RobSize / 2, SimOpt.SimOpts.FieldHeight - Robot.RobSize / 2));
                     rob.Energy = species.Stnrg;
                     rob.Body = 1000;
 
@@ -377,20 +362,6 @@ namespace DarwinBots.Modules
         private void UpdateSim()
         {
             SimOpt.SimOpts.TotRunCycle++;
-
-            if (SimOpt.SimOpts.MutOscill && (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin) > 0)
-            {
-                if (SimOpt.SimOpts.MutOscillSine)
-                {
-                    var fullRange = SimOpt.SimOpts.TotRunCycle % (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin);
-
-                    SimOpt.SimOpts.MutCurrMult = fullRange < SimOpt.SimOpts.MutCycMax
-                        ? Math.Pow(20, Math.Sin((double)fullRange / SimOpt.SimOpts.MutCycMax * Math.PI))
-                        : Math.Pow(20, Math.Sin((double)(fullRange - SimOpt.SimOpts.MutCycMax) / SimOpt.SimOpts.MutCycMin * Math.PI));
-                }
-                else
-                    SimOpt.SimOpts.MutCurrMult = SimOpt.SimOpts.TotRunCycle % (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin) < SimOpt.SimOpts.MutCycMax ? 16 : 1 / 16;
-            }
 
             DnaEngine.ExecRobs(SimOpt.SimOpts.Costs, _robotsManager.Robots);
 

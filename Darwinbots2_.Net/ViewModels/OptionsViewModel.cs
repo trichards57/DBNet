@@ -71,15 +71,11 @@ namespace DarwinBots.ViewModels
         private bool _decayTypeNone = true;
         private bool _decayTypeWaste;
         private bool _enableCorpseMode;
-        private bool _enableMutationSineWave;
-        private float _energyScalingFactor;
         private bool _fieldModeCustom;
         private bool _fieldModeFluid;
         private bool _fieldModeSolid;
         private int _fieldSize;
         private int _initialLightEnergy;
-        private bool _lightCurrentlyIncreasing;
-        private int _lightLevel;
         private int _maximumChloroplasts;
         private int _minimumChloroplastsThreshold;
         private double _mutationMultiplier;
@@ -134,7 +130,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public ICommand ChangeCommand { get; }
         public double CoefficientKinetic { get; set; }
         public double CoefficientStatic { get; set; }
         public double CollisionElasticity { get; set; }
@@ -212,6 +207,7 @@ namespace DarwinBots.ViewModels
         }
 
         public ICommand DeleteSpeciesCommand { get; }
+        public double Density { get; set; }
         public bool DisableMutations { get; set; }
         public ICommand DuplicateSpeciesCommand { get; }
 
@@ -228,23 +224,6 @@ namespace DarwinBots.ViewModels
                 }
             }
         }
-
-        public bool EnableMutationCycling { get; set; }
-
-        public bool EnableMutationSineWave
-        {
-            get => _enableMutationSineWave;
-            set
-            {
-                if (SetProperty(ref _enableMutationSineWave, value))
-                {
-                    OnPropertyChanged(nameof(MaxCyclesLabel));
-                    OnPropertyChanged(nameof(MinCyclesLabel));
-                }
-            }
-        }
-
-        public float EnergyScalingFactor { get => _energyScalingFactor; set => SetProperty(ref _energyScalingFactor, value == 0 ? 1 : value); }
 
         public int FieldHeight
         {
@@ -384,10 +363,8 @@ namespace DarwinBots.ViewModels
         public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
         public bool IsSpeciesSelected => SelectedSpecies != null;
         public ICommand ListNonNativeSpeciesCommand { get; }
-        public string MaxCyclesLabel => EnableMutationSineWave ? "Max at 20x" : "Cycles at 16x";
         public int MaximumChloroplasts { get => _maximumChloroplasts; set => SetProperty(ref _maximumChloroplasts, Math.Clamp(value, 0, 32000)); }
         public double MaxVelocity { get; set; }
-        public string MinCyclesLabel => EnableMutationSineWave ? "Max at 1/20x" : "Cycles at 1/16x";
         public int MinimumChloroplastsThreshold { get => _minimumChloroplastsThreshold; set => SetProperty(ref _minimumChloroplastsThreshold, Math.Clamp(value, 0, 32000)); }
         public DragPresets MovementDrag { get; set; }
 
@@ -505,10 +482,10 @@ namespace DarwinBots.ViewModels
         public double ShotProportion { get; set; }
         public ICommand ShowCustomCostsCommand { get; }
         public ICommand ShowCustomPhysicsCommand { get; }
-        public ICommand ShowEnergyManagementCommand { get; }
         public ICommand ShowGlobalSettingsCommand { get; }
         public ObservableCollection<SpeciesViewModel> SpeciesList { get; } = new();
         public double VegEnergyBodyDistribution { get; set; }
+        public double Viscosity { get; internal set; }
         public int WasteThreshold { get; set; }
 
         public double YGravity
@@ -555,11 +532,7 @@ namespace DarwinBots.ViewModels
             ShotModeProportional = options.EnergyExType == ShotMode.Proportional;
             ShotModeFixedEnergy = options.EnergyExType == ShotMode.Fixed;
             MutationMultiplier = Math.Log(Math.Max(options.MutCurrMult, 0), 2);
-            EnableMutationCycling = options.MutOscill;
-            EnableMutationSineWave = options.MutOscillSine;
             DisableMutations = options.DisableMutations;
-            CyclesHigh = options.MutCycMax;
-            CyclesLow = options.MutCycMin;
             InitialLightEnergy = options.MaxEnergy;
 
             switch (options.FluidSolidCustom)
@@ -579,56 +552,65 @@ namespace DarwinBots.ViewModels
             }
 
             if (options.Costs == Costs.ZeroCosts)
-            {
                 CostsNoCosts = true;
-            }
             else
-            {
                 CostsCustom = true;
+
+            switch (options.CoefficientKinetic)
+            {
+                case 0.75 when options.CoefficientStatic == 0.9 && options.ZGravity == 4:
+                    MovementFriction = FrictionPresets.Sandpaper;
+                    break;
+
+                case 0.4 when options.CoefficientStatic == 0.6 && options.ZGravity == 2:
+                    MovementFriction = FrictionPresets.Metal;
+                    break;
+
+                default:
+                    if (options.CoefficientStatic == 0.05 && options.CoefficientKinetic == 0.05 && options.ZGravity == 1)
+                    {
+                        MovementFriction = FrictionPresets.Teflon;
+                    }
+                    else if (options.CoefficientStatic == 0 & options.CoefficientKinetic == 0 & options.ZGravity == 0)
+                    {
+                        MovementFriction = FrictionPresets.None;
+                    }
+                    else
+                    {
+                        MovementFriction = FrictionPresets.Custom;
+                    }
+
+                    break;
             }
 
-            if (options.CoefficientKinetic == 0.75 && options.CoefficientStatic == 0.9 && options.ZGravity == 4)
+            switch (options.Viscosity)
             {
-                MovementFriction = FrictionPresets.Sandpaper;
-            }
-            else if (options.CoefficientKinetic == 0.4 && options.CoefficientStatic == 0.6 && options.ZGravity == 2)
-            {
-                MovementFriction = FrictionPresets.Metal;
-            }
-            else if (options.CoefficientStatic == 0.05 && options.CoefficientKinetic == 0.05 && options.ZGravity == 1)
-            {
-                MovementFriction = FrictionPresets.Teflon;
-            }
-            else if (options.CoefficientStatic == 0 & options.CoefficientKinetic == 0 & options.ZGravity == 0)
-            {
-                MovementFriction = FrictionPresets.None;
-            }
-            else
-            {
-                MovementFriction = FrictionPresets.Custom;
+                case 0.01 when options.Density == 0.0000001:
+                    MovementDrag = DragPresets.ThickFluid;
+                    break;
+
+                case 0.0005 when options.Density == 0.0000001:
+                    MovementDrag = DragPresets.Transitory;
+                    break;
+
+                case 0.000025 when options.Density == 0.0000001:
+                    MovementDrag = DragPresets.ThinFluid;
+                    break;
+
+                default:
+                    if (options.Viscosity == 0 & options.Density == 0)
+                    {
+                        MovementDrag = DragPresets.None;
+                    }
+                    else
+                    {
+                        MovementDrag = DragPresets.Custom;
+                    }
+
+                    break;
             }
 
-            if (options.Viscosity == 0.01 && options.Density == 0.0000001)
-            {
-                MovementDrag = DragPresets.ThickFluid;
-            }
-            else if (options.Viscosity == 0.0005 && options.Density == 0.0000001)
-            {
-                MovementDrag = DragPresets.Transitory;
-            }
-            else if (options.Viscosity == 0.000025 && options.Density == 0.0000001)
-            {
-                MovementDrag = DragPresets.ThinFluid;
-            }
-            else if (options.Viscosity == 0 & options.Density == 0)
-            {
-                MovementDrag = DragPresets.None;
-            }
-            else
-            {
-                MovementDrag = DragPresets.Custom;
-            }
-
+            Viscosity = options.Viscosity;
             MaxVelocity = options.MaxVelocity;
             VegEnergyBodyDistribution = options.VegFeedingToBody * 100;
             WasteThreshold = options.BadWasteLevel == -1 ? 0 : options.BadWasteLevel;
@@ -658,6 +640,7 @@ namespace DarwinBots.ViewModels
             CoefficientStatic = options.CoefficientStatic;
             CoefficientKinetic = options.CoefficientKinetic;
             YGravity = options.YGravity;
+            Density = options.Density;
         }
 
         public void SaveToOptions(SimOptions options)
@@ -687,11 +670,7 @@ namespace DarwinBots.ViewModels
             options.EnergyFix = ShotEnergy;
             options.EnergyExType = ShotModeProportional ? ShotMode.Proportional : ShotMode.Fixed;
             options.MutCurrMult = Math.Pow(MutationMultiplier, 2);
-            options.MutOscill = EnableMutationCycling;
-            options.MutOscillSine = EnableMutationSineWave;
             options.DisableMutations = DisableMutations;
-            options.MutCycMax = CyclesHigh;
-            options.MutCycMin = CyclesLow;
             options.MaxEnergy = InitialLightEnergy;
 
             if (FieldModeFluid)
@@ -789,6 +768,7 @@ namespace DarwinBots.ViewModels
             options.CoefficientStatic = CoefficientStatic;
             options.CoefficientKinetic = CoefficientKinetic;
             options.YGravity = YGravity;
+            options.Density = Density;
         }
 
         private async Task AddSpecies()

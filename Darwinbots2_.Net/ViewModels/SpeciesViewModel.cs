@@ -33,7 +33,6 @@ namespace DarwinBots.ViewModels
             _species = species;
             _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
 
-            DisplayFatalRestrictionsCommand = new RelayCommand(DisplayFatalRestrictions);
             DisplayMutationRatesCommand = new RelayCommand(DisplayMutationRates);
             ChangeSkinCommand = new RelayCommand(ChangeSkin);
             SetInitialEnergyCommand = new RelayCommand<string>(SetInitialEnergy);
@@ -50,7 +49,6 @@ namespace DarwinBots.ViewModels
             InitialIndividuals = species.Quantity;
             IsFixedInPlace = species.Fixed;
             IsVirusImmune = species.VirusImmune;
-            KillNonMultibot = species.kill_mb;
             Name = species.Name;
             Comments = species.Comment;
 
@@ -104,7 +102,6 @@ namespace DarwinBots.ViewModels
         public bool IsFixedInPlace { get; set; }
         public bool IsVeg => EnableRepopulation;
         public bool IsVirusImmune { get; set; }
-        public bool KillNonMultibot { get; set; }
         public string Name { get; set; }
         public bool Native => _species.Native;
         public OptionsForm ParentForm { get; set; }
@@ -119,10 +116,6 @@ namespace DarwinBots.ViewModels
         {
             var species = new Species
             {
-                Posrg = _species.Posrg,
-                Posdn = _species.Posdn,
-                Poslf = _species.Poslf,
-                Postp = _species.Postp,
                 Veg = _species.Veg,
                 Stnrg = _species.Stnrg,
                 Quantity = _species.Quantity,
@@ -165,7 +158,6 @@ namespace DarwinBots.ViewModels
             _species.Quantity = InitialIndividuals;
             _species.Fixed = IsFixedInPlace;
             _species.VirusImmune = IsVirusImmune;
-            _species.kill_mb = KillNonMultibot;
             _species.Name = Name;
 
             if (DisableChloroplasts)
@@ -175,20 +167,6 @@ namespace DarwinBots.ViewModels
         private void ChangeSkin()
         {
             Skin[6] = (Skin[6] + ThreadSafeRandom.Local.Next(0, Robot.RobSize / 2 + 1)) * 2 / 3;
-        }
-
-        private void DisplayFatalRestrictions()
-        {
-            var dialog = new RestrictionOptionsForm()
-            {
-                Owner = ParentForm
-            };
-            dialog.ViewModel.DialogState = IsVeg ? RestrictionOptionsDialogState.VegetableKillsOnly : RestrictionOptionsDialogState.NonVegetableKillsOnly;
-            dialog.ViewModel.LoadFromSpecies(this);
-            var res = dialog.ShowDialog();
-
-            if (res == true)
-                dialog.ViewModel.SaveToSpecies(this);
         }
 
         private void DisplayMutationRates()

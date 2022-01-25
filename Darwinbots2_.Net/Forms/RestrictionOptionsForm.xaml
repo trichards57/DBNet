@@ -20,9 +20,6 @@
         </Grid.RowDefinitions>
         <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Header="For Non-Repopulating Robots">
             <StackPanel>
-                <GroupBox Header="Fatal Restrictions">
-                    <CheckBox IsChecked="{Binding KillNonMultibotNonVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
-                </GroupBox>
                 <GroupBox Visibility="{Binding ShowNonVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding FixedInPlaceNonVeg}">Fixed in place</CheckBox>
@@ -32,16 +29,12 @@
                         <CheckBox IsChecked="{Binding VirusImmuneNonVeg}">Virus Immune</CheckBox>
                         <CheckBox IsChecked="{Binding DisableMutationsNonVeg}">Disable EnableMutations</CheckBox>
                         <CheckBox IsChecked="{Binding DisableMotionNonVeg}">Disable Voluntary Movement</CheckBox>
-                        <CheckBox IsChecked="{Binding DisableChloroplastsNonVeg}">Disable Chloroplasts</CheckBox>
                     </StackPanel>
                 </GroupBox>
             </StackPanel>
         </GroupBox>
         <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Row="0" Grid.Column="1" Header="For Repopulating Robots">
             <StackPanel>
-                <GroupBox HorizontalAlignment="Stretch" Header="Fatal Restrictions">
-                    <CheckBox IsChecked="{Binding KillNonMultibotVeg}">Kill robot if robot not MB for 150 cycles</CheckBox>
-                </GroupBox>
                 <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding FixedInPlaceVeg}">Fixed in place</CheckBox>

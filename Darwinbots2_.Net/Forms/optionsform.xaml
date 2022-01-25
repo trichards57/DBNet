@@ -470,26 +470,6 @@
                             </TextBlock>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="1" Header="Oscillation Frequency" IsEnabled="{Binding DisableMutations, Converter={StaticResource InvertBoolConverter}}">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                                <RowDefinition />
-                            </Grid.RowDefinitions>
-                            <CheckBox IsChecked="{Binding EnableMutationCycling}" Grid.ColumnSpan="3">Cycle the frequency between 20x and 1/20x</CheckBox>
-                            <CheckBox IsEnabled="{Binding EnableMutationCycling}" IsChecked="{Binding EnableMutationSineWave}" Grid.Row="1" Grid.Column="0">Sine wave instead of saw wave</CheckBox>
-                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="2" Grid.Column="0" Content="{Binding MaxCyclesLabel}" />
-                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Text="{Binding CyclesHigh}" Grid.Row="2" Grid.Column="1" />
-                            <Label IsEnabled="{Binding EnableMutationCycling}" Grid.Row="3" Grid.Column="0" Content="{Binding MinCyclesLabel}" />
-                            <TextBox IsEnabled="{Binding EnableMutationCycling}" Text="{Binding CyclesLow}" Grid.Row="3" Grid.Column="1" />
-                        </Grid>
-                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -504,7 +484,7 @@
             <Button Command="{Binding LoadSettingsCommand}">Load Settings</Button>
             <Button Command="{Binding SaveSettingsCommand}" Grid.Column="1">Save Settings</Button>
             <Button Command="{Binding ShowGlobalSettingsCommand}" Grid.Column="2">Global Settings</Button>
-            <Button Command="{Binding StartNewCommand}" Grid.Column="3" Click="StartNew">Start New</Button>
+            <Button Grid.Column="3" Click="StartNew">Start New</Button>
             <Button Command="{Binding ChangeCommand}" Grid.Column="4">Change</Button>
         </Grid>
     </Grid>

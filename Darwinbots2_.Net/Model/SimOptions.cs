@@ -66,19 +66,9 @@ namespace DarwinBots.Model
 
         public double MutCurrMult { get; set; }
 
-        public int MutCycMax { get; set; }
-
-        public int MutCycMin { get; set; }
-
-        public bool MutOscill { get; set; }
-
-        public bool MutOscillSine { get; set; }
-
         public bool NoShotDecay { get; set; }
 
         public bool NoWShotDecay { get; set; }
-
-        public double OldCostX { get; set; }
 
         public double PhysBrown { get; set; }
 
@@ -134,13 +124,8 @@ namespace DarwinBots.Model
             MaxVelocity = 60;
             MinVegs = 50;
             MutCurrMult = 1;
-            MutCycMax = 0;
-            MutCycMin = 0;
-            MutOscill = false;
-            MutOscillSine = false;
             NoShotDecay = false;
             NoWShotDecay = false;
-            OldCostX = 1;
             PhysBrown = 0.5;
             PhysMoving = 0.66;
             RepopAmount = 10;

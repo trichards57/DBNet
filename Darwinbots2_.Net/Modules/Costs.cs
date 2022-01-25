@@ -6,7 +6,6 @@
         public double AgeCost { get; init; }
         public int AgeCostBeginAge { get; init; }
         public double AgeCostIncreasePerCycle { get; init; }
-        public bool AllowMultiplerToGoNegative { get; init; }
         public double BasicCommandCost { get; init; }
         public double BitwiseCommandCost { get; init; }
         public double BodyUpkeepCost { get; init; }
@@ -37,7 +36,6 @@
             AgeCost = 0,
             AgeCostBeginAge = 0,
             AgeCostIncreasePerCycle = 0,
-            AllowMultiplerToGoNegative = false,
             BasicCommandCost = 0,
             BitwiseCommandCost = 0,
             BodyUpkeepCost = 0,
@@ -69,7 +67,6 @@
             AgeCost = 0.01,
             AgeCostBeginAge = 32,
             AgeCostIncreasePerCycle = 0,
-            AllowMultiplerToGoNegative = false,
             BasicCommandCost = 0,
             BitwiseCommandCost = 0,
             BodyUpkeepCost = 0.00001,

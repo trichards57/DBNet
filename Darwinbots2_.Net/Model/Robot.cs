@@ -49,8 +49,6 @@ namespace DarwinBots.Model
 
         public double AngularMomentum { get; set; }
 
-        public int BirthCycle { get; set; }
-
         public double Body
         {
             get => _body;
@@ -60,8 +58,6 @@ namespace DarwinBots.Model
                 Memory[MemoryAddresses.body] = (int)_body;
             }
         }
-
-        public double Bouyancy { get; set; }
 
         public IntVector BucketPosition { get; set; } = new IntVector(-1, -1);
 
@@ -97,8 +93,6 @@ namespace DarwinBots.Model
 
         public string FName { get; set; }
 
-        public int Generation { get; set; }
-
         public double GenMut { get; set; }
 
         public DoubleVector IndependentImpulse { get; set; }
@@ -125,9 +119,7 @@ namespace DarwinBots.Model
 
         public List<string> LastMutationDetail { get; } = new List<string>();
 
-        public object LastSeenObject { get; set; }
-
-        public DoubleVector LastSeenObjectPosition { get; set; }
+        public Robot LastSeenObject { get; set; }
 
         public Robot LastTouched { get; set; }
 
@@ -144,8 +136,6 @@ namespace DarwinBots.Model
         public int[] Memory { get; } = new int[1000];
 
         public bool MovementSysvarsDisabled { get; set; }
-
-        public int MultibotTimer { get; set; }
 
         public MutationProbabilities MutationProbabilities { get; set; }
 
@@ -454,18 +444,6 @@ namespace DarwinBots.Model
 
             Memory[MemoryAddresses.strbody] = 0;
             Memory[MemoryAddresses.fdbody] = 0;
-        }
-
-        public void ManageBouyancy()
-        {
-            if (Memory[MemoryAddresses.setboy] == 0)
-                return;
-
-            Bouyancy += (double)Memory[MemoryAddresses.setboy] / 32000;
-            Bouyancy = Math.Clamp(Bouyancy, 0, 1);
-
-            Memory[MemoryAddresses.rdboy] = (int)(Bouyancy * 32000);
-            Memory[MemoryAddresses.setboy] = 0;
         }
 
         public void ManageChlr(int totalChloroplasts, double chloroplastCost, int maxPopulation)

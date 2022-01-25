@@ -160,7 +160,6 @@ namespace DarwinBots.Modules
                     Shoot(rob);
                     rob.ManageChlr(TotalChlr, SimOpt.SimOpts.Costs.CholorplastCost * SimOpt.SimOpts.Costs.CostMultiplier, SimOpt.SimOpts.MaxPopulation);
                     rob.ManageBody();
-                    rob.ManageBouyancy();
                     ManageReproduction(rob);
                     rob.Shock();
                     Senses.WriteSenses(this, _bucketManager, rob);
@@ -464,8 +463,6 @@ namespace DarwinBots.Modules
 
                     for (var i = MemoryAddresses.EyeStart + 1; i < MemoryAddresses.EyeEnd; i++)
                         rob.Memory[i] = 0;
-
-                    rob.Bouyancy = 0;
                 }
                 if (rob.Body < 0.5)
                     rob.IsDead = true;
@@ -581,12 +578,6 @@ namespace DarwinBots.Modules
             nuovo.Memory[468] = 32000;
             nuovo.IsCorpse = false;
             nuovo.IsDead = false;
-            nuovo.Generation = robot.Generation + 1;
-
-            if (nuovo.Generation > 32000)
-                nuovo.Generation = 32000;
-
-            nuovo.BirthCycle = SimOpt.SimOpts.TotRunCycle;
 
             var nnrg = robot.Energy / 100 * per;
             var nbody = robot.Body / 100 * per;
@@ -630,11 +621,6 @@ namespace DarwinBots.Modules
 
             nuovo.SubSpecies = robot.SubSpecies;
             nuovo.GenMut = robot.GenMut;
-            nuovo.Bouyancy = robot.Bouyancy;
-
-            if (robot.MultibotTimer > 0)
-                nuovo.MultibotTimer = robot.MultibotTimer / 2 + 2;
-
             nuovo.VirusTimer = 0;
             nuovo.VirusShot = null;
 
@@ -838,11 +824,6 @@ namespace DarwinBots.Modules
             nuovo.Memory[MemoryAddresses.FIXANG] = 32000;
             nuovo.IsCorpse = false;
             nuovo.IsDead = false;
-            nuovo.Generation++;
-            if (nuovo.Generation > 32000)
-                nuovo.Generation = 32000; //Botsareus 10/9/2015 Overflow protection
-
-            nuovo.BirthCycle = SimOpt.SimOpts.TotRunCycle;
 
             var nnrg = female.Energy / 100 * per;
             var nbody = female.Body / 100 * per;
@@ -887,11 +868,6 @@ namespace DarwinBots.Modules
             nuovo.SubSpecies = female.SubSpecies;
 
             nuovo.GenMut = female.GenMut;
-            nuovo.Bouyancy = female.Bouyancy;
-
-            if (female.MultibotTimer > 0)
-                nuovo.MultibotTimer = female.MultibotTimer / 2 + 2;
-
             nuovo.VirusTimer = 0;
             nuovo.VirusShot = null;
 

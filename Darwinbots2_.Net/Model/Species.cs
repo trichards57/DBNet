@@ -11,10 +11,6 @@ namespace DarwinBots.Model
         public Species(string fileName)
         {
             Name = System.IO.Path.GetFileName(fileName);
-            Posrg = 1;
-            Posdn = 1;
-            Poslf = 0;
-            Postp = 0;
             Path = System.IO.Path.GetDirectoryName(fileName);
             Veg = false;
             CantSee = false;
@@ -48,8 +44,6 @@ namespace DarwinBots.Model
 
         public bool Fixed { get; set; }
 
-        public bool kill_mb { get; set; }
-
         public MutationProbabilities Mutables { get; init; }
 
         public string Name { get; set; }
@@ -61,14 +55,6 @@ namespace DarwinBots.Model
         public string Path { get; set; }
 
         public int Population { get; set; }
-
-        public decimal Posdn { get; init; }
-
-        public decimal Poslf { get; init; }
-
-        public decimal Posrg { get; init; }
-
-        public decimal Postp { get; init; }
 
         public int Quantity { get; set; }
 

@@ -1,8 +1,8 @@
-﻿using AsyncAwaitBestPractices.MVVM;
-using DarwinBots.DataModel;
+﻿using DarwinBots.DataModel;
 using DarwinBots.Model;
 using DarwinBots.Modules;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
+using Microsoft.Toolkit.Mvvm.Input;
 using Microsoft.Win32;
 using PostSharp.Patterns.Model;
 using System;
@@ -11,7 +11,6 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Input;
 
 namespace DarwinBots.ViewModels
 {
@@ -23,8 +22,8 @@ namespace DarwinBots.ViewModels
 
         public RestrictionOptionsViewModel()
         {
-            LoadPresetCommand = new AsyncCommand(LoadPreset, _ => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
-            SavePresetCommand = new AsyncCommand(SavePreset, _ => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
+            LoadPresetCommand = new AsyncRelayCommand(LoadPreset, () => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
+            SavePresetCommand = new AsyncRelayCommand(SavePreset, () => DialogState == RestrictionOptionsDialogState.ActiveSimulation);
         }
 
         public RestrictionOptionsDialogState DialogState
@@ -34,14 +33,13 @@ namespace DarwinBots.ViewModels
             {
                 _dialogState = value;
 
-                (LoadPresetCommand as AsyncCommand)?.RaiseCanExecuteChanged();
-                (SavePresetCommand as AsyncCommand)?.RaiseCanExecuteChanged();
+                LoadPresetCommand.NotifyCanExecuteChanged();
+                SavePresetCommand.NotifyCanExecuteChanged();
 
                 UpdateDisplay();
             }
         }
 
-        public bool DisableChloroplastsNonVeg { get; set; }
         public bool DisableDnaNonVeg { get; set; }
         public bool DisableDnaVeg { get; set; }
         public bool DisableMotionNonVeg { get; set; }
@@ -54,10 +52,8 @@ namespace DarwinBots.ViewModels
         public bool DisableVisionVeg { get; set; }
         public bool FixedInPlaceNonVeg { get; set; }
         public bool FixedInPlaceVeg { get; set; }
-        public bool KillNonMultibotNonVeg { get; set; }
-        public bool KillNonMultibotVeg { get; set; }
-        public ICommand LoadPresetCommand { get; }
-        public ICommand SavePresetCommand { get; }
+        public IRelayCommand LoadPresetCommand { get; }
+        public IRelayCommand SavePresetCommand { get; }
         public bool ShowNonVegetablePropertySettings { get; set; }
         public bool ShowNonVegetableSettings { get; set; }
         public bool ShowVegetablePropertySettings { get; set; }
@@ -77,30 +73,12 @@ namespace DarwinBots.ViewModels
         public bool VirusImmuneNonVeg { get; set; }
         public bool VirusImmuneVeg { get; set; }
 
-        public void LoadFromSpecies(SpeciesViewModel species)
-        {
-            switch (DialogState)
-            {
-                case RestrictionOptionsDialogState.VegetableKillsOnly:
-                    KillNonMultibotVeg = species.KillNonMultibot;
-                    break;
-
-                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
-                    KillNonMultibotNonVeg = species.KillNonMultibot;
-                    break;
-
-                case RestrictionOptionsDialogState.ActiveSimulation:
-                    throw new NotImplementedException();
-            }
-        }
-
         public void SaveToAllRobs(IRobotManager robotManager)
         {
             foreach (var rob in robotManager.Robots.Where(r => r.Exists))
             {
                 if (rob.IsVegetable)
                 {
-                    rob.MultibotTimer = KillNonMultibotVeg ? 210 : 0;
                     rob.IsFixed = FixedInPlaceVeg;
 
                     if (rob.IsFixed)
@@ -118,7 +96,6 @@ namespace DarwinBots.ViewModels
                 }
                 else
                 {
-                    rob.MultibotTimer = KillNonMultibotNonVeg ? 210 : 0;
                     rob.IsFixed = FixedInPlaceNonVeg;
 
                     if (rob.IsFixed)
@@ -134,23 +111,6 @@ namespace DarwinBots.ViewModels
                     rob.MutationProbabilities.EnableMutations = !DisableMutationsNonVeg;
                     rob.MovementSysvarsDisabled = DisableMotionNonVeg;
                 }
-            }
-        }
-
-        public void SaveToSpecies(SpeciesViewModel species)
-        {
-            switch (DialogState)
-            {
-                case RestrictionOptionsDialogState.VegetableKillsOnly:
-                    species.KillNonMultibot = KillNonMultibotVeg;
-                    break;
-
-                case RestrictionOptionsDialogState.NonVegetableKillsOnly:
-                    species.KillNonMultibot = KillNonMultibotNonVeg;
-                    break;
-
-                case RestrictionOptionsDialogState.ActiveSimulation:
-                    throw new NotImplementedException();
             }
         }
 
@@ -174,7 +134,6 @@ namespace DarwinBots.ViewModels
                     if (file == null)
                         return;
 
-                    DisableChloroplastsNonVeg = file.DisableChloroplastsNonVeg;
                     DisableDnaNonVeg = file.DisableDnaNonVeg;
                     DisableDnaVeg = file.DisableDnaVeg;
                     DisableMotionNonVeg = file.DisableMotionNonVeg;
@@ -187,8 +146,6 @@ namespace DarwinBots.ViewModels
                     DisableVisionVeg = file.DisableVisionVeg;
                     FixedInPlaceNonVeg = file.FixedInPlaceNonVeg;
                     FixedInPlaceVeg = file.FixedInPlaceVeg;
-                    KillNonMultibotNonVeg = file.KillNonMultibotNonVeg;
-                    KillNonMultibotVeg = file.KillNonMultibotVeg;
                     VirusImmuneNonVeg = file.VirusImmuneNonVeg;
                     VirusImmuneVeg = file.VirusImmuneVeg;
                 }
@@ -221,7 +178,6 @@ namespace DarwinBots.ViewModels
                 {
                     var file = new RestrictionsPresetFile
                     {
-                        DisableChloroplastsNonVeg = DisableChloroplastsNonVeg,
                         DisableDnaNonVeg = DisableDnaNonVeg,
                         DisableDnaVeg = DisableDnaVeg,
                         DisableMotionNonVeg = DisableMotionNonVeg,
@@ -234,8 +190,6 @@ namespace DarwinBots.ViewModels
                         DisableVisionVeg = DisableVisionVeg,
                         FixedInPlaceNonVeg = FixedInPlaceNonVeg,
                         FixedInPlaceVeg = FixedInPlaceVeg,
-                        KillNonMultibotNonVeg = KillNonMultibotNonVeg,
-                        KillNonMultibotVeg = KillNonMultibotVeg,
                         VirusImmuneNonVeg = VirusImmuneNonVeg,
                         VirusImmuneVeg = VirusImmuneVeg
                     };

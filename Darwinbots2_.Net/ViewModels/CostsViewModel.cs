@@ -21,7 +21,6 @@ namespace DarwinBots.ViewModels
         public double AgeCost { get; set; }
         public int AgeCostBeginAge { get; set; }
         public double AgeCostIncreasePerCycle { get; set; }
-        public bool AllowMultiplerToGoNegative { get; set; }
         public double BasicCommandCost { get; set; }
         public double BitwiseCommandCost { get; set; }
         public double BodyUpkeepCost { get; set; }
@@ -84,7 +83,6 @@ namespace DarwinBots.ViewModels
             AgeCost = costs.AgeCost;
             AgeCostBeginAge = costs.AgeCostBeginAge;
             AgeCostIncreasePerCycle = costs.AgeCostIncreasePerCycle;
-            AllowMultiplerToGoNegative = costs.AllowMultiplerToGoNegative;
             BasicCommandCost = costs.BasicCommandCost;
             BitwiseCommandCost = costs.BitwiseCommandCost;
             BodyUpkeepCost = costs.BodyUpkeepCost;
@@ -118,7 +116,6 @@ namespace DarwinBots.ViewModels
                 EnableAgeCostIncreasePerCycle = EnableAgeCostIncreasePerCycle,
                 EnableAgeCostIncreaseLog = EnableAgeCostIncreaseLog,
                 AgeCostBeginAge = AgeCostBeginAge,
-                AllowMultiplerToGoNegative = AllowMultiplerToGoNegative,
                 BasicCommandCost = BasicCommandCost,
                 BodyUpkeepCost = BodyUpkeepCost,
                 BitwiseCommandCost = BitwiseCommandCost,
