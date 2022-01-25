@@ -30,10 +30,6 @@ namespace DarwinBots.ViewModels
         public double CostMultiplier { get; set; }
         public double DnaCopyCost { get; set; }
         public double DnaUpkeepCost { get; set; }
-        public int DynamicCostsLowerRangeTarget { get; set; }
-        public double DynamicCostsSensitivity { get; set; }
-        public int DynamicCostsTargetPopulation { get; set; }
-        public int DynamicCostsUpperRangeTarget { get; set; }
 
         public bool EnableAgeCostIncreaseLog
         {
@@ -57,13 +53,10 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnableDynamicCosts { get; set; }
         public double FlowCommandCost { get; set; }
-        public bool IncludeAllRobotsInPopulation { get; set; }
         public double LogicCost { get; set; }
         public double NumberCost { get; set; }
         public double PoisonCost { get; set; }
-        public int ReinstateCostPopulationLimit { get; set; }
         public ICommand RestoreDefaultsCommand { get; }
         public double RotationCost { get; set; }
         public double ShellCost { get; set; }
@@ -74,7 +67,6 @@ namespace DarwinBots.ViewModels
         public double TieFormationCost { get; set; }
         public double VenomCost { get; set; }
         public double VoluntaryMovementCost { get; set; }
-        public int ZeroCostPopulationLimit { get; set; }
 
         public void LoadFromOptions(Costs costs)
         {
@@ -101,13 +93,10 @@ namespace DarwinBots.ViewModels
             CostMultiplier = costs.CostMultiplier;
             DnaCopyCost = costs.DnaCopyCost;
             DnaUpkeepCost = costs.DnaUpkeepCost;
-            EnableDynamicCosts = costs.EnableDynamicCosts;
             FlowCommandCost = costs.FlowCommandCost;
-            IncludeAllRobotsInPopulation = costs.DynamicCostsIncludePlants;
             LogicCost = costs.LogicCost;
             NumberCost = costs.NumberCost;
             PoisonCost = costs.PoisonCost;
-            ReinstateCostPopulationLimit = costs.ReinstateCostPopulationLimit;
             RotationCost = costs.RotationCost;
             ShellCost = costs.ShellCost;
             ShotFormationCost = costs.ShotFormationCost;
@@ -117,11 +106,6 @@ namespace DarwinBots.ViewModels
             TieFormationCost = costs.TieFormationCost;
             VenomCost = costs.VenomCost;
             VoluntaryMovementCost = costs.VoluntaryMovementCost;
-            ZeroCostPopulationLimit = costs.ZeroCostPopulationLimit;
-            DynamicCostsTargetPopulation = costs.DynamicCostsTargetPopulation;
-            DynamicCostsSensitivity = costs.DynamicCostsSensitivity;
-            DynamicCostsUpperRangeTarget = costs.DynamicCostsUpperRangeTarget;
-            DynamicCostsLowerRangeTarget = costs.DynamicCostsLowerRangeTarget;
         }
 
         public Costs SaveToOptions()
@@ -137,17 +121,14 @@ namespace DarwinBots.ViewModels
                 AllowMultiplerToGoNegative = AllowMultiplerToGoNegative,
                 BasicCommandCost = BasicCommandCost,
                 BodyUpkeepCost = BodyUpkeepCost,
-                ZeroCostPopulationLimit = ZeroCostPopulationLimit,
                 BitwiseCommandCost = BitwiseCommandCost,
                 CholorplastCost = CholorplastCost,
                 ConditionCost = ConditionCost,
                 CostMultiplier = CostMultiplier,
                 StoresCost = StoresCost,
-                ReinstateCostPopulationLimit = ReinstateCostPopulationLimit,
                 DnaCopyCost = DnaCopyCost,
                 DnaUpkeepCost = DnaUpkeepCost,
                 DotNumberCost = StarNumberCost,
-                DynamicCostsIncludePlants = IncludeAllRobotsInPopulation,
                 FlowCommandCost = FlowCommandCost,
                 LogicCost = LogicCost,
                 VoluntaryMovementCost = VoluntaryMovementCost,
@@ -158,12 +139,7 @@ namespace DarwinBots.ViewModels
                 SlimeCost = SlimeCost,
                 TieFormationCost = TieFormationCost,
                 RotationCost = RotationCost,
-                EnableDynamicCosts = EnableDynamicCosts,
                 VenomCost = VenomCost,
-                DynamicCostsTargetPopulation = DynamicCostsTargetPopulation,
-                DynamicCostsSensitivity = DynamicCostsSensitivity,
-                DynamicCostsUpperRangeTarget = DynamicCostsUpperRangeTarget,
-                DynamicCostsLowerRangeTarget = DynamicCostsLowerRangeTarget,
             };
         }
 

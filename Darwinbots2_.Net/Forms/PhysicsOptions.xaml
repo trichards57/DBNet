@@ -64,41 +64,24 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="4*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="100" />
+                    <ColumnDefinition Width="25" />
                 </Grid.ColumnDefinitions>
 
                 <Label>Bang Efficiency</Label>
                 <Slider Minimum="0" Maximum="1" TickFrequency="0.1" TickPlacement="Both" Grid.Column="1" Value="{Binding BangEfficiency}" />
                 <TextBlock Grid.Column="2" Text="{Binding BangEfficiency, StringFormat=p0}" />
-                <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="1">Y Axis Gravity</Label>
-                <Slider IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Minimum="0" Maximum="10" TickFrequency="1" TickPlacement="Both" Grid.Row="1" Grid.Column="1" Value="{Binding YGravity}" />
-                <TextBlock IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Column="2" Grid.Row="1" Text="{Binding YGravity, Converter={StaticResource YGravityScale}}" />
-                <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="2">Brownian Motion</Label>
-                <Slider IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Minimum="0" Maximum="10" TickFrequency="1" TickPlacement="Both" Grid.Row="2" Grid.Column="1" Value="{Binding BrownianMotion}" />
-                <TextBlock IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Column="2" Grid.Row="2" Text="{Binding BrownianMotion, Converter={StaticResource BrownianScale}}" />
+                <Label Grid.Row="1">Y Axis Gravity</Label>
+                <Slider Minimum="0" Maximum="10" TickFrequency="1" TickPlacement="Both" Grid.Row="1" Grid.Column="1" Value="{Binding YGravity}" />
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding YGravity, Converter={StaticResource YGravityScale}}" />
+                <Label Grid.Row="2">Brownian Motion</Label>
+                <Slider Minimum="0" Maximum="10" TickFrequency="1" TickPlacement="Both" Grid.Row="2" Grid.Column="1" Value="{Binding BrownianMotion}" />
+                <TextBlock Grid.Column="2" Grid.Row="2" Text="{Binding BrownianMotion, Converter={StaticResource BrownianScale}}" />
 
                 <GroupBox Grid.Row="3" Header="Toggles">
                     <StackPanel>
                         <CheckBox IsChecked="{Binding ZeroMomentum}">Zero Momentum</CheckBox>
                     </StackPanel>
-                </GroupBox>
-                <GroupBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Header="Planet Eaters">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.ColumnSpan="3" IsChecked="{Binding PlanetEaters}">Planet Eaters</CheckBox>
-                        <Label IsEnabled="{Binding PlanetEaters}" Grid.Row="1">G:</Label>
-                        <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="{Binding PlanetEaters}" Text="{Binding PlanetEatersG, Converter={StaticResource PlanetEatersGScale}}" />
-                        <Label IsEnabled="{Binding PlanetEaters}" Grid.Row="1" Grid.Column="2">E+3</Label>
-                    </Grid>
                 </GroupBox>
             </Grid>
         </GroupBox>

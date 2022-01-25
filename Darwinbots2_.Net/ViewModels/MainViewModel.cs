@@ -5,7 +5,6 @@ using DarwinBots.Modules;
 using DarwinBots.Services;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -31,9 +30,6 @@ namespace DarwinBots.ViewModels
         public Dispatcher Dispatcher { get; internal set; }
 
         public ICommand NewSimulationCommand { get; }
-
-        [DllImport("gdi32.dll")]
-        public static extern bool DeleteObject(IntPtr hObject);
 
         public void StopSimulation()
         {

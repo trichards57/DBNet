@@ -14,11 +14,8 @@ namespace DarwinBots.Modules
 {
     internal class MainEngine
     {
-        private readonly int[] _populationLast10Cycles = new int[10];
         private bool _active;
         private BucketManager _bucketManager;
-        private bool _costsWereZeroed;
-        private int _dynamicCountdown;
         private RobotsManager _robotsManager;
         private ShotsManager _shotsManager;
         private Thread _simThread;
@@ -284,7 +281,7 @@ namespace DarwinBots.Modules
 
                     rob.Memory[MemoryAddresses.SetAim] = Physics.RadiansToInt(rob.Aim * 200);
                     if (rob.IsVegetable)
-                        rob.Chloroplasts = SimOpt.SimOpts.StartChlr;
+                        rob.Chloroplasts = SimOptions.StartChlr;
 
                     rob.IsDead = false;
 
@@ -393,67 +390,6 @@ namespace DarwinBots.Modules
                 }
                 else
                     SimOpt.SimOpts.MutCurrMult = SimOpt.SimOpts.TotRunCycle % (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin) < SimOpt.SimOpts.MutCycMax ? 16 : 1 / 16;
-            }
-
-            var currentPopulation = _robotsManager.TotalNotVegs;
-
-            if (SimOpt.SimOpts.Costs.DynamicCostsIncludePlants)
-                currentPopulation += Vegs.TotalVegs; //Include Plants in target population
-
-            if (SimOpt.SimOpts.TotRunCycle % 10 == 0)
-            {
-                for (var i = 9; i >= 1; i--)
-                    _populationLast10Cycles[i] = _populationLast10Cycles[i - 1];
-
-                _populationLast10Cycles[9] = currentPopulation;
-            }
-
-            if (SimOpt.SimOpts.Costs.EnableDynamicCosts)
-            {
-                var amountOff = currentPopulation - SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
-
-                //If we are more than X% off of our target population either way AND the population isn't moving in the
-                //the direction we want or hasn't moved at all in the past 10 cycles then adjust the cost multiplier
-                var upperRange = SimOpt.SimOpts.Costs.DynamicCostsUpperRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
-                var lowerRange = SimOpt.SimOpts.Costs.DynamicCostsLowerRangeTarget * 0.01 * SimOpt.SimOpts.Costs.DynamicCostsTargetPopulation;
-
-                if (currentPopulation == _populationLast10Cycles[10])
-                {
-                    _dynamicCountdown--;
-                    if (_dynamicCountdown < -10)
-                        _dynamicCountdown = -10;
-                }
-                else
-                    _dynamicCountdown = 10;
-
-                if ((amountOff > upperRange && (_populationLast10Cycles[10] < currentPopulation || _dynamicCountdown <= 0)) || (amountOff < -lowerRange && (_populationLast10Cycles[10] > currentPopulation || _dynamicCountdown <= 0)))
-                {
-                    var correctionAmount = amountOff > upperRange ? amountOff - upperRange : Math.Abs(amountOff) - lowerRange;
-
-                    //Adjust the multiplier. The idea is to rachet this over time as bots evolve to be more effecient.
-                    //We don't muck with it if the bots are within X% of the target.  If they are outside the target, then
-                    //we adjust only if the populatiuon isn't heading towards the range and then we do it my an amount that is a function
-                    //of how far of the range we are (not how far from the target itself) and the sensitivity set in the sim
-                    SimOpt.SimOpts.Costs = SimOpt.SimOpts.Costs with { CostMultiplier = SimOpt.SimOpts.Costs.CostMultiplier + (0.0000001 * correctionAmount * Math.Sign(amountOff) * SimOpt.SimOpts.Costs.DynamicCostsSensitivity) };
-
-                    //Don't let the costs go negative if the user doesn't want them to
-                    if (!SimOpt.SimOpts.Costs.AllowMultiplerToGoNegative && SimOpt.SimOpts.Costs.CostMultiplier < 0)
-                        SimOpt.SimOpts.Costs = SimOpt.SimOpts.Costs with { CostMultiplier = 0 };
-
-                    _dynamicCountdown = 10; // Reset the countdown timer
-                }
-            }
-
-            if (currentPopulation < SimOpt.SimOpts.Costs.ZeroCostPopulationLimit && SimOpt.SimOpts.Costs.CostMultiplier != 0)
-            {
-                _costsWereZeroed = true;
-                SimOpt.SimOpts.OldCostX = SimOpt.SimOpts.Costs.CostMultiplier;
-                SimOpt.SimOpts.Costs = SimOpt.SimOpts.Costs with { CostMultiplier = 0 }; // The population has fallen below the threshold to 0 all costs
-            }
-            else if (currentPopulation > SimOpt.SimOpts.Costs.ReinstateCostPopulationLimit && _costsWereZeroed)
-            {
-                _costsWereZeroed = false; // Set the flag so we don't do this again unless they get zeored again
-                SimOpt.SimOpts.Costs = SimOpt.SimOpts.Costs with { CostMultiplier = SimOpt.SimOpts.OldCostX };
             }
 
             DnaEngine.ExecRobs(SimOpt.SimOpts.Costs, _robotsManager.Robots);

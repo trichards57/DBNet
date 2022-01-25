@@ -25,8 +25,6 @@ namespace DarwinBots.ViewModels
         }
 
         public double KineticFrictionCoefficient { get; set; }
-        public bool PlanetEaters { get; set; }
-        public double PlanetEatersG { get; set; }
 
         public double ReynoldsNumber => Density * Robot.RobSize / Math.Max(Viscosity, 1e-7);
 
@@ -49,15 +47,8 @@ namespace DarwinBots.ViewModels
         public void LoadFromOptions(OptionsViewModel optionsViewModel)
         {
             ZeroMomentum = optionsViewModel.ZeroMomentum;
-            PlanetEaters = optionsViewModel.PlanetEaters;
-            PlanetEatersG = optionsViewModel.PlanetEatersG;
-
-            if (!optionsViewModel.EnableTides)
-            {
-                YGravity = optionsViewModel.YGravity;
-                BrownianMotion = optionsViewModel.PhysBrown;
-            }
-
+            YGravity = optionsViewModel.YGravity;
+            BrownianMotion = optionsViewModel.PhysBrown;
             BangEfficiency = optionsViewModel.PhysMoving;
             ZAxisGravity = optionsViewModel.ZGravity;
             StaticFrictionCoefficient = optionsViewModel.CoefficientStatic;
@@ -67,12 +58,12 @@ namespace DarwinBots.ViewModels
         internal void SaveToOptions(OptionsViewModel optionsViewModel)
         {
             optionsViewModel.ZeroMomentum = ZeroMomentum;
-            optionsViewModel.PlanetEaters = PlanetEaters;
-            optionsViewModel.PlanetEatersG = PlanetEatersG;
             optionsViewModel.PhysMoving = BangEfficiency;
             optionsViewModel.ZGravity = ZAxisGravity;
             optionsViewModel.CoefficientStatic = StaticFrictionCoefficient;
             optionsViewModel.CoefficientKinetic = KineticFrictionCoefficient;
+            optionsViewModel.YGravity = YGravity;
+            optionsViewModel.PhysBrown = BrownianMotion;
         }
     }
 }

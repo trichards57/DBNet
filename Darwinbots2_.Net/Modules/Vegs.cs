@@ -188,7 +188,7 @@ namespace DarwinBots.Modules
 
             a.IsVegetable = SimOpt.SimOpts.Specie[r].Veg;
             if (a.IsVegetable)
-                a.Chloroplasts = SimOpt.SimOpts.StartChlr;
+                a.Chloroplasts = SimOptions.StartChlr;
 
             a.IsFixed = SimOpt.SimOpts.Specie[r].Fixed;
             a.CantSee = SimOpt.SimOpts.Specie[r].CantSee;

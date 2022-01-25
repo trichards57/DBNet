@@ -53,8 +53,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool ApplyChangesGlobally { get; set; }
-
         public double ChancePerBasePair
         {
             get
@@ -70,7 +68,6 @@ namespace DarwinBots.ViewModels
 
                 return pSome == 0 ? double.PositiveInfinity : 1 / pSome;
             }
-            set { }
         }
 
         public double ChancePerUnit

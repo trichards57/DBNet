@@ -128,10 +128,7 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -141,42 +138,6 @@
                 <Label>Cost Multiplier:</Label>
                 <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CostMultiplier}" />
                 <CheckBox Grid.Row="0" Grid.Column="2" x:Name="AllowNegativeCostXCheck" IsChecked="{Binding AllowMultiplerToGoNegative}">Allow Multiplier to go Negative</CheckBox>
-                <Label Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0">Zero Costs when population falls below</Label>
-                <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding ZeroCostPopulationLimit}" />
-                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0">Reinstate Costs when population above</Label>
-                <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding ReinstateCostPopulationLimit}" />
-                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding IncludeAllRobotsInPopulation}">Include all robots</CheckBox>
-                <GroupBox Grid.Row="4" Grid.ColumnSpan="3" Grid.Column="0" Header="Dynamic Cost Adjustment">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <CheckBox Grid.ColumnSpan="4" IsChecked="{Binding EnableDynamicCosts}">Enable Dynamic Costs</CheckBox>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="1">Target Population</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="1" Grid.Column="2" Text="{Binding DynamicCostsTargetPopulation}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Center">Sensitivity</Label>
-                        <Slider Minimum="1" Maximum="1000" TickFrequency="50" IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="0" Value="{Binding DynamicCostsSensitivity}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="1">Upper Range: Target +</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="2" Text="{Binding DynamicCostsUpperRangeTarget}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="2" Grid.Column="3">%</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="1">Lower Range: Target -</Label>
-                        <TextBox IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="2" Text="{Binding DynamicCostsLowerRangeTarget}" />
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="3" Grid.Column="3">%</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0">Low</Label>
-                        <Label IsEnabled="{Binding EnableDynamicCosts}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Right">High</Label>
-                    </Grid>
-                </GroupBox>
             </Grid>
         </GroupBox>
         <GroupBox Grid.Column="1" Grid.Row="2" Header="Aging">

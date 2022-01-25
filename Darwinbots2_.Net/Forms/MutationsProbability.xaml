@@ -90,7 +90,6 @@
             <Label Grid.Row="1" Grid.Column="0">1 chance in</Label>
             <TextBlock Width="55" Text="{Binding ChancePerBasePair, StringFormat=0.00}" Grid.Row="1" Grid.Column="1" />
             <Label Grid.Row="1" Grid.Column="2">per bp</Label>
-            <CheckBox IsChecked="{Binding ApplyChangesGlobally}" Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">Apply Changes Globally</CheckBox>
         </Grid>
         <Button Command="{Binding SetDefaultRatesCommand}" Grid.Row="4" Grid.Column="1">Default Rates</Button>
         <StackPanel Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">

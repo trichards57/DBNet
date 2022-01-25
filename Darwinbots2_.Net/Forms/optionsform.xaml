@@ -185,12 +185,6 @@
                             </Grid>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Grid.Column="0" Header="Wrap Around">
-                        <StackPanel>
-                            <CheckBox IsEnabled="{Binding EnablePondMode, Converter={StaticResource InvertBoolConverter}}" IsChecked="{Binding EnableTopDownWrap}">Top / Down Wrap</CheckBox>
-                            <CheckBox IsChecked="{Binding EnableLeftRightWrap}">Left / Right Wrap</CheckBox>
-                        </StackPanel>
-                    </GroupBox>
                     <GroupBox Grid.Row="2" Grid.Column="0" Header="Waste">
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -351,14 +345,14 @@
                                 <ComboBoxItem>Biological</ComboBoxItem>
                                 <ComboBoxItem>Mechanical</ComboBoxItem>
                             </ComboBox>
-                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="2" Grid.Column="0">Brownian Movement</Label>
-                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding BrownianMotion, Converter={StaticResource EnumToIntConverter}}" Grid.Row="2" Grid.Column="1" Text="Set Brownian">
+                            <Label Grid.Row="2" Grid.Column="0">Brownian Movement</Label>
+                            <ComboBox SelectedIndex="{Binding BrownianMotion, Converter={StaticResource EnumToIntConverter}}" Grid.Row="2" Grid.Column="1" Text="Set Brownian">
                                 <ComboBoxItem>Molecular</ComboBoxItem>
                                 <ComboBoxItem>Bacterial</ComboBoxItem>
                                 <ComboBoxItem>Animal</ComboBoxItem>
                             </ComboBox>
-                            <Label IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" Grid.Row="3" Grid.Column="0">Vertical Gravity</Label>
-                            <ComboBox IsEnabled="{Binding EnableTides, Converter={StaticResource InvertBoolConverter}}" SelectedIndex="{Binding Gravity, Converter={StaticResource EnumToIntConverter}}" Grid.Row="3" Grid.Column="1" Text="Set Gravity">
+                            <Label Grid.Row="3" Grid.Column="0">Vertical Gravity</Label>
+                            <ComboBox SelectedIndex="{Binding Gravity, Converter={StaticResource EnumToIntConverter}}" Grid.Row="3" Grid.Column="1" Text="Set Gravity">
                                 <ComboBoxItem>None</ComboBoxItem>
                                 <ComboBoxItem>Moon</ComboBoxItem>
                                 <ComboBoxItem>Earth</ComboBoxItem>

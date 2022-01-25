@@ -16,19 +16,12 @@
         public double DnaCopyCost { get; init; }
         public double DnaUpkeepCost { get; init; }
         public double DotNumberCost { get; init; }
-        public bool DynamicCostsIncludePlants { get; init; }
-        public int DynamicCostsLowerRangeTarget { get; init; }
-        public double DynamicCostsSensitivity { get; init; }
-        public int DynamicCostsTargetPopulation { get; init; }
-        public int DynamicCostsUpperRangeTarget { get; init; }
         public bool EnableAgeCostIncreaseLog { get; init; }
         public bool EnableAgeCostIncreasePerCycle { get; init; }
-        public bool EnableDynamicCosts { get; init; }
         public double FlowCommandCost { get; init; }
         public double LogicCost { get; init; }
         public double NumberCost { get; init; }
         public double PoisonCost { get; init; }
-        public int ReinstateCostPopulationLimit { get; init; }
         public double RotationCost { get; init; }
         public double ShellCost { get; init; }
         public double ShotFormationCost { get; init; }
@@ -37,7 +30,6 @@
         public double TieFormationCost { get; init; }
         public double VenomCost { get; init; }
         public double VoluntaryMovementCost { get; init; }
-        public int ZeroCostPopulationLimit { get; init; }
 
         public static Costs ZeroCosts { get; } = new()
         {
@@ -55,19 +47,12 @@
             DnaCopyCost = 0,
             DnaUpkeepCost = 0,
             DotNumberCost = 0,
-            DynamicCostsIncludePlants = false,
-            DynamicCostsLowerRangeTarget = 0,
-            DynamicCostsSensitivity = 0,
-            DynamicCostsTargetPopulation = 0,
-            DynamicCostsUpperRangeTarget = 0,
             EnableAgeCostIncreaseLog = false,
             EnableAgeCostIncreasePerCycle = false,
-            EnableDynamicCosts = false,
             FlowCommandCost = 0,
             LogicCost = 0,
             NumberCost = 0,
             PoisonCost = 0,
-            ReinstateCostPopulationLimit = 0,
             RotationCost = 0,
             ShellCost = 0,
             ShotFormationCost = 0,
@@ -76,7 +61,6 @@
             TieFormationCost = 0,
             VenomCost = 0,
             VoluntaryMovementCost = 0,
-            ZeroCostPopulationLimit = 0,
         };
 
         public static Costs DefaultCosts { get; } = new()
@@ -95,19 +79,12 @@
             DnaCopyCost = 0,
             DnaUpkeepCost = 0,
             DotNumberCost = 0,
-            DynamicCostsIncludePlants = false,
-            DynamicCostsLowerRangeTarget = 0,
-            DynamicCostsSensitivity = 0,
-            DynamicCostsTargetPopulation = 0,
-            DynamicCostsUpperRangeTarget = 0,
             EnableAgeCostIncreaseLog = false,
             EnableAgeCostIncreasePerCycle = false,
-            EnableDynamicCosts = false,
             FlowCommandCost = 0,
             LogicCost = 0,
             NumberCost = 0,
             PoisonCost = 0.01,
-            ReinstateCostPopulationLimit = 0,
             RotationCost = 0,
             ShellCost = 0.1,
             ShotFormationCost = 2,
@@ -116,7 +93,6 @@
             TieFormationCost = 2,
             VenomCost = 0.01,
             VoluntaryMovementCost = 0.05,
-            ZeroCostPopulationLimit = 0,
         };
     }
 }

@@ -5,6 +5,8 @@ namespace DarwinBots.Model
 {
     internal class SimOptions
     {
+        public const int StartChlr = 32000;
+
         public SimOptions()
         {
             SetToDefaults();
@@ -91,9 +93,6 @@ namespace DarwinBots.Model
         public int SpeciationGeneticDistance { get; set; }
 
         public List<Species> Specie { get; } = new();
-
-        public int StartChlr => 32000;
-
         public int TotBorn { get; set; }
 
         public int TotRunCycle { get; set; }
@@ -115,7 +114,7 @@ namespace DarwinBots.Model
             CoefficientKinetic = 0;
             CoefficientStatic = 0;
             CorpseEnabled = false;
-            Costs = Costs.ZeroCosts with { CostMultiplier = 1, ZeroCostPopulationLimit = -1 };
+            Costs = Costs.ZeroCosts with { CostMultiplier = 1 };
             Decay = 0;
             DecayType = DecayType.None;
             Density = 0;

@@ -9,7 +9,6 @@ using PostSharp.Patterns.Model;
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -58,13 +57,12 @@ namespace DarwinBots.ViewModels
     }
 
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
-    internal class OptionsViewModel : ObservableObject, IAsyncDisposable
+    internal class OptionsViewModel : ObservableObject
     {
         // TODO : Implement saving and loading settings
 
         private readonly IClipboardService _clipboardService;
         private readonly IDialogService _dialogService;
-        private readonly Timer _lightTimer;
         private bool _costsCustom;
         private bool _costsNoCosts;
         private int _cyclesHigh;
@@ -103,7 +101,6 @@ namespace DarwinBots.ViewModels
         {
             _clipboardService = clipboardService ?? new ClipboardService();
             _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
-            _lightTimer = new Timer(LightTimerTick, null, Timeout.Infinite, Timeout.Infinite);
             ShowGlobalSettingsCommand = new RelayCommand(ShowGlobalSettings);
             ShowCustomPhysicsCommand = new RelayCommand(ShowCustomPhysics);
             ListNonNativeSpeciesCommand = new RelayCommand(ListNonNativeSpecies);
@@ -232,7 +229,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnableLeftRightWrap { get; set; }
         public bool EnableMutationCycling { get; set; }
 
         public bool EnableMutationSineWave
@@ -248,9 +244,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnablePondMode { get; set; }
-        public bool EnableTides { get; set; }
-        public bool EnableTopDownWrap { get; set; }
         public float EnergyScalingFactor { get => _energyScalingFactor; set => SetProperty(ref _energyScalingFactor, value == 0 ? 1 : value); }
 
         public int FieldHeight
@@ -390,9 +383,7 @@ namespace DarwinBots.ViewModels
 
         public int InitialLightEnergy { get => _initialLightEnergy; set => SetProperty(ref _initialLightEnergy, Math.Clamp(value, 0, 32000)); }
         public bool IsSpeciesSelected => SelectedSpecies != null;
-        public int LightLevel { get => _lightLevel; set => SetProperty(ref _lightLevel, Math.Clamp(value, 0, 1000)); }
         public ICommand ListNonNativeSpeciesCommand { get; }
-        public ICommand LoadSettingsCommand { get; }
         public string MaxCyclesLabel => EnableMutationSineWave ? "Max at 20x" : "Cycles at 16x";
         public int MaximumChloroplasts { get => _maximumChloroplasts; set => SetProperty(ref _maximumChloroplasts, Math.Clamp(value, 0, 32000)); }
         public double MaxVelocity { get; set; }
@@ -472,8 +463,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool PlanetEaters { get; set; }
-        public double PlanetEatersG { get; set; }
         public ICommand RenameSpeciesCommand { get; }
         public int RepopulationCooldownPeriod { get => _repopulationCooldownPeriod; set => SetProperty(ref _repopulationCooldownPeriod, Math.Clamp(value, 0, 32000)); }
         public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set => SetProperty(ref _robotsPerRepopulationEvent, Math.Clamp(value, 0, 32000)); }
@@ -519,9 +508,6 @@ namespace DarwinBots.ViewModels
         public ICommand ShowEnergyManagementCommand { get; }
         public ICommand ShowGlobalSettingsCommand { get; }
         public ObservableCollection<SpeciesViewModel> SpeciesList { get; } = new();
-        public ICommand StartNewCommand { get; }
-        public int TidesCyclesOff { get; set; }
-        public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
         public int WasteThreshold { get; set; }
 
@@ -537,12 +523,6 @@ namespace DarwinBots.ViewModels
 
         public bool ZeroMomentum { get; set; }
         public double ZGravity { get; set; }
-
-        public async ValueTask DisposeAsync()
-        {
-            await _lightTimer.DisposeAsync();
-            GC.SuppressFinalize(this);
-        }
 
         public async Task LoadFromOptions(SimOptions options)
         {
@@ -868,38 +848,6 @@ namespace DarwinBots.ViewModels
             else
             {
                 MessageBox.Show("You cannot duplicate a bot that did not originate in this simulation.", "Cannot Duplicate Non-Native Species", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-        }
-
-        private void LightTimerTick(object state)
-        {
-            if (_lightCurrentlyIncreasing)
-            {
-                var n = EnergyScalingFactor + 5;
-
-                if (n > 100)
-                {
-                    _lightCurrentlyIncreasing = false;
-                    EnergyScalingFactor = 100;
-                }
-                else
-                {
-                    EnergyScalingFactor = n;
-                }
-            }
-            else
-            {
-                var n = EnergyScalingFactor - 5;
-
-                if (n < 2)
-                {
-                    _lightCurrentlyIncreasing = true;
-                    EnergyScalingFactor = 2;
-                }
-                else
-                {
-                    EnergyScalingFactor = n;
-                }
             }
         }
 
