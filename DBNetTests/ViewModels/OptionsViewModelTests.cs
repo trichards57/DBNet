@@ -80,16 +80,6 @@ namespace DBNetTests.ViewModels
         }
 
         [Fact]
-        public void Gradient_InputClamped()
-        {
-            var vm = new OptionsViewModel();
-            vm.SedimentLevel = 700000;
-            vm.SedimentLevel.Should().Be(200);
-            vm.SedimentLevel = -1;
-            vm.SedimentLevel.Should().Be(0);
-        }
-
-        [Fact]
         public void ListNativeSpecies_ReportsNoneWhenAllFiltered()
         {
             var testSpecies = _fixture.Build<Species>()

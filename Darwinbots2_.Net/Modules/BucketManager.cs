@@ -24,8 +24,6 @@ namespace DarwinBots.Modules
         /// </remarks>
         public const int BucketSize = 4000;
 
-        private const int EyeEffectiveness = 3;
-
         /// <summary>
         /// The main buckets array.
         /// </summary>
@@ -40,18 +38,11 @@ namespace DarwinBots.Modules
         private readonly IntVector _numBuckets;
 
         /// <summary>
-        /// A reference to the simulations options
-        /// </summary>
-        private readonly SimOptions _options;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="BucketManager"/> class.
         /// </summary>
         /// <param name="opts">The simulation options.</param>
         public BucketManager(SimOptions opts)
         {
-            _options = opts;
-
             _numBuckets = new IntVector((int)Math.Ceiling((double)opts.FieldWidth / BucketSize), (int)Math.Ceiling((double)opts.FieldHeight / BucketSize));
 
             _buckets = new Bucket[_numBuckets.X, _numBuckets.Y];

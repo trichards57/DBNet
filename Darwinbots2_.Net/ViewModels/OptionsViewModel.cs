@@ -479,7 +479,6 @@ namespace DarwinBots.ViewModels
         public int RepopulationCooldownPeriod { get => _repopulationCooldownPeriod; set => SetProperty(ref _repopulationCooldownPeriod, Math.Clamp(value, 0, 32000)); }
         public int RobotsPerRepopulationEvent { get => _robotsPerRepopulationEvent; set => SetProperty(ref _robotsPerRepopulationEvent, Math.Clamp(value, 0, 32000)); }
         public ICommand SaveSettingsCommand { get; }
-        public double SedimentLevel { get => _sedimentLevel; set => SetProperty(ref _sedimentLevel, Math.Clamp(value, 0, 200)); }
 
         public SpeciesViewModel SelectedSpecies
         {
