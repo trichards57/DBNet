@@ -78,7 +78,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        public static void feedvegs(IRobotManager robotManager, IObstacleManager obstacleManager, int totnrg)
+        public static void feedvegs(IRobotManager robotManager, int totnrg)
         {
             if (SimOpt.SimOpts.SunOnRnd)
             {
@@ -210,8 +210,6 @@ namespace DarwinBots.Modules
                 return;
 
             double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
-
-            ScreenArea -= obstacleManager.Obstacles.Where(o => o.Exist).Sum(o => o.Width * o.Height);
 
             var TotalRobotArea = robotManager.Robots.Where(r => r.Exists).Sum(r => Math.Pow(r.GetRadius(SimOpt.SimOpts.FixedBotRadii), 2) * Math.PI);
 

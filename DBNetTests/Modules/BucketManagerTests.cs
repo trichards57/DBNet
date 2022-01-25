@@ -1,7 +1,6 @@
 ﻿using DarwinBots.Model;
 using DarwinBots.Modules;
 using FluentAssertions;
-using Moq;
 using Xunit;
 
 namespace DBNetTests.Modules
@@ -21,7 +20,7 @@ namespace DBNetTests.Modules
         {
             var options = new SimOptions { FieldHeight = FieldHeight, FieldWidth = FieldWidth };
 
-            var manager = new BucketManager(options, new Mock<IObstacleManager>().Object);
+            var manager = new BucketManager(options);
 
             var bot = new Robot(manager) { Position = new DoubleVector(x, y) };
 
@@ -39,7 +38,7 @@ namespace DBNetTests.Modules
         {
             SimOpt.SimOpts = new SimOptions { FieldHeight = FieldHeight, FieldWidth = FieldWidth, FixedBotRadii = true };
 
-            var manager = new BucketManager(SimOpt.SimOpts, new Mock<IObstacleManager>().Object);
+            var manager = new BucketManager(SimOpt.SimOpts);
 
             var bot1 = new Robot(manager) { Position = position1, AbsNum = 0 };
             var bot2 = new Robot(manager) { Position = position2, AbsNum = 1 };
@@ -67,7 +66,7 @@ namespace DBNetTests.Modules
         {
             SimOpt.SimOpts = new SimOptions { FieldHeight = FieldHeight, FieldWidth = FieldWidth, FixedBotRadii = true };
 
-            var manager = new BucketManager(SimOpt.SimOpts, new Mock<IObstacleManager>().Object);
+            var manager = new BucketManager(SimOpt.SimOpts);
 
             var position1 = new DoubleVector(BucketManager.BucketSize - 1, BucketManager.BucketSize - 1);
             var position2 = new DoubleVector(BucketManager.BucketSize + 1, BucketManager.BucketSize + 1);

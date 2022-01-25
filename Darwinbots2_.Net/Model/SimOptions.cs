@@ -11,10 +11,6 @@ namespace DarwinBots.Model
             SetToDefaults();
         }
 
-        public bool AllowHorizontalShapeDrift { get; set; }
-
-        public bool AllowVerticalShapeDrift { get; set; }
-
         public int BadWasteLevel { get; set; }
 
         public double CoefficientElasticity { get; set; }
@@ -75,8 +71,6 @@ namespace DarwinBots.Model
 
         public int LightIntensity { get; set; }
 
-        public bool MakeAllShapesBlack { get; set; }
-
         public int MaxAbsNum { get; set; }
 
         public int MaxEnergy { get; set; }
@@ -116,14 +110,6 @@ namespace DarwinBots.Model
         public int RepopAmount { get; set; }
 
         public int RepopCooldown { get; set; }
-
-        public int ShapeDriftRate { get; set; }
-
-        public bool ShapesAbsorbShots { get; set; }
-
-        public bool ShapesAreSeeThrough { get; set; }
-
-        public bool ShapesAreVisable { get; set; }
 
         public Guid SimGuid { get; set; }
 
@@ -171,8 +157,6 @@ namespace DarwinBots.Model
 
         public void SetToDefaults()
         {
-            AllowHorizontalShapeDrift = false;
-            AllowVerticalShapeDrift = false;
             BadWasteLevel = -1;
             CoefficientElasticity = 0;
             CoefficientKinetic = 0;
@@ -201,7 +185,6 @@ namespace DarwinBots.Model
             FluidSolidCustom = FieldMode.Custom;
             Gradient = 1.02;
             LightIntensity = 0;
-            MakeAllShapesBlack = false;
             MaxAbsNum = 0;
             MaxEnergy = 100;
             MaxPopulation = 100;
@@ -222,10 +205,6 @@ namespace DarwinBots.Model
             PondMode = false;
             RepopAmount = 10;
             RepopCooldown = 10;
-            ShapeDriftRate = 0;
-            ShapesAbsorbShots = false;
-            ShapesAreSeeThrough = false;
-            ShapesAreVisable = false;
             SimGuid = Guid.Empty;
             SnpExcludeVegs = false;
             SpeciationForkInterval = 0;

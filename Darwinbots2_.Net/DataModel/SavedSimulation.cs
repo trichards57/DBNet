@@ -7,8 +7,6 @@ namespace DarwinBots.DataModel
 {
     internal class SavedSimulation
     {
-        public bool AllowHorizontalShapeDrift { get; internal set; }
-        public bool AllowVerticalShapeDrift { get; internal set; }
         public int BadWastelevel { get; internal set; }
         public double CoefficientElasticity { get; internal set; }
         public double CoefficientKinetic { get; internal set; }
@@ -39,7 +37,6 @@ namespace DarwinBots.DataModel
         public FieldMode FluidSolidCustom { get; internal set; }
         public double Gradient { get; internal set; }
         public int LightIntensity { get; internal set; }
-        public bool MakeAllShapesBlack { get; internal set; }
         public int MaxAbsNum { get; internal set; }
         public int MaxEnergy { get; internal set; }
         public int MaxPopulation { get; internal set; }
@@ -52,7 +49,6 @@ namespace DarwinBots.DataModel
         public bool MutOscillSine { get; internal set; }
         public bool NoShotDecay { get; internal set; }
         public bool NoWShotDecay { get; internal set; }
-        public IEnumerable<Obstacle> Obstacles { get; internal set; }
         public double OldCostX { get; internal set; }
         public double PhysBrown { get; internal set; }
         public double PhysMoving { get; internal set; }
@@ -62,10 +58,6 @@ namespace DarwinBots.DataModel
         public int RepopAmount { get; internal set; }
         public int RepopCooldown { get; internal set; }
         public IEnumerable<Robot> Robots { get; set; }
-        public int ShapeDriftRate { get; internal set; }
-        public bool ShapesAbsorbShots { get; internal set; }
-        public bool ShapesAreSeeThrough { get; internal set; }
-        public bool ShapesAreVisable { get; internal set; }
         public IEnumerable<Shot> Shots { get; set; }
         public Guid SimGuid { get; internal set; }
         public bool SnpExcludeVegs { get; internal set; }

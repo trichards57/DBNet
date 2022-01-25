@@ -22,15 +22,13 @@ namespace DarwinBots.Modules
         public const int GeneticSensitivity = 75;
         public const int MaxMem = 1000;
         private readonly IBucketManager _bucketManager;
-        private readonly IObstacleManager _obstacleManager;
         private readonly IShotManager _shotManager;
 
         private int _lastAbsoluteNumber = -1;
 
-        public RobotsManager(IBucketManager bucketManager, IObstacleManager obstacleManager, IShotManager shotManager)
+        public RobotsManager(IBucketManager bucketManager, IShotManager shotManager)
         {
             _bucketManager = bucketManager;
-            _obstacleManager = obstacleManager;
             _shotManager = shotManager;
         }
 
@@ -108,9 +106,6 @@ namespace DarwinBots.Modules
                 if (!SimOpt.SimOpts.DisableFixing)
                     rob.ManageFixed();
                 rob.UpdateMass();
-
-                if (_obstacleManager.Obstacles.Count > 0)
-                    _obstacleManager.DoObstacleCollisions(rob);
 
                 Physics.BorderCollision(_bucketManager, rob);
 
@@ -1132,9 +1127,6 @@ namespace DarwinBots.Modules
         private bool SimpleCollision(int x, int y, Robot rob)
         {
             if (Robots.Any(r => r.Exists && r != rob && Math.Abs(r.Position.X - x) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && Math.Abs(r.Position.Y - y) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)))
-                return true;
-
-            if (_obstacleManager.Obstacles.Any(o => o.Position.X <= Math.Max(rob.Position.X, x) && o.Position.X + o.Width >= Math.Min(rob.Position.X, x) && o.Position.Y <= Math.Max(rob.Position.Y, y) && o.Position.Y + o.Height >= Math.Min(rob.Position.Y, y)))
                 return true;
 
             if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || x + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))

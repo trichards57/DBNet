@@ -80,21 +80,6 @@
                     <MenuItem Header="Delete Teleporter" />
                     <MenuItem Header="Delete All Teleporters" />
                 </MenuItem>
-                <MenuItem Header="Shapes">
-                    <MenuItem Header="New Shape..." />
-                    <MenuItem Header="Add Ten Random Shapes" />
-                    <MenuItem Header="Delete Ten Random Shapes" />
-                    <MenuItem Header="Delete Shape" />
-                    <MenuItem Header="Delete All Shapes" />
-                </MenuItem>
-                <MenuItem Header="Mazes">
-                    <MenuItem Header="Simple Horizontal Maze" />
-                    <MenuItem Header="Simple Vertical Maze" />
-                    <MenuItem Header="Spiral" />
-                    <MenuItem Header="Checkerboard" />
-                    <MenuItem Header="Polar Ice" />
-                    <MenuItem Header="Trash Compactor" />
-                </MenuItem>
             </MenuItem>
             <MenuItem Header="Recording">
                 <MenuItem Header="Safe Mode Backup" />

@@ -205,10 +205,6 @@ namespace DarwinBots.Modules
                     case Robot r:
                         LookOccurr(rob, r); // It's a bot.  Populate the refvar sysvars
                         break;
-
-                    case Obstacle o:
-                        LookOccurrShape(rob, o);
-                        break;
                 }
             }
 
@@ -296,58 +292,6 @@ namespace DarwinBots.Modules
             {
                 rob.Memory[MemoryAddresses.LandM] = 1;
             }
-        }
-
-        private static void LookOccurrShape(Robot rob, Obstacle obstacle)
-        {
-            if (rob.IsCorpse)
-                return;
-
-            rob.Memory[MemoryAddresses.REFTYPE] = 1;
-
-            for (var t = 1; t < 8; t++)
-                rob.Memory[MemoryAddresses.occurrstart + t] = 0;
-
-            rob.Memory[MemoryAddresses.occurrstart + 9] = 0; // refnrg
-            rob.Memory[MemoryAddresses.occurrstart + 10] = 0; //refage
-
-            rob.Memory[MemoryAddresses.in1] = 0;
-            rob.Memory[MemoryAddresses.in2] = 0;
-            rob.Memory[MemoryAddresses.in3] = 0;
-            rob.Memory[MemoryAddresses.in4] = 0;
-            rob.Memory[MemoryAddresses.in5] = 0;
-            rob.Memory[MemoryAddresses.in6] = 0;
-            rob.Memory[MemoryAddresses.in7] = 0;
-            rob.Memory[MemoryAddresses.in8] = 0;
-            rob.Memory[MemoryAddresses.in9] = 0;
-            rob.Memory[MemoryAddresses.in10] = 0;
-
-            rob.Memory[711] = 0; //refaim
-            rob.Memory[712] = 0; //reftie
-            rob.Memory[MemoryAddresses.refshell] = 0;
-            rob.Memory[MemoryAddresses.refbody] = 0;
-
-            rob.Memory[MemoryAddresses.refxpos] = (int)rob.LastSeenObjectPosition.X % 32000;
-            rob.Memory[MemoryAddresses.refypos] = (int)rob.LastSeenObjectPosition.Y % 32000;
-
-            //give reference variables from the bots frame of reference
-            rob.Memory[MemoryAddresses.refvelup] = (int)(obstacle.Velocity.X * Math.Cos(rob.Aim) + obstacle.Velocity.Y * Math.Sin(rob.Aim) * -1) - rob.Memory[MemoryAddresses.velup];
-            rob.Memory[MemoryAddresses.refveldn] = rob.Memory[MemoryAddresses.refvelup] * -1;
-            rob.Memory[MemoryAddresses.refveldx] = (int)(obstacle.Velocity.Y * Math.Cos(rob.Aim) + obstacle.Velocity.X * Math.Sin(rob.Aim)) - rob.Memory[MemoryAddresses.veldx];
-            rob.Memory[MemoryAddresses.refvelsx] = rob.Memory[MemoryAddresses.refvelsx] * -1;
-
-            var temp = Math.Sqrt(Math.Pow(rob.Memory[MemoryAddresses.refvelup], 2) + Math.Pow(rob.Memory[MemoryAddresses.refveldx], 2)); // how fast is this shape moving compared to me?
-            if (temp > 32000)
-                temp = 32000;
-
-            rob.Memory[MemoryAddresses.refvelscalar] = (int)temp;
-            rob.Memory[713] = 0; //refpoison. current value of poison. not poison commands
-            rob.Memory[714] = 0; //refvenom (as with poison)
-            rob.Memory[715] = 0; //refkills
-            rob.Memory[MemoryAddresses.refmulti] = 0;
-
-            rob.Memory[473] = 0;
-            rob.Memory[477] = obstacle.Velocity.X == 0 && obstacle.Velocity.Y == 0 ? 1 : 0;
         }
     }
 }

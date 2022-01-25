@@ -29,12 +29,6 @@ namespace DarwinBots.Modules
         private const int ShotDecay = 20;
         private const double SlimeEffectiveness = 1.0 / 20;
         private const int VenomEffectivenessVsShell = 25;
-        private readonly IObstacleManager _obstacleManager;
-
-        public ShotsManager(IObstacleManager obstacleManager)
-        {
-            _obstacleManager = obstacleManager;
-        }
 
         public double MaxBotShotSeparation { get; set; }
         public List<Shot> Shots { get; } = new();
@@ -328,9 +322,6 @@ namespace DarwinBots.Modules
                     Senses.Taste(rob, shot.OldPosition.X, shot.OldPosition.Y, shot.ShotType);
                     shot.Flash = true;
                 }
-
-                if (_obstacleManager.Obstacles.Count > 0)
-                    _obstacleManager.DoShotObstacleCollisions(this, shot);
 
                 shot.OldPosition = shot.Position;
                 shot.Position += shot.Velocity; //Euler integration

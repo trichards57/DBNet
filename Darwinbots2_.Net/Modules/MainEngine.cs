@@ -19,7 +19,6 @@ namespace DarwinBots.Modules
         private BucketManager _bucketManager;
         private bool _costsWereZeroed;
         private int _dynamicCountdown;
-        private ObstaclesManager _obstacleManager;
         private RobotsManager _robotsManager;
         private ShotsManager _shotsManager;
         private Thread _simThread;
@@ -88,8 +87,6 @@ namespace DarwinBots.Modules
             _robotsManager.Robots.AddRange(savedFile.Robots);
             SimOpt.Species.Clear();
             SimOpt.Species.AddRange(savedFile.Species);
-            _obstacleManager.Obstacles.Clear();
-            _obstacleManager.Obstacles.AddRange(savedFile.Obstacles);
             _shotsManager.Shots.Clear();
             _shotsManager.Shots.AddRange(savedFile.Shots);
 
@@ -149,13 +146,6 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.DayNightCycleCounter = savedFile.DayNightCycleCounter;
             SimOpt.SimOpts.Daytime = savedFile.Daytime;
             SimOpt.SimOpts.SunThresholdMode = savedFile.SunThresholdMode;
-            SimOpt.SimOpts.ShapesAreVisable = savedFile.ShapesAreVisable;
-            SimOpt.SimOpts.AllowVerticalShapeDrift = savedFile.AllowVerticalShapeDrift;
-            SimOpt.SimOpts.AllowHorizontalShapeDrift = savedFile.AllowHorizontalShapeDrift;
-            SimOpt.SimOpts.ShapesAreSeeThrough = savedFile.ShapesAreSeeThrough;
-            SimOpt.SimOpts.ShapesAbsorbShots = savedFile.ShapesAbsorbShots;
-            SimOpt.SimOpts.ShapeDriftRate = savedFile.ShapeDriftRate;
-            SimOpt.SimOpts.MakeAllShapesBlack = savedFile.MakeAllShapesBlack;
             SimOpt.SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
             SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
@@ -193,8 +183,6 @@ namespace DarwinBots.Modules
         {
             var sim = new SavedSimulation
             {
-                AllowHorizontalShapeDrift = SimOpt.SimOpts.AllowHorizontalShapeDrift,
-                AllowVerticalShapeDrift = SimOpt.SimOpts.AllowVerticalShapeDrift,
                 BadWastelevel = SimOpt.SimOpts.BadWasteLevel,
                 CoefficientElasticity = SimOpt.SimOpts.CoefficientElasticity,
                 CoefficientKinetic = SimOpt.SimOpts.CoefficientKinetic,
@@ -225,7 +213,6 @@ namespace DarwinBots.Modules
                 FluidSolidCustom = SimOpt.SimOpts.FluidSolidCustom,
                 Gradient = SimOpt.SimOpts.Gradient,
                 LightIntensity = SimOpt.SimOpts.LightIntensity,
-                MakeAllShapesBlack = SimOpt.SimOpts.MakeAllShapesBlack,
                 MaxAbsNum = SimOpt.SimOpts.MaxAbsNum,
                 MaxEnergy = SimOpt.SimOpts.MaxEnergy,
                 MaxPopulation = SimOpt.SimOpts.MaxPopulation,
@@ -238,7 +225,6 @@ namespace DarwinBots.Modules
                 MutOscillSine = SimOpt.SimOpts.MutOscillSine,
                 NoShotDecay = SimOpt.SimOpts.NoShotDecay,
                 NoWShotDecay = SimOpt.SimOpts.NoWShotDecay,
-                Obstacles = _obstacleManager.Obstacles,
                 OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
@@ -248,10 +234,6 @@ namespace DarwinBots.Modules
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
                 Robots = _robotsManager.Robots.Where(r => r.Exists),
-                ShapeDriftRate = SimOpt.SimOpts.ShapeDriftRate,
-                ShapesAbsorbShots = SimOpt.SimOpts.ShapesAbsorbShots,
-                ShapesAreSeeThrough = SimOpt.SimOpts.ShapesAreSeeThrough,
-                ShapesAreVisable = SimOpt.SimOpts.ShapesAreVisable,
                 Shots = _shotsManager.Shots,
                 SimGuid = SimOpt.SimOpts.SimGuid,
                 SnpExcludeVegs = SimOpt.SimOpts.SnpExcludeVegs,
@@ -310,10 +292,9 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                _obstacleManager = new ObstaclesManager();
-                _shotsManager = new ShotsManager(_obstacleManager);
-                _bucketManager = new BucketManager(SimOpt.SimOpts, _obstacleManager);
-                _robotsManager = new RobotsManager(_bucketManager, _obstacleManager, _shotsManager);
+                _shotsManager = new ShotsManager();
+                _bucketManager = new BucketManager(SimOpt.SimOpts);
+                _robotsManager = new RobotsManager(_bucketManager, _shotsManager);
             }
 
             var standardRadius = SimOpt.SimOpts.FixedBotRadii ? Robot.RobSize / 2.0 : 415.475;
@@ -336,54 +317,6 @@ namespace DarwinBots.Modules
         public void Stop()
         {
             _simThreadCancel.Cancel();
-        }
-
-        //private void DrawAllTies(Graphics graphics)
-        //{
-        //    foreach (var r in _robotsManager.Robots.Where(r => r.Exists))
-        //    {
-        //        DrawTobTiesCol(graphics, r, r.GetRadius(SimOpt.SimOpts.FixedBotRadii) * 2, r.GetRadius(SimOpt.SimOpts.FixedBotRadii));
-        //    }
-        //}
-
-        //private void DrawTobTiesCol(Graphics graphics, Robot t, double w, double s)
-        //{
-        //    var drawSmall = Math.Max((int)(w / 4), 1);
-        //    var centre = t.Position;
-
-        //    foreach (var tie in t.Ties.Where(i => !i.BackTie))
-        //    {
-        //        var otherRob = tie.OtherBot;
-        //        var centre1 = otherRob.Position;
-        //        var drawWidth = drawSmall;
-        //        var col = t.Color;
-        //        w = Math.Max(w, 2);
-
-        //        if (tie.Last > 0)
-        //            drawWidth = (int)(w / 2);
-        //        if (tie.InfoUsed)
-        //        {
-        //            col = Colors.White;
-        //            tie.InfoUsed = false;
-        //        }
-        //        if (tie.EnergyUsed)
-        //        {
-        //            col = Colors.Red;
-        //            tie.EnergyUsed = false;
-        //        }
-        //        if (tie.Sharing)
-        //        {
-        //            col = Colors.Yellow;
-        //            tie.Sharing = false;
-        //        }
-
-        //        graphics.DrawLine(new Pen(col), centre, centre1);
-        //    }
-        //}
-
-        private void Initialise()
-        {
-            _obstacleManager.InitObstacles();
         }
 
         private void LoadRobots()
@@ -614,9 +547,6 @@ namespace DarwinBots.Modules
             foreach (var rob in _robotsManager.Robots.Where(r => r.Exists && !(r.OldPosition.X == 0 & r.OldPosition.Y == 0)))
                 rob.ActualVelocity = rob.Position - rob.OldPosition;
 
-            if (_obstacleManager.Obstacles.Count > 0)
-                _obstacleManager.MoveObstacles();
-
             var allChlr = (int)_robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Chloroplasts);
 
             _robotsManager.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
@@ -624,7 +554,7 @@ namespace DarwinBots.Modules
             if (_robotsManager.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
                 Vegs.VegsRepopulate(_robotsManager, _bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
-            Vegs.feedvegs(_robotsManager, _obstacleManager, SimOpt.SimOpts.MaxEnergy);
+            Vegs.feedvegs(_robotsManager, SimOpt.SimOpts.MaxEnergy);
 
             //Kill some robots to prevent of memory
             var totlen = _robotsManager.Robots.Where(r => r.Exists).Sum(r => r.Dna.Count);
