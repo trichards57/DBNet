@@ -16,7 +16,7 @@ using System.Windows.Media;
 namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
-    public class SpeciesViewModel : ObservableObject
+    internal class SpeciesViewModel : ObservableObject
     {
         // TODO : Sort out initial position
         // TODO : Sort out displaying skin

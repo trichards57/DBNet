@@ -161,23 +161,6 @@ namespace DBNetTests.ViewModels
         }
 
         [Fact]
-        public async Task LoadFromOptions_EnableTides()
-        {
-            var options = _fixture.Create<SimOptions>();
-            var vm = new OptionsViewModel();
-
-            options.Tides = 0;
-            await vm.LoadFromOptions(options);
-
-            vm.EnableTides.Should().BeFalse();
-
-            options.Tides = 20;
-            await vm.LoadFromOptions(options);
-
-            vm.EnableTides.Should().BeTrue();
-        }
-
-        [Fact]
         public async Task LoadFromOptions_HandlesBrownianMotion()
         {
             var options = _fixture.Create<SimOptions>();
@@ -459,11 +442,8 @@ namespace DBNetTests.ViewModels
             vm.EnableCorpseMode.Should().Be(options.CorpseEnabled);
             vm.DecayRate.Should().Be(options.Decay);
             vm.DecayPeriod.Should().Be(options.DecayDelay);
-            vm.LightLevel.Should().Be(options.LightIntensity);
-            vm.SedimentLevel.Should().Be(Math.Clamp((options.Gradient - 1) * 10, 0, 200));
             vm.EnableTopDownWrap.Should().Be(options.UpDnConnected);
             vm.EnableLeftRightWrap.Should().Be(options.DxSxConnected);
-            vm.EnablePondMode.Should().Be(options.PondMode);
             vm.ShotProportion.Should().Be(options.EnergyProp * 100);
             vm.ShotEnergy.Should().Be(options.EnergyFix);
             vm.MutationMultiplier.Should().Be(Math.Log(Math.Max(options.MutCurrMult, 0), 2));

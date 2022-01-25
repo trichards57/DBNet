@@ -233,10 +233,6 @@ namespace DarwinBots.Modules
                 if (!shot.Exist)
                     continue;
 
-                //Add the energy in the shot to the total sim energy if it is an energy shot
-                if (shot.ShotType == -2)
-                    Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] += (int)shot.Energy;
-
                 Robot rob = null;
                 if (shot.ShotType != -100 && !shot.Stored)
                     rob = NewShotCollision(robotManager, shot); // go off and check for collisions with bots.

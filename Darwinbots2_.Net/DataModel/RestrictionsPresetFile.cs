@@ -1,6 +1,6 @@
 ﻿namespace DarwinBots.DataModel
 {
-    public class RestrictionsPresetFile
+    internal record RestrictionsPresetFile
     {
         public bool DisableChloroplastsNonVeg { get; set; }
         public bool DisableDnaNonVeg { get; set; }

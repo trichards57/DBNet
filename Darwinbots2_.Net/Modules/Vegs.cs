@@ -1,7 +1,6 @@
 using DarwinBots.Model;
 using DarwinBots.Support;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace DarwinBots.Modules
@@ -9,15 +8,8 @@ namespace DarwinBots.Modules
     internal static class Vegs
     {
         public static int CoolDown { get; set; }
-        public static int CurrentEnergyCycle { get; set; }
         public static double LightAval { get; private set; }
-        public static double SunChange { get; set; }
-        public static double SunPosition { get; set; }
-        public static double SunRange { get; set; }
-        public static List<int> TotalSimEnergy { get; } = new(new int[101]);
-        public static int TotalSimEnergyDisplayed { get; set; }
         public static int TotalVegs { get; set; }
-        public static int TotalVegsDisplayed { get; set; }
 
         public static void feedveg2(Robot rob)
         {
@@ -80,134 +72,11 @@ namespace DarwinBots.Modules
 
         public static void feedvegs(IRobotManager robotManager, int totnrg)
         {
-            if (SimOpt.SimOpts.SunOnRnd)
-            {
-                var Sposition = (int)(SunChange % 10);
-                var Srange = (int)SunChange / 10;
-
-                if (ThreadSafeRandom.Local.Next(0, 2000) == 0)
-                    Srange = Srange == 0 ? 1 : 0;
-
-                if (ThreadSafeRandom.Local.Next(0, 2000) == 0)
-                    Sposition = ThreadSafeRandom.Local.Next(0, 3);
-
-                if (Srange == 1)
-                    SunRange += 0.0005;
-
-                if (Srange == 0)
-                    SunRange -= 0.0005;
-
-                if (SunRange >= 1)
-                    Srange = 0;
-
-                if (SunRange <= 0)
-                    Srange = 1;
-
-                if (Sposition == 0)
-                    SunPosition -= 0.0005;
-
-                if (Sposition == 2)
-                    SunPosition += 0.0005;
-
-                if (SunPosition >= 1)
-                    Sposition = 0;
-
-                if (SunPosition <= 0)
-                    Sposition = 2;
-
-                SunChange = Sposition + Srange * 10;
-            }
-
-            var FeedThisCycle = SimOpt.SimOpts.Daytime;
-            var OverrideDayNight = false;
-
-            if (TotalSimEnergyDisplayed < SimOpt.SimOpts.SunUpThreshold && SimOpt.SimOpts.SunUp)
-            {
-                //Sim Energy has fallen below the threshold.  Let the sun shine!
-                switch (SimOpt.SimOpts.SunThresholdMode)
-                {
-                    case SunThresholdMode.TemporarilySuspend:
-                        // We only suspend the sun cycles for this cycle.  We want to feed this cycle, but not
-                        // advance the sun or disable day/night cycles
-                        FeedThisCycle = true;
-                        OverrideDayNight = true;
-                        break;
-
-                    case SunThresholdMode.AdvanceToDawnDusk:
-                        //Speed up time until Dawn.  No need to override the day night cycles as we want them to take over.
-                        //Note that the real dawn won't actually start until the nrg climbs above the threshold since
-                        //we will keep coming in here and zeroing the counter, but that's probably okay.
-                        SimOpt.SimOpts.DayNightCycleCounter = 0;
-                        SimOpt.SimOpts.Daytime = true;
-                        FeedThisCycle = true;
-                        break;
-
-                    case SunThresholdMode.PermanentlyToggle:
-                        //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
-                        //We want to feed this cycle.
-                        //We also want to turn on the sun.  The test below should avoid trying to execute day/night cycles.
-                        FeedThisCycle = true;
-                        SimOpt.SimOpts.Daytime = true;
-                        break;
-                }
-            }
-            else if (TotalSimEnergyDisplayed > SimOpt.SimOpts.SunDownThreshold && SimOpt.SimOpts.SunDown)
-            {
-                switch (SimOpt.SimOpts.SunThresholdMode)
-                {
-                    case SunThresholdMode.TemporarilySuspend:
-                        // We only suspend the sun cycles for this cycle.  We do not want to feed this cycle, nor do we
-                        // advance the sun or disable day/night cycles
-                        FeedThisCycle = false;
-                        OverrideDayNight = true;
-                        break;
-
-                    case SunThresholdMode.AdvanceToDawnDusk:
-                        //Speed up time until Dusk.  No need to override the day night cycles as we want them to take over.
-                        //Note that the real night time won't actually start until the nrg falls below the threshold since
-                        //we will keep coming in here and zeroing the counter, but that's probably okay.
-                        SimOpt.SimOpts.DayNightCycleCounter = 0;
-                        SimOpt.SimOpts.Daytime = false;
-                        FeedThisCycle = false;
-                        break;
-
-                    case SunThresholdMode.PermanentlyToggle:
-                        //We don't care about cycles.  We are just bouncing back and forth between the thresholds.
-                        //We do not want to feed this cycle.
-                        //We also want to turn off the sun.  The test below should avoid trying to execute day/night cycles
-                        FeedThisCycle = false;
-                        SimOpt.SimOpts.Daytime = false;
-                        break;
-                }
-            }
-
-            //In this mode, we ignore sun cycles and just bounce between thresholds.  I don't really want to add another
-            //feature enable checkbox, so we will just test to make sure the user is using both thresholds.  If not, we
-            //don't override the cycles even if one of the thresholds is set.
-            if (SimOpt.SimOpts.SunThresholdMode == SunThresholdMode.PermanentlyToggle && SimOpt.SimOpts.SunDown && SimOpt.SimOpts.SunUp)
-                OverrideDayNight = true;
-
-            if (SimOpt.SimOpts.DayNight && !OverrideDayNight)
-            {
-                //Well, we are neither above nor below the thresholds or we arn't using thresholds so lets see if it's time to rise and shine
-                SimOpt.SimOpts.DayNightCycleCounter++;
-                if (SimOpt.SimOpts.DayNightCycleCounter > SimOpt.SimOpts.CycleLength)
-                {
-                    SimOpt.SimOpts.Daytime = !SimOpt.SimOpts.Daytime;
-                    SimOpt.SimOpts.DayNightCycleCounter = 0;
-                }
-
-                FeedThisCycle = SimOpt.SimOpts.Daytime;
-            }
-
             //Botsareus 8/16/2014 All robots are set to think there is no sun, sun is calculated later
             foreach (var rob in robotManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
                 rob.Memory[218] = 0;
             }
-
-            if (!FeedThisCycle)
-                return;
 
             double ScreenArea = SimOpt.SimOpts.FieldWidth * SimOpt.SimOpts.FieldHeight;
 
@@ -224,23 +93,6 @@ namespace DarwinBots.Modules
 
             var AreaCorrection = Math.Pow((1 - LightAval), 2) * 4;
 
-            var sunstart = (SunPosition - (0.25 + Math.Pow(SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
-            var sunstop = (SunPosition + (0.25 + Math.Pow(SunRange, 3) * 0.75) / 2) * SimOpt.SimOpts.FieldWidth;
-
-            var sunstop2 = sunstop;
-            var sunstart2 = sunstart; //Do not delete, bug fix!
-
-            if (sunstart < 0)
-            {
-                sunstart2 = SimOpt.SimOpts.FieldWidth + sunstart;
-                sunstop2 = SimOpt.SimOpts.FieldWidth;
-            }
-            if (sunstop > SimOpt.SimOpts.FieldWidth)
-            {
-                sunstop2 = sunstop - SimOpt.SimOpts.FieldWidth;
-                sunstart2 = 0;
-            }
-
             foreach (var rob in robotManager.Robots.Where(r => r.Energy > 0 && r.Exists))
             {
                 double acttok = 0;
@@ -250,20 +102,7 @@ namespace DarwinBots.Modules
                     if (rob.ChloroplastsShareDelay > 0)
                         rob.ChloroplastsShareDelay--;
 
-                    if ((rob.Position.X < sunstart2 || rob.Position.X > sunstop2) && (rob.Position.X < sunstart || rob.Position.X > sunstop))
-                        continue;
-
-                    double tok = 0;
-                    if (SimOpt.SimOpts.PondMode)
-                    {
-                        var depth = (rob.Position.Y / 2000) + 1;
-                        if (depth < 1)
-                            depth = 1;
-
-                        tok = SimOpt.SimOpts.LightIntensity / Math.Pow(depth, SimOpt.SimOpts.Gradient); //Botsareus 3/26/2013 No longer add one, robots get fed more accuratly
-                    }
-                    else
-                        tok = totnrg;
+                    double tok = totnrg;
 
                     if (tok < 0)
                     {
@@ -285,9 +124,6 @@ namespace DarwinBots.Modules
                     continue;
 
                 acttok -= rob.Age * rob.Chloroplasts / 1000000000; //Botsareus 10/6/2015 Robots should start losing body at around 32000 cycles
-
-                if (SimOpt.SimOpts.Tides > 0)
-                    acttok *= (1 - Physics.BouyancyScaling); //Botsareus 10/6/2015 Cancer effect corrected for
 
                 rob.Energy += acttok * (1 - SimOpt.SimOpts.VegFeedingToBody);
                 rob.Body += acttok * SimOpt.SimOpts.VegFeedingToBody / 10;

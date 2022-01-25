@@ -2,7 +2,7 @@
 
 namespace DarwinBots.Model
 {
-    public class Species
+    internal class Species
     {
         public Species()
         {

@@ -2,14 +2,14 @@
 
 namespace DarwinBots.Model
 {
-    public record MutationProbability
+    internal record MutationProbability
     {
         public double Mean { get; init; }
         public double Probability { get; init; }
         public double StandardDeviation { get; init; }
     }
 
-    public class MutationProbabilities
+    internal class MutationProbabilities
     {
         public MutationProbability CopyError { get; set; }
         public int CopyErrorWhatToChange { get; set; }

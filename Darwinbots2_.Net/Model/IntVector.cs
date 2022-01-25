@@ -2,10 +2,12 @@
 
 namespace DarwinBots.Model
 {
-    public struct IntVector
+    internal record IntVector
     {
         private readonly int _x;
         private readonly int _y;
+
+        public IntVector() { }
 
         public IntVector(int x, int y)
         {
@@ -30,11 +32,6 @@ namespace DarwinBots.Model
             };
         }
 
-        public static bool operator !=(IntVector left, IntVector right)
-        {
-            return !(left == right);
-        }
-
         public static IntVector operator *(IntVector v1, int k)
         {
             return new()
@@ -51,19 +48,6 @@ namespace DarwinBots.Model
                 X = v1.X + v2.X,
                 Y = v1.Y + v2.Y
             };
-        }
-
-        public static bool operator ==(IntVector left, IntVector right)
-        {
-            return left.Equals(right);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (obj is IntVector vector)
-                return vector.X == X && vector.Y == Y;
-
-            return false;
         }
 
         public override int GetHashCode()

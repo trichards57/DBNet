@@ -1,6 +1,6 @@
 ﻿namespace DarwinBots.Model
 {
-    public enum ShotMode
+    internal enum ShotMode
     {
         Proportional,
         Fixed

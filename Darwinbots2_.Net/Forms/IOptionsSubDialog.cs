@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public interface IOptionsSubDialog
+    internal interface IOptionsSubDialog
     {
         Window Owner { get; set; }
 

@@ -83,20 +83,8 @@ namespace DarwinBots.Modules
             BotsToKill.Clear();
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
-            Vegs.TotalVegsDisplayed = Vegs.TotalVegs;
             Vegs.TotalVegs = 0;
-
-            if (SimOpt.SimOpts.Tides == 0)
-            {
-                Physics.BouyancyScaling = 1;
-            }
-            else
-            {
-                Physics.BouyancyScaling = (1 + Math.Sin((float)(SimOpt.SimOpts.TotRunCycle + SimOpt.SimOpts.TidesOf) % SimOpt.SimOpts.Tides / SimOpt.SimOpts.Tides * Math.PI * 2)) / 2;
-                Physics.BouyancyScaling = Math.Sqrt(Physics.BouyancyScaling);
-                SimOpt.SimOpts.YGravity = (1 - Physics.BouyancyScaling) * 4;
-                SimOpt.SimOpts.PhysBrown = Physics.BouyancyScaling > 0.8 ? 10 : 0;
-            }
+            Physics.BouyancyScaling = 1;
 
             //this loops is for pre update
             foreach (var rob in Robots.Where(r => r.Exists))
@@ -185,17 +173,13 @@ namespace DarwinBots.Modules
                 {
                     ManageDeath(rob); // Even bots with disabled DNA can die...
                 }
-                if (rob.Exists)
-                {
-                    Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] = (int)(Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] + rob.Energy + rob.Body * 10);
-                }
             }
 
             ReproduceAndKill();
             RemoveExtinctSpecies();
         }
 
-        private static List<DnaBlock> Crossover(List<block2> dna1, List<block2> dna2)
+        private static List<DnaBlock> Crossover(List<Block2> dna1, List<Block2> dna2)
         {
             var nn = 0;
             var res1 = 0;//result1
@@ -223,12 +207,12 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DnaBlock { Type = dna1[a].tipo, Value = dna1[a].value });
+                            outDna.Add(new DnaBlock { Type = dna1[a].Type, Value = dna1[a].Value });
                     }
                     else
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DnaBlock { Type = dna2[a].tipo, Value = dna2[a].value });
+                            outDna.Add(new DnaBlock { Type = dna2[a].Type, Value = dna2[a].Value });
                     }
                 }
                 else if (res1 - n1 > 0)
@@ -236,7 +220,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n1; a < res1 - 1; a++)
-                            outDna.Add(new DnaBlock { Type = dna1[a].tipo, Value = dna1[a].value });
+                            outDna.Add(new DnaBlock { Type = dna1[a].Type, Value = dna1[a].Value });
                     }
                 }
                 else if (res2 - n2 > 0)
@@ -244,7 +228,7 @@ namespace DarwinBots.Modules
                     if (ThreadSafeRandom.Local.Next(0, 2) == 0)
                     {
                         for (var a = n2; a < res2 - 1; a++)
-                            outDna.Add(new DnaBlock { Type = dna2[a].tipo, Value = dna2[a].value });
+                            outDna.Add(new DnaBlock { Type = dna2[a].Type, Value = dna2[a].Value });
                     }
                 }
 
@@ -262,8 +246,8 @@ namespace DarwinBots.Modules
                 {
                     var block = new DnaBlock
                     {
-                        Type = whatside ? dna1[a].tipo : dna2[a - nn + res2].tipo,
-                        Value = (dna1[a].tipo == dna2[a - nn + res2].tipo && Math.Abs(dna2[a].value) > 999 && Math.Abs(dna2[a - nn + res2].value) > 999 ? ThreadSafeRandom.Local.Next(0, 2) == 0 : whatside) ? dna1[a].value : dna2[a - nn + res2].value
+                        Type = whatside ? dna1[a].Type : dna2[a - nn + res2].Type,
+                        Value = (dna1[a].Type == dna2[a - nn + res2].Type && Math.Abs(dna2[a].Value) > 999 && Math.Abs(dna2[a - nn + res2].Value) > 999 ? ThreadSafeRandom.Local.Next(0, 2) == 0 : whatside) ? dna1[a].Value : dna2[a - nn + res2].Value
                     };
                     outDna.Add(block);
                 }
@@ -276,9 +260,9 @@ namespace DarwinBots.Modules
             return DnaManipulations.GeneEnd(rob.Dna, pos) - pos + 1;
         }
 
-        private static double GeneticDistance(List<block3> rob1, List<block3> rob2)
+        private static double GeneticDistance(List<Block3> rob1, List<Block3> rob2)
         {
-            return rob1.Count(b => b.match == 0) + rob2.Count(b => b.match == 0) / (rob1.Count + rob2.Count);
+            return rob1.Count(b => b.Match == 0) + rob2.Count(b => b.Match == 0) / (rob1.Count + rob2.Count);
         }
 
         private static MutationProbability MutateProbability(MutationProbability probability)
@@ -297,20 +281,20 @@ namespace DarwinBots.Modules
                 SimOpt.SimOpts.Specie.Remove(s);
         }
 
-        private static int ScanFromN(IList<block2> rob, int n, ref int layer)
+        private static int ScanFromN(IList<Block2> rob, int n, ref int layer)
         {
             for (var a = n; a < rob.Count; a++)
             {
-                if (rob[a].match == layer)
+                if (rob[a].Match == layer)
                     continue;
 
-                layer = rob[a].match;
+                layer = rob[a].Match;
                 return a;
             }
             return rob.Count;
         }
 
-        private static void SimpleMatch(List<block3> r1, List<block3> r2)
+        private static void SimpleMatch(List<Block3> r1, List<Block3> r2)
         {
             var ei1 = r1.Count;
             var ei2 = r2.Count;
@@ -331,8 +315,8 @@ namespace DarwinBots.Modules
                 if (loopr2 >= ei2)
                     loopr2 = ei2 - 1;
 
-                matchlist1.Add(r1[loopr1].nucli);
-                matchlist2.Add(r2[loopr2].nucli);
+                matchlist1.Add(r1[loopr1].Nucleus);
+                matchlist2.Add(r2[loopr2].Nucleus);
 
                 //does anything match
                 var matchr2 = false;
@@ -343,13 +327,13 @@ namespace DarwinBots.Modules
 
                 for (loopold = 0; loopold < matchlist1.Count; loopold++)
                 {
-                    if (r2[loopr2].nucli == matchlist1[loopold])
+                    if (r2[loopr2].Nucleus == matchlist1[loopold])
                     {
                         matchr2 = true;
                         match = true;
                         break;
                     }
-                    if (r1[loopr1].nucli == matchlist2[loopold])
+                    if (r1[loopr1].Nucleus == matchlist2[loopold])
                     {
                         match = true;
                         break;
@@ -375,14 +359,14 @@ namespace DarwinBots.Modules
 
                     do
                     {
-                        if (r2[loopr2].nucli == r1[loopr1].nucli)
+                        if (r2[loopr2].Nucleus == r1[loopr1].Nucleus)
                         {
                             if (newmatch == false)
                                 inc++;
 
                             newmatch = true;
-                            r1[loopr1].match = inc;
-                            r2[loopr2].match = inc;
+                            r1[loopr1] = r1[loopr1] with { Match = inc };
+                            r2[loopr2] = r2[loopr2] with { Match = inc };
                         }
                         else
                         {
@@ -535,7 +519,7 @@ namespace DarwinBots.Modules
                 return;
 
             // Attempt to stop veg overpopulation but will it work?
-            if (robot.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (robot.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegs < 0))
                 return;
 
             // If we got here and it's a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
@@ -544,7 +528,7 @@ namespace DarwinBots.Modules
             // then let them all reproduce.
             if (robot.IsVegetable && ThreadSafeRandom.Local.Next(0, 10) != 5 && TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
-            if (Vegs.TotalVegsDisplayed == -1)
+            if (Vegs.TotalVegs == -1)
                 return;
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
@@ -753,7 +737,7 @@ namespace DarwinBots.Modules
             //we let male veggies fertilize nonveggie females all they want since the offspring's "species" and thus vegginess
             //will be determined by their mother.  Perhaps a strategy will emerge where plants compete to reproduce
             //with nonveggies so as to bypass the popualtion limtis?  Who knows.
-            if (female.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegsDisplayed < 0))
+            if (female.IsVegetable && (TotalChlr > SimOpt.SimOpts.MaxPopulation || Vegs.TotalVegs < 0))
                 return;
 
             // If we got here and the female is a veg, then we are below the reproduction threshold.  Let a random 10% of the veggis reproduce
@@ -763,7 +747,7 @@ namespace DarwinBots.Modules
             if (female.IsVegetable && ThreadSafeRandom.Local.Next(0, 9) != 5 && TotalChlr > SimOpt.SimOpts.MaxPopulation * 0.9)
                 return;
 
-            if (Vegs.TotalVegsDisplayed == -1)
+            if (Vegs.TotalVegs == -1)
                 return;// no veggies can reproduce on the first cycle after the sim is restarted.
 
             per %= 100; // per should never be <=0 as this is checked in ManageReproduction()
@@ -786,13 +770,13 @@ namespace DarwinBots.Modules
 
             //Step1 Copy both dnas into block2
 
-            var dna1 = female.Dna.Select(d => new block2 { tipo = d.Type, value = d.Value }).ToList();
-            var dna2 = female.SpermDna.Select(d => new block2 { tipo = d.Type, value = d.Value }).ToList();
+            var dna1 = female.Dna.Select(d => new Block2 { Type = d.Type, Value = d.Value }).ToList();
+            var dna2 = female.SpermDna.Select(d => new Block2 { Type = d.Type, Value = d.Value }).ToList();
 
             //Step2 map nucli
 
-            var ndna1 = dna1.Select(d => new block3 { nucli = DnaTokenizing.DnaToInt(d.tipo, d.value) }).ToList();
-            var ndna2 = dna2.Select(d => new block3 { nucli = DnaTokenizing.DnaToInt(d.tipo, d.value) }).ToList();
+            var ndna1 = dna1.Select(d => new Block3 { Nucleus = DnaTokenizing.DnaToInt(d.Type, d.Value) }).ToList();
+            var ndna2 = dna2.Select(d => new Block3 { Nucleus = DnaTokenizing.DnaToInt(d.Type, d.Value) }).ToList();
 
             //Step3 Check longest sequences
 
@@ -809,10 +793,10 @@ namespace DarwinBots.Modules
             //Step4 map back
 
             for (var t = 0; t < dna1.Count; t++)
-                dna1[t].match = ndna1[t].match;
+                dna1[t] = dna1[t] with { Match = ndna1[t].Match };
 
             for (var t = 0; t < dna2.Count; t++)
-                dna2[t].match = ndna2[t].match;
+                dna2[t] = dna2[t] with { Match = ndna2[t].Match };
 
             //Step5 do crossover
 

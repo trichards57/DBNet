@@ -1,6 +1,6 @@
 namespace DarwinBots.Modules
 {
-    public enum MutationType
+    internal enum MutationType
     {
         PointMutation,
         MinorDeletion,

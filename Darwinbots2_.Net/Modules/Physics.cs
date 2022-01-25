@@ -366,20 +366,7 @@ namespace DarwinBots.Modules
 
         private static void GravityForces(Robot rob)
         {
-            if (SimOpt.SimOpts.YGravity == 0 || !SimOpt.SimOpts.PondMode || SimOpt.SimOpts.UpDnConnected)
-            {
-                rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
-            }
-            else
-            {
-                if (rob.Bouyancy > 0)
-                    rob.Energy -= SimOpt.SimOpts.YGravity / SimOpt.SimOpts.PhysMoving * (rob.Mass > 192 ? 192 : rob.Mass) * SimOpt.SimOpts.Costs.VoluntaryMovementCost * SimOpt.SimOpts.Costs.CostMultiplier * rob.Bouyancy;
-
-                if (1 / BouyancyScaling - rob.Position.Y / SimOpt.SimOpts.FieldHeight > rob.Bouyancy)
-                    rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
-                else
-                    rob.IndependentImpulse += new DoubleVector(0, -SimOpt.SimOpts.YGravity * rob.Mass);
-            }
+            rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
         }
 
         private static void PlanetEaters(IRobotManager robotManager, Robot rob)

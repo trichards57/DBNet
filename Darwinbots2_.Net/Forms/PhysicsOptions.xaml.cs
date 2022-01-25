@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class PhysicsOptions : IOptionsSubDialog
+    internal partial class PhysicsOptions : IOptionsSubDialog
     {
         public PhysicsOptions()
         {

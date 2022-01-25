@@ -27,11 +27,9 @@ namespace DarwinBots.Modules
         // TODO : Save last run settings
         // TODO : Graphing statistics
         // TODO : Handle showing data for the selected robot
-        // TODO : Handle signalling the window to draw
         // TODO : Handle selected robot logic
         // TODO : Handle saving the sim on error
         // TODO : Drag and drop robots
-        // TODO : Triggering screen updates
 
         public event EventHandler<UpdateAvailableArgs> UpdateAvailable;
 
@@ -112,13 +110,8 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.PhysMoving = savedFile.PhysMoving;
             SimOpt.SimOpts.TotBorn = savedFile.TotBorn;
             SimOpt.SimOpts.TotRunCycle = savedFile.TotRunCycle;
-            SimOpt.SimOpts.PondMode = savedFile.Pondmode;
             SimOpt.SimOpts.CorpseEnabled = savedFile.CorpseEnabled;
-            SimOpt.SimOpts.LightIntensity = savedFile.LightIntensity;
             SimOpt.SimOpts.Decay = savedFile.Decay;
-            SimOpt.SimOpts.Gradient = savedFile.Gradient;
-            SimOpt.SimOpts.DayNight = savedFile.DayNight;
-            SimOpt.SimOpts.CycleLength = savedFile.CycleLength;
             SimOpt.SimOpts.DecayDelay = savedFile.DecayDelay;
             SimOpt.SimOpts.DecayType = savedFile.DecayType;
             SimOpt.SimOpts.DxSxConnected = savedFile.DxSxConnected;
@@ -138,14 +131,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.FluidSolidCustom = savedFile.FluidSolidCustom;
             SimOpt.SimOpts.MaxVelocity = savedFile.MaxVelocity;
             SimOpt.SimOpts.NoShotDecay = savedFile.NoShotDecay;
-            SimOpt.SimOpts.SunUpThreshold = savedFile.SunUpThreshold;
-            SimOpt.SimOpts.SunUp = savedFile.SunUp;
-            SimOpt.SimOpts.SunDownThreshold = savedFile.SunDownThreshold;
-            SimOpt.SimOpts.SunDown = savedFile.SunDown;
             SimOpt.SimOpts.FixedBotRadii = savedFile.FixedBotRadii;
-            SimOpt.SimOpts.DayNightCycleCounter = savedFile.DayNightCycleCounter;
-            SimOpt.SimOpts.Daytime = savedFile.Daytime;
-            SimOpt.SimOpts.SunThresholdMode = savedFile.SunThresholdMode;
             SimOpt.SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
             SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
@@ -155,13 +141,7 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
             SimOpt.SimOpts.DisableTypArepro = savedFile.DisableTypArepro;
             SimOpt.SimOpts.NoWShotDecay = savedFile.NoWShotDecay;
-            SimOpt.SimOpts.SunOnRnd = savedFile.SunOnRnd;
             SimOpt.SimOpts.DisableFixing = savedFile.DisableFixing;
-            Vegs.SunPosition = savedFile.SunPosition;
-            Vegs.SunRange = savedFile.SunRange;
-            Vegs.SunChange = savedFile.SunChange;
-            SimOpt.SimOpts.Tides = savedFile.Tides;
-            SimOpt.SimOpts.TidesOf = savedFile.TidesOf;
             SimOpt.SimOpts.MutOscillSine = savedFile.MutOscillSine;
         }
 
@@ -189,10 +169,6 @@ namespace DarwinBots.Modules
                 CoefficientStatic = SimOpt.SimOpts.CoefficientStatic,
                 CorpseEnabled = SimOpt.SimOpts.CorpseEnabled,
                 Costs = SimOpt.SimOpts.Costs,
-                CycleLength = SimOpt.SimOpts.CycleLength,
-                DayNight = SimOpt.SimOpts.DayNight,
-                DayNightCycleCounter = SimOpt.SimOpts.DayNightCycleCounter,
-                Daytime = SimOpt.SimOpts.Daytime,
                 DeadRobotSnp = SimOpt.SimOpts.DeadRobotSnp,
                 Decay = SimOpt.SimOpts.Decay,
                 DecayDelay = SimOpt.SimOpts.DecayDelay,
@@ -211,8 +187,6 @@ namespace DarwinBots.Modules
                 FieldWidth = SimOpt.SimOpts.FieldWidth,
                 FixedBotRadii = SimOpt.SimOpts.FixedBotRadii,
                 FluidSolidCustom = SimOpt.SimOpts.FluidSolidCustom,
-                Gradient = SimOpt.SimOpts.Gradient,
-                LightIntensity = SimOpt.SimOpts.LightIntensity,
                 MaxAbsNum = SimOpt.SimOpts.MaxAbsNum,
                 MaxEnergy = SimOpt.SimOpts.MaxEnergy,
                 MaxPopulation = SimOpt.SimOpts.MaxPopulation,
@@ -230,7 +204,6 @@ namespace DarwinBots.Modules
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
                 PlanetEaters = SimOpt.SimOpts.PlanetEaters,
                 PlanetEatersG = SimOpt.SimOpts.PlanetEatersG,
-                Pondmode = SimOpt.SimOpts.PondMode,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
                 Robots = _robotsManager.Robots.Where(r => r.Exists),
@@ -240,17 +213,6 @@ namespace DarwinBots.Modules
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
                 Species = SimOpt.SimOpts.Specie,
-                SunChange = Vegs.SunChange,
-                SunDown = SimOpt.SimOpts.SunDown,
-                SunDownThreshold = SimOpt.SimOpts.SunDownThreshold,
-                SunOnRnd = SimOpt.SimOpts.SunOnRnd,
-                SunPosition = Vegs.SunPosition,
-                SunRange = Vegs.SunRange,
-                SunThresholdMode = SimOpt.SimOpts.SunThresholdMode,
-                SunUp = SimOpt.SimOpts.SunUp,
-                SunUpThreshold = SimOpt.SimOpts.SunUpThreshold,
-                Tides = SimOpt.SimOpts.Tides,
-                TidesOf = SimOpt.SimOpts.TidesOf,
                 TotBorn = SimOpt.SimOpts.TotBorn,
                 TotRunCycle = SimOpt.SimOpts.TotRunCycle,
                 UpDnConnected = SimOpt.SimOpts.UpDnConnected,
@@ -271,18 +233,6 @@ namespace DarwinBots.Modules
         public void StartSimulation(bool startLoaded = false)
         {
             DnaEngine.LoadSysVars();
-
-            if (SimOpt.SimOpts.SunOnRnd)
-            {
-                Vegs.SunRange = 0.5;
-                Vegs.SunChange = ThreadSafeRandom.Local.Next(3) + ThreadSafeRandom.Local.Next(2) * 10;
-                Vegs.SunPosition = ThreadSafeRandom.Local.NextDouble();
-            }
-            else
-            {
-                Vegs.SunPosition = 0.5;
-                Vegs.SunRange = 1;
-            }
 
             if (!startLoaded)
             {
@@ -462,16 +412,10 @@ namespace DarwinBots.Modules
                     SimOpt.SimOpts.MutCurrMult = SimOpt.SimOpts.TotRunCycle % (SimOpt.SimOpts.MutCycMax + SimOpt.SimOpts.MutCycMin) < SimOpt.SimOpts.MutCycMax ? 16 : 1 / 16;
             }
 
-            Vegs.TotalSimEnergyDisplayed = Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle];
-            Vegs.CurrentEnergyCycle = SimOpt.SimOpts.TotRunCycle % 100;
-            Vegs.TotalSimEnergy[Vegs.CurrentEnergyCycle] = 0;
-
             var currentPopulation = _robotsManager.TotalNotVegs;
 
             if (SimOpt.SimOpts.Costs.DynamicCostsIncludePlants)
-                currentPopulation += Vegs.TotalVegsDisplayed; //Include Plants in target population
-
-            //If (SimOpts.TotRunCycle + 200) Mod 2000 = 0 Then MsgBox "sup" & SimOpts.TotRunCycle 'debug only
+                currentPopulation += Vegs.TotalVegs; //Include Plants in target population
 
             if (SimOpt.SimOpts.TotRunCycle % 10 == 0)
             {
@@ -551,7 +495,7 @@ namespace DarwinBots.Modules
 
             _robotsManager.TotalChlr = allChlr / 16000; //Panda 8/23/2013 Calculate total unit chloroplasts
 
-            if (_robotsManager.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegsDisplayed != -1)
+            if (_robotsManager.TotalChlr < SimOpt.SimOpts.MinVegs && Vegs.TotalVegs != -1)
                 Vegs.VegsRepopulate(_robotsManager, _bucketManager); //Will be -1 first cycle after loading a sim.  Prevents spikes.
 
             Vegs.feedvegs(_robotsManager, SimOpt.SimOpts.MaxEnergy);

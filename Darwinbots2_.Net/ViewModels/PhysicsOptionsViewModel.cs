@@ -24,7 +24,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnableTides { get; set; }
         public double KineticFrictionCoefficient { get; set; }
         public bool PlanetEaters { get; set; }
         public double PlanetEatersG { get; set; }
@@ -52,7 +51,6 @@ namespace DarwinBots.ViewModels
             ZeroMomentum = optionsViewModel.ZeroMomentum;
             PlanetEaters = optionsViewModel.PlanetEaters;
             PlanetEatersG = optionsViewModel.PlanetEatersG;
-            EnableTides = optionsViewModel.EnableTides;
 
             if (!optionsViewModel.EnableTides)
             {
@@ -71,14 +69,6 @@ namespace DarwinBots.ViewModels
             optionsViewModel.ZeroMomentum = ZeroMomentum;
             optionsViewModel.PlanetEaters = PlanetEaters;
             optionsViewModel.PlanetEatersG = PlanetEatersG;
-            optionsViewModel.EnableTides = EnableTides;
-
-            if (!EnableTides)
-            {
-                optionsViewModel.YGravity = YGravity;
-                optionsViewModel.PhysBrown = BrownianMotion;
-            }
-
             optionsViewModel.PhysMoving = BangEfficiency;
             optionsViewModel.ZGravity = ZAxisGravity;
             optionsViewModel.CoefficientStatic = StaticFrictionCoefficient;

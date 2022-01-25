@@ -36,7 +36,6 @@ namespace DarwinBots.Model
         public bool InfoUsed { get; set; }
         public double k { get; set; }
         public int Last { get; set; }
-        public int Length { get; set; }
         public int Mem { get; set; }
         public double NaturalLength { get; set; }
         public Robot OtherBot { get; set; }

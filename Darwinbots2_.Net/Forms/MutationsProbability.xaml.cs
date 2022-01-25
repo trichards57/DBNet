@@ -2,7 +2,7 @@ using DarwinBots.ViewModels;
 
 namespace DarwinBots.Forms
 {
-    public partial class MutationsProbability
+    internal partial class MutationsProbability
     {
         public MutationsProbability()
         {

@@ -1,6 +1,6 @@
 ﻿namespace DarwinBots.Model
 {
-    public enum FieldMode
+    internal enum FieldMode
     {
         Fluid,
         Solid,

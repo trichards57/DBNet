@@ -3,7 +3,7 @@ using System.Windows;
 
 namespace DarwinBots.Forms
 {
-    public partial class CostsForm : IOptionsSubDialog
+    internal partial class CostsForm : IOptionsSubDialog
     {
         // TODO : Set up some validation on the Okay button.
 

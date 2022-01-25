@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace DarwinBots.Services
 {
-    public interface IDialogService
+    internal interface IDialogService
     {
         void ShowInfoMessageBox(string title, string message);
 
@@ -12,7 +12,7 @@ namespace DarwinBots.Services
            where TForm : IOptionsSubDialog, new();
     }
 
-    public class DialogService : IDialogService
+    internal class DialogService : IDialogService
     {
         public DialogService(Window owner)
         {

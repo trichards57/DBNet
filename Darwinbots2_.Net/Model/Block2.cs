@@ -1,9 +1,9 @@
 ﻿namespace DarwinBots.Model
 {
-    internal class block2
+    internal record Block2
     {
-        public int match { get; set; }
-        public int tipo { get; set; }
-        public int value { get; set; }
+        public int Match { get; init; }
+        public int Type { get; init; }
+        public int Value { get; init; }
     }
 }

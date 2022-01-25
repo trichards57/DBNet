@@ -2,7 +2,7 @@
 
 namespace DarwinBots.Model
 {
-    public class SafeStack<T> : Stack<T>
+    internal class SafeStack<T> : Stack<T>
     {
         public T DefaultValue { init; get; }
 

@@ -1,6 +1,6 @@
 ﻿namespace DarwinBots.Modules
 {
-    public record Costs
+    internal record Costs
     {
         public double AdvancedCommandCost { get; init; }
         public double AgeCost { get; init; }

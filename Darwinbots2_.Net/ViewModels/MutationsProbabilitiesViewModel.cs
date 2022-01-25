@@ -9,7 +9,7 @@ using System.Windows.Input;
 namespace DarwinBots.ViewModels
 {
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
-    public class MutationsProbabilitiesViewModel : ObservableObject
+    internal class MutationsProbabilitiesViewModel : ObservableObject
     {
         // TODO : Save mutations to a mrates file.
         // TODO : Work out a more efficient way of changing the mutation values.  Probably need a mutable version for this use.

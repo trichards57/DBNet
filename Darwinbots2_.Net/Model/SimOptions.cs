@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace DarwinBots.Model
 {
-    public class SimOptions
+    internal class SimOptions
     {
         public SimOptions()
         {
@@ -22,14 +22,6 @@ namespace DarwinBots.Model
         public bool CorpseEnabled { get; set; }
 
         public Costs Costs { get; set; } = new();
-
-        public int CycleLength { get; set; }
-
-        public bool DayNight { get; set; }
-
-        public int DayNightCycleCounter { get; set; }
-
-        public bool Daytime { get; set; }
 
         public bool DeadRobotSnp { get; set; }
 
@@ -67,10 +59,6 @@ namespace DarwinBots.Model
 
         public FieldMode FluidSolidCustom { get; set; }
 
-        public double Gradient { get; set; }
-
-        public int LightIntensity { get; set; }
-
         public int MaxAbsNum { get; set; }
 
         public int MaxEnergy { get; set; }
@@ -105,8 +93,6 @@ namespace DarwinBots.Model
 
         public double PlanetEatersG { get; set; }
 
-        public bool PondMode { get; set; }
-
         public int RepopAmount { get; set; }
 
         public int RepopCooldown { get; set; }
@@ -122,22 +108,6 @@ namespace DarwinBots.Model
         public List<Species> Specie { get; } = new();
 
         public int StartChlr => 32000;
-
-        public bool SunDown { get; set; }
-
-        public int SunDownThreshold { get; set; }
-
-        public bool SunOnRnd { get; set; }
-
-        public SunThresholdMode SunThresholdMode { get; set; }
-
-        public bool SunUp { get; set; }
-
-        public int SunUpThreshold { get; set; }
-
-        public int Tides { get; set; }
-
-        public int TidesOf { get; set; }
 
         public int TotBorn { get; set; }
 
@@ -163,10 +133,6 @@ namespace DarwinBots.Model
             CoefficientStatic = 0;
             CorpseEnabled = false;
             Costs = Costs.ZeroCosts with { CostMultiplier = 1, ZeroCostPopulationLimit = -1 };
-            CycleLength = 0;
-            DayNight = false;
-            DayNightCycleCounter = 0;
-            Daytime = true;
             DeadRobotSnp = false;
             Decay = 0;
             DecayType = DecayType.None;
@@ -183,8 +149,6 @@ namespace DarwinBots.Model
             FieldWidth = 16000;
             FixedBotRadii = false;
             FluidSolidCustom = FieldMode.Custom;
-            Gradient = 1.02;
-            LightIntensity = 0;
             MaxAbsNum = 0;
             MaxEnergy = 100;
             MaxPopulation = 100;
@@ -202,7 +166,6 @@ namespace DarwinBots.Model
             PhysMoving = 0.66;
             PlanetEaters = false;
             PlanetEatersG = 0;
-            PondMode = false;
             RepopAmount = 10;
             RepopCooldown = 10;
             SimGuid = Guid.Empty;
@@ -210,14 +173,6 @@ namespace DarwinBots.Model
             SpeciationForkInterval = 0;
             SpeciationGeneticDistance = 0;
             Specie.Clear();
-            SunDown = false;
-            SunDownThreshold = 1000000;
-            SunOnRnd = false;
-            SunThresholdMode = 0;
-            SunUp = false;
-            SunUpThreshold = 500000;
-            Tides = 0;
-            TidesOf = 0;
             TotBorn = 0;
             TotRunCycle = 0;
             UpDnConnected = false;

@@ -1,6 +1,6 @@
 ﻿namespace DarwinBots.Model
 {
-    public enum DecayType
+    internal enum DecayType
     {
         None = 0,
         Waste = 1,

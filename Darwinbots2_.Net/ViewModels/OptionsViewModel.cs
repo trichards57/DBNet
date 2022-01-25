@@ -16,14 +16,14 @@ using System.Windows.Input;
 
 namespace DarwinBots.ViewModels
 {
-    public enum BrownianMotion
+    internal enum BrownianMotion
     {
         Molecular,
         Bacterial,
         Animal
     }
 
-    public enum DragPresets
+    internal enum DragPresets
     {
         ThickFluid,
         Transitory,
@@ -32,7 +32,7 @@ namespace DarwinBots.ViewModels
         Custom
     }
 
-    public enum FrictionPresets
+    internal enum FrictionPresets
     {
         Sandpaper,
         Metal,
@@ -41,14 +41,14 @@ namespace DarwinBots.ViewModels
         Custom
     }
 
-    public enum MovementEfficiency
+    internal enum MovementEfficiency
     {
         Ideal,
         Biological,
         Mechanical
     }
 
-    public enum VerticalGravity
+    internal enum VerticalGravity
     {
         None,
         Moon,
@@ -58,7 +58,7 @@ namespace DarwinBots.ViewModels
     }
 
     [NotifyPropertyChanged(ExcludeExplicitProperties = true)]
-    public class OptionsViewModel : ObservableObject, IAsyncDisposable
+    internal class OptionsViewModel : ObservableObject, IAsyncDisposable
     {
         // TODO : Implement saving and loading settings
 
@@ -105,7 +105,6 @@ namespace DarwinBots.ViewModels
             _clipboardService = clipboardService ?? new ClipboardService();
             _dialogService = dialogService ?? new DialogService(Application.Current?.MainWindow);
             _lightTimer = new Timer(LightTimerTick, null, Timeout.Infinite, Timeout.Infinite);
-            ShowEnergyManagementCommand = new RelayCommand(ShowEnergyManagement);
             ShowGlobalSettingsCommand = new RelayCommand(ShowGlobalSettings);
             ShowCustomPhysicsCommand = new RelayCommand(ShowCustomPhysics);
             ListNonNativeSpeciesCommand = new RelayCommand(ListNonNativeSpecies);
@@ -174,7 +173,6 @@ namespace DarwinBots.ViewModels
 
         public int CyclesHigh { get => _cyclesHigh; set => SetProperty(ref _cyclesHigh, Math.Clamp(value, 0, 500000)); }
         public int CyclesLow { get => _cyclesLow; set => SetProperty(ref _cyclesLow, Math.Clamp(value, 0, 500000)); }
-        public int DayNightCyclePeriod { get; set; }
         public int DecayPeriod { get; set; }
         public double DecayRate { get; set; }
 
@@ -235,7 +233,6 @@ namespace DarwinBots.ViewModels
             }
         }
 
-        public bool EnableDayNightCycles { get; set; }
         public bool EnableLeftRightWrap { get; set; }
         public bool EnableMutationCycling { get; set; }
 
@@ -253,11 +250,8 @@ namespace DarwinBots.ViewModels
         }
 
         public bool EnablePondMode { get; set; }
-        public bool EnableSunComesUpThreshold { get; set; }
-        public bool EnableSunGoesDownThreshold { get; set; }
         public bool EnableTides { get; set; }
         public bool EnableTopDownWrap { get; set; }
-        public bool EnableWeather { get; set; }
         public float EnergyScalingFactor { get => _energyScalingFactor; set => SetProperty(ref _energyScalingFactor, value == 0 ? 1 : value); }
 
         public int FieldHeight
@@ -528,11 +522,6 @@ namespace DarwinBots.ViewModels
         public ICommand ShowGlobalSettingsCommand { get; }
         public ObservableCollection<SpeciesViewModel> SpeciesList { get; } = new();
         public ICommand StartNewCommand { get; }
-        public int SunComesUpThreshold { get; set; }
-        public int SunGoesDownThreshold { get; set; }
-        public bool ThresholdAdvancesSun { get; set; }
-        public bool ThresholdSuspendsDayCycles { get; set; }
-        public bool ThresholdTogglesSunState { get; set; }
         public int TidesCyclesOff { get; set; }
         public int TidesCyclesOn { get; set; }
         public double VegEnergyBodyDistribution { get; set; }
@@ -583,11 +572,8 @@ namespace DarwinBots.ViewModels
 
             DecayRate = options.Decay;
             DecayPeriod = options.DecayDelay;
-            LightLevel = options.LightIntensity;
-            SedimentLevel = (options.Gradient - 1) * 10;
             EnableTopDownWrap = options.UpDnConnected;
             EnableLeftRightWrap = options.DxSxConnected;
-            EnablePondMode = options.PondMode;
             ShotProportion = options.EnergyProp * 100;
             ShotEnergy = options.EnergyFix;
             ShotModeProportional = options.EnergyExType == ShotMode.Proportional;
@@ -673,7 +659,6 @@ namespace DarwinBots.ViewModels
             CollisionElasticity = options.CoefficientElasticity * 10;
             FixBotRadii = options.FixedBotRadii;
             SelectedSpecies = null;
-            EnableTides = options.Tides > 0;
 
             PhysBrown = options.PhysBrown;
 
@@ -691,33 +676,6 @@ namespace DarwinBots.ViewModels
 
             FieldWidth = options.FieldWidth;
             FieldHeight = options.FieldHeight;
-
-            DayNightCyclePeriod = options.CycleLength;
-            EnableDayNightCycles = options.DayNight;
-            SunComesUpThreshold = options.SunUpThreshold;
-            EnableSunComesUpThreshold = options.SunUp;
-            SunGoesDownThreshold = options.SunDownThreshold;
-            EnableSunGoesDownThreshold = options.SunDown;
-
-            switch (options.SunThresholdMode)
-            {
-                case SunThresholdMode.TemporarilySuspend:
-                    ThresholdSuspendsDayCycles = true;
-                    break;
-
-                case SunThresholdMode.AdvanceToDawnDusk:
-                    ThresholdAdvancesSun = true;
-                    break;
-
-                case SunThresholdMode.PermanentlyToggle:
-                    ThresholdTogglesSunState = true;
-                    break;
-            }
-
-            EnableWeather = options.SunOnRnd;
-
-            TidesCyclesOn = options.Tides;
-            TidesCyclesOff = options.TidesOf;
             ZeroMomentum = options.ZeroMomentum;
             PlanetEaters = options.PlanetEaters;
             PhysMoving = options.PhysMoving;
@@ -751,11 +709,8 @@ namespace DarwinBots.ViewModels
 
             options.Decay = DecayRate;
             options.DecayDelay = DecayPeriod;
-            options.LightIntensity = LightLevel;
-            options.Gradient = SedimentLevel / 10 + 1;
             options.UpDnConnected = EnableTopDownWrap;
             options.DxSxConnected = EnableLeftRightWrap;
-            options.PondMode = EnablePondMode;
             options.EnergyProp = ShotProportion / 100;
             options.EnergyFix = ShotEnergy;
             options.EnergyExType = ShotModeProportional ? ShotMode.Proportional : ShotMode.Fixed;
@@ -843,17 +798,6 @@ namespace DarwinBots.ViewModels
             options.BadWasteLevel = WasteThreshold == 0 ? -1 : WasteThreshold;
             options.CoefficientElasticity = CollisionElasticity / 10;
             options.FixedBotRadii = FixBotRadii;
-            // TODO : Work out how this works
-            if (EnableTides)
-            {
-                options.Tides = TidesCyclesOn;
-                options.TidesOf = TidesCyclesOff;
-            }
-            else
-            {
-                options.Tides = 0;
-                options.TidesOf = 0;
-            }
 
             options.PhysBrown = PhysBrown;
 
@@ -867,26 +811,6 @@ namespace DarwinBots.ViewModels
 
             options.FieldWidth = FieldWidth;
             options.FieldHeight = FieldHeight;
-
-            options.CycleLength = DayNightCyclePeriod;
-            options.DayNight = EnableDayNightCycles;
-            options.SunUpThreshold = SunComesUpThreshold;
-            options.SunUp = EnableSunComesUpThreshold;
-            options.SunDownThreshold = SunGoesDownThreshold;
-            options.SunDown = EnableSunGoesDownThreshold;
-
-            if (ThresholdSuspendsDayCycles)
-                options.SunThresholdMode = SunThresholdMode.TemporarilySuspend;
-            else if (ThresholdAdvancesSun)
-                options.SunThresholdMode = SunThresholdMode.AdvanceToDawnDusk;
-            else
-                options.SunThresholdMode = SunThresholdMode.PermanentlyToggle;
-
-            options.SunOnRnd = EnableWeather;
-
-            options.Tides = TidesCyclesOn;
-            options.TidesOf = TidesCyclesOff;
-
             options.ZeroMomentum = ZeroMomentum;
             options.PlanetEaters = PlanetEaters;
             options.PhysMoving = PhysMoving;
@@ -1042,11 +966,6 @@ namespace DarwinBots.ViewModels
         private void ShowCustomPhysics()
         {
             _dialogService.ShowOptionsSubDialog<PhysicsOptions>(this, ParentForm);
-        }
-
-        private void ShowEnergyManagement()
-        {
-            _dialogService.ShowOptionsSubDialog<EnergyForm>(this, ParentForm);
         }
 
         private void ShowGlobalSettings()

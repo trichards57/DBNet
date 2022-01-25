@@ -175,7 +175,7 @@ namespace DarwinBots.Modules
             var edgeToEdgeDistance = ab.Magnitude() - rob1.GetRadius(botRadiiFixed) - rob2.GetRadius(botRadiiFixed);
 
             var sightDistances = Enumerable.Range(0, 8)
-                .Select(a => 1440 * EyeStrength(rob1))
+                .Select(a => 1440)
                 .ToArray();
 
             var maxSightDistance = sightDistances.Max();
@@ -256,24 +256,6 @@ namespace DarwinBots.Modules
                 // Set the distance for the eye
                 rob1.Memory[MemoryAddresses.EyeStart + 1 + a] = (int)eyeValue;
             }
-        }
-
-        private double EyeStrength(Robot rob)
-        {
-            double eyeStrength;
-
-            if (_options.PondMode && rob.Position.Y > 1)
-                eyeStrength = Math.Pow(Math.Pow(EyeEffectiveness / (rob.Position.Y / 2000), _options.Gradient), 6828.0 / _options.FieldHeight);
-            else
-                eyeStrength = 1;
-
-            if (!_options.Daytime)
-                eyeStrength *= 0.8f;
-
-            if (eyeStrength > 1)
-                eyeStrength = 1;
-
-            return eyeStrength;
         }
     }
 }
