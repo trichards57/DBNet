@@ -57,6 +57,13 @@ namespace DarwinBots.Model
             };
         }
 
+        public static implicit operator DoubleVector(double[] items)
+        {
+            if (items.Length != 2)
+                throw new InvalidCastException();
+            return new DoubleVector(items[0], items[1]);
+        }
+
         public static implicit operator Point(DoubleVector vector)
         {
             return new Point((int)Math.Round(vector.X), (int)Math.Round(vector.Y));

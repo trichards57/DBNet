@@ -1,14 +1,15 @@
 using DarwinBots.Model;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace DarwinBots.Modules
 {
     internal interface IBucketManager
     {
-        void BucketsCollision(Robot rob);
+        IEnumerable<Robot> BucketsCollision(Robot rob, bool botRadiiFixed);
 
-        object BucketsProximity(Robot rob);
+        object BucketsProximity(Robot rob, bool botRadiiFixed);
 
         void UpdateBotBucket(Robot rob);
     }
@@ -21,7 +22,7 @@ namespace DarwinBots.Modules
         /// <remarks>
         /// 3348 plus twice radius of the largest possible bot is the farthest possible a bot can see.  4000 is a nice round number.
         /// </remarks>
-        private const int BucketSize = 4000;
+        public const int BucketSize = 4000;
 
         private const int EyeEffectiveness = 3;
 
@@ -54,7 +55,7 @@ namespace DarwinBots.Modules
             _options = opts;
             _obstacleManager = obstacleManager;
 
-            _numBuckets = new IntVector((int)Math.Ceiling((double)opts.FieldWidth / BucketSize) + 1, (int)Math.Ceiling((double)opts.FieldHeight / BucketSize) + 1);
+            _numBuckets = new IntVector((int)Math.Ceiling((double)opts.FieldWidth / BucketSize), (int)Math.Ceiling((double)opts.FieldHeight / BucketSize));
 
             _buckets = new Bucket[_numBuckets.X, _numBuckets.Y];
 
@@ -95,12 +96,13 @@ namespace DarwinBots.Modules
         /// Checks all the bots in the same bucket and surrounding buckets for collisions.
         /// </summary>
         /// <param name="rob">The robot to check.</param>
-        public void BucketsCollision(Robot rob)
+        public IEnumerable<Robot> BucketsCollision(Robot rob, bool botRadiiFixed)
         {
-            CheckBotBucketForCollision(rob, rob.BucketPosition);
+            foreach (var r in CheckBotBucketForCollision(rob, rob.BucketPosition, botRadiiFixed))
+                yield return r;
 
-            foreach (var adjBucket in _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].AdjacentBuckets.Where(b => b.X != -1))
-                CheckBotBucketForCollision(rob, adjBucket);
+            foreach (var r in _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].AdjacentBuckets.Where(b => b.X != -1).SelectMany(b => CheckBotBucketForCollision(rob, b, botRadiiFixed)))
+                yield return r;
         }
 
         /// <summary>
@@ -110,7 +112,7 @@ namespace DarwinBots.Modules
         /// The last viewed object.
         /// </returns>
         /// <param name="rob">The robot to check.</param>
-        public object BucketsProximity(Robot rob)
+        public object BucketsProximity(Robot rob, bool botRadiiFixed)
         {
             rob.LastSeenObject = null;
             rob.Memory[MemoryAddresses.EYEF] = 0;
@@ -118,13 +120,13 @@ namespace DarwinBots.Modules
             for (var x = MemoryAddresses.EyeStart + 1; x < MemoryAddresses.EyeEnd; x++)
                 rob.Memory[x] = 0;
 
-            CheckBotBucketForVision(rob, rob.BucketPosition);
+            CheckBotBucketForVision(rob, rob.BucketPosition, botRadiiFixed);
 
             foreach (var adjBucket in _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].AdjacentBuckets.Where(b => b.X != -1))
-                CheckBotBucketForVision(rob, adjBucket);
+                CheckBotBucketForVision(rob, adjBucket, botRadiiFixed);
 
-            if (_options.ShapesAreVisable && rob.Exists)
-                CompareShapes(rob);
+            if (_options.ShapesAreVisable)
+                CompareShapes(rob, botRadiiFixed);
 
             return rob.LastSeenObject;
         }
@@ -149,7 +151,7 @@ namespace DarwinBots.Modules
 
             if (rob.BucketPosition == newBucket) return;
 
-            if (rob.BucketPosition.X != -2 && rob.BucketPosition.Y != -2)
+            if (rob.BucketPosition.X >= 0 && rob.BucketPosition.Y >= 0)
                 _buckets[rob.BucketPosition.X, rob.BucketPosition.Y].Robots.Remove(rob);
 
             _buckets[newBucket.X, newBucket.Y].Robots.Add(rob);
@@ -242,27 +244,27 @@ namespace DarwinBots.Modules
             return false;
         }
 
-        private void CheckBotBucketForCollision(Robot rob, IntVector pos)
+        private IEnumerable<Robot> CheckBotBucketForCollision(Robot rob, IntVector pos, bool botRadiiFixed)
         {
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob && i.AbsNum > rob.AbsNum))
             {
                 var distvector = rob.Position - r.Position;
-                var dist = rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + r.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+                var dist = rob.GetRadius(botRadiiFixed) + r.GetRadius(botRadiiFixed);
                 if (distvector.MagnitudeSquare() < dist * dist)
-                    Physics.Repel(rob, r);
+                    yield return r;
             }
         }
 
-        private void CheckBotBucketForVision(Robot rob, IntVector pos)
+        private void CheckBotBucketForVision(Robot rob, IntVector pos, bool botRadiiFixed)
         {
             foreach (var r in _buckets[pos.X, pos.Y].Robots.Where(i => i != rob))
-                CompareRobots(rob, r);
+                CompareRobots(rob, r, botRadiiFixed);
         }
 
-        private void CompareRobots(Robot rob1, Robot rob2)
+        private void CompareRobots(Robot rob1, Robot rob2, bool botRadiiFixed)
         {
             var ab = rob2.Position - rob1.Position;
-            var edgeToEdgeDistance = ab.Magnitude() - rob1.GetRadius(SimOpt.SimOpts.FixedBotRadii) - rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            var edgeToEdgeDistance = ab.Magnitude() - rob1.GetRadius(botRadiiFixed) - rob2.GetRadius(botRadiiFixed);
 
             var sightDistances = Enumerable.Range(0, 8)
                 .Select(a => EyeSightDistance(rob1.Memory[MemoryAddresses.EYE1WIDTH + a], rob1))
@@ -286,11 +288,11 @@ namespace DarwinBots.Modules
             var ac = ab.Unit();
 
             var ad = new DoubleVector(ac.Y, -ac.X);
-            ad *= rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            ad *= rob2.GetRadius(botRadiiFixed);
             ad += ab;
 
             ac = new DoubleVector(-ac.Y, ac.X);
-            ac *= rob2.GetRadius(SimOpt.SimOpts.FixedBotRadii);
+            ac *= rob2.GetRadius(botRadiiFixed);
             ac += ab;
 
             // Coordinates are in the 4th quadrant, so make the y values negative so the math works
@@ -363,7 +365,7 @@ namespace DarwinBots.Modules
             }
         }
 
-        private void CompareShapes(Robot rob)
+        private void CompareShapes(Robot rob, bool botRadiiFixed)
         {
             var d1 = new DoubleVector[5];
             var p = new DoubleVector[5];
@@ -603,7 +605,7 @@ namespace DarwinBots.Modules
 
                     if (lowestDist >= 32000) continue;
 
-                    var percentDistance = (lowestDist - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + 10) / sightDistance;
+                    var percentDistance = (lowestDist - rob.GetRadius(botRadiiFixed) + 10) / sightDistance;
                     var eyeValue = percentDistance <= 0 ? 32000 : (int)(1 / (percentDistance * percentDistance));
 
                     if (eyeValue > 32000)

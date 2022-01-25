@@ -198,7 +198,7 @@ namespace DarwinBots.Modules
             rob.Memory[MemoryAddresses.TotalBots] = robotManager.TotalRobots;
             rob.Memory[MemoryAddresses.TOTALMYSPECIES] = SpeciesFromBot(rob).Population;
 
-            if (!rob.CantSee && !rob.IsCorpse && bucketManager.BucketsProximity(rob) != null)
+            if (!rob.CantSee && !rob.IsCorpse && bucketManager.BucketsProximity(rob, SimOpt.SimOpts.FixedBotRadii) != null)
             {
                 switch (rob.LastSeenObject)
                 {

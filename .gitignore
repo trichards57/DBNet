@@ -328,3 +328,5 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+/DBNetTests/coveragereport
+/DBNetTests/run-tests.ps1

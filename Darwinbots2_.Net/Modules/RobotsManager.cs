@@ -122,7 +122,8 @@ namespace DarwinBots.Modules
                 if (!rob.IsFixed)
                     Physics.NetForces(this, rob); //calculate forces on all robots
 
-                _bucketManager.BucketsCollision(rob);
+                foreach (var r in _bucketManager.BucketsCollision(rob, SimOpt.SimOpts.FixedBotRadii))
+                    Physics.Repel(rob, r);
 
                 if (rob.StaticImpulse > 0 & (rob.IndependentImpulse.X != 0 || rob.IndependentImpulse.Y != 0))
                 {
