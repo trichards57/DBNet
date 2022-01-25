@@ -89,7 +89,6 @@ namespace DarwinBots.ViewModels
         private double _physMoving;
         private int _repopulationCooldownPeriod;
         private int _robotsPerRepopulationEvent;
-        private double _sedimentLevel;
         private SpeciesViewModel _selectedSpecies;
         private int _shotEnergy;
         private bool _shotModeFixedEnergy;
@@ -571,8 +570,6 @@ namespace DarwinBots.ViewModels
 
             DecayRate = options.Decay;
             DecayPeriod = options.DecayDelay;
-            EnableTopDownWrap = options.UpDnConnected;
-            EnableLeftRightWrap = options.DxSxConnected;
             ShotProportion = options.EnergyProp * 100;
             ShotEnergy = options.EnergyFix;
             ShotModeProportional = options.EnergyExType == ShotMode.Proportional;
@@ -676,10 +673,8 @@ namespace DarwinBots.ViewModels
             FieldWidth = options.FieldWidth;
             FieldHeight = options.FieldHeight;
             ZeroMomentum = options.ZeroMomentum;
-            PlanetEaters = options.PlanetEaters;
             PhysMoving = options.PhysMoving;
             ZGravity = options.ZGravity;
-            PlanetEatersG = options.PlanetEatersG;
             CoefficientStatic = options.CoefficientStatic;
             CoefficientKinetic = options.CoefficientKinetic;
             YGravity = options.YGravity;
@@ -708,8 +703,6 @@ namespace DarwinBots.ViewModels
 
             options.Decay = DecayRate;
             options.DecayDelay = DecayPeriod;
-            options.UpDnConnected = EnableTopDownWrap;
-            options.DxSxConnected = EnableLeftRightWrap;
             options.EnergyProp = ShotProportion / 100;
             options.EnergyFix = ShotEnergy;
             options.EnergyExType = ShotModeProportional ? ShotMode.Proportional : ShotMode.Fixed;
@@ -811,41 +804,11 @@ namespace DarwinBots.ViewModels
             options.FieldWidth = FieldWidth;
             options.FieldHeight = FieldHeight;
             options.ZeroMomentum = ZeroMomentum;
-            options.PlanetEaters = PlanetEaters;
             options.PhysMoving = PhysMoving;
             options.ZGravity = ZGravity;
-            options.PlanetEatersG = PlanetEatersG;
             options.CoefficientStatic = CoefficientStatic;
             options.CoefficientKinetic = CoefficientKinetic;
             options.YGravity = YGravity;
-        }
-
-        public void SetPondMode(bool enable)
-        {
-            if (enable)
-            {
-                var res = MessageBox.Show("Turning on Pond Mode will greatly alter the physics of the simulation.  Chloroplasts will recieve less energy towards the bottom of the field.  Gravity will be turned on and top/down wrapping switched off.  Do you want to continue?", "Enable Pond Mode", MessageBoxButton.YesNo, MessageBoxImage.Warning, MessageBoxResult.No);
-
-                if (res == MessageBoxResult.Yes)
-                {
-                    EnablePondMode = true;
-                    EnableTopDownWrap = false;
-                    YGravity = 6.2;
-                    LightLevel = 100;
-                    SedimentLevel = 2;
-                }
-            }
-            EnablePondMode = false;
-        }
-
-        public void StartLightTimer()
-        {
-            _lightTimer.Change(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
-        }
-
-        public void StopLightTimer()
-        {
-            _lightTimer.Change(TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(100));
         }
 
         private async Task AddSpecies()

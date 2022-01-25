@@ -1,5 +1,4 @@
 ﻿using DarwinBots.Modules;
-using System;
 using System.Collections.Generic;
 
 namespace DarwinBots.Model
@@ -23,8 +22,6 @@ namespace DarwinBots.Model
 
         public Costs Costs { get; set; } = new();
 
-        public bool DeadRobotSnp { get; set; }
-
         public double Decay { get; set; }
 
         public int DecayDelay { get; set; }
@@ -41,8 +38,6 @@ namespace DarwinBots.Model
 
         public bool DisableTypArepro { get; set; }
 
-        public bool DxSxConnected { get; set; }
-
         public bool EnableAutoSpeciation { get; set; }
 
         public ShotMode EnergyExType { get; set; }
@@ -58,8 +53,6 @@ namespace DarwinBots.Model
         public bool FixedBotRadii { get; set; }
 
         public FieldMode FluidSolidCustom { get; set; }
-
-        public int MaxAbsNum { get; set; }
 
         public int MaxEnergy { get; set; }
 
@@ -89,17 +82,9 @@ namespace DarwinBots.Model
 
         public double PhysMoving { get; set; }
 
-        public bool PlanetEaters { get; set; }
-
-        public double PlanetEatersG { get; set; }
-
         public int RepopAmount { get; set; }
 
         public int RepopCooldown { get; set; }
-
-        public Guid SimGuid { get; set; }
-
-        public bool SnpExcludeVegs { get; set; }
 
         public int SpeciationForkInterval { get; set; }
 
@@ -112,8 +97,6 @@ namespace DarwinBots.Model
         public int TotBorn { get; set; }
 
         public int TotRunCycle { get; set; }
-
-        public bool UpDnConnected { get; set; }
 
         public double VegFeedingToBody { get; set; }
 
@@ -133,7 +116,6 @@ namespace DarwinBots.Model
             CoefficientStatic = 0;
             CorpseEnabled = false;
             Costs = Costs.ZeroCosts with { CostMultiplier = 1, ZeroCostPopulationLimit = -1 };
-            DeadRobotSnp = false;
             Decay = 0;
             DecayType = DecayType.None;
             Density = 0;
@@ -141,7 +123,6 @@ namespace DarwinBots.Model
             DisableMutations = false;
             DisableTies = false;
             DisableTypArepro = false;
-            DxSxConnected = false;
             EnableAutoSpeciation = false;
             EnergyExType = ShotMode.Proportional;
             EnergyFix = 200;
@@ -149,7 +130,6 @@ namespace DarwinBots.Model
             FieldWidth = 16000;
             FixedBotRadii = false;
             FluidSolidCustom = FieldMode.Custom;
-            MaxAbsNum = 0;
             MaxEnergy = 100;
             MaxPopulation = 100;
             MaxVelocity = 60;
@@ -164,18 +144,13 @@ namespace DarwinBots.Model
             OldCostX = 1;
             PhysBrown = 0.5;
             PhysMoving = 0.66;
-            PlanetEaters = false;
-            PlanetEatersG = 0;
             RepopAmount = 10;
             RepopCooldown = 10;
-            SimGuid = Guid.Empty;
-            SnpExcludeVegs = false;
             SpeciationForkInterval = 0;
             SpeciationGeneticDistance = 0;
             Specie.Clear();
             TotBorn = 0;
             TotRunCycle = 0;
-            UpDnConnected = false;
             VegFeedingToBody = 0.75;
             Viscosity = 0;
             YGravity = 0;

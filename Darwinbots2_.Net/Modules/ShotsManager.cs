@@ -442,47 +442,26 @@ namespace DarwinBots.Modules
 
         private Robot NewShotCollision(IRobotManager robotManager, Shot shot)
         {
-            // Check for collisions with the field edges
-            if (SimOpt.SimOpts.UpDnConnected)
+            if (shot.Position.Y > SimOpt.SimOpts.FieldHeight)
             {
-                if (shot.Position.Y > SimOpt.SimOpts.FieldHeight)
-                    shot.Position -= new DoubleVector(0, SimOpt.SimOpts.FieldHeight);
-                else if (shot.Position.Y < 0)
-                    shot.Position += new DoubleVector(0, SimOpt.SimOpts.FieldHeight);
+                shot.Position = new DoubleVector(shot.Position.X, SimOpt.SimOpts.FieldHeight);
+                shot.Velocity = new DoubleVector(shot.Velocity.X, -1 * Math.Abs(shot.Velocity.Y));
             }
-            else
+            else if (shot.Position.Y < 0)
             {
-                if (shot.Position.Y > SimOpt.SimOpts.FieldHeight)
-                {
-                    shot.Position = new DoubleVector(shot.Position.X, SimOpt.SimOpts.FieldHeight);
-                    shot.Velocity = new DoubleVector(shot.Velocity.X, -1 * Math.Abs(shot.Velocity.Y));
-                }
-                else if (shot.Position.Y < 0)
-                {
-                    shot.Position = new DoubleVector(shot.Position.X, 0);
-                    shot.Velocity = new DoubleVector(shot.Velocity.X, Math.Abs(shot.Velocity.Y));
-                }
+                shot.Position = new DoubleVector(shot.Position.X, 0);
+                shot.Velocity = new DoubleVector(shot.Velocity.X, Math.Abs(shot.Velocity.Y));
             }
 
-            if (SimOpt.SimOpts.DxSxConnected)
+            if (shot.Position.X > SimOpt.SimOpts.FieldWidth)
             {
-                if (shot.Position.X > SimOpt.SimOpts.FieldWidth)
-                    shot.Position -= new DoubleVector(SimOpt.SimOpts.FieldWidth, 0);
-                else if (shot.Position.X < 0)
-                    shot.Position += new DoubleVector(SimOpt.SimOpts.FieldWidth, 0);
+                shot.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth, shot.Position.Y);
+                shot.Velocity = new DoubleVector(-1 * Math.Abs(shot.Velocity.X), shot.Velocity.Y);
             }
-            else
+            else if (shot.Position.X < 0)
             {
-                if (shot.Position.X > SimOpt.SimOpts.FieldWidth)
-                {
-                    shot.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth, shot.Position.Y);
-                    shot.Velocity = new DoubleVector(-1 * Math.Abs(shot.Velocity.X), shot.Velocity.Y);
-                }
-                else if (shot.Position.X < 0)
-                {
-                    shot.Position = new DoubleVector(0, shot.Position.Y);
-                    shot.Velocity = new DoubleVector(Math.Abs(shot.Velocity.X), shot.Velocity.Y);
-                }
+                shot.Position = new DoubleVector(0, shot.Position.Y);
+                shot.Velocity = new DoubleVector(Math.Abs(shot.Velocity.X), shot.Velocity.Y);
             }
 
             Robot newShotCollision = null;

@@ -432,8 +432,6 @@ namespace DBNetTests.ViewModels
             vm.EnableCorpseMode.Should().Be(options.CorpseEnabled);
             vm.DecayRate.Should().Be(options.Decay);
             vm.DecayPeriod.Should().Be(options.DecayDelay);
-            vm.EnableTopDownWrap.Should().Be(options.UpDnConnected);
-            vm.EnableLeftRightWrap.Should().Be(options.DxSxConnected);
             vm.ShotProportion.Should().Be(options.EnergyProp * 100);
             vm.ShotEnergy.Should().Be(options.EnergyFix);
             vm.MutationMultiplier.Should().Be(Math.Log(Math.Max(options.MutCurrMult, 0), 2));

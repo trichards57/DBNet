@@ -89,8 +89,6 @@ namespace DarwinBots.Modules
             _shotsManager.Shots.AddRange(savedFile.Shots);
 
             SimOpt.SimOpts.Costs = savedFile.Costs;
-            SimOpt.SimOpts.DeadRobotSnp = savedFile.DeadRobotSnp;
-            SimOpt.SimOpts.SnpExcludeVegs = savedFile.SnpExcludeVegs;
             SimOpt.SimOpts.DisableTies = savedFile.DisableTies;
             SimOpt.SimOpts.EnergyExType = savedFile.EnergyExType;
             SimOpt.SimOpts.EnergyFix = savedFile.EnergyFix;
@@ -114,16 +112,12 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.Decay = savedFile.Decay;
             SimOpt.SimOpts.DecayDelay = savedFile.DecayDelay;
             SimOpt.SimOpts.DecayType = savedFile.DecayType;
-            SimOpt.SimOpts.DxSxConnected = savedFile.DxSxConnected;
-            SimOpt.SimOpts.UpDnConnected = savedFile.UpDnConnected;
             SimOpt.SimOpts.RepopAmount = savedFile.RepopAmount;
             SimOpt.SimOpts.RepopCooldown = savedFile.RepopCooldown;
             SimOpt.SimOpts.ZeroMomentum = savedFile.ZeroMomentum;
             SimOpt.SimOpts.VegFeedingToBody = savedFile.VegFeedingToBody;
             SimOpt.SimOpts.CoefficientStatic = savedFile.CoefficientStatic;
             SimOpt.SimOpts.CoefficientKinetic = savedFile.CoefficientKinetic;
-            SimOpt.SimOpts.PlanetEaters = savedFile.PlanetEaters;
-            SimOpt.SimOpts.PlanetEatersG = savedFile.PlanetEatersG;
             SimOpt.SimOpts.Viscosity = savedFile.Viscosity;
             SimOpt.SimOpts.Density = savedFile.Density;
             SimOpt.SimOpts.BadWasteLevel = savedFile.BadWastelevel;
@@ -132,10 +126,8 @@ namespace DarwinBots.Modules
             SimOpt.SimOpts.MaxVelocity = savedFile.MaxVelocity;
             SimOpt.SimOpts.NoShotDecay = savedFile.NoShotDecay;
             SimOpt.SimOpts.FixedBotRadii = savedFile.FixedBotRadii;
-            SimOpt.SimOpts.MaxAbsNum = savedFile.MaxAbsNum;
             SimOpt.SimOpts.OldCostX = savedFile.OldCostX;
             SimOpt.SimOpts.DisableMutations = savedFile.DisableMutations;
-            SimOpt.SimOpts.SimGuid = savedFile.SimGuid;
             SimOpt.SimOpts.SpeciationGeneticDistance = savedFile.SpeciationGeneticDistance;
             SimOpt.SimOpts.EnableAutoSpeciation = savedFile.EnableAutoSpeciation;
             SimOpt.SimOpts.SpeciationForkInterval = savedFile.SpeciationForkInterval;
@@ -169,7 +161,6 @@ namespace DarwinBots.Modules
                 CoefficientStatic = SimOpt.SimOpts.CoefficientStatic,
                 CorpseEnabled = SimOpt.SimOpts.CorpseEnabled,
                 Costs = SimOpt.SimOpts.Costs,
-                DeadRobotSnp = SimOpt.SimOpts.DeadRobotSnp,
                 Decay = SimOpt.SimOpts.Decay,
                 DecayDelay = SimOpt.SimOpts.DecayDelay,
                 DecayType = SimOpt.SimOpts.DecayType,
@@ -178,7 +169,6 @@ namespace DarwinBots.Modules
                 DisableMutations = SimOpt.SimOpts.DisableMutations,
                 DisableTies = SimOpt.SimOpts.DisableTies,
                 DisableTypArepro = SimOpt.SimOpts.DisableTypArepro,
-                DxSxConnected = SimOpt.SimOpts.DxSxConnected,
                 EnableAutoSpeciation = SimOpt.SimOpts.EnableAutoSpeciation,
                 EnergyExType = SimOpt.SimOpts.EnergyExType,
                 EnergyFix = SimOpt.SimOpts.EnergyFix,
@@ -187,7 +177,6 @@ namespace DarwinBots.Modules
                 FieldWidth = SimOpt.SimOpts.FieldWidth,
                 FixedBotRadii = SimOpt.SimOpts.FixedBotRadii,
                 FluidSolidCustom = SimOpt.SimOpts.FluidSolidCustom,
-                MaxAbsNum = SimOpt.SimOpts.MaxAbsNum,
                 MaxEnergy = SimOpt.SimOpts.MaxEnergy,
                 MaxPopulation = SimOpt.SimOpts.MaxPopulation,
                 MaxVelocity = SimOpt.SimOpts.MaxVelocity,
@@ -202,20 +191,15 @@ namespace DarwinBots.Modules
                 OldCostX = SimOpt.SimOpts.OldCostX,
                 PhysBrown = SimOpt.SimOpts.PhysBrown,
                 PhysMoving = SimOpt.SimOpts.PhysMoving,
-                PlanetEaters = SimOpt.SimOpts.PlanetEaters,
-                PlanetEatersG = SimOpt.SimOpts.PlanetEatersG,
                 RepopAmount = SimOpt.SimOpts.RepopAmount,
                 RepopCooldown = SimOpt.SimOpts.RepopCooldown,
                 Robots = _robotsManager.Robots.Where(r => r.Exists),
                 Shots = _shotsManager.Shots,
-                SimGuid = SimOpt.SimOpts.SimGuid,
-                SnpExcludeVegs = SimOpt.SimOpts.SnpExcludeVegs,
                 SpeciationForkInterval = SimOpt.SimOpts.SpeciationForkInterval,
                 SpeciationGeneticDistance = SimOpt.SimOpts.SpeciationGeneticDistance,
                 Species = SimOpt.SimOpts.Specie,
                 TotBorn = SimOpt.SimOpts.TotBorn,
                 TotRunCycle = SimOpt.SimOpts.TotRunCycle,
-                UpDnConnected = SimOpt.SimOpts.UpDnConnected,
                 VegFeedingToBody = SimOpt.SimOpts.VegFeedingToBody,
                 Viscosity = SimOpt.SimOpts.Viscosity,
                 Ygravity = SimOpt.SimOpts.YGravity,
@@ -236,7 +220,6 @@ namespace DarwinBots.Modules
 
             if (!startLoaded)
             {
-                SimOpt.SimOpts.SimGuid = Guid.NewGuid();
                 SimOpt.SimOpts.TotBorn = 0;
             }
 

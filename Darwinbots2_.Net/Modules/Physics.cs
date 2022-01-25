@@ -8,7 +8,6 @@ namespace DarwinBots.Modules
     internal static class Physics
     {
         public const double SmudgeFactor = 50;
-        public static double BouyancyScaling { get; set; }
 
         public static double AngDiff(double a1, double a2)
         {
@@ -44,48 +43,28 @@ namespace DarwinBots.Modules
 
             if (dist.X != 0)
             {
-                if (SimOpt.SimOpts.DxSxConnected)
-                {
-                    if (dist.X < 0)
-                        Multibots.ReSpawn(bucketManager, rob, smudge, rob.Position.Y);
-                    else
-                        Multibots.ReSpawn(bucketManager, rob, SimOpt.SimOpts.FieldWidth - smudge, rob.Position.Y);
-                }
-                else
-                {
-                    rob.Memory[214] = 1;
+                rob.Memory[214] = 1;
 
-                    if (rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
-                        rob.Position = new DoubleVector(rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
+                if (rob.Position.X - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
+                    rob.Position = new DoubleVector(rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
 
-                    if (rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldWidth)
-                        rob.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
+                if (rob.Position.X + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldWidth)
+                    rob.Position = new DoubleVector(SimOpt.SimOpts.FieldWidth - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii), rob.Position.Y);
 
-                    rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
-                }
+                rob.ResistiveImpulse += new DoubleVector(rob.Velocity.X * b, 0);
             }
 
             if (dist.Y != 0)
             {
-                if (SimOpt.SimOpts.UpDnConnected)
-                {
-                    if (dist.Y < 0)
-                        Multibots.ReSpawn(bucketManager, rob, rob.Position.X, smudge);
-                    else
-                        Multibots.ReSpawn(bucketManager, rob, rob.Position.X, SimOpt.SimOpts.FieldHeight - smudge);
-                }
-                else
-                {
-                    rob.Memory[214] = 1;
+                rob.Memory[214] = 1;
 
-                    if (rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
-                        rob.Position = new DoubleVector(rob.Position.X, rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+                if (rob.Position.Y - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) < 0)
+                    rob.Position = new DoubleVector(rob.Position.X, rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
 
-                    if (rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldHeight)
-                        rob.Position = new DoubleVector(rob.Position.X, SimOpt.SimOpts.FieldHeight - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
+                if (rob.Position.Y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) > SimOpt.SimOpts.FieldHeight)
+                    rob.Position = new DoubleVector(rob.Position.X, SimOpt.SimOpts.FieldHeight - rob.GetRadius(SimOpt.SimOpts.FixedBotRadii));
 
-                    rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
-                }
+                rob.ResistiveImpulse += new DoubleVector(0, rob.Velocity.Y * b);
             }
         }
 
@@ -102,7 +81,6 @@ namespace DarwinBots.Modules
             if (Math.Abs(rob.Velocity.Y) < 0.0000001)
                 rob.Velocity = new DoubleVector(rob.Velocity.X, 0);
 
-            PlanetEaters(robotManager, rob);
             FrictionForces(rob);
             SphereDragForces(rob);
             BrownianForces(rob);
@@ -367,28 +345,6 @@ namespace DarwinBots.Modules
         private static void GravityForces(Robot rob)
         {
             rob.IndependentImpulse += new DoubleVector(0, SimOpt.SimOpts.YGravity * rob.Mass);
-        }
-
-        private static void PlanetEaters(IRobotManager robotManager, Robot rob)
-        {
-            if (!SimOpt.SimOpts.PlanetEaters || rob.Mass == 0)
-                return;
-
-            foreach (var r in robotManager.Robots.Where(r => r.Mass > 0 && r.Exists))
-            {
-                var posDiff = r.Position - rob.Position;
-                var mag = posDiff.Magnitude();
-
-                if (mag == 0)
-                    continue;
-
-                var force = SimOpt.SimOpts.PlanetEatersG * (rob.Mass > 192 ? 192 : rob.Mass) * (r.Mass > 192 ? 192 : r.Mass) / (mag * mag);
-
-                posDiff *= 1 / mag;
-                posDiff *= force;
-
-                rob.IndependentImpulse += posDiff;
-            }
         }
 
         private static double SphereCd(double velocitymagnitude, double radius)

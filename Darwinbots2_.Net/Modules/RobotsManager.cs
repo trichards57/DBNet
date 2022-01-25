@@ -84,7 +84,6 @@ namespace DarwinBots.Modules
             BotsToReproduce.Clear();
             BotsToReproduceSexually.Clear();
             Vegs.TotalVegs = 0;
-            Physics.BouyancyScaling = 1;
 
             //this loops is for pre update
             foreach (var rob in Robots.Where(r => r.Exists))
@@ -1113,10 +1112,10 @@ namespace DarwinBots.Modules
             if (Robots.Any(r => r.Exists && r != rob && Math.Abs(r.Position.X - x) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) && Math.Abs(r.Position.Y - y) < r.GetRadius(SimOpt.SimOpts.FixedBotRadii) + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii)))
                 return true;
 
-            if (SimOpt.SimOpts.DxSxConnected == false && (x < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || x + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth))
+            if (x < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || x + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldWidth)
                 return true;
 
-            if (SimOpt.SimOpts.UpDnConnected == false && (y < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldHeight))
+            if (y < rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor || y + rob.GetRadius(SimOpt.SimOpts.FixedBotRadii) + Physics.SmudgeFactor > SimOpt.SimOpts.FieldHeight)
                 return true;
 
             return false;
