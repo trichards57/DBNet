@@ -1,0 +1,62 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWPF>true</UseWPF>
+    <StartupObject>DarwinBots.App</StartupObject>
+    <RootNamespace>DarwinBots</RootNamespace>
+    <AssemblyName>DarwinBots</AssemblyName>
+    <Configurations>Debug;Release;Debug No PostSharp</Configurations>
+    <Nullable>warnings</Nullable>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug No PostSharp|AnyCPU'">
+    <SkipPostSharp>True</SkipPostSharp>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Forms\datirob.xaml.cs" />
+    <Compile Remove="Forms\DNA_Help.xaml.cs" />
+    <Compile Remove="Forms\frmAbout.xaml.cs" />
+    <Compile Remove="Forms\frmEYE.xaml.cs" />
+    <Compile Remove="Forms\frmFirstTimeInfo.xaml.cs" />
+    <Compile Remove="Forms\frmGset.xaml.cs" />
+    <Compile Remove="Forms\frmMonitorSet.xaml.cs" />
+    <Compile Remove="Forms\frmPBMode.xaml.cs" />
+    <Compile Remove="Forms\grafico.xaml.cs" />
+    <Compile Remove="Forms\InfoForm.xaml.cs" />
+    <Compile Remove="Forms\NetEvent.xaml.cs" />
+    <Compile Remove="Forms\ObstacleForm.xaml.cs" />
+    <Compile Remove="Forms\parentele.xaml.cs" />
+    <Compile Remove="Forms\TeleportForm.xaml.cs" />
+    <Compile Remove="Modules\ObstaclesManager.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Remove="Forms\datirob.xaml" />
+    <Page Remove="Forms\DNA_Help.xaml" />
+    <Page Remove="Forms\frmAbout.xaml" />
+    <Page Remove="Forms\frmEYE.xaml" />
+    <Page Remove="Forms\frmFirstTimeInfo.xaml" />
+    <Page Remove="Forms\frmGset.xaml" />
+    <Page Remove="Forms\frmMonitorSet.xaml" />
+    <Page Remove="Forms\frmPBMode.xaml" />
+    <Page Remove="Forms\grafico.xaml" />
+    <Page Remove="Forms\InfoForm.xaml" />
+    <Page Remove="Forms\NetEvent.xaml" />
+    <Page Remove="Forms\ObstacleForm.xaml" />
+    <Page Remove="Forms\parentele.xaml" />
+    <Page Remove="Forms\TeleportForm.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
+    <PackageReference Include="PostSharp" Version="6.10.5" />
+    <PackageReference Include="PostSharp.Patterns.Model" Version="6.10.5" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="App.xaml" />
+  </ItemGroup>
+</Project>

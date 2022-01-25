@@ -1,0 +1,100 @@
+<Window x:Class="DarwinBots.Forms.MutationsProbability"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:MutationsProbabilitiesViewModel}"
+        mc:Ignorable="d" Title="Mutation Probabilities" SizeToContent="Height" Width="815" Style="{StaticResource OptionsForm}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.RowSpan="3" Header="Mutation Types">
+            <StackPanel>
+                <RadioButton IsChecked="{Binding PointMutationSelected}" GroupName="SelectedMutation">Point</RadioButton>
+                <RadioButton IsChecked="{Binding MinorDeletionSelected}" GroupName="SelectedMutation">Minor Deletion</RadioButton>
+                <RadioButton IsChecked="{Binding ReversalSelected}" GroupName="SelectedMutation">Reversal</RadioButton>
+                <RadioButton IsChecked="{Binding InsertionSelected}" GroupName="SelectedMutation">Insertion</RadioButton>
+                <RadioButton IsChecked="{Binding AmplificationSelected}" GroupName="SelectedMutation">Amplification</RadioButton>
+                <RadioButton IsChecked="{Binding MajorDeletionSelected}" GroupName="SelectedMutation">Major Deletion</RadioButton>
+                <RadioButton IsChecked="{Binding CopyErrorSelected}" GroupName="SelectedMutation">Copy Error</RadioButton>
+            </StackPanel>
+        </GroupBox>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" Height="110" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2">
+            <TextBlock Text="{Binding Explanation}" TextWrapping="Wrap" />
+        </ScrollViewer>
+        <CheckBox IsChecked="{Binding IsEnabled}" Grid.Row="1" Grid.Column="1">Enabled</CheckBox>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal">
+            <TextBlock>1 chance in</TextBlock>
+            <TextBox Text="{Binding ChancePerUnit}" />
+            <TextBlock Text="{Binding Unit}" />
+        </StackPanel>
+        <GroupBox Grid.ColumnSpan="2" IsEnabled="{Binding EnableGauss}" Grid.Row="2" Grid.Column="1" Header="{Binding GaussLabel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Image Grid.ColumnSpan="3" />
+                <Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center">Lower</Label>
+                <Label Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center">Mean</Label>
+                <Label Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">Upper</Label>
+                <TextBox Text="{Binding CustomGaussLower}" Grid.Row="2" Grid.Column="0" />
+                <TextBox Text="{Binding CustomGaussMean}" Grid.Row="2" Grid.Column="1" />
+                <TextBox Text="{Binding CustomGaussUpper}"  Grid.Row="2" Grid.Column="2" />
+                <Label Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right">Standard Deviation:</Label>
+                <TextBox Text="{Binding CustomGaussStdDev}" Grid.Row="3" Grid.Column="3" />
+            </Grid>
+        </GroupBox>
+        <Grid Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Label IsEnabled="{Binding EnableTypeSlider}">Change type</Label>
+            <Slider Width="150" IsEnabled="{Binding EnableTypeSlider}" Value="{Binding TypeValueRatio}" Grid.Column="1"  Minimum="0" Maximum="100" TickFrequency="5" />
+            <Label IsEnabled="{Binding EnableTypeSlider}" Grid.Column="2">Change value</Label>
+        </Grid>
+        <Grid Grid.Row="3" Grid.RowSpan="2" Grid.Column="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <Label Grid.ColumnSpan="3">Mutation Summations:</Label>
+            <Label Grid.Row="1" Grid.Column="0">1 chance in</Label>
+            <TextBlock Width="55" Text="{Binding ChancePerBasePair, StringFormat=0.00}" Grid.Row="1" Grid.Column="1" />
+            <Label Grid.Row="1" Grid.Column="2">per bp</Label>
+        </Grid>
+        <Button Command="{Binding SetDefaultRatesCommand}" Grid.Row="4" Grid.Column="1">Default Rates</Button>
+        <StackPanel Grid.Row="4" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button IsDefault="True" Click="Okay_Click">Okay</Button>
+            <Button IsCancel="True">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -358,10 +358,6 @@ On Error Resume Next
 rob(robfocus).mem(SetAim) = 0
 End Sub
 
-Private Sub Form_Activate()
-  SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE 'Botsareus 12/12/2012 Info form is always on top
-End Sub
-
 Private Sub txtDir_Change(Index As Integer)
 On Error Resume Next
 rob(robfocus).mem(Index + EYE1DIR) = txtDir(Index).text

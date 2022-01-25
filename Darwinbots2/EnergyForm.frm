@@ -341,14 +341,14 @@ Option Explicit
 'Botsareus 6/12/2012 form's icon change
 
 Private Sub chkRnd_Click() 'Botsareus 7/15/2014 Randomize the Sun On Cycles
-    TmpOpts.SunOnRnd = chkRnd.value * True
+  TmpOpts.SunOnRnd = chkRnd.value
 End Sub
 
 Private Sub DNCheck_Click()
-  TmpOpts.DayNight = DNCheck.value * True
+  TmpOpts.DayNight = DNCheck.value
   If TmpOpts.DayNight = False Then TmpOpts.Daytime = True
-  DNLength.Enabled = DNCheck.value * True
-  DNCycleUpDn.Enabled = DNCheck.value * True
+  DNLength.Enabled = DNCheck.value
+  DNCycleUpDn.Enabled = DNCheck.value
 End Sub
 
 
@@ -359,21 +359,21 @@ End Sub
 
 Private Sub Form_Load()
   DNLength.text = TmpOpts.CycleLength
-  DNLength.Enabled = TmpOpts.DayNight * True
-  DNCycleUpDn.Enabled = TmpOpts.DayNight * True
-  DNCheck.value = TmpOpts.DayNight * True
+  DNLength.Enabled = TmpOpts.DayNight
+  DNCycleUpDn.Enabled = TmpOpts.DayNight
+  DNCheck.value = TmpOpts.DayNight
   
   SunUpThreshold.text = TmpOpts.SunUpThreshold
-  SunUpThreshold.Enabled = TmpOpts.SunUp * True
-  SunUpUpDn.Enabled = TmpOpts.SunUp * True
-  SunUp.value = TmpOpts.SunUp * True
+  SunUpThreshold.Enabled = TmpOpts.SunUp
+  SunUpUpDn.Enabled = TmpOpts.SunUp
+  SunUp.value = TmpOpts.SunUp
   
   SunDownThreshold.text = TmpOpts.SunDownThreshold
-  SunDownThreshold.Enabled = TmpOpts.SunDown * True
-  SunDownUpDn.Enabled = TmpOpts.SunDown * True
-  SunDown.value = TmpOpts.SunDown * True
+  SunDownThreshold.Enabled = TmpOpts.SunDown
+  SunDownUpDn.Enabled = TmpOpts.SunDown
+  SunDown.value = TmpOpts.SunDown
   ThresholdMode(TmpOpts.SunThresholdMode).value = True
-  chkRnd.value = TmpOpts.SunOnRnd * True
+  chkRnd.value = TmpOpts.SunOnRnd
   
   txtTide = TmpOpts.Tides
   txtTideOf = TmpOpts.TidesOf
@@ -384,9 +384,9 @@ Private Sub OKButton_Click()
 End Sub
 
 Private Sub SunDown_Click()
-  TmpOpts.SunDown = SunDown.value * True
-  SunDownThreshold.Enabled = SunDown.value * True
-  SunDownUpDn.Enabled = SunDown.value * True
+  TmpOpts.SunDown = SunDown.value
+  SunDownThreshold.Enabled = SunDown.value
+  SunDownUpDn.Enabled = SunDown.value
 End Sub
 
 
@@ -395,9 +395,9 @@ Private Sub SunDownThreshold_Change()
 End Sub
 
 Private Sub SunUp_Click()
-  TmpOpts.SunUp = SunUp.value * True
-  SunUpThreshold.Enabled = SunUp.value * True
-  SunUpUpDn.Enabled = SunUp.value * True
+  TmpOpts.SunUp = SunUp.value
+  SunUpThreshold.Enabled = SunUp.value
+  SunUpUpDn.Enabled = SunUp.value
 End Sub
 
 Private Sub SunUpThreshold_Change()
@@ -409,16 +409,16 @@ Private Sub ThresholdMode_Click(Index As Integer)
 End Sub
 
 Private Sub txtTide_Change()
-txtTide = Int(val(txtTide))
-If txtTide < 0 Then txtTide = 0
-If txtTide > 32000 Then txtTide = 32000
-If txtTide = 0 Then lblTides = "cycles (off)" Else lblTides = "cycles"
-TmpOpts.Tides = txtTide
+  txtTide = Int(val(txtTide))
+  If txtTide < 0 Then txtTide = 0
+  If txtTide > 32000 Then txtTide = 32000
+  If txtTide = 0 Then lblTides = "cycles (off)" Else lblTides = "cycles"
+  TmpOpts.Tides = txtTide
 End Sub
 
 Private Sub txtTideOf_Change()
-txtTideOf = Int(val(txtTideOf))
-If txtTideOf < 0 Then txtTideOf = 0
-If txtTideOf > 32000 Then txtTideOf = 32000
-TmpOpts.TidesOf = txtTideOf
+  txtTideOf = Int(val(txtTideOf))
+  If txtTideOf < 0 Then txtTideOf = 0
+  If txtTideOf > 32000 Then txtTideOf = 32000
+  TmpOpts.TidesOf = txtTideOf
 End Sub

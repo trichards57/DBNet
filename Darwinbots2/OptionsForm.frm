@@ -1,7 +1,7 @@
 VERSION 5.00
 Object = "{FE0065C0-1B7B-11CF-9D53-00AA003C9CB6}#1.1#0"; "COMCT232.OCX"
 Object = "{F9043C88-F6F2-101A-A3C9-08002B2F49FB}#1.2#0"; "COMDLG32.OCX"
-Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "MSCOMCTL.OCX"
+Object = "{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}#2.0#0"; "Mscomctl.ocx"
 Object = "{BDC217C8-ED16-11CD-956C-0000C04E4C0A}#1.1#0"; "TABCTL32.OCX"
 Object = "{3B7C8863-D78F-101B-B9B5-04021C009402}#1.2#0"; "RICHTX32.OCX"
 Begin VB.Form optionsform 
@@ -85,13 +85,14 @@ Begin VB.Form optionsform
       _Version        =   393216
       Style           =   1
       Tabs            =   6
+      Tab             =   2
       TabsPerRow      =   10
       TabHeight       =   520
       ShowFocusRect   =   0   'False
       BackColor       =   12632256
       TabCaption(0)   =   "Species"
       TabPicture(0)   =   "OptionsForm.frx":0000
-      Tab(0).ControlEnabled=   -1  'True
+      Tab(0).ControlEnabled=   0   'False
       Tab(0).Control(0)=   "SpeciesLabel"
       Tab(0).Control(0).Enabled=   0   'False
       Tab(0).Control(1)=   "Label36"
@@ -117,36 +118,56 @@ Begin VB.Form optionsform
       TabPicture(1)   =   "OptionsForm.frx":001C
       Tab(1).ControlEnabled=   0   'False
       Tab(1).Control(0)=   "GenPropFrame"
+      Tab(1).Control(0).Enabled=   0   'False
       Tab(1).ControlCount=   1
       TabCaption(2)   =   "Physics and Costs"
       TabPicture(2)   =   "OptionsForm.frx":0038
-      Tab(2).ControlEnabled=   0   'False
+      Tab(2).ControlEnabled=   -1  'True
       Tab(2).Control(0)=   "Frame21"
+      Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "Frame20"
+      Tab(2).Control(1).Enabled=   0   'False
+
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Mutations"
       TabPicture(3)   =   "OptionsForm.frx":0054
       Tab(3).ControlEnabled=   0   'False
-      Tab(3).Control(0)=   "Frame13"
+      Tab(3).Control(0)=   "DisableMutationsCheck"
+      Tab(3).Control(0).Enabled=   0   'False
       Tab(3).Control(1)=   "Frame14"
-      Tab(3).Control(2)=   "DisableMutationsCheck"
+      Tab(3).Control(1).Enabled=   0   'False
+      Tab(3).Control(2)=   "Frame13"
+      Tab(3).Control(2).Enabled=   0   'False
+
       Tab(3).ControlCount=   3
       TabCaption(4)   =   "Restart and League"
       TabPicture(4)   =   "OptionsForm.frx":0070
       Tab(4).ControlEnabled=   0   'False
-      Tab(4).Control(0)=   "Label19"
-      Tab(4).Control(1)=   "Restart"
-      Tab(4).Control(2)=   "Frame7"
-      Tab(4).Control(3)=   "btnSetF1"
-      Tab(4).Control(4)=   "btnSetF2"
-      Tab(4).Control(5)=   "btnSetSB"
+
+      Tab(4).Control(0)=   "btnSetSB"
+      Tab(4).Control(0).Enabled=   0   'False
+      Tab(4).Control(1)=   "btnSetF2"
+      Tab(4).Control(1).Enabled=   0   'False
+      Tab(4).Control(2)=   "btnSetF1"
+      Tab(4).Control(2).Enabled=   0   'False
+      Tab(4).Control(3)=   "Frame7"
+      Tab(4).Control(3).Enabled=   0   'False
+      Tab(4).Control(4)=   "Restart"
+      Tab(4).Control(4).Enabled=   0   'False
+      Tab(4).Control(5)=   "Label19"
+      Tab(4).Control(5).Enabled=   0   'False
+
       Tab(4).ControlCount=   6
       TabCaption(5)   =   "Internet"
       TabPicture(5)   =   "OptionsForm.frx":008C
       Tab(5).ControlEnabled=   0   'False
-      Tab(5).Control(0)=   "Label41"
+      Tab(5).Control(0)=   "Simulazione"
+      Tab(5).Control(0).Enabled=   0   'False
       Tab(5).Control(1)=   "Label42"
-      Tab(5).Control(2)=   "Simulazione"
+      Tab(5).Control(1).Enabled=   0   'False
+      Tab(5).Control(2)=   "Label41"
+      Tab(5).Control(2).Enabled=   0   'False
+
       Tab(5).ControlCount=   3
       Begin VB.CommandButton btnSetSB 
          Caption         =   "Set SB settings"
@@ -175,7 +196,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton NativeSpeciesButton 
          Caption         =   "List Non-Native Species "
          Height          =   375
-         Left            =   1440
+         Left            =   -73560
          TabIndex        =   186
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -193,7 +214,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame20 
          Caption         =   "Physics"
          Height          =   5235
-         Left            =   -74820
+         Left            =   180
          TabIndex        =   150
          Top             =   420
          Width           =   4635
@@ -294,7 +315,7 @@ Begin VB.Form optionsform
          End
          Begin MSComctlLib.Slider MaxVelSlider 
             Height          =   495
-            Left            =   240
+            Left            =   360
             TabIndex        =   151
             ToolTipText     =   "Maximum bot velocity"
             Top             =   3840
@@ -1368,7 +1389,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton DuplicaButt 
          Caption         =   "Duplicate"
          Height          =   375
-         Left            =   1440
+         Left            =   -73560
          TabIndex        =   78
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -1378,7 +1399,7 @@ Begin VB.Form optionsform
       Begin VB.ListBox SpecList 
          Height          =   2400
          ItemData        =   "OptionsForm.frx":03C3
-         Left            =   240
+         Left            =   -74760
          List            =   "OptionsForm.frx":03C5
          TabIndex        =   77
          Top             =   720
@@ -1387,7 +1408,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton AddSpec 
          Caption         =   "Add"
          Height          =   375
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   76
          Tag             =   "0"
          ToolTipText     =   "Add a new robot type to the simulation"
@@ -1397,7 +1418,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton DelSpec 
          Caption         =   "Delete"
          Height          =   375
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   75
          Tag             =   "0"
          Top             =   3720
@@ -1406,7 +1427,7 @@ Begin VB.Form optionsform
       Begin VB.CommandButton RenameButton 
          Caption         =   "Rename"
          Height          =   375
-         Left            =   2640
+         Left            =   -72360
          TabIndex        =   74
          Tag             =   "0"
          Top             =   3720
@@ -1839,7 +1860,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame21 
          Caption         =   "Costs and Returned Shots"
          Height          =   5235
-         Left            =   -70080
+         Left            =   4920
          TabIndex        =   6
          Top             =   420
          Width           =   4815
@@ -1988,7 +2009,7 @@ Begin VB.Form optionsform
       End
       Begin RichTextLib.RichTextBox CommentBox 
          Height          =   975
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   79
          Top             =   4680
          Width           =   3495
@@ -2003,7 +2024,7 @@ Begin VB.Form optionsform
       Begin VB.Frame Frame1 
          Caption         =   "Species Properties"
          Height          =   5085
-         Left            =   3840
+         Left            =   -71160
          TabIndex        =   47
          Tag             =   "2010"
          Top             =   600
@@ -2454,7 +2475,7 @@ Begin VB.Form optionsform
       Begin VB.Label Label36 
          Caption         =   "Commenti sulla specie:"
          Height          =   255
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   164
          Tag             =   "2100"
          Top             =   4440
@@ -2463,7 +2484,7 @@ Begin VB.Form optionsform
       Begin VB.Label SpeciesLabel 
          Caption         =   "Native Species:"
          Height          =   255
-         Left            =   240
+         Left            =   -74760
          TabIndex        =   163
          Tag             =   "0"
          Top             =   480
@@ -3346,6 +3367,39 @@ Private Sub ShowSkin(k As Integer)
   Line9.x2 = TmpOpts.Specie(k).Skin(6) * multx * Cos(TmpOpts.Specie(k).Skin(7) / 100) + x
   Line9.y2 = TmpOpts.Specie(k).Skin(6) * multy * Sin(TmpOpts.Specie(k).Skin(7) / 100) + y
 End Sub
+
+
+'Botsareus 4/37/2013 Do not need this one also
+'Private Sub ShowSkinO(k As Integer)
+'  Dim t As Integer
+'  Dim x As Long
+'  Dim y As Long
+'  x = Shape2.Left
+'  y = Shape2.Top
+'  multx = Shape2.Width / 120
+'  multy = Shape2.Height / 120
+'  Me.AutoRedraw = True
+'  Shape3.Left = x + TmpOpts.Specie(k).Skin(t) * multx
+'  Shape3.Top = y + TmpOpts.Specie(k).Skin(t + 1) * multy
+'  Shape3.Width = TmpOpts.Specie(k).Skin(t + 2) * multx
+'  Shape3.Height = TmpOpts.Specie(k).Skin(t + 3) * multy
+'  'Shape4.Left = x + specie(k).Skin(t + 4) * multx
+'  'Shape4.Top = Y + specie(k).Skin(t + 5) * multy
+'  'Shape4.Width = specie(k).Skin(t + 6) * multx
+'  'Shape4.Height = specie(k).Skin(t + 7) * multy
+'End Sub
+
+'Botsareus 4/37/2013 This code never runs anyway
+'Private Sub AssignSkinO(k As Integer)
+'  Dim i As Integer
+'  For i = 0 To 8 Step 4
+'    TmpOpts.Specie(k).Skin(i) = Random(0, 120)
+'    TmpOpts.Specie(k).Skin(i + 2) = Random(0, 120 - TmpOpts.Specie(k).Skin(i))
+'    TmpOpts.Specie(k).Skin(i + 1) = Random(0, 120)
+'    TmpOpts.Specie(k).Skin(i + 3) = Random(0, 120 - TmpOpts.Specie(k).Skin(i + 1))
+'  Next i
+'End Sub
+
 
 Sub AssignSkin(k As Integer, path As String) 'The new skin engine requires path
 'Botsareus 4/27/2013 The new skin engine
@@ -4492,10 +4546,11 @@ Dim o As Integer
 For o = 1 To UBound(xObstacle)
 If xObstacle(o).exist Then
 With xObstacle(o)
- .pos.x = .pos.x / simopts.fieldWidth
- .pos.y = .pos.y / simopts.fieldHeight
- .Width = .Width / simopts.fieldWidth
- .Height = .Height / simopts.fieldHeight
+ .pos.x = .pos.x / SimOpts.FieldWidth
+ .pos.y = .pos.y / SimOpts.FieldHeight
+ .Width = .Width / SimOpts.FieldWidth
+ .Height = .Height / SimOpts.FieldHeight
+
 End With
 End If
 Next

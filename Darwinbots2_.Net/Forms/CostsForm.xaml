@@ -1,0 +1,175 @@
+<Window x:Class="DarwinBots.Forms.CostsForm"
+        x:ClassModifier="internal"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:CostsViewModel}"
+        mc:Ignorable="d" Title="Costs" Style="{StaticResource OptionsForm}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <GroupBox HorizontalAlignment="Stretch" Header="DNA Command Costs">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label>number</Label>
+                <TextBox x:Name="NumberCostTextBox" Grid.Row="0" Grid.Column="1" Text="{Binding NumberCost}" />
+                <Label Grid.Row="0" Grid.Column="2">nrg per instance</Label>
+                <Label Grid.Row="1" Grid.Column="0">*number</Label>
+                <TextBox x:Name="DotNumberCostTextBox" Grid.Row="1" Grid.Column="1" Text="{Binding StarNumberCost}" />
+                <Label Grid.Row="1" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="2" Grid.Column="0">Basic Command</Label>
+                <TextBox x:Name="BasicCommandCostTextBox" Grid.Row="2" Grid.Column="1" Text="{Binding BasicCommandCost}" />
+                <Label Grid.Row="2" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="3" Grid.Column="0">Advanced Command</Label>
+                <TextBox x:Name="AdvancedCommandCostTextBox" Grid.Row="3" Grid.Column="1" Text="{Binding AdvancedCommandCost}" />
+                <Label Grid.Row="3" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="4" Grid.Column="0">Bitwise Command</Label>
+                <TextBox x:Name="BitwiseCommandCostTextBox" Grid.Row="4" Grid.Column="1" Text="{Binding BitwiseCommandCost}" />
+                <Label Grid.Row="4" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="5" Grid.Column="0">Condition</Label>
+                <TextBox x:Name="ConditionCommandCostTextBox" Grid.Row="5" Grid.Column="1" Text="{Binding ConditionCost}" />
+                <Label Grid.Row="5" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="6" Grid.Column="0">Logic</Label>
+                <TextBox x:Name="LogicCommandCostTextBox" Grid.Row="6" Grid.Column="1" Text="{Binding LogicCost}" />
+                <Label Grid.Row="6" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="7" Grid.Column="0">Stores</Label>
+                <TextBox x:Name="StoresCommandCostTextBox" Grid.Row="7" Grid.Column="1" Text="{Binding StoresCost}" />
+                <Label Grid.Row="7" Grid.Column="2" >nrg per instance</Label>
+                <Label Grid.Row="8" Grid.Column="0">Flow Command</Label>
+                <TextBox x:Name="FlowCommandCostTextBox" Grid.Row="8" Grid.Column="1" Text="{Binding FlowCommandCost}" />
+                <Label Grid.Row="8" Grid.Column="2">nrg per instance</Label>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Header="Morphological Costs">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Label>Voluntary Movement</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding VoluntaryMovementCost}" />
+                <Label Grid.Row="0" Grid.Column="2" >nrg per bang</Label>
+                <Label Grid.Row="1" Grid.Column="0">Rotation</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding RotationCost}" />
+                <Label Grid.Row="1" Grid.Column="2" >nrg per radian</Label>
+                <Label Grid.Row="2" Grid.Column="0">Tie Formation</Label>
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding TieFormationCost}" />
+                <Label Grid.Row="2" Grid.Column="2" >nrg per firing</Label>
+                <Label Grid.Row="3" Grid.Column="0">Shot Formation</Label>
+                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ShotFormationCost}" />
+                <Label Grid.Row="3" Grid.Column="2" >base nrg per shot</Label>
+                <Label Grid.Row="4" Grid.Column="0">DNA Upkeep</Label>
+                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding DnaUpkeepCost}" />
+                <Label Grid.Row="4" Grid.Column="2">nrg per data per copy</Label>
+                <Label Grid.Row="5" Grid.Column="0">Venom Cost</Label>
+                <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding VenomCost}" />
+                <Label Grid.Row="5" Grid.Column="2" >nrg per unit constructed</Label>
+                <Label Grid.Row="6" Grid.Column="0">Poison Cost</Label>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding PoisonCost}" />
+                <Label Grid.Row="6" Grid.Column="2" >nrg per unit constructed</Label>
+                <Label Grid.Row="7" Grid.Column="0">Slime Cost</Label>
+                <TextBox Grid.Row="7" Grid.Column="1" Text="{Binding SlimeCost}" />
+                <Label Grid.Row="7" Grid.Column="2" >nrg per unit constructed</Label>
+                <Label Grid.Row="8" Grid.Column="0">Shell Cost</Label>
+                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding ShellCost}" />
+                <Label Grid.Row="8" Grid.Column="2">nrg per unit constructed</Label>
+                <Label Grid.Row="9" Grid.Column="0">Body Upkeep</Label>
+                <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding BodyUpkeepCost}" />
+                <Label Grid.Row="9" Grid.Column="2">nrg per body per turn</Label>
+                <Label Grid.Row="10" Grid.Column="0">DNA Copy</Label>
+                <TextBox Grid.Row="10" Grid.Column="1" Text="{Binding DnaCopyCost}" />
+                <Label Grid.Row="10" Grid.Column="2">nrg per data per cycle</Label>
+                <Label Grid.Row="11" Grid.Column="0">Chloroplast Cost</Label>
+                <TextBox Grid.Row="11" Grid.Column="1" Text="{Binding CholorplastCost}" />
+                <Label Grid.Row="11" Grid.Column="2">nrg per added chlr</Label>
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Row="1" Grid.RowSpan="2" Grid.Column="0" Header="Cost Overrides">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label>Cost Multiplier:</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CostMultiplier}" />
+            </Grid>
+        </GroupBox>
+        <GroupBox Grid.Column="1" Grid.Row="2" Header="Aging">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label>Age Cost</Label>
+                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding AgeCost}" />
+                <Label Grid.Row="0" Grid.Column="2">nrg per cycle</Label>
+                <Label Grid.Row="1" Grid.Column="0">Begins upon reaching</Label>
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding AgeCostBeginAge}" />
+                <Label Grid.Row="1" Grid.Column="2">cycles old</Label>
+                <Label Grid.Row="2" Grid.ColumnSpan="3" Grid.Column="0">Once cost begins being applied:</Label>
+                <CheckBox Grid.Row="3" Grid.Column="0" IsChecked="{Binding EnableAgeCostIncreasePerCycle}">Increase by</CheckBox>
+                <TextBox IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="1" Text="{Binding AgeCostIncreasePerCycle}" />
+                <Label IsEnabled="{Binding EnableAgeCostIncreasePerCycle}" Grid.Row="3" Grid.Column="2">nrg per cycle</Label>
+                <CheckBox Grid.ColumnSpan="3" Grid.Column="0" Grid.Row="4" IsChecked="{Binding EnableAgeCostIncreaseLog}">Increase log (bot age - cost start age)</CheckBox>
+            </Grid>
+        </GroupBox>
+        <Button Grid.Row="3" Grid.Column="0" HorizontalAlignment="Left" Command="{Binding RestoreDefaultsCommand}">Restore Defaults</Button>
+        <StackPanel Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" HorizontalAlignment="Right" Orientation="Horizontal">
+            <Button IsDefault="True" Click="Okay_Click">Okay</Button>
+            <Button IsCancel="True">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

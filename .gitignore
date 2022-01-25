@@ -328,6 +328,9 @@ ASALocalRun/
 
 # MFractors (Xamarin productivity tool) working folder 
 .mfractor/
+
+/DBNetTests/coveragereport
+/DBNetTests/run-tests.ps1
 /Darwinbots2/settings/lastran.set
 /Darwinbots2/settings/lastexit.set
 /Darwinbots2/saves/lastexit.sim
@@ -338,3 +341,4 @@ ASALocalRun/
 /Darwinbots2/saves/localcopy.sim
 /Darwinbots2/DBLibrary.dll
 /Darwinbots2/Darwin2.48.32.exe
+

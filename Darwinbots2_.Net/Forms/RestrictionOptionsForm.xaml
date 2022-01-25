@@ -1,0 +1,60 @@
+<Window x:Class="DarwinBots.Forms.RestrictionOptionsForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewmodels="clr-namespace:DarwinBots.ViewModels"
+        d:DataContext="{d:DesignInstance Type=viewmodels:RestrictionOptionsViewModel}"
+        mc:Ignorable="d" Title="{Binding Title}" Style="{StaticResource OptionsForm}">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="VisibilityConverter" />
+    </Window.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <GroupBox Grid.Row="0" Grid.Column="0" Visibility="{Binding ShowNonVegetableSettings, Converter={StaticResource VisibilityConverter}}" Header="For Non-Repopulating Robots">
+            <StackPanel>
+                <GroupBox Visibility="{Binding ShowNonVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
+                    <StackPanel>
+                        <CheckBox IsChecked="{Binding FixedInPlaceNonVeg}">Fixed in place</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableVisionNonVeg}">Disable Vision</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableDnaNonVeg}">Disable DNA Execution</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableReproductionNonVeg}">Disable Reproduction</CheckBox>
+                        <CheckBox IsChecked="{Binding VirusImmuneNonVeg}">Virus Immune</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsNonVeg}">Disable EnableMutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMotionNonVeg}">Disable Voluntary Movement</CheckBox>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </GroupBox>
+        <GroupBox Visibility="{Binding ShowVegetableSettings, Converter={StaticResource VisibilityConverter}}" Grid.Row="0" Grid.Column="1" Header="For Repopulating Robots">
+            <StackPanel>
+                <GroupBox Visibility="{Binding ShowVegetablePropertySettings, Converter={StaticResource VisibilityConverter}}" Header="Property Applied Restrictions">
+                    <StackPanel>
+                        <CheckBox IsChecked="{Binding FixedInPlaceVeg}">Fixed in place</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableVisionVeg}">Disable Vision</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableDnaVeg}">Disable DNA Execution</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableReproductionVeg}">Disable Reproduction</CheckBox>
+                        <CheckBox IsChecked="{Binding VirusImmuneVeg}">Virus Immune</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMutationsVeg}">Disable EnableMutations</CheckBox>
+                        <CheckBox IsChecked="{Binding DisableMotionVeg}">Disable Voluntary Movement</CheckBox>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Command="{Binding LoadPresetCommand}">Load Preset...</Button>
+            <Button Command="{Binding SavePresetCommand}">Save Preset...</Button>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Click="ApplyClick" IsDefault="True">Apply</Button>
+            <Button IsCancel="True">Cancel</Button>
+        </StackPanel>
+    </Grid>
+</Window>

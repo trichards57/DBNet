@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Iersera", "Iersera.csproj", "{92F75129-0EC1-47BA-85A7-E47F9EB140FD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DBNetTests", "..\DBNetTests\DBNetTests.csproj", "{A117D188-EA48-4541-8305-5364D87FEFDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug No PostSharp|Any CPU = Debug No PostSharp|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Debug No PostSharp|Any CPU.ActiveCfg = Debug No PostSharp|Any CPU
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Debug No PostSharp|Any CPU.Build.0 = Debug No PostSharp|Any CPU
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92F75129-0EC1-47BA-85A7-E47F9EB140FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug No PostSharp|Any CPU.ActiveCfg = Debug|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug No PostSharp|Any CPU.Build.0 = Debug|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A117D188-EA48-4541-8305-5364D87FEFDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CDAB8FB0-3586-4B7D-94DB-F2C0BF9927CF}
+	EndGlobalSection
+EndGlobal
