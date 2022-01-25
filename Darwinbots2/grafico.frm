@@ -3642,17 +3642,6 @@ Dim maxy As Single
 
 Dim secretunloadoverwrite As Boolean 'Botsareus 6/29/2013
 
-' EricL 4/7/2006
-'Public Sub SetYLabel(a As String)
-'  Dim b As String
-'  b = ""
-'  For t = 1 To Len(a)
-'    b = b + Mid(a, t, 1) + vbCrLf
-'  Next t
-'  'YLabel.Caption = b
-'  Me.Caption = a + " / Cycles graph"
-'End Sub
-
 Public Sub ResetGraph()
   Dim t As Integer
   Erase data
@@ -3739,10 +3728,10 @@ Public Sub SetValues(n As String, v As Single)
       End If
     Else ' all other graphs uses species as series labels
       'Check if the name matches a species.  Might be a new species from the internet
-      While SimOpts.Specie(i).Name <> n And i < SimOpts.SpeciesNum And i <= MAXNATIVESPECIES
+      While simopts.Specie(i).Name <> n And i < simopts.SpeciesNum And i <= MAXNATIVESPECIES
         i = i + 1
       Wend
-      If i = SimOpts.SpeciesNum Then ' Internet Species not in this sim yet
+      If i = simopts.SpeciesNum Then ' Internet Species not in this sim yet
         i = 0
         While InternetSpecies(i).Name <> n And i < numInternetSpecies
           i = i + 1
@@ -3750,7 +3739,7 @@ Public Sub SetValues(n As String, v As Single)
         Wend
         AddSeries n, InternetSpecies(i).color
       Else ' species already in the species list
-        AddSeries n, SimOpts.Specie(i).color
+        AddSeries n, simopts.Specie(i).color
       End If
     End If
     
@@ -3912,7 +3901,7 @@ Dim t As Integer
   SetWindowPos hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE + SWP_NOSIZE
   Me.Height = 4000
   Me.Width = 8400
-  XLabel.Caption = Str(SimOpts.chartingInterval) + " cycles per data point"
+  XLabel.Caption = Str(simopts.chartingInterval) + " cycles per data point"
 End Sub
 
 Private Sub Form_QueryUnload(Cancel As Integer, UnloadMode As Integer)
@@ -3967,19 +3956,6 @@ On Error GoTo patch 'Botsareus 10/12/2013 Attempt to fix a 380 error viea patch
   End If
 patch:
 End Sub
-
-'Public Sub AddVal(n As String, x As Single, s As Integer)
-'  Dim k As Byte
-'  k = 0
-'  While k < MaxSeries And SerName(k) <> n
-'    k = k + 1
-'  Wend
-'  If SerName(k) <> n Then
-'    AddSeries n, RGB(Random(0, 255), Random(0, 255), Random(0, 255))
-'    s = MaxSeries - 1
-'  End If
-'  data(Pivot, s) = x
-'End Sub
 
 Public Sub NewPoints()
   Dim t As Byte
@@ -4059,7 +4035,7 @@ If Top <> Screen.Height Then graphtop(WhichGraphAmI) = Top
   p = Pivot - 1
   If p < 0 Then p = MaxData
   
-  If t > 50 Or SimOpts.EnableAutoSpeciation Then 'Botsareus attempt to fix forking issue, may lead to graph instability
+  If t > 50 Or simopts.EnableAutoSpeciation Then 'Botsareus attempt to fix forking issue, may lead to graph instability
    For x = (MaxSeries - 1) To 0 Step -1
       If data(p, x) = 0 Then
         DelSeries (x)
@@ -4108,7 +4084,7 @@ If Top <> Screen.Height Then graphtop(WhichGraphAmI) = Top
   End If
   
   
-  XLabel.Caption = Str(SimOpts.chartingInterval) + " cycles per data point. " + Str(k) + " data points."
+  XLabel.Caption = Str(simopts.chartingInterval) + " cycles per data point. " + Str(k) + " data points."
 
 bypass:
 End Sub

@@ -1130,11 +1130,6 @@ Private Sub AutoSpeciationMenu_Click()
   'Speciation.Show 'Commented out to remove error.
 End Sub
 
-'Botsareus 4/17/2013 Temporary (Beta only) debug
-'Private Sub BetaDebug_Click()
-'BetaDebug.Checked = Not BetaDebug.Checked
-'End Sub
-
 Private Sub DeleteAllShapes_Click()
   DeleteAllObstacles
 End Sub
@@ -1321,7 +1316,7 @@ Top:
     End If
 tryagain:
     'This section create our new Internet Mode Teleporter
-    i = NewTeleporter(False, False, (SimOpts.FieldHeight ^ 0.5) * 10, True)  'Botsareus 5/12/2012 Changed the startup size of teleporter for better robot flow
+    i = NewTeleporter(False, False, (SimOpts.fieldHeight ^ 0.5) * 10, True)  'Botsareus 5/12/2012 Changed the startup size of teleporter for better robot flow
     
     
     Teleporters(i).vel = VectorSet(0, 0)
@@ -1474,7 +1469,6 @@ Dim OldSpeciesName As String
     
   AddSpecie n, False ' Species is forked in this sim so it's native
   ChangeNameOfAllChildren n, OldSpeciesName
-  ChangeNameOfAllCloselyRelated n, 10, OldSpeciesName
 End Function
 
 
@@ -1493,30 +1487,6 @@ Dim t As Integer
     End If
   Next t
 End Sub
-
-Private Sub ChangeNameOfAllCloselyRelated(n As Integer, d As Integer, OldSpeciesName As String)
-Dim t As Integer
-Dim l, ll As Long
-Dim simNum As Long
-Dim closestAncestor As Long
-
-  For t = 1 To MaxRobs
-    If rob(t).exist And Not rob(t).Corpse And t <> n Then
-      If rob(t).FName = OldSpeciesName Then
-         'closestAncestor = FindClosestCommonAncestor(t, n, simNum)
-         'If closestAncestor <> 0 Then
-         '  l = FindGeneticDistance(t, n, closestAncestor, simNum)
-         '  ll = FindGenerationalDistance(t, n, closestAncestor, simNum)
-         '  If (l < SimOpts.SpeciationGeneticDistance / 3) And (ll < SimOpts.SpeciationGenerationalDistance / 3) Then
-         '    rob(t).FName = rob(n).FName
-         '  End If
-         'End If
-      End If
-    End If
-  Next t
-End Sub
-
-
 
 Private Sub MonitorOn_Click()
 If frmMonitorSet.overwrite Then MonitorOn.Checked = Not MonitorOn.Checked Else MsgBox "Please configure monitor settings first.", vbInformation
@@ -2022,22 +1992,22 @@ Public Sub ZoomOut()
   Form1.visiblew = Form1.visiblew / 0.95
   Form1.visibleh = Form1.visibleh / 0.95
   
-  If Form1.visiblew > SimOpts.FieldWidth And ZoomLock.value = 0 Then
-    Form1.visiblew = SimOpts.FieldWidth
-    Form1.visibleh = SimOpts.FieldHeight
+  If Form1.visiblew > SimOpts.fieldWidth And ZoomLock.value = 0 Then
+    Form1.visiblew = SimOpts.fieldWidth
+    Form1.visibleh = SimOpts.fieldHeight
   End If
   
-  If Form1.visibleh > SimOpts.FieldHeight And ZoomLock.value = 0 Then
-    Form1.visiblew = SimOpts.FieldWidth
-    Form1.visibleh = SimOpts.FieldHeight
+  If Form1.visibleh > SimOpts.fieldHeight And ZoomLock.value = 0 Then
+    Form1.visiblew = SimOpts.fieldWidth
+    Form1.visibleh = SimOpts.fieldHeight
   End If
   
   Form1.ScaleTop = yc - Form1.visibleh / 2
   Form1.ScaleLeft = xc - Form1.visiblew / 2
   
-  If Form1.visiblew + Form1.ScaleLeft > SimOpts.FieldWidth And ZoomLock.value = 0 Then
-    Form1.ScaleLeft = SimOpts.FieldWidth - Form1.visiblew
-    Form1.ScaleTop = SimOpts.FieldHeight - Form1.visibleh
+  If Form1.visiblew + Form1.ScaleLeft > SimOpts.fieldWidth And ZoomLock.value = 0 Then
+    Form1.ScaleLeft = SimOpts.fieldWidth - Form1.visiblew
+    Form1.ScaleTop = SimOpts.fieldHeight - Form1.visibleh
   End If
   
   If Form1.ScaleLeft < 0 And ZoomLock.value = 0 Then
@@ -2423,25 +2393,6 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   MDIForm1.BaseCaption = "DarwinBots " + CStr(App.Major) + "." + CStr(App.Minor) + "." + Format(App.revision, "00")
   MDIForm1.Caption = MDIForm1.BaseCaption
   
-  'startdir = App.path 'Botsareus 5/10/2013 startdir does not look like it is ever used, disabeling
-  
-'Botsareus 5/10/2013 It is up to the user to select there main dir from now on.
-'  MainDir = App.path
-'    'this little snippet insures that Prsn828 can run his code alright
-'  If Left(MDIForm1.MainDir, 51) = "C:\Repositories\DarwinbotsVB\trunk" Then _
-'    MDIForm1.MainDir = "C:\Program Files\DarwinBotsII"
-'
-'    'Numsgil code
-'  If Left(MDIForm1.MainDir, 15) = "C:\darwinsource" Then _
-'    MDIForm1.MainDir = "C:\DarwinbotsII"
-'
-'  ' Here's another hack like the above so that EricL can run in VB
-'  If Left(MDIForm1.MainDir, 51) = "C:\Documents and Settings\Eric\Desktop\DB VB Source" Then _
-'    MDIForm1.MainDir = "C:\Program Files\DarwinBotsII"
-  
-  disablesim
-  'SimOpts.FieldWidth = Me.Width
-  'SimOpts.FieldHeight = Me.Height
   Me.Show
   
   Set Form1.t = New TrayIcon
@@ -2476,9 +2427,9 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.NoShotDecay = False
   TmpOpts.NoWShotDecay = False
   TmpOpts.chartingInterval = 200
-  TmpOpts.FieldWidth = 16000
-  TmpOpts.FieldHeight = 12000
-  TmpOpts.MaxVelocity = 60
+  TmpOpts.fieldWidth = 16000
+  TmpOpts.fieldHeight = 12000
+  TmpOpts.maxVelocity = 60
   TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 50
   TmpOpts.Costs(BOTNOCOSTLEVEL) = -1 'Botsareus 5/11/2012 Sets BotNoCostThreshold to -1 to fix a bug when running a veg only sim.
   TmpOpts.Costs(COSTMULTIPLIER) = 1 'Botsareus 1/5/2013 default for cost multiply
@@ -2497,7 +2448,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.SunDown = False   'Set to a reasonable default value
   TmpOpts.FixedBotRadii = False
   TmpOpts.SunThresholdMode = 0
-  TmpOpts.PhysMoving = 0.66
+  TmpOpts.physMoving = 0.66
   TmpOpts.EnergyExType = True
   TmpOpts.EnergyFix = 200
   TmpOpts.EnergyProp = 1
@@ -2506,7 +2457,7 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
   TmpOpts.MinVegs = 50
   TmpOpts.RepopAmount = 10
   TmpOpts.RepopCooldown = 10
-  TmpOpts.PhysBrown = 0.5
+  TmpOpts.physBrown = 0.5
   TmpOpts.FieldSize = 2
   
   MaxPop = 700
@@ -2563,10 +2514,10 @@ Form1.Active = True 'Botsareus 2/21/2013 moved active here to enable to pause in
                     For i = 0 To UBound(TmpOpts.Specie)
                      If TmpOpts.Specie(i).Name = "Base.txt" Then
                         TmpOpts.Specie(i).Mutables.Mutations = False
-                        TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.FieldHeight) * CDbl(TmpOpts.FieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
+                        TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.fieldHeight) * CDbl(TmpOpts.fieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
                         If TmpOpts.Specie(i).qty = 0 Then TmpOpts.Specie(i).qty = 1
                      End If
-                     If TmpOpts.Specie(i).Name = "Mutate.txt" Then TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.FieldHeight) * CDbl(TmpOpts.FieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
+                     If TmpOpts.Specie(i).Name = "Mutate.txt" Then TmpOpts.Specie(i).qty = Sqr(CDbl(TmpOpts.fieldHeight) * CDbl(TmpOpts.fieldWidth)) / (80 * 8 * (x_filenumber + 1) ^ 0.5)
                      If TmpOpts.Specie(i).qty = 0 Then TmpOpts.Specie(i).qty = 1
                     Next
                     'Randomize find best
@@ -2821,12 +2772,6 @@ skipsetup:
     Exit Sub
   End If
     
-  'optionsform.datatolist
-  'TmpOpts.Daytime = True ' Ericl March 15, 2006
- 
- ' Unload optionsform  ' We do this here becuase reading in the settings above loads the Options dialog.
-                      ' We want it unloaded so that when the user loads it the next time, it gets properly
-                      ' populated by the form's load routine
   SimOpts = TmpOpts
   path = Command
   
@@ -2973,10 +2918,6 @@ Form1.show_graphs
 End Sub
 
 
-Private Sub MDIForm_Resize()
-'  Form1.dimensioni
-  'InfoForm.ZOrder
-End Sub
 Private Sub MDIForm_Unload(Cancel As Integer)
    
 SaveSimulation MDIForm1.MainDir + "\saves\lastexit.sim"  'save last settings
@@ -2996,7 +2937,6 @@ Sub infos(ByVal cyc As Single, tot As Integer, tnv As Integer, tv As Long, brn A
   Dim h As Long
   Dim i As Integer
   Dim k As Integer
- ' Dim AvgSimEnergyLastHundredCycles As Long
   Dim AvgSimEnergyLastTenCycles As Long
   Dim Delta As Double
   
@@ -3022,23 +2962,7 @@ Sub infos(ByVal cyc As Single, tot As Integer, tnv As Integer, tv As Long, brn A
   Me.MutationValue.Caption = "Mut " + Str$(SimOpts.MutCurrMult)
   StatusBar1.Panels(9).text = "Restarts " + Str$(ReStarts) + " "
   StatusBar1.Panels(10).text = "Shots " + Str$(Shots_Module.ShotsThisCycle) + " "
-  
-  'AvgSimEnergyLastTenCycles = 0
-  'This delibertly counts the 10 cycles *before* this one to avoid cases where the timer invokes
-  'this routine before the calculations for the current energy cycle have completed.
-  'For i = 99 To 90 Step -1
-  '  k = (CurrentEnergyCycle + i) Mod 100
-  '  AvgSimEnergyLastTenCycles = AvgSimEnergyLastTenCycles + (TotalSimEnergy(k) * 0.1)
-  'Next i
-  
-' AvgSimEnergyLastHundredCycles = AvgSimEnergyLastTenCycles
-'    k = (CurrentEnergyCycle + 100 - i) Mod 100
-'    AvgSimEnergyLastHundredCycles = AvgSimEnergyLastHundredCycles + TotalSimEnergy(k)
- ' Next i
- ' AvgSimEnergyLastTenCycles = AvgSimEnergyLastTenCycles * 0.1
- ' AvgSimEnergyLastHundredCycles = AvgSimEnergyLastHundredCycles * 0.01
 
-  'If AvgSimEnergyLastTenCycles <> 0 Then delta = TotalSimEnergyDisplayed - AvgSimEnergyLastTenCycles
   k = (CurrentEnergyCycle + 98) Mod 100
   Delta = TotalSimEnergyDisplayed - TotalSimEnergy(k)
   
@@ -3113,16 +3037,10 @@ Public Sub enablesim()
   czo.Enabled = True
 End Sub
 
-Public Sub disablesim()
- ' edit.Enabled = False
- ' popup.Enabled = False
- ' czin.Enabled = False
- ' czo.Enabled = False
-End Sub
+
 
 Private Sub waste_Click()
   Gridmode = 1
-  'DispGrid
 End Sub
 
 Private Sub y_info_Click()

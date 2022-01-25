@@ -366,15 +366,17 @@ Private Sub Form_Load()
   Else
     Form1.Picture = Nothing
   End If
+
   Top = 0
   Left = 0
   Width = MDIForm1.ScaleWidth
   Height = MDIForm1.ScaleHeight
   visiblew = SimOpts.FieldWidth
   visibleh = SimOpts.FieldHeight
+
   MDIForm1.visualize = True
   MaxMem = 1000
-  maxfieldsize = SimOpts.FieldWidth * 2
+  maxfieldsize = simopts.fieldWidth * 2
   TotalRobots = 0
   robfocus = 0
   MDIForm1.DisableRobotsMenu
@@ -382,7 +384,7 @@ Private Sub Form_Load()
   shotpointer = 1
   ReDim Shots(maxshotarray)
   dispskin = True
-    
+
   FlashColor(1) = vbBlack         ' Hit with memory shot
   FlashColor(-1 + 10) = vbRed     ' Hit with Nrg feeding shot
   FlashColor(-2 + 10) = vbWhite   ' Hit with Nrg Shot
@@ -485,6 +487,7 @@ Function GetTwipHeight() As Single
 End Function
 
 Private Sub DrawArena()
+
   'Botsareus 8/16/2014 Draw Sun
   Dim sunstart As Long
   Dim sunstop As Long
@@ -518,6 +521,7 @@ Private Sub DrawArena()
   Line -(SimOpts.FieldWidth - 0, SimOpts.FieldHeight), vbWhite
   Line -(0 + SimOpts.FieldWidth, 0), vbWhite
   Line -(0, -0), vbWhite
+
 End Sub
 
 ' draws memory monitor
@@ -580,6 +584,7 @@ Private Sub DrawRobPer(n As Integer)
   If n = robfocus Then Circle (CentreX, CentreY), radius * 1.2, vbWhite
  
   FillColor = BackColor
+
 
   Circle (CentreX, CentreY), rob(n).radius, rob(n).color    'new line
       
@@ -682,8 +687,10 @@ Private Sub DrawRobDistPer(n As Integer)
   If n = robfocus Then Circle (CentreX, CentreY), RobSize * 2, vbWhite
   
   Form1.FillColor = rob(n).color
+
   
   Circle (CentreX, CentreY), rob(n).radius, rob(n).color
+
 End Sub
 
 ' draws rob aim
@@ -708,11 +715,13 @@ Private Sub DrawRobAim(n As Integer)
     
     If MDIForm1.displayMovementVectorsToggle Then
       'Draw the voluntary movement vectors
+
       If rob(n).lastup <> 0 Then
         If rob(n).lastup < -1000 Then rob(n).lastup = -1000
         If rob(n).lastup > 1000 Then rob(n).lastup = 1000
         vol = VectorAdd(pos2, VectorScalar(pos, CSng(rob(n).lastup)))
         Line (pos2.x, pos2.y)-(vol.x, vol.y), rob(n).color
+
         
         arrow3 = VectorAdd(vol, VectorScalar(pos, 15)) ' point of the arrowhead
         temp = VectorSet(Cos(rob(n).aim - PI / 2), Sin(rob(n).aim - PI / 2))
@@ -973,6 +982,7 @@ Public Sub DrawAllRobs()
         DrawMode = vbNotMergePen
   
         length = (1 / Sqr(rob(robfocus).mem(EyeStart + a + 1))) * (EyeSightDistance(AbsoluteEyeWidth(rob(robfocus).mem(EYE1WIDTH + a)), robfocus) + rob(robfocus).radius) + rob(robfocus).radius
+
         If length < 0 Then length = 0
       Else
         DrawMode = vbCopyPen
@@ -984,8 +994,9 @@ Public Sub DrawAllRobs()
       If (a = Abs(rob(robfocus).mem(FOCUSEYE) + 4) Mod 9) Then
         Circle (rob(robfocus).pos.x, rob(robfocus).pos.y), length, vbRed, low, hi
       End If
-       
+
     Next
+
   End If
 
   
@@ -1142,6 +1153,7 @@ Sub StartSimul()
   
   'Botsareus 8/16/2014 Lets initate the sun
   If SimOpts.SunOnRnd Then
+
     SunRange = 0.5
     SunChange = Int(Rnd * 3) + Int(Rnd * 2) * 10
     SunPosition = Rnd
@@ -1151,6 +1163,7 @@ Sub StartSimul()
   End If
   
   SimOpts.SimGUID = CLng(Rnd)
+
   Over = False
     
   If BackPic <> "" Then
@@ -1160,32 +1173,33 @@ Sub StartSimul()
   End If
   
   Form1.Show
-  Form1.ScaleWidth = SimOpts.FieldWidth
-  Form1.ScaleHeight = SimOpts.FieldHeight
-  Form1.visiblew = SimOpts.FieldWidth
-  Form1.visibleh = SimOpts.FieldHeight
+  Form1.ScaleWidth = simopts.fieldWidth
+  Form1.ScaleHeight = simopts.fieldHeight
+  Form1.visiblew = simopts.fieldWidth
+  Form1.visibleh = simopts.fieldHeight
   xDivisor = 1
   yDivisor = 1
   
-  If SimOpts.FieldWidth > 32000 Then xDivisor = SimOpts.FieldWidth / 32000
-  If SimOpts.FieldHeight > 32000 Then yDivisor = SimOpts.FieldHeight / 32000
+  If simopts.fieldWidth > 32000 Then xDivisor = simopts.fieldWidth / 32000
+  If simopts.fieldHeight > 32000 Then yDivisor = simopts.fieldHeight / 32000
   
   
-  MDIForm1.DontDecayNrgShots.Checked = SimOpts.NoShotDecay
-  MDIForm1.DontDecayWstShots.Checked = SimOpts.NoWShotDecay
+  MDIForm1.DontDecayNrgShots.Checked = simopts.NoShotDecay
+  MDIForm1.DontDecayWstShots.Checked = simopts.NoWShotDecay
   
-  MDIForm1.DisableTies.Checked = SimOpts.DisableTies
-  MDIForm1.DisableArep.Checked = SimOpts.DisableTypArepro
-  MDIForm1.DisableFixing.Checked = SimOpts.DisableFixing
+  MDIForm1.DisableTies.Checked = simopts.DisableTies
+  MDIForm1.DisableArep.Checked = simopts.DisableTypArepro
+  MDIForm1.DisableFixing.Checked = simopts.DisableFixing
   
   'Botsareus 4/18/2016 recording menu
-  MDIForm1.SnpDeadEnable.Checked = SimOpts.DeadRobotSnp
-  MDIForm1.SnpDeadExRep.Checked = SimOpts.SnpExcludeVegs
-  
+  MDIForm1.SnpDeadEnable.Checked = simopts.DeadRobotSnp
+  MDIForm1.SnpDeadExRep.Checked = simopts.SnpExcludeVegs
+
   SimOpts.TotBorn = 0
+
   grafico.ResetGraph
   MaxMem = 1000
-  maxfieldsize = SimOpts.FieldWidth * 2
+  maxfieldsize = simopts.fieldWidth * 2
   robfocus = 0
   MDIForm1.DisableRobotsMenu
   nlink = RobSize
@@ -1200,7 +1214,7 @@ Sub StartSimul()
   'the end of this cycle will be the hypotinose (sp?) of a right triangle C where side A is the miximum possible bot radius, and
   'side B is the sum of the maximum bot velocity and the maximum shot velocity, the latter of which can be robsize/3 + the bot
   'max velocity since bot velocity is added to shot velocity.
-  MaxBotShotSeperation = Sqr((FindRadius(0, -1) ^ 2) + ((SimOpts.MaxVelocity * 2 + RobSize / 3) ^ 2))
+  MaxBotShotSeperation = Sqr((FindRadius(0, -1) ^ 2) + ((simopts.maxVelocity * 2 + RobSize / 3) ^ 2))
   
   Dim t As Integer
   
@@ -1229,12 +1243,11 @@ Sub StartSimul()
   
   defaultWidth = 0.2
   defaultHeight = 0.2
-    
+
   MaxRobs = 0
   loadrobs
   If Form1.Active Then SecTimer.Enabled = True
-  SimOpts.TotRunTime = 0
-  'setfeed
+  simopts.TotRunTime = 0
   If MDIForm1.visualize Then DrawAllRobs
     MDIForm1.enablesim
     
@@ -1248,13 +1261,14 @@ Sub StartSimul()
       SimOpts.MaxEnergy = 10
     End If
   End If
-  
+
   strSimStart = Replace(Replace(Now, ":", "-"), "/", "-")
   
   'Botsareus 1/5/2014 The Obstacle Regeneration code
   
   Dim o As Integer
   Dim oo As Integer
+
   For o = 1 To UBound(xObstacle)
     If xObstacle(o).exist Then
       oo = NewObstacle(xObstacle(o).pos.x * SimOpts.FieldWidth, xObstacle(o).pos.y * SimOpts.FieldHeight, xObstacle(o).Width * SimOpts.FieldWidth, xObstacle(o).Height * SimOpts.FieldHeight)
@@ -1262,6 +1276,7 @@ Sub StartSimul()
       Obstacles.Obstacles(oo).vel = xObstacle(o).vel
     End If
   Next
+
   
   'sim running
   
@@ -1310,6 +1325,7 @@ Sub startloaded()
     chartcolor = vbWhite
     backgcolor = &H400000
   End If
+
   
   Init_Buckets
   
@@ -1318,20 +1334,22 @@ Sub startloaded()
   Else
     Picture = Nothing
   End If
+
   ScaleWidth = SimOpts.FieldWidth
   ScaleHeight = SimOpts.FieldHeight
   visiblew = SimOpts.FieldWidth
   visibleh = SimOpts.FieldHeight
+
   
   xDivisor = 1
   yDivisor = 1
-  If SimOpts.FieldWidth > 32000 Then xDivisor = SimOpts.FieldWidth / 32000
-  If SimOpts.FieldHeight > 32000 Then yDivisor = SimOpts.FieldHeight / 32000
+  If simopts.fieldWidth > 32000 Then xDivisor = simopts.fieldWidth / 32000
+  If simopts.fieldHeight > 32000 Then yDivisor = simopts.fieldHeight / 32000
   
   MDIForm1.visualize = True
   Active = True
   MaxMem = 1000
-  maxfieldsize = SimOpts.FieldWidth * 2
+  maxfieldsize = simopts.fieldWidth * 2
   robfocus = 0
   MDIForm1.DisableRobotsMenu
   nlink = RobSize
@@ -1346,39 +1364,41 @@ Sub startloaded()
   'the end of this cycle will be the hypotinoose (sp?) of a right triangle ABC where side A is the maximum possible bot radius, and
   'side B is the sum of the maximum bot velocity and the maximum shot velocity, the latter of which can be robsize/3 + the bot
   'max velocity since bot velocity is added to shot velocity.
-  MaxBotShotSeperation = Sqr((FindRadius(0, -1) ^ 2) + ((SimOpts.MaxVelocity * 2 + RobSize / 3) ^ 2))
+  MaxBotShotSeperation = Sqr((FindRadius(0, -1) ^ 2) + ((simopts.maxVelocity * 2 + RobSize / 3) ^ 2))
   
   shotpointer = 1
   
   defaultWidth = 0.2
   defaultHeight = 0.2
+
   
   MDIForm1.DontDecayNrgShots.Checked = SimOpts.NoShotDecay
   MDIForm1.DontDecayWstShots.Checked = SimOpts.NoWShotDecay
+
   
-  MDIForm1.DisableTies.Checked = SimOpts.DisableTies
-  MDIForm1.DisableArep.Checked = SimOpts.DisableTypArepro
-  MDIForm1.DisableFixing.Checked = SimOpts.DisableFixing
+  MDIForm1.DisableTies.Checked = simopts.DisableTies
+  MDIForm1.DisableArep.Checked = simopts.DisableTypArepro
+  MDIForm1.DisableFixing.Checked = simopts.DisableFixing
   
   'Botsareus 4/18/2016 recording menu
-  MDIForm1.SnpDeadEnable.Checked = SimOpts.DeadRobotSnp
-  MDIForm1.SnpDeadExRep.Checked = SimOpts.SnpExcludeVegs
+  MDIForm1.SnpDeadEnable.Checked = simopts.DeadRobotSnp
+  MDIForm1.SnpDeadExRep.Checked = simopts.SnpExcludeVegs
   
+
   MDIForm1.AutoFork.Checked = SimOpts.EnableAutoSpeciation
-  
+
   SecTimer.Enabled = True
-  'setfeed
   If MDIForm1.visualize Then DrawAllRobs
   MDIForm1.enablesim
   Me.Visible = True
   
   NoDeaths = True
-  
+
   Vegs.cooldown = -SimOpts.RepopCooldown
   totnvegsDisplayed = -1 ' Just set this to -1 for the first cycle so the cost low water mark doesn't trigger.
   totvegs = -1 ' Set to -1 to avoid veggy reproduction on first cycle
   totnvegs = SimOpts.Costs(DYNAMICCOSTTARGET) ' Just set this high for the first cycle so the cost low water mark doesn't trigger.
-  
+
   main
 End Sub
 
@@ -1389,24 +1409,24 @@ Private Sub loadrobs()
   Dim i As Integer
   Dim cc As Integer, t As Integer
   k = 0
-  For cc = 1 To SimOpts.SpeciesNum
-    For t = 1 To SimOpts.Specie(k).qty
-      a = RobScriptLoad(respath(SimOpts.Specie(k).path) + "\" + SimOpts.Specie(k).Name)
+  For cc = 1 To simopts.SpeciesNum
+    For t = 1 To simopts.Specie(k).qty
+      a = RobScriptLoad(respath(simopts.Specie(k).path) + "\" + simopts.Specie(k).Name)
       If a < 0 Then
-        t = SimOpts.Specie(k).qty
-        SimOpts.Specie(k).Native = False
+        t = simopts.Specie(k).qty
+        simopts.Specie(k).Native = False
         GoTo bypassThisSpecies
       Else
-        SimOpts.Specie(k).Native = True
+        simopts.Specie(k).Native = True
       End If
-      rob(a).Veg = SimOpts.Specie(k).Veg
-      rob(a).NoChlr = SimOpts.Specie(k).NoChlr
-      rob(a).Fixed = SimOpts.Specie(k).Fixed
+      rob(a).Veg = simopts.Specie(k).Veg
+      rob(a).NoChlr = simopts.Specie(k).NoChlr
+      rob(a).Fixed = simopts.Specie(k).Fixed
       If rob(a).Fixed Then rob(a).mem(216) = 1
-      rob(a).pos.x = Random(SimOpts.Specie(k).Poslf * CSng(SimOpts.FieldWidth - 60#), SimOpts.Specie(k).Posrg * CSng(SimOpts.FieldWidth - 60#))
-      rob(a).pos.y = Random(SimOpts.Specie(k).Postp * CSng(SimOpts.FieldHeight - 60#), SimOpts.Specie(k).Posdn * CSng(SimOpts.FieldHeight - 60#))
+      rob(a).pos.x = Random(simopts.Specie(k).Poslf * CSng(simopts.fieldWidth - 60#), simopts.Specie(k).Posrg * CSng(simopts.fieldWidth - 60#))
+      rob(a).pos.y = Random(simopts.Specie(k).Postp * CSng(simopts.fieldHeight - 60#), simopts.Specie(k).Posdn * CSng(simopts.fieldHeight - 60#))
       
-      rob(a).nrg = SimOpts.Specie(k).Stnrg
+      rob(a).nrg = simopts.Specie(k).Stnrg
       rob(a).body = 1000
       
       rob(a).radius = FindRadius(a)
@@ -1415,19 +1435,20 @@ Private Sub loadrobs()
       If rob(a).Veg Then rob(a).chloroplasts = StartChlr 'Botsareus 2/12/2014 Start a robot with chloroplasts
       rob(a).Dead = False
             
-      rob(a).Mutables = SimOpts.Specie(k).Mutables
+      rob(a).Mutables = simopts.Specie(k).Mutables
       
       For i = 0 To 7 'Botsareus 5/20/2012 fix for skin engine
         rob(a).Skin(i) = SimOpts.Specie(k).Skin(i)
       Next
+
       
-      rob(a).color = SimOpts.Specie(k).color
+      rob(a).color = simopts.Specie(k).color
       rob(a).mem(timersys) = Random(-32000, 32000)
-      rob(a).CantSee = SimOpts.Specie(k).CantSee
-      rob(a).DisableDNA = SimOpts.Specie(k).DisableDNA
-      rob(a).DisableMovementSysvars = SimOpts.Specie(k).DisableMovementSysvars
-      rob(a).CantReproduce = SimOpts.Specie(k).CantReproduce
-      rob(a).VirusImmune = SimOpts.Specie(k).VirusImmune
+      rob(a).CantSee = simopts.Specie(k).CantSee
+      rob(a).DisableDNA = simopts.Specie(k).DisableDNA
+      rob(a).DisableMovementSysvars = simopts.Specie(k).DisableMovementSysvars
+      rob(a).CantReproduce = simopts.Specie(k).CantReproduce
+      rob(a).VirusImmune = simopts.Specie(k).VirusImmune
       rob(a).virusshot = 0
       rob(a).Vtimer = 0
       rob(a).genenum = CountGenes(rob(a).dna)
@@ -1439,6 +1460,7 @@ Private Sub loadrobs()
       rob(a).mem(GenesSys) = rob(a).genenum
       
       'Botsareus 7/29/2014 New kill restrictions
+
       rob(a).multibot_time = IIf(SimOpts.Specie(k).kill_mb, 210, 0)
       rob(a).dq = IIf(SimOpts.Specie(k).dq_kill, 1, 0)
     Next
@@ -1446,12 +1468,13 @@ bypassThisSpecies:
     k = k + 1
     MDIForm1.Caption = "Loading... " & Int((cc - 1) * 100 / SimOpts.SpeciesNum) & "% Please wait..."
   Next
+
   MDIForm1.Caption = MDIForm1.BaseCaption
 End Sub
 
 ' calls main form status bar update
 Public Sub cyccaption(ByVal num As Single)
-  MDIForm1.infos num, TotalRobotsDisplayed, totnvegsDisplayed, TotalChlr, SimOpts.TotBorn, SimOpts.TotRunCycle, SimOpts.TotRunTime  'Botsareus 8/25/2013 Mod to send TotalChlr
+  MDIForm1.infos num, TotalRobotsDisplayed, totnvegsDisplayed, TotalChlr, simopts.TotBorn, simopts.TotRunCycle, simopts.TotRunTime  'Botsareus 8/25/2013 Mod to send TotalChlr
 End Sub
 
 ' which rob has been clicked?
@@ -1516,11 +1539,11 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
         sl = 0
         MouseClickX = x
       End If
-      If st > SimOpts.FieldHeight - visibleh And MDIForm1.ZoomLock.value = 0 Then
-        st = SimOpts.FieldHeight - visibleh
+      If st > simopts.fieldHeight - visibleh And MDIForm1.ZoomLock.value = 0 Then
+        st = simopts.fieldHeight - visibleh
       End If
-      If sl > SimOpts.FieldWidth - visiblew And MDIForm1.ZoomLock.value = 0 Then
-        sl = SimOpts.FieldWidth - visiblew
+      If sl > simopts.fieldWidth - visiblew And MDIForm1.ZoomLock.value = 0 Then
+        sl = simopts.fieldWidth - visiblew
       End If
       Form1.ScaleTop = st
       Form1.ScaleLeft = sl
@@ -1547,14 +1570,13 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y A
   End If
   
   If Button = 1 And obstaclefocus > 0 Then
-  ' Obstacles.Obstacles(obstaclefocus).pos = VectorSet(x - (mousepos.x - Obstacles.Obstacles(obstaclefocus).pos.x), y - (mousepos.x - Obstacles.Obstacles(obstaclefocus).pos.y))
    Obstacles.Obstacles(obstaclefocus).pos = VectorSet(x - (Obstacles.Obstacles(obstaclefocus).Width / 2), y - (Obstacles.Obstacles(obstaclefocus).Height / 2))
     If Not Active Then Redraw
     Exit Sub
   End If
   
   If Button = 1 And teleporterFocus > 0 Then
-  ' Obstacles.Obstacles(obstaclefocus).pos = VectorSet(x - (mousepos.x - Obstacles.Obstacles(obstaclefocus).pos.x), y - (mousepos.x - Obstacles.Obstacles(obstaclefocus).pos.y))
+
    Teleport.Teleporters(teleporterFocus).pos = VectorSet(x - (Teleport.Teleporters(teleporterFocus).Width / 2), y - (Teleport.Teleporters(teleporterFocus).Height / 2))
     If Not Active Then Redraw
     Exit Sub
@@ -1574,7 +1596,9 @@ End Sub
 ' outside of a Form event. So I've used the event to switch
 ' on and off some global vars
 Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+
   If lblSafeMode.Visible Then Exit Sub 'Botsareus 5/13/2013 Safemode restrictions
+
   
   MouseClicked = False
   ZoomFlag = False ' EricL - stop zooming in!
@@ -1589,15 +1613,16 @@ End Sub
 
 Private Sub Form_Resize()
   If Form1.WindowState = 2 Then
-    SimOpts.FieldWidth = Form1.ScaleWidth
-    SimOpts.FieldHeight = Form1.ScaleHeight
-    maxfieldsize = SimOpts.FieldWidth * 2
+    simopts.fieldWidth = Form1.ScaleWidth
+    simopts.fieldHeight = Form1.ScaleHeight
+    maxfieldsize = simopts.fieldWidth * 2
   End If
 End Sub
 
 ' double clicking on a rob pops up the info window
 ' elsewhere closes it
 Private Sub Form_DblClick()
+
   Dim n As Integer
   Dim m As Integer
   n = whichrob(CSng(MouseClickX), CSng(MouseClickY))
@@ -1731,10 +1756,7 @@ If lblSafeMode.Visible Then Exit Sub 'Botsareus 5/13/2013 Safemode restrictions
   If n = 0 Then
     teleporterFocus = whichTeleporter(x, y)
     If teleporterFocus <> 0 Then
-      'MDIForm1.DeleteTeleporter.Enabled = True
       mousepos = VectorSet(x, y)
-    Else
-     ' MDIForm1.DeleteTeleporter.Enabled = False
     End If
   End If
   
@@ -1765,14 +1787,12 @@ If lblSafeMode.Visible Then Exit Sub 'Botsareus 5/13/2013 Safemode restrictions
   If n = 0 And Button = 1 And MDIForm1.insrob Then
    If Not lblSaving.Visible Then 'Botsareus 9/6/2014 Bug fix
     k = 0
-    While SimOpts.Specie(k).Name <> "" And SimOpts.Specie(k).Name <> MDIForm1.Combo1.text
+    While simopts.Specie(k).Name <> "" And simopts.Specie(k).Name <> MDIForm1.Combo1.text
       k = k + 1
     Wend
     
-    If SimOpts.Specie(k).path = "Invalid Path" Then
+    If simopts.Specie(k).path = "Invalid Path" Then
       MsgBox ("The path for this robot is invalid.")
-    'ElseIf Not SimOpts.Specie(k).Native Then
-    '   MsgBox ("Sorry, but you can't insert a species which did not originate in this simulation.")
     Else
       aggiungirob k, x, y
     End If
@@ -1797,6 +1817,7 @@ Private Sub deletemark()
   For t = 1 To MaxRobs
     rob(t).highlight = False
   Next
+
 End Sub
 
 ' seconds timer, used to periodically check _cycles_ counters
@@ -1815,11 +1836,12 @@ Private Sub SecTimer_Timer()
   Dim t As Integer
   Dim i As Integer
   
-  SimOpts.TotRunTime = SimOpts.TotRunTime + 1
+  simopts.TotRunTime = simopts.TotRunTime + 1
 
   ' reset counters if simulation restarted
-  If SimOpts.TotRunTime = 1 Then
+  If simopts.TotRunTime = 1 Then
     For i = 0 To 9
+
       TenSecondsAgo(i) = SimOpts.TotRunCycle
     Next
     ' reset the counter for horiz/vertical shuffle
@@ -1827,29 +1849,32 @@ Private Sub SecTimer_Timer()
   End If
   
   ' same as above, but checking totruncycle<lastcycle instead
-  If SimOpts.TotRunCycle < TenSecondsAgo((SimOpts.TotRunTime + 9) Mod 10) Then
+  If simopts.TotRunCycle < TenSecondsAgo((simopts.TotRunTime + 9) Mod 10) Then
     For i = 0 To 9
       TenSecondsAgo(i) = SimOpts.TotRunCycle
     Next
+
     LastShuffle = 0
   End If
   
   ' if we've had 5000 cycles in a second, probably we've
   ' loaded a saved sim. So we need to reset some counters
-  If SimOpts.TotRunCycle - TenSecondsAgo((SimOpts.TotRunTime + 9) Mod 10) > 5000 Then
+  If simopts.TotRunCycle - TenSecondsAgo((simopts.TotRunTime + 9) Mod 10) > 5000 Then
     For i = 0 To 9
+
       TenSecondsAgo(i) = SimOpts.TotRunCycle
     Next
     ' facciamo avvenire uno shuffle fra 50000 cicli
-    LastShuffle = SimOpts.TotRunCycle - 50000
+    LastShuffle = simopts.TotRunCycle - 50000
   End If
   
   ' update status bar in MDI formMod
-  
+
   TenSecondsAgo(SimOpts.TotRunTime Mod 10) = SimOpts.TotRunCycle
   SimOpts.CycSec = CSng(CSng(CSng(SimOpts.TotRunCycle) - CSng(TenSecondsAgo((SimOpts.TotRunTime + 1) Mod 10))) * 0.1)
     
   cyccaption SimOpts.CycSec
+
 
   '(provides the mutation rates oscillation Botsareus 8/3/2013 moved to UpdateSim)
     
@@ -1917,7 +1942,7 @@ Private Sub main()
         If Not MDIForm1.oneonten Then
           Redraw
         Else
-          If SimOpts.TotRunCycle Mod 10 = 0 Then Redraw
+          If simopts.TotRunCycle Mod 10 = 0 Then Redraw
         End If
       End If
     
@@ -1926,7 +1951,7 @@ Private Sub main()
       End If
             
       ' feeds graphs with data:
-      If SimOpts.TotRunCycle Mod SimOpts.chartingInterval = 0 Then
+      If simopts.TotRunCycle Mod simopts.chartingInterval = 0 Then
         For i = 1 To NUMGRAPHS
           If Not (Charts(i).graf Is Nothing) Then
            If Charts(i).graf.Visible Then  'Botsareus 2/23/2013 Do not update chart if invisable
@@ -1935,7 +1960,7 @@ Private Sub main()
           End If
         Next
       End If
-      If SimOpts.TotRunCycle Mod 200 = 0 Then
+      If simopts.TotRunCycle Mod 200 = 0 Then
         If InternetMode.Visible Then writeIMdata 'Botsareus 9/6/2014 calculate stats for IM
       End If
     End If
@@ -2007,8 +2032,6 @@ Public Sub NewGraph(n As Integer, YLab As String)
     Charts(n).graf.ResetGraph
     Charts(n).graf.Left = graphleft(n)
     Charts(n).graf.Top = graphtop(n)
-
-  '  Charts(n).graf.SetYLabel YLab ' EricL - Don't need this line - dup of line below
   Else
     'Botsareus 1/5/2013 reposition graph
     Charts(n).graf.Top = IIf(Charts(n).graf.Top <> Screen.Height And Charts(n).graf.Visible, 0, graphtop(n))
@@ -2016,7 +2039,6 @@ Public Sub NewGraph(n As Integer, YLab As String)
   End If
   
    Charts(n).graf.chk_GDsave.value = IIf(graphsave(n), 1, 0)
-  'Charts(n).graf.SetYLabel YLab ' EricL 4/7/2006 Commented out - just no longer need to call SetYLabel
   
   'EricL 4/7/2006 Just set the caption directly now without adding "/ Cycles..." to teh end of the caption
   Charts(n).graf.Caption = YLab
@@ -2219,7 +2241,7 @@ Private Sub CalcStats(ByRef nomi, ByRef dati, graphNum As Integer) 'Botsareus 8/
   
  ' Dim numbots As Integer
  
-  For t = 0 To SimOpts.SpeciesNum
+  For t = 0 To simopts.SpeciesNum
     speciesListIndex(t) = 0
   Next
 
@@ -2280,24 +2302,26 @@ Private Sub CalcStats(ByRef nomi, ByRef dati, graphNum As Integer) 'Botsareus 8/
       dati(p, DNALENGTH_GRAPH) = Round(dati(p, DNALENGTH_GRAPH) / dati(p, POPULATION_GRAPH), 1)
       dati(p, DNACOND_GRAPH) = Round(dati(p, DNACOND_GRAPH) / dati(p, POPULATION_GRAPH), 1)
       dati(p, MUT_DNALENGTH_GRAPH) = Round(dati(p, MUT_DNALENGTH_GRAPH) / dati(p, POPULATION_GRAPH), 1)
+
     Next
+
     End If
-    dati(1, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(COSTMULTIPLIER)
+    dati(1, DYNAMICCOSTS_GRAPH) = simopts.Costs(COSTMULTIPLIER)
     
-    If SimOpts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
+    If simopts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
       dati(2, DYNAMICCOSTS_GRAPH) = population
     Else
-      dati(2, DYNAMICCOSTS_GRAPH) = population / SimOpts.Costs(DYNAMICCOSTTARGET)
+      dati(2, DYNAMICCOSTS_GRAPH) = population / simopts.Costs(DYNAMICCOSTTARGET)
     End If
     
-    dati(3, DYNAMICCOSTS_GRAPH) = 1 + (SimOpts.Costs(DYNAMICCOSTTARGETUPPERRANGE) * 0.01)
-    dati(4, DYNAMICCOSTS_GRAPH) = 1 - (SimOpts.Costs(DYNAMICCOSTTARGETLOWERRANGE) * 0.01)
-    If SimOpts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
-      dati(5, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(BOTNOCOSTLEVEL)
-      dati(6, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(COSTXREINSTATEMENTLEVEL)
+    dati(3, DYNAMICCOSTS_GRAPH) = 1 + (simopts.Costs(DYNAMICCOSTTARGETUPPERRANGE) * 0.01)
+    dati(4, DYNAMICCOSTS_GRAPH) = 1 - (simopts.Costs(DYNAMICCOSTTARGETLOWERRANGE) * 0.01)
+    If simopts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
+      dati(5, DYNAMICCOSTS_GRAPH) = simopts.Costs(BOTNOCOSTLEVEL)
+      dati(6, DYNAMICCOSTS_GRAPH) = simopts.Costs(COSTXREINSTATEMENTLEVEL)
     Else
-      dati(5, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(BOTNOCOSTLEVEL) / SimOpts.Costs(DYNAMICCOSTTARGET)
-      dati(6, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(COSTXREINSTATEMENTLEVEL) / SimOpts.Costs(DYNAMICCOSTTARGET)
+      dati(5, DYNAMICCOSTS_GRAPH) = simopts.Costs(BOTNOCOSTLEVEL) / simopts.Costs(DYNAMICCOSTTARGET)
+      dati(6, DYNAMICCOSTS_GRAPH) = simopts.Costs(COSTXREINSTATEMENTLEVEL) / simopts.Costs(DYNAMICCOSTTARGET)
     End If
     
     'Botsareus 5/25/2013 Logic for custom graph
@@ -2433,7 +2457,9 @@ getout2:
        
   Case MUTATIONS_GRAPH
     For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, MUTATIONS_GRAPH) = dati(p, MUTATIONS_GRAPH) + rob(t).LastMut + rob(t).Mutations
@@ -2447,7 +2473,9 @@ getout2:
     
   Case AVGAGE_GRAPH
    For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, AVGAGE_GRAPH) = dati(p, AVGAGE_GRAPH) + (rob(t).age / 100) ' EricL 4/7/2006 Graph age in 100's of cycles
@@ -2460,7 +2488,9 @@ getout2:
 
   Case OFFSPRING_GRAPH
   For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, OFFSPRING_GRAPH) = dati(p, OFFSPRING_GRAPH) + rob(t).SonNumber
@@ -2474,8 +2504,10 @@ getout2:
    
   Case ENERGY_GRAPH
   For t = 1 To MaxRobs
+
       If rob(t).exist Then
        ' numbots = numbots + 1
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, ENERGY_GRAPH) = dati(p, ENERGY_GRAPH) + rob(t).nrg
@@ -2489,9 +2521,11 @@ getout2:
    
   Case DNALENGTH_GRAPH
     For t = 1 To MaxRobs
+
       'If Not .wall And .exist Then
       If rob(t).exist Then
        ' numbots = numbots + 1
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, DNALENGTH_GRAPH) = dati(p, DNALENGTH_GRAPH) + rob(t).DnaLen
@@ -2505,9 +2539,11 @@ getout2:
    
   Case DNACOND_GRAPH
   For t = 1 To MaxRobs
+
       'If Not .wall And .exist Then
       If rob(t).exist Then
       '  numbots = numbots + 1
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, DNACOND_GRAPH) = dati(p, DNACOND_GRAPH) + rob(t).condnum
@@ -2521,7 +2557,9 @@ getout2:
    
   Case MUT_DNALENGTH_GRAPH
   For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, MUT_DNALENGTH_GRAPH) = dati(p, MUT_DNALENGTH_GRAPH) + (rob(t).LastMut + rob(t).Mutations) / rob(t).DnaLen * 1000
@@ -2535,28 +2573,30 @@ getout2:
    
   Case ENERGY_SPECIES_GRAPH
     For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, ENERGY_SPECIES_GRAPH) = dati(p, ENERGY_SPECIES_GRAPH) + (rob(t).nrg + rob(t).body * 10) * 0.001
       End If
     Next
     
   Case DYNAMICCOSTS_GRAPH
-    dati(1, DYNAMICCOSTS_GRAPH) = Round(SimOpts.Costs(COSTMULTIPLIER), 4)
-    If SimOpts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
+    dati(1, DYNAMICCOSTS_GRAPH) = Round(simopts.Costs(COSTMULTIPLIER), 4)
+    If simopts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
       dati(2, DYNAMICCOSTS_GRAPH) = population
     Else
-      dati(2, DYNAMICCOSTS_GRAPH) = population / SimOpts.Costs(DYNAMICCOSTTARGET)
+      dati(2, DYNAMICCOSTS_GRAPH) = population / simopts.Costs(DYNAMICCOSTTARGET)
     End If
         
-    dati(3, DYNAMICCOSTS_GRAPH) = 1 + (SimOpts.Costs(DYNAMICCOSTTARGETUPPERRANGE) * 0.01)
-    dati(4, DYNAMICCOSTS_GRAPH) = 1 - (SimOpts.Costs(DYNAMICCOSTTARGETLOWERRANGE) * 0.01)
-    If SimOpts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
-      dati(5, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(BOTNOCOSTLEVEL)
-      dati(6, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(COSTXREINSTATEMENTLEVEL)
+    dati(3, DYNAMICCOSTS_GRAPH) = 1 + (simopts.Costs(DYNAMICCOSTTARGETUPPERRANGE) * 0.01)
+    dati(4, DYNAMICCOSTS_GRAPH) = 1 - (simopts.Costs(DYNAMICCOSTTARGETLOWERRANGE) * 0.01)
+    If simopts.Costs(DYNAMICCOSTTARGET) = 0 Then ' Divide by zero protection
+      dati(5, DYNAMICCOSTS_GRAPH) = simopts.Costs(BOTNOCOSTLEVEL)
+      dati(6, DYNAMICCOSTS_GRAPH) = simopts.Costs(COSTXREINSTATEMENTLEVEL)
     Else
-      dati(5, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(BOTNOCOSTLEVEL) / SimOpts.Costs(DYNAMICCOSTTARGET)
-      dati(6, DYNAMICCOSTS_GRAPH) = SimOpts.Costs(COSTXREINSTATEMENTLEVEL) / SimOpts.Costs(DYNAMICCOSTTARGET)
+      dati(5, DYNAMICCOSTS_GRAPH) = simopts.Costs(BOTNOCOSTLEVEL) / simopts.Costs(DYNAMICCOSTTARGET)
+      dati(6, DYNAMICCOSTS_GRAPH) = simopts.Costs(COSTXREINSTATEMENTLEVEL) / simopts.Costs(DYNAMICCOSTTARGET)
     End If
     
   Case SPECIESDIVERSITY_GRAPH
@@ -2581,7 +2621,9 @@ getout2:
     
   Case AVGCHLR_GRAPH 'Botsareus 8/31/2013 The new chloroplast graph
     For t = 1 To MaxRobs
+
       If rob(t).exist Then
+
         p = Flex.Position(rob(t).FName, nomi)
         dati(p, POPULATION_GRAPH) = dati(p, POPULATION_GRAPH) + 1
         dati(p, AVGCHLR_GRAPH) = dati(p, AVGCHLR_GRAPH) + rob(t).chloroplasts
@@ -2867,7 +2909,7 @@ Private Sub writeIMdata()
     Dim simpopulations() As IMbots
     Dim upperbound As Integer
     ReDim simpopulations(0)
-    simdata = "{""cycle"":" & SimOpts.TotRunCycle & ",""simId"":""" & strSimStart & """,""width"":" & SimOpts.FieldWidth & ",""height"":" & SimOpts.FieldHeight & ",""population"":["   'bug fix
+    simdata = "{""cycle"":" & simopts.TotRunCycle & ",""simId"":""" & strSimStart & """,""width"":" & simopts.fieldWidth & ",""height"":" & simopts.fieldHeight & ",""population"":["   'bug fix
     
     'calculate species
     For i = 1 To MaxRobs
@@ -2905,7 +2947,7 @@ Private Sub writeIMdata()
     
     simdata = simdata & "]}"
                
-    Open OutboundPath & "\" & SimOpts.TotRunCycle & SimOpts.UserSeedNumber & ".stats" For Output As #299
+    Open OutboundPath & "\" & simopts.TotRunCycle & simopts.UserSeedNumber & ".stats" For Output As #299
      Print #299, simdata
     Close #299
 End Sub

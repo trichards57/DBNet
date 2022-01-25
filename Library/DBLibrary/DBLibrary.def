@@ -1,0 +1,21 @@
+LIBRARY
+
+EXPORTS 
+	Robot_CalculateMass
+	Robot_RunPreUpdates
+	Robot_StoreVenom
+	Robot_ManageBody
+	Robot_FindRadius
+	Robot_ManageFixed
+	Robot_Poisons
+	Robot_FeedBody
+	Robot_StoreBody
+	Robot_StoreVenom
+	DNA_Execute
+	VectorMin
+	VectorMax
+	VectorDot
+	VectorCross
+	Angle
+	AngleDifference
+	AngleNormalise

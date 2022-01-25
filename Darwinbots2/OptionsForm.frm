@@ -127,6 +127,7 @@ Begin VB.Form optionsform
       Tab(2).Control(0).Enabled=   0   'False
       Tab(2).Control(1)=   "Frame20"
       Tab(2).Control(1).Enabled=   0   'False
+
       Tab(2).ControlCount=   2
       TabCaption(3)   =   "Mutations"
       TabPicture(3)   =   "OptionsForm.frx":0054
@@ -137,10 +138,12 @@ Begin VB.Form optionsform
       Tab(3).Control(1).Enabled=   0   'False
       Tab(3).Control(2)=   "Frame13"
       Tab(3).Control(2).Enabled=   0   'False
+
       Tab(3).ControlCount=   3
       TabCaption(4)   =   "Restart and League"
       TabPicture(4)   =   "OptionsForm.frx":0070
       Tab(4).ControlEnabled=   0   'False
+
       Tab(4).Control(0)=   "btnSetSB"
       Tab(4).Control(0).Enabled=   0   'False
       Tab(4).Control(1)=   "btnSetF2"
@@ -153,6 +156,7 @@ Begin VB.Form optionsform
       Tab(4).Control(4).Enabled=   0   'False
       Tab(4).Control(5)=   "Label19"
       Tab(4).Control(5).Enabled=   0   'False
+
       Tab(4).ControlCount=   6
       TabCaption(5)   =   "Internet"
       TabPicture(5)   =   "OptionsForm.frx":008C
@@ -163,6 +167,7 @@ Begin VB.Form optionsform
       Tab(5).Control(1).Enabled=   0   'False
       Tab(5).Control(2)=   "Label41"
       Tab(5).Control(2).Enabled=   0   'False
+
       Tab(5).ControlCount=   3
       Begin VB.CommandButton btnSetSB 
          Caption         =   "Set SB settings"
@@ -2011,6 +2016,7 @@ Begin VB.Form optionsform
          _ExtentX        =   6165
          _ExtentY        =   1720
          _Version        =   393217
+         Enabled         =   -1  'True
          ReadOnly        =   -1  'True
          ScrollBars      =   2
          TextRTF         =   $"OptionsForm.frx":0547
@@ -2521,8 +2527,6 @@ Dim follow2 As Boolean
 Dim follow3 As Boolean
 Dim follow4 As Boolean
 
-'Dim SpeciesToggle As Boolean 'Botsareus 1/21/2013 no more need for speices toggle
-
 Dim lastsettings As String
 Dim contrmethod As Integer
 Public CurrSpec As Integer
@@ -2626,14 +2630,14 @@ pass = False
     TmpOpts.CorpseEnabled = False    ' No Corpses
     TmpOpts.DayNight = False         ' Sun never sets
     TmpOpts.SunOnRnd = True          ' There is weather
-    TmpOpts.FieldWidth = 9237
-    TmpOpts.FieldHeight = 6928
+    TmpOpts.fieldWidth = 9237
+    TmpOpts.fieldHeight = 6928
     TmpOpts.FieldSize = 1
     TmpOpts.MaxEnergy = 40           ' Veggy nrg per cycle
     TmpOpts.MaxPopulation = 25       ' Veggy max population
     TmpOpts.MinVegs = 10
     TmpOpts.Pondmode = False
-    TmpOpts.PhysBrown = 0         ' Animal Motion
+    TmpOpts.physBrown = 0         ' Animal Motion
     TmpOpts.Toroidal = True
     TmpOpts.Updnconnected = True
     TmpOpts.Dxsxconnected = True
@@ -2660,7 +2664,7 @@ pass = False
     TmpOpts.DisableFixing = False
     TmpOpts.RepopAmount = 10
     TmpOpts.RepopCooldown = 25
-    TmpOpts.MaxVelocity = 180
+    TmpOpts.maxVelocity = 180
     TmpOpts.VegFeedingToBody = 0.5       ' 50/50 nrg/body veggy feeding ratio
     TmpOpts.SunUp = False                ' Turn off bringing the sun up due to a threshold
     TmpOpts.SunDown = False              ' Turn off setting the sun due to a threshold
@@ -2699,8 +2703,8 @@ If MsgBox("Enabling SB mode settings will greatly alter the physics of your simu
 pass = True
 
 btnSetF1_Click
-TmpOpts.FieldWidth = 16000
-TmpOpts.FieldHeight = 12000
+TmpOpts.fieldWidth = 16000
+TmpOpts.fieldHeight = 12000
 FieldSizeSlide.value = 2
 FWidthLab = 16000
 FHeightLab = 12000
@@ -2847,23 +2851,23 @@ Label7(2).Visible = TmpOpts.Tides = 0
 Label7(3).Visible = TmpOpts.Tides = 0
 Label47.Visible = TmpOpts.Tides > 0
   
-If TmpOpts.PhysMoving < 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
-If TmpOpts.PhysMoving > 0.33 And TmpOpts.PhysMoving < 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
-If TmpOpts.PhysMoving > 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
+If TmpOpts.physMoving < 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
+If TmpOpts.physMoving > 0.33 And TmpOpts.physMoving < 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
+If TmpOpts.physMoving > 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
 
-If TmpOpts.PhysMoving = 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
-If TmpOpts.PhysMoving = 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
-If TmpOpts.PhysMoving = 1 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
+If TmpOpts.physMoving = 0.33 Then EfficiencyCombo.text = EfficiencyCombo.list(2)
+If TmpOpts.physMoving = 0.66 Then EfficiencyCombo.text = EfficiencyCombo.list(1)
+If TmpOpts.physMoving = 1 Then EfficiencyCombo.text = EfficiencyCombo.list(0)
   
 '
 
-If TmpOpts.PhysBrown > 7 Then BrownianCombo.text = BrownianCombo.list(0)
-If TmpOpts.PhysBrown > 0.5 And TmpOpts.PhysBrown < 7 Then BrownianCombo.text = BrownianCombo.list(1)
-If TmpOpts.PhysBrown < 0.5 Then BrownianCombo.text = BrownianCombo.list(2)
+If TmpOpts.physBrown > 7 Then BrownianCombo.text = BrownianCombo.list(0)
+If TmpOpts.physBrown > 0.5 And TmpOpts.physBrown < 7 Then BrownianCombo.text = BrownianCombo.list(1)
+If TmpOpts.physBrown < 0.5 Then BrownianCombo.text = BrownianCombo.list(2)
 
-If TmpOpts.PhysBrown = 7 Then BrownianCombo.text = BrownianCombo.list(0)
-If TmpOpts.PhysBrown = 0.5 Then BrownianCombo.text = BrownianCombo.list(1)
-If TmpOpts.PhysBrown = 0 Then BrownianCombo.text = BrownianCombo.list(2)
+If TmpOpts.physBrown = 7 Then BrownianCombo.text = BrownianCombo.list(0)
+If TmpOpts.physBrown = 0.5 Then BrownianCombo.text = BrownianCombo.list(1)
+If TmpOpts.physBrown = 0 Then BrownianCombo.text = BrownianCombo.list(2)
 
 '
 
@@ -2949,21 +2953,11 @@ Public Sub PopulateSpeciesList()
 Dim i As Integer
 
  SortSpecies
-' If SpeciesToggle Then 'Botsareus 1/21/2013 Get non-native species via SnapShotSearch
-'    SpeciesLabel = "Native and Non-Native Species:"
-'    NativeSpeciesButton.Caption = "Show Native Species Only"
-'    SpecList.CLEAR
-'    For i = 0 To TmpOpts.SpeciesNum - 1
-'      SpecList.additem (TmpOpts.Specie(i).Name)
-'    Next i
-'  Else
-'    SpeciesLabel = "Native Species:"
-'    NativeSpeciesButton.Caption = "Show Non-Native Species"
+
     SpecList.CLEAR
     For i = 0 To TmpOpts.SpeciesNum - 1
        If TmpOpts.Specie(i).Native Then SpecList.additem (TmpOpts.Specie(i).Name)
     Next i
-'  End If
  
   SpecList.Refresh
 End Sub
@@ -2974,9 +2968,9 @@ Dim i As Integer
 Dim MSG As String
 Dim found As Boolean
 MSG = "The Non-Native Species are:" & vbCrLf & vbCrLf
-For i = 0 To SimOpts.SpeciesNum - 1
- If Not SimOpts.Specie(i).Native Then
-    MSG = MSG & """" & SimOpts.Specie(i).Name & """, "
+For i = 0 To simopts.SpeciesNum - 1
+ If Not simopts.Specie(i).Native Then
+    MSG = MSG & """" & simopts.Specie(i).Name & """, "
     found = True
  End If
 Next i
@@ -2993,7 +2987,6 @@ Dim ind As Integer
  
   ind = optionsform.SpecList.ListIndex
   If ind >= 0 Then
-    'RenameForm.Show vbModal
   Else
     MsgBox ("No Species Selected.")
   End If
@@ -3064,13 +3057,8 @@ Private Sub FluidSolidRadio_Click(Index As Integer)
 End Sub
 
 Private Sub MaxVelSlider_Change()
-  TmpOpts.MaxVelocity = MaxVelSlider.value
+  TmpOpts.maxVelocity = MaxVelSlider.value
 End Sub
-
-'Private Sub PauseButton_Click() 'Botsareus 1/5/2013 Can not control pause from settings
-'  Form1.Active = Not Form1.Active
-'  PauseButton.Caption = IIf(Form1.Active, "Unpaused", "Paused")
-'End Sub
 
 
 ''''''''''''''''''''''''''''''''
@@ -3196,7 +3184,6 @@ Private Sub AddSpec_Click()
   CommonDialog1.ShowOpen
   If CommonDialog1.FileName <> "" Then 'Botsareus 1/11/2013 Do not insert robot if filename is blank
   additem CommonDialog1.FileName
- ' TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
   PopulateSpeciesList
   End If
 fine:
@@ -3207,12 +3194,6 @@ Private Sub DuplicaButt_Click() 'Botsareus 4/30/2013 Fix for the duplicator
   Dim ind As Integer
   ind = SpecList.ListIndex
   If ind >= 0 And TmpOpts.Specie(ind).Native Then
-'    CommonDialog1.FileName = ""
-'    CommonDialog1.Filter = "Dna file(*.txt)|*.txt"
-'    CommonDialog1.InitDir = MDIForm1.MainDir + "\robots"
-'    CommonDialog1.DialogTitle = WSchoosedna
-'    CommonDialog1.ShowOpen
-'    additem CommonDialog1.FileName
     TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
     TmpOpts.Specie(TmpOpts.SpeciesNum - 1) = TmpOpts.Specie(ind)
     DispSettings
@@ -3228,15 +3209,11 @@ Sub DelSpec_Click()
   If ind >= 0 Then
     SpecList.RemoveItem ind
     k = ind
-    'l = SpecList.ListCount + 1
     For t = ind To SpecList.ListCount 'Listcount now has one fewer than it did before!!!
       TmpOpts.Specie(t) = TmpOpts.Specie(t + 1)
     Next t
     TmpOpts.SpeciesNum = TmpOpts.SpeciesNum - 1
     disprop
-  'Else
-   ' MsgBox ("Sorry, but you can only delete bots that originated in this simulation.")
-    'Check to make sure our current slected index is still valid
     If ind >= SpecList.ListCount Then
       ind = ind - 1
     End If
@@ -3251,7 +3228,6 @@ End Sub
 Private Sub clearall()
   Dim k As Integer
   k = 0
-'  SpecList.CLEAR
   While TmpOpts.Specie(k).Name <> ""
     TmpOpts.Specie(k).Name = ""
     k = k + 1
@@ -3265,7 +3241,6 @@ End Sub
 Sub additem(path As String)
   Dim k As Integer, t As Long
   SpecList.additem extractname(path)
-  'k = SpecList.ListCount - 1
   
   k = TmpOpts.SpeciesNum
   TmpOpts.SpeciesNum = TmpOpts.SpeciesNum + 1
@@ -3393,6 +3368,7 @@ Private Sub ShowSkin(k As Integer)
   Line9.y2 = TmpOpts.Specie(k).Skin(6) * multy * Sin(TmpOpts.Specie(k).Skin(7) / 100) + y
 End Sub
 
+
 'Botsareus 4/37/2013 Do not need this one also
 'Private Sub ShowSkinO(k As Integer)
 '  Dim t As Integer
@@ -3423,6 +3399,7 @@ End Sub
 '    TmpOpts.Specie(k).Skin(i + 3) = Random(0, 120 - TmpOpts.Specie(k).Skin(i + 1))
 '  Next i
 'End Sub
+
 
 Sub AssignSkin(k As Integer, path As String) 'The new skin engine requires path
 'Botsareus 4/27/2013 The new skin engine
@@ -4094,27 +4071,27 @@ Private Sub FieldSizeSlide_Scroll()
   
   TmpOpts.FieldSize = FieldSizeSlide.value
   
-  oldsw = TmpOpts.FieldWidth
-  oldsh = TmpOpts.FieldHeight
+  oldsw = TmpOpts.fieldWidth
+  oldsh = TmpOpts.fieldHeight
   
   If TmpOpts.FieldSize = 1 Then 'F1 mode
-    TmpOpts.FieldWidth = 9237
-    TmpOpts.FieldHeight = 6928
+    TmpOpts.fieldWidth = 9237
+    TmpOpts.fieldHeight = 6928
   Else
-    TmpOpts.FieldWidth = 8000
-    TmpOpts.FieldHeight = 6000
+    TmpOpts.fieldWidth = 8000
+    TmpOpts.fieldHeight = 6000
     
     If TmpOpts.FieldSize <= 12 Then
-      TmpOpts.FieldWidth = TmpOpts.FieldWidth * TmpOpts.FieldSize
-      TmpOpts.FieldHeight = TmpOpts.FieldHeight * TmpOpts.FieldSize
+      TmpOpts.fieldWidth = TmpOpts.fieldWidth * TmpOpts.FieldSize
+      TmpOpts.fieldHeight = TmpOpts.fieldHeight * TmpOpts.FieldSize
     Else ' Field sizes larger than size 12 get big fast...
-      TmpOpts.FieldWidth = (TmpOpts.FieldWidth * 12) * (TmpOpts.FieldSize - 12) * 2
-      TmpOpts.FieldHeight = (TmpOpts.FieldHeight * 12) * (TmpOpts.FieldSize - 12) * 2
+      TmpOpts.fieldWidth = (TmpOpts.fieldWidth * 12) * (TmpOpts.FieldSize - 12) * 2
+      TmpOpts.fieldHeight = (TmpOpts.fieldHeight * 12) * (TmpOpts.FieldSize - 12) * 2
     End If
   End If
   
-  FWidthLab.Caption = TmpOpts.FieldWidth
-  FHeightLab.Caption = TmpOpts.FieldHeight
+  FWidthLab.Caption = TmpOpts.fieldWidth
+  FHeightLab.Caption = TmpOpts.fieldHeight
 End Sub
 
 
@@ -4129,7 +4106,7 @@ End Sub
 
 Private Sub UserSeedText_Change()
   TmpOpts.UserSeedNumber = val(UserSeedText.text)
-  SimOpts.UserSeedNumber = val(UserSeedText.text)
+  simopts.UserSeedNumber = val(UserSeedText.text)
 End Sub
 
 ''''''End Seeded Random Control
@@ -4297,7 +4274,7 @@ Private Sub color_lightlines()
   If EnergyScalingFactor = 0 Then EnergyScalingFactor = 1
   toplevel = 2 * (val(EnergyScalingFactor.text) / (depth ^ Gradient))
    
-  depth = TmpOpts.FieldHeight / 16 / 2000 + 1
+  depth = TmpOpts.fieldHeight / 16 / 2000 + 1
   fxn = 2 * (TmpOpts.LightIntensity / (depth ^ Gradient)) / toplevel
   greyform = Convert_PercentageColor(Ceil(fxn, 1))
   greyform = Abs(greyform)
@@ -4312,8 +4289,8 @@ Private Sub color_lightlines()
   LightStrata(15).BorderColor = color
   
   For Index = 1 To 14
-    depth = (Index * TmpOpts.FieldHeight / 16) / 2000 + 1
-    depth2 = ((Index + 1) * TmpOpts.FieldHeight / 16 / 2000) + 1
+    depth = (Index * TmpOpts.fieldHeight / 16) / 2000 + 1
+    depth2 = ((Index + 1) * TmpOpts.fieldHeight / 16 / 2000) + 1
     fxn = 2 * (TmpOpts.LightIntensity / (depth ^ Gradient)) / toplevel
     fxn = fxn + 2 * (TmpOpts.LightIntensity / (depth2 ^ Gradient)) / toplevel
     fxn = Ceil(fxn / 2, 1)
@@ -4439,11 +4416,11 @@ End Sub
 Private Sub EfficiencyCombo_Click()
   Select Case EfficiencyCombo.text
     Case EfficiencyCombo.list(0)
-      TmpOpts.PhysMoving = 1
+      TmpOpts.physMoving = 1
     Case EfficiencyCombo.list(1)
-      TmpOpts.PhysMoving = 0.66
+      TmpOpts.physMoving = 0.66
     Case EfficiencyCombo.list(2)
-      TmpOpts.PhysMoving = 0.33
+      TmpOpts.physMoving = 0.33
   End Select
 End Sub
 
@@ -4486,11 +4463,11 @@ End Sub
 Private Sub BrownianCombo_Click()
   Select Case BrownianCombo.text
     Case BrownianCombo.list(0)
-      TmpOpts.PhysBrown = 7
+      TmpOpts.physBrown = 7
     Case BrownianCombo.list(1)
-      TmpOpts.PhysBrown = 0.5
+      TmpOpts.physBrown = 0.5
     Case BrownianCombo.list(2)
-      TmpOpts.PhysBrown = 0
+      TmpOpts.physBrown = 0
   End Select
 End Sub
 
@@ -4573,6 +4550,7 @@ With xObstacle(o)
  .pos.y = .pos.y / SimOpts.FieldHeight
  .Width = .Width / SimOpts.FieldWidth
  .Height = .Height / SimOpts.FieldHeight
+
 End With
 End If
 Next
@@ -4598,16 +4576,16 @@ End Sub
 
 Private Sub Form_Load()
 
-TmpOpts = SimOpts
+TmpOpts = simopts
   
  CurrSpec = -1 ' EricL 4/1/2006 Initialize that no species is selected
  DragInit    'Initialize drag code
  strings Me
 
- Form1.ScaleWidth = SimOpts.FieldWidth
- Form1.ScaleHeight = SimOpts.FieldHeight
- If TmpOpts.FieldWidth = 0 Then TmpOpts.FieldWidth = 16000
- If TmpOpts.FieldHeight = 0 Then TmpOpts.FieldHeight = 12000
+ Form1.ScaleWidth = simopts.fieldWidth
+ Form1.ScaleHeight = simopts.fieldHeight
+ If TmpOpts.fieldWidth = 0 Then TmpOpts.fieldWidth = 16000
+ If TmpOpts.fieldHeight = 0 Then TmpOpts.fieldHeight = 12000
  datatolist
  validate = True
  DispSettings
@@ -4687,26 +4665,26 @@ Form1.camfix = False 'Botsareus 2/23/2013 When simulation starts the screen is n
   
   'These change values while a sim is running.
   'Copy them so the correct value will be put back into SimOpts
-  TmpOpts.TotRunCycle = SimOpts.TotRunCycle
-  TmpOpts.TotBorn = SimOpts.TotBorn
-  TmpOpts.TotRunTime = SimOpts.TotRunTime
-  TmpOpts.DayNightCycleCounter = SimOpts.DayNightCycleCounter
-  TmpOpts.Daytime = SimOpts.Daytime
+  TmpOpts.TotRunCycle = simopts.TotRunCycle
+  TmpOpts.TotBorn = simopts.TotBorn
+  TmpOpts.TotRunTime = simopts.TotRunTime
+  TmpOpts.DayNightCycleCounter = simopts.DayNightCycleCounter
+  TmpOpts.Daytime = simopts.Daytime
   If TmpOpts.DayNight = False Then TmpOpts.Daytime = True
   
   
-  SimOpts = TmpOpts
+  simopts = TmpOpts
   
-  If InternetMode Then ResizeInternetTeleporter (SimOpts.FieldHeight / 150)
+  If InternetMode Then ResizeInternetTeleporter (simopts.fieldHeight / 150)
   
-  Form1.ScaleWidth = SimOpts.FieldWidth
-  Form1.ScaleHeight = SimOpts.FieldHeight
-  Form1.visiblew = SimOpts.FieldWidth
-  Form1.visibleh = SimOpts.FieldHeight
+  Form1.ScaleWidth = simopts.fieldWidth
+  Form1.ScaleHeight = simopts.fieldHeight
+  Form1.visiblew = simopts.fieldWidth
+  Form1.visibleh = simopts.fieldHeight
   Form1.xDivisor = 1
   Form1.yDivisor = 1
-  If SimOpts.FieldWidth > 32000 Then Form1.xDivisor = SimOpts.FieldWidth / 32000
-  If SimOpts.FieldHeight > 32000 Then Form1.yDivisor = SimOpts.FieldHeight / 32000
+  If simopts.fieldWidth > 32000 Then Form1.xDivisor = simopts.fieldWidth / 32000
+  If simopts.fieldHeight > 32000 Then Form1.yDivisor = simopts.fieldHeight / 32000
   Form1.SecTimer.Enabled = True
   Form1.Active = True
   
@@ -4812,7 +4790,7 @@ If chseedstartnew Then TmpOpts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 
   
   Unload Me
   
-  SimOpts = TmpOpts
+  simopts = TmpOpts
   
   If Form1.Active Then Form1.SecTimer.Enabled = True
   If InternetMode Then MDIForm1.F1Internet_Click
@@ -4822,7 +4800,7 @@ If chseedstartnew Then TmpOpts.UserSeedNumber = Timer * 100 'Botsareus 5/3/2013 
   While StartAnotherRound
     StartAnotherRound = False
     Form1.StartSimul
-    SimOpts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart, moved to after first sim
+    simopts.UserSeedNumber = Rnd * 2147483647 'Botsareus 6/11/2013 Randomize seed on restart, moved to after first sim
   Wend
   
 End Sub
@@ -4853,8 +4831,8 @@ End If
   UserSeedText.text = TmpOpts.UserSeedNumber
   FrequencyText.text = TmpOpts.Decaydelay
   
-  FWidthLab.Caption = TmpOpts.FieldWidth
-  FHeightLab.Caption = TmpOpts.FieldHeight
+  FWidthLab.Caption = TmpOpts.fieldWidth
+  FHeightLab.Caption = TmpOpts.fieldHeight
   
   'DisableTiesCheck.value = TmpOpts.DisableTies * True
   TopDownCheck.value = TmpOpts.Updnconnected * True
@@ -4996,7 +4974,7 @@ End If
     DragCombo.text = "Custom"
   End If
     
-  MaxVelSlider.value = TmpOpts.MaxVelocity
+  MaxVelSlider.value = TmpOpts.maxVelocity
   BodyNrgDist.value = TmpOpts.VegFeedingToBody * 100
   
   'EricL 4/1/2006 Added these to initialize values
@@ -5107,8 +5085,8 @@ On Error GoTo fine
     'Write #1, TmpOpts.Specie(t).Poslf
     'Write #1, TmpOpts.Specie(t).Postp
     
-    Write #1, TmpOpts.FieldWidth
-    Write #1, TmpOpts.FieldHeight
+    Write #1, TmpOpts.fieldWidth
+    Write #1, TmpOpts.fieldHeight
     Write #1, 0
     Write #1, 0
     
@@ -5135,8 +5113,8 @@ skipthisspecie:
   'generali
   Write #1, numSpecies 'Botsareus 1/21/2013 No more non-native species -bug fixed
   Write #1, TmpOpts.FieldSize
-  Write #1, TmpOpts.FieldWidth
-  Write #1, TmpOpts.FieldHeight
+  Write #1, TmpOpts.fieldWidth
+  Write #1, TmpOpts.fieldHeight
   Write #1, TmpOpts.MaxPopulation
   Write #1, TmpOpts.BlockedVegs
   Write #1, TmpOpts.DisableTies
@@ -5156,8 +5134,8 @@ skipthisspecie:
   'fisica
   Write #1, TmpOpts.Ygravity
   Write #1, TmpOpts.Zgravity
-  Write #1, TmpOpts.PhysBrown
-  Write #1, TmpOpts.PhysMoving
+  Write #1, TmpOpts.physBrown
+  Write #1, TmpOpts.physMoving
   Write #1, TmpOpts.PhysSwim
   
   Write #1, "null"
@@ -5252,13 +5230,13 @@ skipthisspecie3:
 skipthisspecie4:
   Next k
   
-  Write #1, TmpOpts.MaxVelocity
+  Write #1, TmpOpts.maxVelocity
   Write #1, TmpOpts.BadWastelevel 'EricL 4/1/2006 Added this
   Write #1, TmpOpts.chartingInterval 'EricL 4/1/2006 Added this
   Write #1, TmpOpts.FluidSolidCustom 'EricL 5/7/2006
   Write #1, TmpOpts.CostRadioSetting ' EricL 5/7/2006
   Write #1, TmpOpts.CoefficientElasticity ' EricL 5/7/2006
-  Write #1, TmpOpts.MaxVelocity ' EricL 5/15/2006
+  Write #1, TmpOpts.maxVelocity ' EricL 5/15/2006
   Write #1, TmpOpts.NoShotDecay ' EricL 6/8/2006
   Write #1, TmpOpts.SunUpThreshold 'EricL 6/8/2006 Added this
   Write #1, TmpOpts.SunUp 'EricL 6/8/2006 Added this
@@ -5483,8 +5461,8 @@ Public Sub ReadSettFromFile()
   Input #1, TmpOpts.SimName
   Input #1, TmpOpts.SpeciesNum
   Input #1, TmpOpts.FieldSize
-  Input #1, TmpOpts.FieldWidth
-  Input #1, TmpOpts.FieldHeight
+  Input #1, TmpOpts.fieldWidth
+  Input #1, TmpOpts.fieldHeight
   Input #1, TmpOpts.MaxPopulation
   Input #1, TmpOpts.BlockedVegs
   Input #1, TmpOpts.DisableTies
@@ -5504,8 +5482,8 @@ Public Sub ReadSettFromFile()
   'fisica
   Input #1, TmpOpts.Ygravity
   Input #1, TmpOpts.Zgravity
-  Input #1, TmpOpts.PhysBrown
-  Input #1, TmpOpts.PhysMoving
+  Input #1, TmpOpts.physBrown
+  Input #1, TmpOpts.physMoving
   Input #1, TmpOpts.PhysSwim
   
   Input #1, obsoleteString
@@ -5593,7 +5571,7 @@ Public Sub ReadSettFromFile()
     TmpOpts.Specie(k).Native = True
   Next k
   
-  If Not EOF(1) Then Input #1, TmpOpts.MaxVelocity
+  If Not EOF(1) Then Input #1, TmpOpts.maxVelocity
   
   TmpOpts.BadWastelevel = -1 ' Default
   If Not EOF(1) Then Input #1, TmpOpts.BadWastelevel 'EricL 4/1/2006 Added this
@@ -5610,8 +5588,8 @@ Public Sub ReadSettFromFile()
   TmpOpts.CoefficientElasticity = 0 ' Default for older settings files
   If Not EOF(1) Then Input #1, TmpOpts.CoefficientElasticity 'EricL 5/7/2006 Added this
   
-  TmpOpts.MaxVelocity = 40 ' Default for older settings files
-  If Not EOF(1) Then Input #1, TmpOpts.MaxVelocity 'EricL 5/15/2006 Added this
+  TmpOpts.maxVelocity = 40 ' Default for older settings files
+  If Not EOF(1) Then Input #1, TmpOpts.maxVelocity 'EricL 5/15/2006 Added this
   
   TmpOpts.NoShotDecay = False ' Default for older settings files
   If Not EOF(1) Then Input #1, TmpOpts.NoShotDecay 'EricL 6/8/2006 Added this
@@ -5731,9 +5709,9 @@ Public Sub ReadSettFromFile()
                               "Not all the information it contains can be " + vbCrLf + _
                               "transfered."
   
-  If TmpOpts.FieldWidth = 0 Then TmpOpts.FieldWidth = 16000
-  If TmpOpts.FieldHeight = 0 Then TmpOpts.FieldHeight = 12000
-  If TmpOpts.MaxVelocity = 0 Then TmpOpts.MaxVelocity = 60
+  If TmpOpts.fieldWidth = 0 Then TmpOpts.fieldWidth = 16000
+  If TmpOpts.fieldHeight = 0 Then TmpOpts.fieldHeight = 12000
+  If TmpOpts.maxVelocity = 0 Then TmpOpts.maxVelocity = 60
   If TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 0 Then TmpOpts.Costs(DYNAMICCOSTSENSITIVITY) = 50
   
   

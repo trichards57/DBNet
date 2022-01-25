@@ -205,6 +205,7 @@ Private Sub debug_Click() 'Botsareus 2/2/2013 The debug button
   Consoleform.evnt.fire cnum, "debug"
 End Sub
 
+
 Private Sub Form_Resize()
   If WindowState <> 1 Then
     Text1.Width = Width - 120
@@ -456,6 +457,7 @@ End Function
 Public Sub cycle(num As Integer)
   Dim q As Integer, k As Integer
   For k = 1 To num
+
     Form1.cyc = Form1.cyc + 1
     
     UpdateSim
@@ -473,6 +475,7 @@ Public Sub cycle(num As Integer)
       lasttim = Int(Timer)
       Form1.cyc = 0
     End If
+
     DoEvents
   Next
 End Sub

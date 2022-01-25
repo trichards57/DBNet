@@ -162,205 +162,18 @@ Public Const rmchlr As Integer = 922 'Panda 8/15/2013 The remove chloroplast var
 Public Const light As Integer = 923 'Botsareus 8/14/2013 A variable to let robots know how much light is available
 Public Const sharechlr As Integer = 924 'Panda 08/26/2013 Share Chloroplasts between ties variable
 
-'Botsareus 10/5/2015 freeing up memory from Eric's obsolete ancestors code
-'Private Type ancestorType
-'  num As Long ' unique ID of ancestor
-'  mut As Long ' mutations this ancestor had at time next descendent was born
-'  sim As Long ' the sim this ancestor was born in
-'End Type
 
-'Botsareus 10/5/2015 Replaced with something better
-'Private Type delgenerestore 'Botsareus 9/16/2014 A new bug fix from Billy
-'position As Integer
-'dna() As block
-'End Type
-
-' robot structure
-Private Type robot
-
-  exist As Boolean        ' the robot exists?
-  radius As Single
-  
-  Veg As Boolean          ' is it a vegetable?
-  NoChlr As Boolean       ' no chloroplasts?
-  
-  wall As Boolean         ' is it a wall?
-  Corpse As Boolean
-  Fixed As Boolean        ' is it blocked?
-  
-  View As Boolean         ' has this bot ever tried to see?
-  NewMove As Boolean      ' is the bot using the new physics paradigms?
-  
-  ' physics
-  pos As vector
-  BucketPos As vector
-  
-  vel As vector
-  actvel As vector 'Botsareus 6/22/2016 Robots actual velocity if it hits something
-  opos As vector 'Used to calculate actvel
-   
-  ImpulseInd As vector      ' independant forces vector
-  ImpulseRes As vector      ' Resistive forces vector
-  ImpulseStatic As Single   ' static force scalar (always opposes current forces)
-    
-  AddedMass As Single     'From fluid displacement
-  
-  aim As Single           ' aim angle
-  aimvector As vector     ' the unit vector for aim
-  
-  oaim As Single          ' old aim angle
-  ma As Single              ' angular momentum
-  mt As Single              ' torch
-  Ties(10) As tie           ' array of ties
-  order As Integer          'order in the roborder array
-    
-  occurr(20) As Integer     ' array with the ref* values
-  nrg As Single             ' energy
-  onrg As Single            ' old energy
-
-  
-  chloroplasts As Single    'Panda 8/11/2013 number of chloroplasts
-  
-  body As Single            ' Body points. A corpse still has a body after all
-  obody As Single           ' old body points, for use with pain pleas versions for body
-  vbody As Single           ' Virtual Body used to calculate body functions of MBs
-    
-  mass As Single            ' mass of robot
-  
-  shell As Single          ' Hard shell. protection from shots 1-100 reduces each cycle
-  Slime As Single          ' slime layer. protection from ties 1-100 reduces each cycle
-  Waste As Single          ' waste buildup in a robot. Too much and he dies. some can be removed by various methods
-  Pwaste As Single         ' Permanent waste. cannot be removed. Builds up as waste is removed.
-  poison As Single         ' How poisonous is robot
-  venom As Single          ' How venomous is robot
-    
-  Paralyzed As Boolean      ' true when robot is paralyzed
-  Paracount As Single       ' countdown until paralyzed robot is free to move again
-  
-  numties As Single         ' the number of ties attached to a robot
-  Multibot As Boolean       ' Is robot part of a multi-bot
-  TieAngOverwrite(3) As Boolean 'Botsareus 3/22/2013 allowes program to handle tieang...tielen 1...4 as input
-  TieLenOverwrite(3) As Boolean
-  
-  Poisoned As Boolean       ' Is robot poisoned and confused
-  Poisoncount As Single     ' Countdown till poison is out of his system
-  
-  Bouyancy As Single        ' Does robot float or sink
-  DecayTimer As Integer     ' controls decay cycle
-  Kills As Long             ' How many other robots has it killed? Might not work properly
-  Dead As Boolean           ' Allows program to define a robot as dead after a certain operation
-  Ploc As Integer           ' Location for custom poison to strike
-  Pval As Integer           ' Value to insert into venom location
-  Vloc As Integer           ' Location for custom venom to strike
-  Vval As Integer           ' Value to insert into venom location
-  Vtimer As Long            ' Count down timer to produce a virus
-  
-  vars(1000) As var
-  vnum As Integer           '| about private variables
-  maxusedvars As Integer    '|
-  usedvars(1000) As Integer '| used memory cells
-  
-  ' virtual machine
-  epimem(14) As Integer
-  mem(1000) As Integer      ' memory array
-  dna() As block            ' program array
-  
-  lastopp As Long           ' Index of last object in the focus eye.  Could be a bot or shape or something else.
-  lastopptype As Integer    ' Indicates the type of lastopp.
-                            ' 0 - bot
-                            ' 1 - shape
-                            ' 2 - edge of the playing field
-  lastopppos As vector      ' the position of the closest portion of the viewed object
-  
-  lasttch As Long           ' Botsareus 11/26/2013 The robot who is touching our robot.
-  
-  AbsNum As Long            ' absolute robot number
-  sim As Long               ' GUID of sim in which this bot was born
-    
-  'Mutation related
-  Mutables As mutationprobs
-   
-  PointMutCycle As Long     ' Next cycle to point mutate (expressed in cycles since birth.  ie: age)
-  PointMutBP As Long        ' the base pair to mutate
-  Point2MutCycle As Long    ' Botsareus 12/10/2013 The new point2 cycle
-  
-  condnum As Integer        ' number of conditions (used for cost calculations)
-  console As Consoleform    ' console object associated to the robot
-  
-  ' informative
-  SonNumber As Integer      ' number of sons
-  
-  Mutations As Long         ' total mutations
-  OldMutations As Long      ' total mutations from dna file
-  
-  
-  GenMut As Single          ' figure out how many mutations before the next genetic test
-  OldGD As Single           ' our old genetic distance
-  LastMut As Long           ' last mutations
-  MutEpiReset As Double     ' how many mutations until epigenetic reset
-  
-  parent As Long            ' parent absolute number
-  age As Long               ' age in cycles
-  newage As Long            ' age this simulation
-  BirthCycle As Long        ' birth cycle
-  genenum As Integer        ' genes number
-  generation As Integer     ' generation
-  ''TODO Look at this
-  LastOwner As String       ' last internet owner's name
-  FName As String           ' species name
-  DnaLen As Integer         ' dna length
-  LastMutDetail As String   ' description of last mutations
-  
-  ' aspetto
-  Skin(13) As Integer       ' skin definition
-  OSkin(13) As Integer      ' Old skin definition
-  color As Long             ' colour
-  highlight As Boolean      ' is it highlighted?
-  flash As Integer          ' EricL - used for blinking the entire bot a specific color for 1 cycle when various things happen
-  
-  'These store the last direction values the bot stored for voluntary movement.  Used to display movement vectors.
-  lastup As Integer
-  lastdown As Integer
-  lastleft As Integer
-  lastright As Integer
-  
-  virusshot As Long                 ' the viral shot being stored
-  ga() As Boolean                   ' EricL March 15, 2006  Used to store gene activation state
-  oldBotNum As Integer              ' EricL New for 2.42.8 - used only for remapping ties when loading multi-cell organisms
-  reproTimer As Integer             ' New for 2.42.9 - the time in cycles before the act of reproduction is free
-  CantSee As Boolean                ' Indicates whether bot's eyes get populated
-  DisableDNA As Boolean             ' Indicates whether bot's DNA should be executed
-  DisableMovementSysvars As Boolean ' Indicates whether movement sysvars for this bot should be disabled.
-  CantReproduce As Boolean          ' Indicates whether reproduction for this robot has been disabled
-  VirusImmune As Boolean            ' Indicates whether this robot is immune to viruses
-  SubSpecies As Integer             ' Indicates this bot's subspecies.  Changed when mutation or virus infection occurs
-'  Ancestors(500) As ancestorType    ' Orderred list of ancestor bot numbers.
-'  AncestorIndex As Integer          ' Index into the Ancestors array.  Points to the bot's immediate parent.  Older ancestors have lower numbers then wrap.
-  
-  fertilized As Integer             ' If non-zero, indicates this bot has been fertilized via a sperm shot.  This bot can choose to sexually reproduce
-                                    ' with this DNA until the counter hits 0.  Will be zero if unfertilized.
-  spermDNA() As block               ' Contains the DNA this bot has been fertilized with.
-  spermDNAlen As Integer
-  
-  tag As String * 50
-  
-  monitor_r As Integer
-  monitor_g As Integer
-  monitor_b As Integer
-  
-  multibot_time As Byte
-  Chlr_Share_Delay As Byte
-  dq As Byte
-  
-  dbgstring As String
-
-End Type
 
 Public Const RobSize As Integer = 120       ' rob diameter in fixed diameter sims
 Public Const half As Integer = 60           ' and so on...
 Public Const CubicTwipPerBody As Long = 905 'seems like a random number, I know.
                                             'It's cube root of volume * some constants to give
                                             'radius of 60 for a bot of 1000 body
+
+Private Declare Sub Robot_RunPreUpdates Lib "DBLibrary.dll" (ByRef r() As robot, ByVal maxRobots As Integer, ByRef simulationOptions As SimOptions)
+Private Declare Sub Robot_StoreVenom Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
+Private Declare Sub Robot_ManageBody Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions)
+Private Declare Function Robot_FindRadius Lib "DBLibrary.dll" (ByRef rob As robot, ByRef SimOpts As SimOptions, ByVal multiplier As Single) As Single
 
 Public Const ROBARRAYMAX As Integer = 32000 'robot array must be an array for swift retrieval times.
 Public rob() As robot                       ' array of robots  start at 500 and up dynamically in chunks of 500 as needed
@@ -637,57 +450,10 @@ ReDim Preserve Outdna(upperbound + resn - nn)
 
 whatside = Int(rndy * 2) = 0
 
-''''debug
-'Dim debugme As Boolean
-'debugme = False
-'Dim k As String
-'Dim temp As String
-'Dim bp As block
-'Dim converttosysvar As Boolean
-''''debug
-
 For a = nn To resn - 1
     Outdna(upperbound + 1 + a - nn).tipo = IIf(whatside, rob1(a).tipo, rob2(a - nn + res2).tipo) 'left hand side or right hand?
     Outdna(upperbound + 1 + a - nn).value = IIf(IIf(rob1(a).tipo = rob2(a - nn + res2).tipo And Abs(rob1(a).value) > 999 And Abs(rob2(a - nn + res2).value) > 999, Int(rndy * 2) = 0, whatside), rob1(a).value, rob2(a - nn + res2).value)  'if typo is different or in var range then all left/right hand, else choose a random side
-    'If rob1(a).tipo = rob2(a - nn + res2).tipo And Abs(rob1(a).value) > 999 And Abs(rob2(a - nn + res2).value) > 999 And rob1(a).value <> rob2(a - nn + res2).value Then debugme = True 'debug
 Next
-
-'If debugme Then
-'Dim a2 As Integer
-'Dim a3 As Integer
-'k = ""
-'      For a = nn To resn - 1
-'
-'        If a = UBound(rob1) Then converttosysvar = False Else converttosysvar = IIf(rob1(a + 1).tipo = 7, True, False)
-'        bp.tipo = rob1(a).tipo
-'        bp.value = rob1(a).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbTab
-'
-'        a2 = a - nn + res2
-'        If a2 = UBound(rob2) Then converttosysvar = False Else converttosysvar = IIf(rob2(a2 + 1).tipo = 7, True, False)
-'        bp.tipo = rob2(a2).tipo
-'        bp.value = rob2(a2).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbTab
-'
-'        a3 = upperbound + 1 + a - nn
-'        If a3 = UBound(Outdna) Then converttosysvar = False Else converttosysvar = IIf(Outdna(a3 + 1).tipo = 7, True, False)
-'        bp.tipo = Outdna(a3).tipo
-'        bp.value = Outdna(a3).value
-'        temp = ""
-'        Parse temp, bp, 1, converttosysvar
-'
-'      k = k & temp & vbCrLf
-'
-'      Next
-'
-'      MsgBox k
-'End If
 
 Loop
 
@@ -714,29 +480,8 @@ End Sub
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 Public Function FindRadius(ByVal n As Integer, Optional ByVal mult As Single = 1) As Single
-
-  'Botsareus 9/30/2014 Redo of find radius to make it faster
-  Dim bodypoints As Single
-  Dim chlr As Single
-  
-  If mult = -1 Then
-    bodypoints = 32000
-    chlr = 0
-  Else
-    bodypoints = rob(n).body * mult
-    chlr = rob(n).chloroplasts * mult
-  End If
-  
-  If bodypoints < 1 Then bodypoints = 1
-  If SimOpts.FixedBotRadii Then
-    FindRadius = half
-  Else
-    ' EricL 10/20/2007 Added log(bodypoints) to increase the size variation in bots.
-    FindRadius = (Log(bodypoints) * bodypoints * CubicTwipPerBody * 3 * 0.25 / PI) ^ (1 / 3)
-    'Botsareus 9/30/2014 added a rule to count chloroplasts in robot size
-    FindRadius = FindRadius + (415 - FindRadius) * chlr / 32000
-    If FindRadius < 1 Then FindRadius = 1
-  End If
+    'If n = 0 Then n = 1
+    FindRadius = Robot_FindRadius(rob(n), SimOpts, mult)
 End Function
 
 ' returns an absolute acceleration, given up-down,
@@ -839,9 +584,9 @@ Public Sub UpdatePosition(ByVal n As Integer)
     .vel = VectorAdd(.vel, VectorScalar(.ImpulseInd, 1 / (.mass + .AddedMass)))
         
     vt = VectorMagnitudeSquare(.vel)
-    If vt > SimOpts.MaxVelocity * SimOpts.MaxVelocity Then
-      .vel = VectorScalar(VectorUnit(.vel), SimOpts.MaxVelocity)
-      vt = SimOpts.MaxVelocity * SimOpts.MaxVelocity
+    If vt > SimOpts.maxVelocity * SimOpts.maxVelocity Then
+      .vel = VectorScalar(VectorUnit(.vel), SimOpts.maxVelocity)
+      vt = SimOpts.maxVelocity * SimOpts.maxVelocity
     End If
     
     .pos = VectorAdd(.pos, .vel)
@@ -868,19 +613,19 @@ Public Sub UpdatePosition(ByVal n As Integer)
   .mem(dirsx) = 0
   
   .mem(velscalar) = iceil(Sqr(vt))
-  .mem(vel) = iceil(Cos(.aim) * .vel.X + Sin(.aim) * .vel.Y * -1)
+  .mem(vel) = iceil(Cos(.aim) * .vel.x + Sin(.aim) * .vel.y * -1)
   .mem(veldn) = .mem(vel) * -1
-  .mem(veldx) = iceil(Sin(.aim) * .vel.X + Cos(.aim) * .vel.Y)
+  .mem(veldx) = iceil(Sin(.aim) * .vel.x + Cos(.aim) * .vel.y)
   .mem(velsx) = .mem(veldx) * -1
   
   .mem(masssys) = .mass
-  .mem(maxvelsys) = SimOpts.MaxVelocity
+  .mem(maxvelsys) = SimOpts.maxVelocity
   End With
 End Sub
 
-Private Function iceil(X As Single) As Integer
-    If (Abs(X) > 32000) Then X = Sgn(X) * 32000
-    iceil = X
+Private Function iceil(x As Single) As Integer
+    If (Abs(x) > 32000) Then x = Sgn(x) * 32000
+    iceil = x
 End Function
 
 Private Sub makeshell(n As Integer)
@@ -997,46 +742,6 @@ Private Sub altzheimer(n As Integer)
   
 End Sub
 
-Private Sub Upkeep(n As Integer)
-  Dim Cost As Single
-  Dim ageDelta As Long
-  With rob(n)
-       
-    'EricL 4/12/2006 Growing old is a bitch
-    'Age Cost
-    ageDelta = .age - CLng(SimOpts.Costs(AGECOSTSTART))
-    If ageDelta > 0 And .age > 0 Then
-      If SimOpts.Costs(AGECOSTMAKELOG) = 1 Then
-        Cost = SimOpts.Costs(AGECOST) * Math.Log(ageDelta)
-      ElseIf SimOpts.Costs(AGECOSTMAKELINEAR) = 1 Then
-        Cost = SimOpts.Costs(AGECOST) + (ageDelta * SimOpts.Costs(AGECOSTLINEARFRACTION))
-      Else
-        Cost = SimOpts.Costs(AGECOST)
-      End If
-      .nrg = .nrg - (Cost * SimOpts.Costs(COSTMULTIPLIER))
-    End If
-  
-    'BODY UPKEEP
-    Cost = .body * SimOpts.Costs(BODYUPKEEP) * SimOpts.Costs(COSTMULTIPLIER)
-    .nrg = .nrg - Cost
-    
-    'DNA upkeep cost
-    Cost = (.DnaLen - 1) * SimOpts.Costs(DNACYCCOST) * SimOpts.Costs(COSTMULTIPLIER)
-    .nrg = .nrg - Cost
-    
-    'degrade slime
-    .Slime = .Slime * 0.98
-    If .Slime < 0.5 Then .Slime = 0 ' To keep things sane for integer rounding, etc.
-    .mem(821) = CInt(.Slime)
-    
-    'degrade poison
-    .poison = .poison * 0.98
-    If .poison < 0.5 Then .poison = 0 'Botsareus 3/15/2013 bug fix for poison so it does not change slime
-    .mem(827) = CInt(.poison)
-    
-  End With
-End Sub
-
 Public Function genelength(n As Integer, p As Integer) As Long
   'measures the length of gene p in robot n
   Dim pos As Long
@@ -1111,30 +816,6 @@ Dim length As Long
   End With
 End Sub
 
-Private Sub Poisons(n As Integer)
-  With rob(n)
-  'Paralyzed means venomized
-  
-  If .Paralyzed Then .mem(.Vloc) = .Vval
-    
-  If .Paralyzed Then
-    .Paracount = .Paracount - 1
-    If .Paracount < 1 Then .Paralyzed = False: .Vloc = 0: .Vval = 0
-  End If
-  
-  .mem(837) = Int(.Paracount) 'Botsareus 7/13/2016 Bug fix
-  
-  If .Poisoned Then .mem(.Ploc) = .Pval
-
-  If .Poisoned Then
-    .Poisoncount = .Poisoncount - 1
-    If .Poisoncount < 1 Then .Poisoned = False: .Ploc = 0: .Pval = 0
-  End If
-  
-  .mem(838) = Int(.Poisoncount) 'Botsareus 7/13/2016 Bug fix
-  End With
-End Sub
-
 Private Sub UpdateCounters(n As Integer)
 Dim i As Integer
 
@@ -1175,7 +856,7 @@ End Sub
 
 Private Sub MakeStuff(ByVal n As Integer)
    
-  If rob(n).mem(824) <> 0 Then storevenom n
+  If rob(n).mem(824) <> 0 Then Robot_StoreVenom rob(n), SimOpts
   If rob(n).mem(826) <> 0 Then storepoison n
   If rob(n).mem(822) <> 0 Then makeshell n
   If rob(n).mem(820) <> 0 Then makeslime n
@@ -1264,20 +945,6 @@ End With
   
 End Sub
 
-Private Sub ManageBody(ByVal n As Integer)
-    
-  'body management
-  'rob(n).obody = rob(n).body      'replaces routine above 'Botsareus 7/4/2016 Bug fix -bodgain and bodloss work now
-        
-  If rob(n).mem(strbody) > 0 Then storebody n
-  If rob(n).mem(fdbody) > 0 Then feedbody n
-  
-  If rob(n).body > 32000 Then rob(n).body = 32000
-  If rob(n).body < 0 Then rob(n).body = 0   'Ericl 4/6/2006 Overflow protection.
-  rob(n).mem(body) = CInt(rob(n).body)
-    
-End Sub
-
 Private Sub Shock(ByVal n As Integer)
 
 'This code here forces a robot to die instantly from getting an overload based on energy
@@ -1349,17 +1016,6 @@ Private Sub ManageBouyancy(ByVal n As Integer) 'Botsareus 2/2/2013 Bouyancy fix 
      .mem(setboy) = 0
     End If
   End With
-End Sub
-
-Private Sub ManageFixed(n As Integer)
-
-  'Fixed/ not fixed
-    If rob(n).mem(216) > 0 Then
-      rob(n).Fixed = True
-    Else
-      rob(n).Fixed = False
-    End If
-
 End Sub
 
 'Add bots reproducing this cycle to the rep array
@@ -1447,11 +1103,11 @@ Private Sub FireTies(ByVal n As Integer)
 End Sub
 
 Private Sub DeleteSpecies(i As Integer)
-  Dim X As Integer
+  Dim x As Integer
   
-  For X = i To SimOpts.SpeciesNum - 1
-    SimOpts.Specie(X) = SimOpts.Specie(X + 1)
-  Next X
+  For x = i To SimOpts.SpeciesNum - 1
+    SimOpts.Specie(x) = SimOpts.Specie(x + 1)
+  Next x
   SimOpts.Specie(SimOpts.SpeciesNum - 1).Native = False ' Do this just in case
   SimOpts.SpeciesNum = SimOpts.SpeciesNum - 1
    
@@ -1481,9 +1137,9 @@ Public Sub UpdateBots()
   Dim z As Integer
   Dim q As Integer
   Dim ti As Single
-  Dim X As Integer
+  Dim x As Integer
   Dim staticV As Single
-    
+      
   rp = 1
   kl = 1
   kil(1) = 0
@@ -1526,26 +1182,21 @@ Public Sub UpdateBots()
         BouyancyScaling = (1 + Sin(((SimOpts.TotRunCycle + TmpOpts.TidesOf) Mod TmpOpts.Tides) / SimOpts.Tides * PI * 2)) / 2
         BouyancyScaling = Sqr(BouyancyScaling)
         SimOpts.Ygravity = (1 - BouyancyScaling) * 4
-        SimOpts.PhysBrown = IIf(BouyancyScaling > 0.8, 10, 0)
+        SimOpts.physBrown = IIf(BouyancyScaling > 0.8, 10, 0)
     End If
-  
-  'this loops is for pre update
-  For t = 1 To MaxRobs
+
+    Robot_RunPreUpdates rob, MaxRobs, SimOpts
+
+    'this loops is for pre update
+    For t = 1 To MaxRobs
     If t Mod 250 = 0 Then DoEvents
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
-      If (rob(t).Corpse = False) Then Upkeep t ' No upkeep costs if you are dead!
-      If ((rob(t).Corpse = False) And (rob(t).DisableDNA = False)) Then Poisons t
-      If Not SimOpts.DisableFixing Then ManageFixed t 'Botsareus 8/5/2014 Call function only if allowed
-      CalcMass t
-      If numObstacles > 0 Then DoObstacleCollisions t
-      bordercolls t
-      TieHooke t ' Handles tie lengths, tie hardening and compressive, elastic tie forces
-      If Not rob(t).Corpse And Not rob(t).DisableDNA Then TieTorque t 'EricL 4/21/2006 Handles tie angles
-      If Not rob(t).Fixed Then NetForces t 'calculate forces on all robots
+      ' If numObstacles > 0 Then DoObstacleCollisions t
+      
       BucketsCollision t
       'Botsareus 6/17/2016 Static friction fix
-      If rob(t).ImpulseStatic > 0 And (rob(t).ImpulseInd.X <> 0 Or rob(t).ImpulseInd.Y <> 0) Then
-        If rob(t).vel.X = 0 And rob(t).vel.Y = 0 Then
+      If rob(t).ImpulseStatic > 0 And (rob(t).ImpulseInd.x <> 0 Or rob(t).ImpulseInd.y <> 0) Then
+        If rob(t).vel.x = 0 And rob(t).vel.y = 0 Then
             staticV = rob(t).ImpulseStatic
         Else
             'Takes into account the fact that the robot may be moving along the same vector
@@ -1626,7 +1277,7 @@ Public Sub UpdateBots()
       HandleWaste t
       Shooting t
       If Not rob(t).NoChlr Then ManageChlr t 'Botsareus 3/28/2014 Disable Chloroplasts
-      ManageBody t
+      Robot_ManageBody rob(t), SimOpts
       ManageBouyancy t
       ManageReproduction t
       Shock t
@@ -1693,24 +1344,6 @@ Private Sub ReproduceAndKill()
     KillRobot kil(t)
     t = t + 1
   Wend
-End Sub
-
-Private Sub storebody(t As Integer)
-  If rob(t).mem(strbody) > 100 Then rob(t).mem(strbody) = 100
-  rob(t).nrg = rob(t).nrg - rob(t).mem(strbody)
-  rob(t).body = rob(t).body + rob(t).mem(strbody) / 10
-  If rob(t).body > 32000 Then rob(t).body = 32000
-  rob(t).radius = FindRadius(t)
-  rob(t).mem(strbody) = 0
-End Sub
-
-Private Sub feedbody(t As Integer)
-  If rob(t).mem(fdbody) > 100 Then rob(t).mem(fdbody) = 100
-  rob(t).nrg = rob(t).nrg + rob(t).mem(fdbody)
-  rob(t).body = rob(t).body - CSng(rob(t).mem(fdbody)) / 10#
-  If rob(t).nrg > 32000 Then rob(t).nrg = 32000
-  rob(t).radius = FindRadius(t)
-  rob(t).mem(fdbody) = 0
 End Sub
 
 ' here we catch the attempt of a robot to shoot,
@@ -2006,46 +1639,6 @@ getout:
   End With
 End Sub
 
-'Robot n converts some of his energy to venom
-Public Sub storevenom(n As Integer)
-  Dim Cost As Single
-  Dim Delta As Single
-  Dim venomNrgConvRate As Single
-
-  venomNrgConvRate = 1 ' Make 1 venom for 1 nrg
-
-  With rob(n)
-    If .nrg <= 0 Then GoTo getout ' Can't make or unmake venom if nrg is negative
-     
-    If .mem(824) > 32000 Then .mem(824) = 32000
-    If .mem(824) < -32000 Then .mem(824) = -32000
-    
-    Delta = .mem(824) ' This is what the bot wants to do to his venom, up or down
-    
-    If Abs(Delta) > .nrg / venomNrgConvRate Then Delta = Sgn(Delta) * .nrg / venomNrgConvRate  ' Can't make or unmake more venom than you have nrg
-    
-    If Abs(Delta) > 100 Then Delta = Sgn(Delta) * 100      ' Can't make or unmake more than 100 venom at a time
-    If .venom + Delta > 32000 Then Delta = 32000 - .venom  ' venom can't go above 32000
-    If .venom + Delta < 0 Then Delta = -.venom             ' venom can't go below 0
-    
-    .venom = .venom + Delta                                ' Make the change in venom
-    .nrg = .nrg - (Abs(Delta) * venomNrgConvRate)          ' Making or unmaking venom takes nrg
-    
-    'This is the transaction cost
-    Cost = Abs(Delta) * SimOpts.Costs(VENOMCOST) * SimOpts.Costs(COSTMULTIPLIER)
-   
-    .nrg = .nrg - Cost
-    
-    .Waste = .Waste + Cost                 ' waste is created proportional to the transaction cost
-    
-    .mem(824) = 0                          ' reset the .mkvenom sysvar
-    .mem(825) = Int(.venom)               ' update the .venom sysvar
-getout:
-    'Botsareus 3/14/2014 Disqualify
-    If (SimOpts.F1 Or x_restartmode = 1) And Disqualify = 2 Then dreason .FName, .tag, "making venom"
-    If Not SimOpts.F1 And .dq = 1 And Disqualify = 2 Then rob(n).Dead = True 'safe kill robot
-  End With
-End Sub
 ' Robot n converts some of his energy to poison
 Public Sub storepoison(n As Integer)
   Dim Cost As Single
@@ -2142,8 +1735,8 @@ If SimOpts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
   
   tempnrg = rob(n).nrg
   If tempnrg > 0 Then
-    nx = rob(n).pos.X + absx(rob(n).aim, sondist, 0, 0, 0)
-    ny = rob(n).pos.Y + absy(rob(n).aim, sondist, 0, 0, 0)
+    nx = rob(n).pos.x + absx(rob(n).aim, sondist, 0, 0, 0)
+    ny = rob(n).pos.y + absy(rob(n).aim, sondist, 0, 0, 0)
     tests = tests Or simplecoll(nx, ny, n)
     tests = tests Or Not rob(n).exist 'Botsareus 6/4/2014 Can not reproduce from a dead robot
     'tests = tests Or (rob(n).Fixed And IsInSpawnArea(nx, ny))
@@ -2180,11 +1773,11 @@ If SimOpts.DisableTypArepro And rob(n).Veg = False Then Exit Sub
       Erase rob(nuovo).mem
       Erase rob(nuovo).Ties
       
-      rob(nuovo).pos.X = rob(n).pos.X + absx(rob(n).aim, sondist, 0, 0, 0)
-      rob(nuovo).pos.Y = rob(n).pos.Y + absy(rob(n).aim, sondist, 0, 0, 0)
+      rob(nuovo).pos.x = rob(n).pos.x + absx(rob(n).aim, sondist, 0, 0, 0)
+      rob(nuovo).pos.y = rob(n).pos.y + absy(rob(n).aim, sondist, 0, 0, 0)
       rob(nuovo).exist = True
-      rob(nuovo).BucketPos.X = -2
-      rob(nuovo).BucketPos.Y = -2
+      rob(nuovo).BucketPos.x = -2
+      rob(nuovo).BucketPos.y = -2
       UpdateBotBucket nuovo
       rob(nuovo).vel = rob(n).vel
       rob(nuovo).actvel = rob(n).actvel 'Botsareus 7/1/2016 Bugfix
@@ -2468,8 +2061,8 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
   
   tempnrg = rob(female).nrg
   If tempnrg > 0 Then
-    nx = rob(female).pos.X + absx(rob(female).aim, sondist, 0, 0, 0)
-    ny = rob(female).pos.Y + absy(rob(female).aim, sondist, 0, 0, 0)
+    nx = rob(female).pos.x + absx(rob(female).aim, sondist, 0, 0, 0)
+    ny = rob(female).pos.y + absy(rob(female).aim, sondist, 0, 0, 0)
     tests = tests Or simplecoll(nx, ny, female)
     tests = tests Or Not rob(female).exist 'Botsareus 6/4/2014 Can not reproduce from a dead robot
     'tests = tests Or (rob(n).Fixed And IsInSpawnArea(nx, ny))
@@ -2628,11 +2221,11 @@ If rob(female).body < 5 Then Exit Function 'Botsareus 3/27/2014 An attempt to pr
       Erase rob(nuovo).mem
       Erase rob(nuovo).Ties
       
-      rob(nuovo).pos.X = rob(female).pos.X + absx(rob(female).aim, sondist, 0, 0, 0)
-      rob(nuovo).pos.Y = rob(female).pos.Y + absy(rob(female).aim, sondist, 0, 0, 0)
+      rob(nuovo).pos.x = rob(female).pos.x + absx(rob(female).aim, sondist, 0, 0, 0)
+      rob(nuovo).pos.y = rob(female).pos.y + absy(rob(female).aim, sondist, 0, 0, 0)
       rob(nuovo).exist = True
-      rob(nuovo).BucketPos.X = -2
-      rob(nuovo).BucketPos.Y = -2
+      rob(nuovo).BucketPos.x = -2
+      rob(nuovo).BucketPos.y = -2
       UpdateBotBucket nuovo
       
       rob(nuovo).vel = rob(female).vel
@@ -2865,7 +2458,7 @@ Public Sub DoGeneticMemory(t As Integer)
 End Sub
 
 ' verifies rapidly if a field position is already occupied
-Public Function simplecoll(X As Long, Y As Long, k As Integer) As Boolean
+Public Function simplecoll(x As Long, y As Long, k As Integer) As Boolean
   Dim t As Integer
   Dim radius As Long
   
@@ -2873,8 +2466,8 @@ Public Function simplecoll(X As Long, Y As Long, k As Integer) As Boolean
   
   For t = 1 To MaxRobs
     If rob(t).exist And Not (rob(t).FName = "Base.txt" And hidepred) Then
-      If Abs(rob(t).pos.X - X) < rob(t).radius + rob(k).radius And _
-        Abs(rob(t).pos.Y - Y) < rob(t).radius + rob(k).radius Then
+      If Abs(rob(t).pos.x - x) < rob(t).radius + rob(k).radius And _
+        Abs(rob(t).pos.y - y) < rob(t).radius + rob(k).radius Then
         If k <> t Then
           simplecoll = True
           GoTo getout
@@ -2885,21 +2478,21 @@ Public Function simplecoll(X As Long, Y As Long, k As Integer) As Boolean
   
   'EricL Can't reproduce into or across a shape
   For t = 1 To numObstacles
-    If Not ((Obstacles.Obstacles(t).pos.X > Max(rob(k).pos.X, X)) Or _
-           (Obstacles.Obstacles(t).pos.X + Obstacles.Obstacles(t).Width < Min(rob(k).pos.X, X)) Or _
-           (Obstacles.Obstacles(t).pos.Y > Max(rob(k).pos.Y, Y)) Or _
-           (Obstacles.Obstacles(t).pos.Y + Obstacles.Obstacles(t).Height < Min(rob(k).pos.Y, Y))) Then
+    If Not ((Obstacles.Obstacles(t).pos.x > Max(rob(k).pos.x, x)) Or _
+           (Obstacles.Obstacles(t).pos.x + Obstacles.Obstacles(t).Width < Min(rob(k).pos.x, x)) Or _
+           (Obstacles.Obstacles(t).pos.y > Max(rob(k).pos.y, y)) Or _
+           (Obstacles.Obstacles(t).pos.y + Obstacles.Obstacles(t).Height < Min(rob(k).pos.y, y))) Then
        simplecoll = True
        GoTo getout
     End If
   Next t
   
   If SimOpts.Dxsxconnected = False Then
-    If X < rob(k).radius + smudgefactor Or X + rob(k).radius + smudgefactor > SimOpts.FieldWidth Then simplecoll = True
+    If x < rob(k).radius + smudgefactor Or x + rob(k).radius + smudgefactor > SimOpts.fieldWidth Then simplecoll = True
   End If
   
   If SimOpts.Updnconnected = False Then
-    If Y < rob(k).radius + smudgefactor Or Y + rob(k).radius + smudgefactor > SimOpts.FieldHeight Then simplecoll = True
+    If y < rob(k).radius + smudgefactor Or y + rob(k).radius + smudgefactor > SimOpts.fieldHeight Then simplecoll = True
   End If
 getout:
 End Function
@@ -2909,7 +2502,7 @@ Public Function posto() As Integer
   Dim newsize As Long
   Dim t As Integer
   Dim foundone As Boolean
-  Dim X As Long
+  Dim x As Long
   
   t = 1
   foundone = False
@@ -2991,7 +2584,7 @@ End If
 
 
  Dim newsize As Long
- Dim X As Long
+ Dim x As Long
  
   'If n = -1 Then n = robfocus
    

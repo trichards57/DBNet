@@ -44,7 +44,8 @@ Public Const PERMSUNSUSPEND As Integer = 1
 
 
 Public Const MAXSPECIES As Integer = 500 ' Used to count species in other sims for IM mode
-Public Const MAXNATIVESPECIES As Integer = 76 ' Max number of species that can be in this sim
+'Public Const MAXNATIVESPECIES As Integer = 76 ' Max number of species that can be in this sim
+Public Const MAXNATIVESPECIES As Integer = 20 ' Reduced to allow for reduced memory usage
 
 Public Species(MAXSPECIES) As datispecie
 
@@ -64,8 +65,8 @@ Public Type SimOptions
   SpeciesNum As Integer
   Specie(MAXNATIVESPECIES + 1) As datispecie 'Botsareus 3/15/2013 Had to resize this so it works better with nonnative species elimination
   FieldSize As Integer
-  FieldWidth As Long
-  FieldHeight As Long
+  fieldWidth As Long
+  fieldHeight As Long
   MaxPopulation As Integer
   MinVegs As Integer
   KillDistVegs As Boolean
@@ -135,8 +136,8 @@ Public Type SimOptions
   Viscosity As Double
   'FlowType As Byte Botsareus 2/6/2013 never implemented
   '
-  PhysBrown As Single
-  PhysMoving As Single
+  physBrown As Single
+  physMoving As Single
   
   'swimming constant will hopefully soon be either obsolete or revamped.
   PhysSwim As Single
@@ -150,7 +151,7 @@ Public Type SimOptions
   Diffuse As Single
   VegFeedingToBody As Single
   
-  MaxVelocity As Single
+  maxVelocity As Single
   BadWastelevel As Integer    ' EricL 4/1/2006 Added this
   chartingInterval As Integer ' EricL 4/1/2006 Added this
   CoefficientElasticity As Single ' EricL 4/29/2006

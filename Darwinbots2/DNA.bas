@@ -7,10 +7,6 @@ Private Type boolstack
   pos As Integer
 End Type
 
-Type block
-  tipo As Integer
-  value As Integer
-End Type
 
 Dim CurrentFlow As Byte
 Const CLEAR As Byte = 0
@@ -53,125 +49,10 @@ Public ingene As Boolean             ' Flag for current gene counting.
 ''''''''''''''''''''''''''''''''''''''''''''
 ''''''''''''''''''''''''''''''''''''''''''''
 
-Private Sub ExecuteDNA(ByVal n As Integer)
-  Dim a As Integer
-  Dim b As Integer
-  Dim tipo As Long
-  Dim i As Integer
-  
-  currbot = n
-  currgene = 0
-  CurrentCondFlag = NEXTBODY 'execute body statements if no cond is found
-  ingene = False
-  
-  'New bot.  clear the stacks
-  ClearIntStack
-  ClearBoolStack
-  
-  'EricL - March 15, 2006 This section initializes the robot's ga() array to all False so that it can
-  'be populated below for those genes that activate this cycle.  Used for displaying
-  'Gene Activations.  Only initialized and populated for the robot with the focus or if the bot's console
-  'is open.
-  If (n = robfocus) Or Not (rob(n).console Is Nothing) Then
-  '  rob(n).genenum = CountGenes(rob(n).DNA) ' EricL 4/6/2006 This keeps the gene number up to date
-    ReDim rob(n).ga(rob(n).genenum)
-    For i = 0 To rob(n).genenum
-      rob(n).ga(i) = False
-    Next i
-  End If
-      
-  With rob(n)
-  a = 1
-  rob(n).condnum = 0 ' EricL 4/6/2006 reset the COND statement counter to 0
-  rob(n).dbgstring = "" 'Botsareus 4/5/2016 Safer way to debug DNA
-  While Not (.dna(a).tipo = 10 And .dna(a).value = 1) And a <= 32000 And a < UBound(.dna) 'Botsareus 6/16/2012 Added upper bounds check (This seems like overkill but I had situations where 'end' command did not exisit)
-    tipo = .dna(a).tipo
-    Select Case tipo
-      Case 0 'number
-        If CurrentFlow <> CLEAR Then
-          PushIntStack .dna(a).value
-          rob(currbot).nrg = rob(currbot).nrg - (SimOpts.Costs(NUMCOST) * SimOpts.Costs(COSTMULTIPLIER))
-        End If
-      Case 1 '*number
-        If CurrentFlow <> CLEAR Then 'And .DNA(a).value <= 1000 And .DNA(a).value > 0 Then
-        
-          b = .dna(a).value
-          If b > MaxMem Or b < 1 Then
-              b = Abs(.dna(a).value) Mod MaxMem
-              If b = 0 Then b = 1000 ' Special case that multiples of 1000 should store to location 1000
-    
-              '2/28/2014 New code from Botsareus if it is a real sysvar then put it into range 'Disabled 3/20/2016 Replaced with Point2 and Copyerror2
-              'If Not IsNumeric(SysvarDetok(b, n)) Then .dna(a).value = b
-          End If
-          
-          PushIntStack .mem(b)
-          rob(currbot).nrg = rob(currbot).nrg - (SimOpts.Costs(DOTNUMCOST) * SimOpts.Costs(COSTMULTIPLIER))
-         ' If .DNA(a).value > EyeStart And .DNA(a).value <= EyeEnd Then ' Can mutations make robots blind?
-         '    rob(n).View = True
-         ' End If
-        End If
-      Case 2 'commands (add, sub, etc.)
-        If CurrentFlow <> CLEAR Then
-          ExecuteBasicCommand .dna(a).value
-        End If
-      Case 3 'advanced commands
-        If CurrentFlow <> CLEAR Then
-          ExecuteAdvancedCommand .dna(a).value, a
-        End If
-      Case 4 'bitwise commands
-        If CurrentFlow <> CLEAR Then
-          ExecuteBitwiseCommand .dna(a).value
-        End If
-      Case 5 'conditions
-        'EricL  11/2007 New execution paradym.  Conditions can now be executeed anywhere in the gene
-        If CurrentFlow = COND Or CurrentFlow = body Or CurrentFlow = ELSEBODY Then
-          ExecuteConditions .dna(a).value
-        End If
-      Case 6 'logic commands (and, or, etc.)
-        'EricL  11/2007 New execution paradym.  Conditions can now be executeed anywhere in the gene
-        If CurrentFlow = COND Or CurrentFlow = body Or CurrentFlow = ELSEBODY Then
-          ExecuteLogic .dna(a).value
-        End If
-      Case 7 'store, inc and dec
-      
-          '2/28/2014 New code from Botsareus if it is a real sysvar then put it into range 'Disabled 3/20/2016 Replaced with Point2 and Copyerror2
-'          If a > 0 Then
-'              b = .dna(a - 1).value
-'              If (b > MaxMem Or b < 1) And .dna(a - 1).tipo = 0 Then
-'                b = Abs(.dna(a - 1).value) Mod MaxMem
-'                If b = 0 Then b = 1000 ' Special case that multiples of 1000 should store to location 1000
-'
-'                '2/28/2014 New code from Botsareus if it is a real sysvar then put it into range
-'                If Not IsNumeric(SysvarDetok(b, n)) Then .dna(a - 1).value = b
-'              End If
-'          End If
+Private Declare Sub DNA_Execute Lib "DBLibrary.dll" (ByRef r As robot, ByRef opts As SimOptions)
 
-        If CurrentFlow = body Or CurrentFlow = ELSEBODY Then
-          If CondStateIsTrue Then  ' Check the Bool stack.  If empty or True on top, do the stores.  Don't if False.
-            ExecuteStores .dna(a).value
-            If n = robfocus Or Not (rob(n).console Is Nothing) Then rob(n).ga(currgene) = True   'EricL  This gene fired this cycle!  Populate ga()
-          End If
-        End If
-      Case 8 'reserved for a future type
-      Case 9 'flow commands
-      
-        ' EricL 4/6/2006 Added If statement.  This counts the number of COND statements in each bot.
-        If Not ExecuteFlowCommands(.dna(a).value, n) Then
-          rob(n).condnum = rob(n).condnum + 1
-        End If
-        
-        'If .VirusArray(currgene) > 1 Then 'next gene is busy, so clear flag
-        '  CurrentFlow = CLEAR
-        'End If
-        
-        .mem(thisgene) = currgene
-      Case 10 'Master flow, such as end, chromostart, etc.
-        'ExecuteMasterFlow .dna(a).value
-    End Select
-    a = a + 1
-  Wend
-  End With
-  CurrentFlow = CLEAR ' EricL 4/15/2006 Do this so next bot doesn't inherit the flow control
+Private Sub ExecuteDNA(ByVal n As Integer)
+    DNA_Execute rob(n), SimOpts
 End Sub
 
 ''''''''''''''''''''''''''''''''''''''''''
@@ -390,8 +271,8 @@ Private Sub findang()
   Dim e As Single  'angle to target
   b = PopIntStack ' * Form1.yDivisor
   a = PopIntStack ' * Form1.xDivisor
-  c = rob(currbot).pos.X / Form1.xDivisor
-  d = rob(currbot).pos.Y / Form1.yDivisor
+  c = rob(currbot).pos.x / Form1.xDivisor
+  d = rob(currbot).pos.y / Form1.yDivisor
   e = angnorm(angle(c, d, a, b)) * 200
   PushIntStack e
 End Sub
@@ -405,8 +286,8 @@ Private Sub finddist()
   Dim e As Single  'distance to target
   b = PopIntStack * Form1.yDivisor
   a = PopIntStack * Form1.xDivisor
-  c = rob(currbot).pos.X
-  d = rob(currbot).pos.Y
+  c = rob(currbot).pos.x
+  d = rob(currbot).pos.y
   e = Sqr(((c - a) ^ 2 + (d - b) ^ 2))
   If Abs(e) > 2000000000# Then
     e = Sgn(e) * 2000000000#
@@ -593,9 +474,9 @@ End Sub
 
 Private Sub DNABitwiseCompliment()
   Dim value As Long
-  Dim bits As DoubleWord
-  
-  value = PopIntStack
+    Dim bits As DoubleWord
+
+    value = PopIntStack
   bits = NumberToBit(value)
   InvertBits bits
   PushIntStack BitToNumber(bits)

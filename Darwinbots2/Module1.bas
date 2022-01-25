@@ -67,9 +67,6 @@ Public Function DnaLen(dna() As block) As Integer
     DnaLen = DnaLen + 1
   Wend
   
-  'If DnaLen = 32000 Then 'Botsareus 5/29/2012 removed pointless code
-    'DnaLen = 32000
-  'End If
 End Function
 
 ' compiles a list of used locations
@@ -331,11 +328,11 @@ Public Function NextStop(ByRef dna() As block, ByVal inizio As Long) As Integer
 End Function
 
 'Returns the position of the last base pair of the gene beginnign at position
-Public Function GeneEnd(ByRef dna() As block, ByVal position As Integer) As Integer
+Public Function GeneEnd(ByRef dna() As block, ByVal Position As Integer) As Integer
   Dim condgene As Boolean
   condgene = False
     
-  GeneEnd = position
+  GeneEnd = Position
   If dna(GeneEnd).tipo = 9 And dna(GeneEnd).value = 1 Then condgene = True
   
   While GeneEnd + 1 <= 32000
@@ -411,59 +408,5 @@ End Function
 
 ' executes program of robot n with genes activation display on
 Public Sub exechighlight(ByVal n As Integer)
-  'Dim ga() As Boolean
-  'Dim k As Integer
-  'ReDim ga(rob(n).genenum)
-  'k = 1
-  ' scans the list of genes entry points
-  ' verifying conditions and jumping to body execution
-  'While rob(n).condlist(k) > 0
-  '  currgene = k
-  '  If COND(n, rob(n).condlist(k) + 1) Then
-  '    ga(k) = True
-  '    'corpo (n)
-  '  Else
-  '    ga(k) = False
-  '  End If
-  '  k = k + 1
-  'Wend
   ActivForm.DrawGrid rob(n).ga ' EricL March 15, 2006 - This line uncommented
 End Sub
-
-'executes program of robot n with console opened
-'Public Sub eseguidebug(n As Integer)
-'  Dim ga() As Boolean
-'  Dim k As Integer
-'  ReDim ga(rob(n).genenum)
-'  k = 1
-'  ' scans the list of genes entry points
-'  ' verifying conditions and jumping to body execution
-'  ' jay - add a gene name to this to replace CStr(k)
-'  While rob(n).condlist(k) > 0
-'    currgene = k
-'    If COND(n, rob(n).condlist(k) + 1) Then
-'      rob(n).console.textout CStr(k) & " executed"
-'      ga(k) = True
-'      corpo (n)
-'    Else
-'      rob(n).console.textout CStr(k) & " -"
-'      ga(k) = False
-'    End If
-'    k = k + 1
-'  Wend
-'  If ActivForm.Visible Then ActivForm.DrawGrid ga
-'End Sub
-
-' plain execution of robot n
-'Public Sub eseguirob2(n As Integer)
-'
-'Dim k As Integer
-'  k = 1
-'  ' scans the list of genes entry points
-'  ' verifying conditions and jumping to body execution
-'  'While rob(n).condlist(k) > 0
-'    'currgene = k
-'    'If COND(n, rob(n).condlist(k) + 1) Then corpo (n)
-'  '  k = k + 1
-'  'Wend
-'End Sub

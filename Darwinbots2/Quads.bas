@@ -23,8 +23,8 @@ Public Sub Init_Buckets()
   Dim x As Integer: Dim y As Integer: Dim z As Integer
   
   'Determine the nubmer of buckets.
-  NumXBuckets = Int(SimOpts.FieldWidth / BucketSize)
-  NumYBuckets = Int(SimOpts.FieldHeight / BucketSize)
+  NumXBuckets = Int(simopts.fieldWidth / BucketSize)
+  NumYBuckets = Int(simopts.fieldHeight / BucketSize)
   
   ReDim Buckets(NumXBuckets, NumYBuckets)
     
@@ -199,7 +199,7 @@ Public Function BucketsProximity(n As Integer) As Integer
   Next x
 done:
         
-  If SimOpts.shapesAreVisable And rob(n).exist Then CompareShapes n, 12
+  If simopts.shapesAreVisable And rob(n).exist Then CompareShapes n, 12
       
   BucketsProximity = rob(n).lastopp ' return the index of the last viewed object
 End Function
@@ -383,14 +383,14 @@ End Function
 Private Function eyestrength(n1 As Integer) As Single 'Botsareus 2/3/2013 eye strength mod
 Const EyeEffectiveness As Byte = 3  'Botsareus 3/26/2013 For eye strength formula
 
-If SimOpts.Pondmode And rob(n1).pos.y > 1 Then 'Botsareus 3/26/2013 Bug fix if robot Y pos is almost zero
-  eyestrength = (EyeEffectiveness / (rob(n1).pos.y / 2000) ^ SimOpts.Gradient) ^ (6828 / SimOpts.FieldHeight)  'Botsareus 3/26/2013 Robots only effected by density, not light intensity
+If simopts.Pondmode And rob(n1).pos.y > 1 Then 'Botsareus 3/26/2013 Bug fix if robot Y pos is almost zero
+  eyestrength = (EyeEffectiveness / (rob(n1).pos.y / 2000) ^ simopts.Gradient) ^ (6828 / simopts.fieldHeight)  'Botsareus 3/26/2013 Robots only effected by density, not light intensity
 Else
   eyestrength = 1
 End If
 
 
-If Not SimOpts.Daytime Then eyestrength = eyestrength * 0.8
+If Not simopts.Daytime Then eyestrength = eyestrength * 0.8
 
 If eyestrength > 1 Then eyestrength = 1
 
@@ -442,7 +442,7 @@ If (rob(n2).FName = "Base.txt" And hidepred) Then Exit Sub
       If edgetoedgedist > sightdist Then GoTo getout ' Bot too far away to see
       
       'If Shapes are see through, then there is no reason to check if a shape blocks a bot
-      If Not SimOpts.shapesAreSeeThrough Then
+      If Not simopts.shapesAreSeeThrough Then
         If AnyShapeBlocksBot(n1, n2) Then GoTo getout
       End If
       
@@ -910,11 +910,6 @@ Dim percentdist As Single
             eyevalue = 1 / (percentdist * percentdist)
           End If
             
-         ' If (RobSize - rob(n).radius + lowestDist) <> 0 Then
-          '  eyevalue = RobSize * 100 / (RobSize - rob(n).radius + lowestDist)
-          'Else
-           ' eyevalue = 100
-          'End If
           If eyevalue > 32000 Then eyevalue = 32000
                      
           If rob(n).mem(EyeStart + 1 + a) < eyevalue Then
@@ -962,148 +957,3 @@ Dim t As Single
         
 End Function
 
-
-'Public Sub CompareRobots(n1 As Integer, N2 As Integer, field As Integer)
-' Dim ab As vector, ac As vector, ad As vector 'vector from n1 to n2
-' Dim invdist As Single, discheck As Single
-' Dim eyecellC As Integer, eyecellD As Integer
-' Dim a As Integer
-'
-' ab = VectorSub(rob(N2).pos, rob(n1).pos)
-' invdist = VectorMagnitudeSquare(ab)
-' discheck = field * RobSize + rob(N2).radius
-' discheck = discheck * discheck
-'
-' 'check distance
-' If discheck < invdist Then Exit Sub
-' invdist = VectorInvMagnitude(ab)
-' 'ac and ad are to either end of the bots, while ab is to the center
-'
-' ac = VectorScalar(ab, invdist)
-' 'ac is now unit vector
-'
-' ad = VectorSet(ac.Y, -ac.X)
-' ad = VectorScalar(ad, rob(N2).radius)
-' ad = VectorAdd(ab, ad)
-'
-' ac = VectorSet(-ac.Y, ac.X)
-' ac = VectorScalar(ac, rob(N2).radius)
-' ac = VectorAdd(ab, ac)
-'
-' eyecellD = EyeCells(n1, ad)
-' eyecellC = EyeCells(n1, ac)
-'
-' If eyecellC = 0 And eyecellD = 0 Then Exit Sub
-'
-' If eyecellC = 0 Then eyecellC = EyeStart + 9
-' If eyecellD = 0 Then eyecellD = EyeStart + 1
-'
-' For a = eyecellD To eyecellC
-'   If rob(n1).mem(a) < (RobSize * 100 * invdist) Then
-'     Dim eyevalue As Long
-'     If a = EyeStart + 5 Then
-'       rob(n1).lastopp = N2
-'     End If
-'     eyevalue = (RobSize * 100 * invdist)
-'     If eyevalue > 32000 Then eyevalue = 32000
-'     rob(n1).mem(a) = eyevalue
-'   End If
-' Next a
-'End Sub
-
-'Returns the eye cell in which the point represented by the vestor ab taken from bot n's center is visable to bot n
-'Private Function EyeCells(n As Integer, ab As vector) As Integer
-'  Dim aimvector As vector
-'  Dim tantheta As Single
-'  Dim sign As Integer
-'  Dim a As Integer
-'
-'  'because we're in the third quadrant (all computer screens work like that)
-'  'we have to do the opposite of y
-'  'believe me, this caused some wierd bugs until I figured it out
-'  aimvector.X = rob(n).aimvector.X
-'  aimvector.Y = -rob(n).aimvector.Y
-'
-'  'tantheta = Tan(rob(n1).aim - Atn(ab.Y / ab.X))
-'  tantheta = Dot(ab, aimvector): If tantheta <= 0 Then Exit Function
-'  tantheta = Cross(ab, aimvector) / tantheta
-'
-'  If tantheta > 0# Then
-'    sign = 1
-'  Else
-'    sign = -1
-'    tantheta = -tantheta
-'  End If
-'
-'  If tantheta > 1# Then
-'    Exit Function   'not visible
-'  End If
-'
-'  'n2 visible to n1
-'  For a = 0 To 4
-'    If tantheta < TanLookup(a) Then 'we've found the right spot
-'      EyeCells = EyeStart + 5 - sign * a
-'      Exit Function
-'    End If
-'  Next a
-'End Function
-
-
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-'Public Function BucketShotColl(n As Integer) As Integer
-'  'doesn't check if the shot moved from bucket to bucket, which might cause problems
-'  'we'll fix that later sometime
-'
-'  Dim ab As vector, ac As vector, bc As vector, bucket As vector
-'  Dim MagAB As Single, a As Integer, robnumber As Integer
-'  Dim PX As Single, PY As Single
-'  Dim dist As Single
-'
-'  With Shots(n)
-'  ab = VectorSub(.pos, .opos)
-'  MagAB = VectorMagnitudeSquare(ab)
-'
-'  bucket = VectorSet(Int(.x / BucketSize), Int(.y / BucketSize))
-'
-'  If bucket.x < 0 Or bucket.y < 0 Or _
-'    bucket.x * BucketSize > SimOpts.FieldWidth Or _
-'    bucket.y * BucketSize > SimOpts.FieldHeight Then
-'    Exit Function
-'  End If
-'
-'  For a = 0 To Buckets(bucket.x, bucket.y).size
-'    If Buckets(bucket.x, bucket.y).arr(a) > 0 Then
-'      robnumber = Buckets(bucket.x, bucket.y).arr(a)
-'      PX = rob(robnumber).pos.x
-'      PY = rob(robnumber).pos.y
-'
-'      ac = VectorSet(PX - .ox, PY - .oy)
-'      bc = VectorSet(PX - .x, PY - .y)
-'
-'      If Dot(ab, ac) > 0 Then
-'        'if AB dot AC > 0 then nearest point is point B
-'        dist = VectorMagnitudeSquare(bc)
-'      ElseIf Dot(ab, bc) > 0 Then
-'        'if AB dot BC > 0 then nearest point is point A
-'        dist = VectorMagnitudeSquare(ac)
-'      ElseIf MagAB > 0 Then
-'        '(AB cross AC)  / ||AB|| = distance
-'        'square both sides
-'        dist = Cross(ab, ac) ^ 2 / MagAB
-'      Else
-'        dist = VectorMagnitudeSquare(ac)
-'      End If
-'
-'      If dist <= rob(robnumber).radius * rob(robnumber).radius Then
-'        If Shots(n).parent <> robnumber And rob(robnumber).Wall = False Then
-'          BucketShotColl = robnumber
-'          Exit Function
-'        End If
-'      End If
-'
-'    End If
-'  Next a
-'  End With
-'End Function

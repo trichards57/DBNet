@@ -15,16 +15,16 @@ Public savingtofile As Boolean 'make sure that when we are saving to file do not
 Public Sub calc_dnamatrix()
 'calculate dna matrix
 Dim result As String
-Dim Y As block
+Dim y As block
 Dim y_tipo As Byte
 Dim y_value As Byte
 Dim count As Byte
 
 For y_tipo = 0 To 8
  For y_value = 0 To 13
-  Y.tipo = y_tipo + 2
-  Y.value = y_value + 1
-  Parse result, Y
+  y.tipo = y_tipo + 2
+  y.value = y_value + 1
+  Parse result, y
   If result <> "" Then
    dnamatrix(y_tipo, y_value) = count
    count = count + 1
@@ -101,16 +101,8 @@ inizio:
        Dim useref As Boolean
     If (Left(a, 1) <> "'" And Left(a, 1) <> "/") And a <> "" Then
         If Left(a, 3) = "def" Then
-'          If Left(a, 3) = "shp" Then  'inserts robot shape
-'            rob(n).Shape = val(Right(a, 1))
-'          End If
-'          If Left(a, 3) = "def" Then  'inserts user defined labels as sysvars
             insertvar n, a
             useref = True
-'          End If
-'          If Left(a, 3) = "use" Then
-'            interpretUSE n, a
-'          End If
         Else
           pos = InStr(a, " ")
           While pos <> 0
@@ -159,7 +151,6 @@ here:
   End If
   rob(n).dna(DNApos).tipo = 10
   rob(n).dna(DNApos).value = 1
-  'ReDim Preserve rob(n).DNA(DnaLen(rob(n).DNA())) ' EricL commented out March 15, 2006
   ReDim Preserve rob(n).dna(DNApos)  'EricL - Added March 15, 2006
   'Botsareus 6/5/2013 Bug fix to do with leading zero on def
   If useref Then
@@ -181,7 +172,7 @@ fine:
     If path <> MDIForm1.MainDir + "\Robots\" & rob(n).FName Then 'Attempt to load a robot from common folder if not found.
       If dir(MDIForm1.MainDir + "\Robots\" & rob(n).FName) <> "" Then
         path = MDIForm1.MainDir + "\Robots\" & rob(n).FName
-        SimOpts.Specie(SpeciesFromBot(n)).path = Left(path, Len(path) - Len(rob(n).FName) - 1)
+        simopts.Specie(SpeciesFromBot(n)).path = Left(path, Len(path) - Len(rob(n).FName) - 1)
         GoTo inizio
       End If
     End If
@@ -202,7 +193,7 @@ fine:
     Else
       ' The user selected a new path
       path = path2
-      SimOpts.Specie(SpeciesFromBot(n)).path = Left(path, Len(path) - Len(rob(n).FName) - 1)  ' Update the species struct
+      simopts.Specie(SpeciesFromBot(n)).path = Left(path, Len(path) - Len(rob(n).FName) - 1)  ' Update the species struct
       GoTo inizio
     End If
     
@@ -3176,7 +3167,7 @@ Public Function DetokenizeDNA(n As Integer, Optional Position As Integer) As Str
   Dim GeneEnd As Boolean
   Dim coding As Boolean
   
-  Dim X As Integer
+  Dim x As Integer
   Dim dna() As block
   Dim vlen As Integer
   Dim Insert As Integer
