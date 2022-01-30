@@ -147,10 +147,10 @@ namespace DBNetTests.Modules
 
         [Theory,
             InlineData(0, 5),
-            InlineData(-Math.PI / 18, 4), InlineData(-2 * Math.PI / 18, 3),
-            InlineData(-3 * Math.PI / 18, 2), InlineData(-4 * Math.PI / 18, 1),
-            InlineData(1 * Math.PI / 18, 6), InlineData(2 * Math.PI / 18, 7),
-            InlineData(3 * Math.PI / 18, 8), InlineData(4 * Math.PI / 18, 9)]
+            InlineData(-Math.PI / 18, 6), InlineData(-2 * Math.PI / 18, 7),
+            InlineData(-3 * Math.PI / 18, 8), InlineData(-4 * Math.PI / 18, 9),
+            InlineData(1 * Math.PI / 18, 4), InlineData(2 * Math.PI / 18, 3),
+            InlineData(3 * Math.PI / 18, 2), InlineData(4 * Math.PI / 18, 1)]
         public void DetectsVisibleBot(double aim, int eyeNumber)
         {
             SimOpt.SimOpts = new SimOptions { FieldHeight = FieldHeight, FieldWidth = FieldWidth, FixedBotRadii = true };

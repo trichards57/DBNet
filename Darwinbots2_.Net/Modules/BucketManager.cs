@@ -171,8 +171,8 @@ namespace DarwinBots.Modules
             ac *= rob2.GetRadius(botRadiiFixed);
             ac += ab;
 
-            var theta = Physics.NormaliseAngle(Math.Atan2(ad.Y, ad.X) - rob1.Aim, false);
-            var beta = Physics.NormaliseAngle(Math.Atan2(ac.Y, ac.X) - rob1.Aim, false);
+            var theta = Physics.NormaliseAngle(Math.Atan2(ad.Y, ad.X) + rob1.Aim, false);
+            var beta = Physics.NormaliseAngle(Math.Atan2(ac.Y, ac.X) + rob1.Aim, false);
 
             for (var a = 0; a < 9; a++)
             {
