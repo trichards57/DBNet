@@ -94,7 +94,7 @@ namespace DarwinBots.Modules
                     rob.ManageFixed();
                 rob.UpdateMass();
 
-                Physics.BorderCollision(_bucketManager, rob);
+                Physics.BorderCollision(rob);
 
                 Physics.TieHooke(rob); // Handles tie lengths, tie hardening and compressive, elastic tie forces
 
@@ -104,7 +104,7 @@ namespace DarwinBots.Modules
                 if (!rob.IsFixed)
                     Physics.NetForces(this, rob); //calculate forces on all robots
 
-                foreach (var r in _bucketManager.BucketsCollision(rob, SimOpt.SimOpts.FixedBotRadii))
+                foreach (var r in _bucketManager.CheckForCollisions(rob, SimOpt.SimOpts.FixedBotRadii))
                     Physics.Repel(rob, r);
 
                 if (rob.StaticImpulse > 0 & (rob.IndependentImpulse.X != 0 || rob.IndependentImpulse.Y != 0))

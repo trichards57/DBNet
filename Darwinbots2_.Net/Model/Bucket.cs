@@ -4,7 +4,7 @@ namespace DarwinBots.Model
 {
     internal class Bucket
     {
-        public List<IntVector> AdjacentBuckets { get; } = new();
+        public List<Bucket> Adjacent { get; } = new();
         public List<Robot> Robots { get; } = new();
     }
 }

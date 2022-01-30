@@ -198,7 +198,7 @@ namespace DarwinBots.Modules
             rob.Memory[MemoryAddresses.TotalBots] = robotManager.TotalRobots;
             rob.Memory[MemoryAddresses.TOTALMYSPECIES] = SpeciesFromBot(rob).Population;
 
-            if (!rob.CantSee && !rob.IsCorpse && bucketManager.BucketsProximity(rob, SimOpt.SimOpts.FixedBotRadii) != null)
+            if (!rob.CantSee && !rob.IsCorpse && bucketManager.UpdateSight(rob, SimOpt.SimOpts.FixedBotRadii) != null)
             {
                 LookOccurr(rob, rob.LastSeenObject); // It's a bot.  Populate the refvar sysvars
             }
