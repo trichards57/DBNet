@@ -45,7 +45,7 @@ namespace DarwinBots.Model
 
         public int EnergyFix { get; set; }
 
-        public double EnergyProp { get; set; }
+        public double EnergyProp { get; set; } = 1;
 
         public int FieldHeight { get; set; }
 
