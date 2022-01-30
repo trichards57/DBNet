@@ -27,7 +27,7 @@ namespace DarwinBots.Modules
             return Math.Atan2(y2 - y1, x2 - x1);
         }
 
-        public static void BorderCollision(IBucketManager bucketManager, Robot rob)
+        public static void BorderCollision(Robot rob)
         {
             const double b = 0.05;
 
@@ -88,13 +88,23 @@ namespace DarwinBots.Modules
             VoluntaryForces(rob);
         }
 
-        public static double NormaliseAngle(double an)
+        public static double NormaliseAngle(double an, bool positiveOnly = true)
         {
-            while (an < 0)
-                an += 2 * Math.PI;
+            if (positiveOnly)
+            {
+                while (an < 0)
+                    an += 2 * Math.PI;
 
-            while (an > 2 * Math.PI)
-                an -= 2 * Math.PI;
+                while (an > 2 * Math.PI)
+                    an -= 2 * Math.PI;
+            }
+            else
+            {
+                while (an < -Math.PI)
+                    an += 2 * Math.PI;
+                while (an > Math.PI)
+                    an -= 2 * Math.PI;
+            }
 
             return an;
         }

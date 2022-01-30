@@ -31,7 +31,7 @@ namespace DarwinBots.Model
 
         public int AbsNum { get; set; }
 
-        public DoubleVector ActualVelocity { get; set; }
+        public DoubleVector ActualVelocity { get; set; } = DoubleVector.Zero;
 
         public int Age
         {
@@ -95,7 +95,7 @@ namespace DarwinBots.Model
 
         public double GenMut { get; set; }
 
-        public DoubleVector IndependentImpulse { get; set; }
+        public DoubleVector IndependentImpulse { get; set; } = DoubleVector.Zero;
 
         public bool IsCorpse { get; set; }
 
@@ -161,7 +161,7 @@ namespace DarwinBots.Model
 
         public int OldMutations { get; set; }
 
-        public DoubleVector OldPosition { get; set; }
+        public DoubleVector OldPosition { get; set; } = DoubleVector.Zero;
 
         public int ParalyzedCountdown
         {
@@ -205,9 +205,9 @@ namespace DarwinBots.Model
 
         public int PoisonValue { get; set; }
 
-        public DoubleVector Position { get; set; }
+        public DoubleVector Position { get; set; } = DoubleVector.Zero;
 
-        public DoubleVector ResistiveImpulse { get; set; }
+        public DoubleVector ResistiveImpulse { get; set; } = DoubleVector.Zero;
 
         public double Shell { get; set; }
 
@@ -241,7 +241,7 @@ namespace DarwinBots.Model
 
         public double vbody { get; set; }
 
-        public DoubleVector Velocity { get; set; }
+        public DoubleVector Velocity { get; set; } = DoubleVector.Zero;
 
         public double Venom
         {
