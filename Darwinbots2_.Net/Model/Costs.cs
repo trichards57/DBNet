@@ -1,4 +1,4 @@
-﻿namespace DarwinBots.Modules
+﻿namespace DarwinBots.Model
 {
     internal record Costs
     {

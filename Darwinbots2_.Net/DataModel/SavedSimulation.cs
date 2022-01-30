@@ -1,5 +1,4 @@
 ﻿using DarwinBots.Model;
-using DarwinBots.Modules;
 using System.Collections.Generic;
 
 namespace DarwinBots.DataModel

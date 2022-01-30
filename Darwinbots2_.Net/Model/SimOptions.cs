@@ -1,5 +1,4 @@
-﻿using DarwinBots.Modules;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace DarwinBots.Model
 {

@@ -1,4 +1,4 @@
-﻿using DarwinBots.Modules;
+﻿using DarwinBots.Model;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;
 using PostSharp.Patterns.Model;

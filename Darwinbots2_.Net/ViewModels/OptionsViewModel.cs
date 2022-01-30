@@ -1,6 +1,5 @@
 ﻿using DarwinBots.Forms;
 using DarwinBots.Model;
-using DarwinBots.Modules;
 using DarwinBots.Services;
 using Microsoft.Toolkit.Mvvm.ComponentModel;
 using Microsoft.Toolkit.Mvvm.Input;

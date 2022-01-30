@@ -1,6 +1,5 @@
 ﻿using AutoFixture;
 using DarwinBots.Model;
-using DarwinBots.Modules;
 using DarwinBots.Services;
 using DarwinBots.ViewModels;
 using FluentAssertions;
